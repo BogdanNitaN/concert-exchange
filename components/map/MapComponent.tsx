@@ -11,6 +11,7 @@ interface Artist {
   tier: string
   fee: string
   genres: string[]
+  events: string[]
   nearby: boolean
   available: boolean
   dist: number
@@ -86,19 +87,7 @@ export default function MapComponent({ artists, center, radius, onSelectArtist }
         artist.tier === 'A+' ? '#3b82f6' : '#6b7280'
 
       const icon = L.divIcon({
-        html: `<div style="
-          background:${color};
-          color:white;
-          border:2px solid white;
-          border-radius:8px;
-          padding:4px 10px;
-          font-size:11px;
-          font-weight:700;
-          white-space:nowrap;
-          box-shadow:0 2px 8px rgba(0,0,0,0.25);
-          font-family:sans-serif;
-          cursor:pointer;
-        ">${artist.name.split(' ')[0]}${artist.nearby ? ' 📍' : ''}</div>`,
+        html: `<div style="background:${color};color:white;border:2px solid white;border-radius:8px;padding:4px 10px;font-size:11px;font-weight:700;white-space:nowrap;box-shadow:0 2px 8px rgba(0,0,0,0.25);font-family:sans-serif;cursor:pointer;">${artist.name.split(' ')[0]}${artist.nearby ? ' 📍' : ''}</div>`,
         className: '',
         iconAnchor: [0, 0]
       })
@@ -107,14 +96,7 @@ export default function MapComponent({ artists, center, radius, onSelectArtist }
         .addTo(map)
         .on('click', () => onSelectArtist(artist))
 
-      marker.bindTooltip(`
-        <div style="font-family:sans-serif;font-size:12px;padding:2px 4px">
-          <strong>${artist.name}</strong><br/>
-          ${artist.tier} • ${artist.fee}<br/>
-          ${artist.dist}km distanță
-          ${artist.nearby ? '<br/><span style="color:#16a34a;font-weight:600">📍 Deja în zonă</span>' : ''}
-        </div>
-      `)
+      marker.bindTooltip(`<div style="font-family:sans-serif;font-size:12px;padding:2px 4px"><strong>${artist.name}</strong><br/>${artist.tier} • ${artist.fee}<br/>${artist.dist}km distanță${artist.nearby ? '<br/><span style="color:#16a34a;font-weight:600">📍 Deja în zonă</span>' : ''}</div>`)
       markersRef.current.push(marker)
     })
   }
@@ -126,10 +108,5 @@ export default function MapComponent({ artists, center, radius, onSelectArtist }
     })
   }, [artists, radius])
 
-  return (
-    <div
-      ref={mapRef}
-      style={{ width: '100%', height: '100%' }}
-    />
-  )
+  return <div ref={mapRef} style={{ width: '100%', height: '100%' }} />
 }
