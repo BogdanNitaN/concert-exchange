@@ -27,13 +27,13 @@ const VENUES = [
 const GENRES = ["Pop","Dance","EDM","Urban","Hip-Hop","Cover Band","Folk","Lăutărească","Trap"]
 const EVENT_TYPES = ["Club","Festival","Corporate","Wedding","Private","City Days","Mall","Casino"]
 const TIERS = ["Premium","A+","A"]
-const DEFAULT_CENTER: [number, number] = [45.9432, 24.9668]
+const DEFAULT_CENTER: [number, number] = [45.7489, 24.9668]
 
 interface GeoSuggestion {
   name: string
+  fullName: string
   lat: number
   lng: number
-  fullName: string
 }
 
 export default function SearchPage() {
@@ -50,7 +50,6 @@ export default function SearchPage() {
   const [center, setCenter] = useState<[number, number]>(DEFAULT_CENTER)
   const [citySuggestions, setCitySuggestions] = useState<GeoSuggestion[]>([])
   const [selectedCity, setSelectedCity] = useState('')
-  const [showVenues, setShowVenues] = useState(true)
   const [mapLayer, setMapLayer] = useState<'artisti'|'venues'|'toate'>('toate')
   const searchTimer = useRef<any>(null)
 
@@ -60,20 +59,17 @@ export default function SearchPage() {
     searchTimer.current = setTimeout(async () => {
       try {
         const res = await fetch(
-          `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(citySearch)}&countrycodes=ro,md&format=json&limit=8&accept-language=ro&addressdetails=1`,
-          { headers: { 'Accept-Language': 'ro' } }
+          `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(citySearch)}&countrycodes=ro,md&format=json&limit=8&accept-language=ro&addressdetails=1`
         )
         const data = await res.json()
         const suggestions: GeoSuggestion[] = data.map((d: any) => ({
-          name: d.address?.city || d.address?.town || d.address?.village || d.address?.municipality || d.name,
+          name: d.address?.city || d.address?.town || d.address?.village || d.name,
           fullName: [d.address?.city || d.address?.town || d.address?.village || d.name, d.address?.county, d.address?.country].filter(Boolean).join(', '),
           lat: parseFloat(d.lat),
           lng: parseFloat(d.lon)
         }))
         setCitySuggestions(suggestions)
-      } catch (e) {
-        console.error(e)
-      }
+      } catch {}
     }, 400)
   }, [citySearch])
 
@@ -102,173 +98,164 @@ export default function SearchPage() {
   }
 
   return (
-    <div className="min-h-screen bg-stone-50 flex flex-col">
-      <nav className="border-b border-stone-200 bg-white sticky top-0 z-50">
-        <div className="max-w-full px-6 h-16 flex items-center justify-between">
-          <Link href="/" className="text-xl font-bold text-stone-900 tracking-tight">
-            Concert <span className="text-amber-500">●</span> Exchange
-          </Link>
-          <div className="flex items-center gap-4">
-            <div className="flex gap-1 bg-stone-100 rounded-xl p-1">
-              {(['toate','artisti','venues'] as const).map(l => (
-                <button key={l} onClick={() => setMapLayer(l)}
-                  className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all ${
-                    mapLayer === l ? 'bg-white text-stone-900 shadow-sm' : 'text-stone-500 hover:text-stone-700'
-                  }`}>
-                  {l === 'toate' ? 'Toate' : l === 'artisti' ? '🎤 Artiști' : '🏛️ Venue-uri'}
-                </button>
-              ))}
-            </div>
-            <Link href="/dashboard/promoter" className="text-sm text-stone-500 hover:text-stone-900">Dashboard</Link>
-            {isPremium && <span className="bg-amber-100 text-amber-700 text-xs font-semibold px-3 py-1 rounded-full">⭐ Premium</span>}
+    <div style={{display:'flex', flexDirection:'column', height:'100vh', overflow:'hidden', fontFamily:'Montserrat,sans-serif'}}>
+
+      {/* NAV */}
+      <nav style={{borderBottom:'1px solid #e7e5e4', background:'white', flexShrink:0, height:'56px', display:'flex', alignItems:'center', padding:'0 24px', justifyContent:'space-between', zIndex:100}}>
+        <Link href="/" style={{fontWeight:800, fontSize:'18px', color:'#1c1917', textDecoration:'none', letterSpacing:'-0.02em'}}>
+          Concert <span style={{color:'#f59e0b'}}>●</span> Exchange
+        </Link>
+        <div style={{display:'flex', alignItems:'center', gap:'8px'}}>
+          <div style={{display:'flex', gap:'4px', background:'#f5f5f4', borderRadius:'10px', padding:'4px'}}>
+            {(['toate','artisti','venues'] as const).map(l => (
+              <button key={l} onClick={() => setMapLayer(l)}
+                style={{padding:'5px 12px', borderRadius:'7px', border:'none', cursor:'pointer', fontSize:'12px', fontWeight:600, fontFamily:'Montserrat,sans-serif',
+                  background: mapLayer === l ? 'white' : 'transparent',
+                  color: mapLayer === l ? '#1c1917' : '#78716c',
+                  boxShadow: mapLayer === l ? '0 1px 3px rgba(0,0,0,0.1)' : 'none'
+                }}>
+                {l === 'toate' ? 'Toate' : l === 'artisti' ? '🎤 Artiști' : '🏛️ Venue-uri'}
+              </button>
+            ))}
           </div>
+          <Link href="/dashboard/promoter" style={{fontSize:'13px', color:'#78716c', textDecoration:'none'}}>Dashboard</Link>
+          {isPremium && <span style={{background:'#fef3c7', color:'#92400e', fontSize:'11px', fontWeight:700, padding:'3px 10px', borderRadius:'20px'}}>⭐ Premium</span>}
         </div>
       </nav>
 
-      <div className="flex flex-1" style={{height:'calc(100vh - 64px)'}}>
+      <div style={{display:'flex', flex:1, overflow:'hidden'}}>
 
-        <div className="w-80 flex-shrink-0 bg-white border-r border-stone-200 overflow-y-auto flex flex-col">
-          <div className="p-4 border-b border-stone-100">
-            <div className="flex items-center justify-between mb-3">
-              <h2 className="font-semibold text-stone-900">Filtre căutare</h2>
-              <span className="text-xs text-stone-400">{filtered.length} găsiți</span>
+        {/* SIDEBAR */}
+        <div style={{width:'280px', flexShrink:0, background:'white', borderRight:'1px solid #e7e5e4', display:'flex', flexDirection:'column', overflow:'hidden'}}>
+
+          <div style={{padding:'12px 16px', borderBottom:'1px solid #f5f5f4'}}>
+            <div style={{display:'flex', justifyContent:'space-between', alignItems:'center', marginBottom:'10px'}}>
+              <span style={{fontWeight:700, fontSize:'13px', color:'#1c1917'}}>Filtre căutare</span>
+              <span style={{fontSize:'11px', color:'#a8a29e'}}>{filtered.length} găsiți</span>
             </div>
 
-            <div className="relative">
-              <label className="block text-xs font-semibold text-stone-500 uppercase tracking-wider mb-2">
-                Orașul evenimentului
-              </label>
-              <div className="relative">
-                <span className="absolute left-3 top-1/2 -translate-y-1/2 text-stone-400 text-sm">📍</span>
-                <input
-                  type="text"
-                  value={citySearch}
-                  onChange={e => { setCitySearch(e.target.value); setSelectedCity('') }}
-                  placeholder="Caută orice localitate RO / MD..."
-                  className="w-full pl-8 pr-3 py-2.5 rounded-xl border border-stone-200 text-sm focus:outline-none focus:border-amber-400"
-                />
-              </div>
+            <div style={{position:'relative'}}>
+              <span style={{position:'absolute', left:'10px', top:'50%', transform:'translateY(-50%)', fontSize:'14px'}}>📍</span>
+              <input type="text" value={citySearch}
+                onChange={e => { setCitySearch(e.target.value); setSelectedCity('') }}
+                placeholder="Caută orice localitate RO / MD..."
+                style={{width:'100%', paddingLeft:'32px', paddingRight:'10px', paddingTop:'8px', paddingBottom:'8px', borderRadius:'10px', border:'1px solid #e7e5e4', fontSize:'12px', fontFamily:'Montserrat,sans-serif', color:'#1c1917', outline:'none', boxSizing:'border-box'}}
+              />
               {citySuggestions.length > 0 && (
-                <div className="absolute top-full left-0 right-0 bg-white border border-stone-200 rounded-xl mt-1 z-[200] shadow-xl overflow-hidden">
+                <div style={{position:'absolute', top:'100%', left:0, right:0, background:'white', border:'1px solid #e7e5e4', borderRadius:'10px', marginTop:'4px', zIndex:200, boxShadow:'0 8px 24px rgba(0,0,0,0.12)', overflow:'hidden'}}>
                   {citySuggestions.map((s, i) => (
                     <button key={i} onClick={() => selectCity(s)}
-                      className="w-full text-left px-4 py-3 hover:bg-stone-50 border-b border-stone-100 last:border-0">
-                      <div className="text-sm font-medium text-stone-900">{s.name}</div>
-                      <div className="text-xs text-stone-400">{s.fullName}</div>
+                      style={{width:'100%', textAlign:'left', padding:'10px 14px', border:'none', background:'white', cursor:'pointer', borderBottom:'1px solid #f5f5f4', fontFamily:'Montserrat,sans-serif'}}>
+                      <div style={{fontSize:'12px', fontWeight:600, color:'#1c1917'}}>{s.name}</div>
+                      <div style={{fontSize:'10px', color:'#a8a29e', marginTop:'1px', overflow:'hidden', textOverflow:'ellipsis', whiteSpace:'nowrap'}}>{s.fullName}</div>
                     </button>
                   ))}
                 </div>
               )}
-              {selectedCity && (
-                <div className="mt-2 flex items-center gap-1 text-xs text-green-600 font-medium">
-                  <span>✓</span>
-                  <span className="truncate">{selectedCity}</span>
-                </div>
-              )}
+              {selectedCity && <div style={{fontSize:'10px', color:'#22c55e', marginTop:'4px', fontWeight:600}}>✓ {selectedCity}</div>}
             </div>
           </div>
 
-          <div className="p-4 space-y-5 flex-1">
+          <div style={{padding:'12px 16px', overflowY:'auto', flex:1, display:'flex', flexDirection:'column', gap:'14px'}}>
+
             <div>
-              <label className="block text-xs font-semibold text-stone-500 uppercase tracking-wider mb-3">
-                Radius: <span className="text-stone-900">{radius} km</span>
-              </label>
-              <div className="flex gap-1.5 mb-2">
+              <div style={{fontSize:'10px', fontWeight:700, color:'#a8a29e', textTransform:'uppercase', letterSpacing:'0.06em', marginBottom:'8px'}}>Radius: <span style={{color:'#1c1917'}}>{radius} km</span></div>
+              <div style={{display:'flex', gap:'4px', marginBottom:'6px'}}>
                 {[100,200,350,600].map(r => (
                   <button key={r} onClick={() => setRadius(r)}
-                    className={`flex-1 py-1.5 rounded-lg text-xs font-semibold border transition-all ${
-                      radius === r ? 'bg-stone-900 text-white border-stone-900' : 'bg-white text-stone-600 border-stone-200 hover:border-stone-400'
-                    }`}>{r}</button>
+                    style={{flex:1, padding:'6px 0', borderRadius:'8px', border:'1px solid', cursor:'pointer', fontSize:'11px', fontWeight:700, fontFamily:'Montserrat,sans-serif',
+                      background: radius === r ? '#1c1917' : 'white',
+                      color: radius === r ? 'white' : '#78716c',
+                      borderColor: radius === r ? '#1c1917' : '#e7e5e4'
+                    }}>{r}</button>
                 ))}
               </div>
-              <input type="range" min={50} max={600} step={50} value={radius}
-                onChange={e => setRadius(Number(e.target.value))} className="w-full" />
+              <input type="range" min={50} max={600} step={50} value={radius} onChange={e => setRadius(Number(e.target.value))} style={{width:'100%'}} />
             </div>
 
             <div>
-              <label className="block text-xs font-semibold text-stone-500 uppercase tracking-wider mb-2">Dată eveniment</label>
+              <div style={{fontSize:'10px', fontWeight:700, color:'#a8a29e', textTransform:'uppercase', letterSpacing:'0.06em', marginBottom:'6px'}}>Dată eveniment</div>
               <input type="date" value={date} onChange={e => setDate(e.target.value)}
-                className="w-full px-3 py-2.5 rounded-xl border border-stone-200 text-sm focus:outline-none focus:border-amber-400" />
+                style={{width:'100%', padding:'8px 10px', borderRadius:'10px', border:'1px solid #e7e5e4', fontSize:'12px', fontFamily:'Montserrat,sans-serif', color:'#1c1917', outline:'none', boxSizing:'border-box'}} />
             </div>
 
             <div>
-              <label className="block text-xs font-semibold text-stone-500 uppercase tracking-wider mb-2">Gen muzical</label>
-              <div className="flex flex-wrap gap-1.5">
+              <div style={{fontSize:'10px', fontWeight:700, color:'#a8a29e', textTransform:'uppercase', letterSpacing:'0.06em', marginBottom:'6px'}}>Gen muzical</div>
+              <div style={{display:'flex', flexWrap:'wrap', gap:'4px'}}>
                 {GENRES.map(g => (
                   <button key={g} onClick={() => setGenre(genre === g ? '' : g)}
-                    className={`px-2.5 py-1 rounded-full text-xs font-medium border transition-all ${
-                      genre === g ? 'bg-stone-900 text-white border-stone-900' : 'bg-white text-stone-600 border-stone-200 hover:border-stone-400'
-                    }`}>{g}</button>
+                    style={{padding:'4px 10px', borderRadius:'20px', border:'1px solid', cursor:'pointer', fontSize:'11px', fontWeight:600, fontFamily:'Montserrat,sans-serif',
+                      background: genre === g ? '#1c1917' : 'white',
+                      color: genre === g ? 'white' : '#78716c',
+                      borderColor: genre === g ? '#1c1917' : '#e7e5e4'
+                    }}>{g}</button>
                 ))}
               </div>
             </div>
 
             <div>
-              <label className="block text-xs font-semibold text-stone-500 uppercase tracking-wider mb-2">Tip eveniment</label>
-              <div className="flex flex-wrap gap-1.5">
+              <div style={{fontSize:'10px', fontWeight:700, color:'#a8a29e', textTransform:'uppercase', letterSpacing:'0.06em', marginBottom:'6px'}}>Tip eveniment</div>
+              <div style={{display:'flex', flexWrap:'wrap', gap:'4px'}}>
                 {EVENT_TYPES.map(e => (
                   <button key={e} onClick={() => setEventType(eventType === e ? '' : e)}
-                    className={`px-2.5 py-1 rounded-full text-xs font-medium border transition-all ${
-                      eventType === e ? 'bg-stone-900 text-white border-stone-900' : 'bg-white text-stone-600 border-stone-200 hover:border-stone-400'
-                    }`}>{e}</button>
+                    style={{padding:'4px 10px', borderRadius:'20px', border:'1px solid', cursor:'pointer', fontSize:'11px', fontWeight:600, fontFamily:'Montserrat,sans-serif',
+                      background: eventType === e ? '#1c1917' : 'white',
+                      color: eventType === e ? 'white' : '#78716c',
+                      borderColor: eventType === e ? '#1c1917' : '#e7e5e4'
+                    }}>{e}</button>
                 ))}
               </div>
             </div>
 
             <div>
-              <label className="block text-xs font-semibold text-stone-500 uppercase tracking-wider mb-2">Tier</label>
-              <div className="flex gap-2">
+              <div style={{fontSize:'10px', fontWeight:700, color:'#a8a29e', textTransform:'uppercase', letterSpacing:'0.06em', marginBottom:'6px'}}>Tier</div>
+              <div style={{display:'flex', gap:'4px'}}>
                 {TIERS.map(t => (
                   <button key={t} onClick={() => setTierFilter(tierFilter === t ? '' : t)}
-                    className={`flex-1 py-2 rounded-xl text-xs font-semibold border transition-all ${
-                      tierFilter === t ? 'bg-stone-900 text-white border-stone-900' : 'bg-white text-stone-600 border-stone-200 hover:border-stone-400'
-                    }`}>{t}</button>
+                    style={{flex:1, padding:'7px 0', borderRadius:'8px', border:'1px solid', cursor:'pointer', fontSize:'11px', fontWeight:700, fontFamily:'Montserrat,sans-serif',
+                      background: tierFilter === t ? '#1c1917' : 'white',
+                      color: tierFilter === t ? 'white' : '#78716c',
+                      borderColor: tierFilter === t ? '#1c1917' : '#e7e5e4'
+                    }}>{t}</button>
                 ))}
               </div>
             </div>
 
             {filtered.some(a => a.nearby) && (
-              <div className="bg-green-50 border border-green-200 rounded-xl p-3">
-                <div className="text-xs font-semibold text-green-800 mb-1">🔗 Smart routing activ</div>
-                <div className="text-xs text-green-600">{filtered.filter(a=>a.nearby).length} artiști deja în zonă</div>
-              </div>
-            )}
-
-            {mapLayer !== 'artisti' && (
-              <div className="bg-blue-50 border border-blue-200 rounded-xl p-3">
-                <div className="text-xs font-semibold text-blue-800 mb-2">🏛️ Venue-uri în zonă</div>
-                {VENUES.map(v => (
-                  <div key={v.id} className="text-xs text-blue-700 mb-1">
-                    <span className="font-medium">{v.name}</span> — {v.type}, {v.city}
-                  </div>
-                ))}
-                <div className="text-xs text-blue-400 mt-2">Contactele vizibile doar pentru tine (Pro)</div>
+              <div style={{background:'#f0fdf4', border:'1px solid #bbf7d0', borderRadius:'10px', padding:'10px 12px'}}>
+                <div style={{fontSize:'11px', fontWeight:700, color:'#166534', marginBottom:'3px'}}>🔗 Smart routing activ</div>
+                <div style={{fontSize:'11px', color:'#16a34a'}}>{filtered.filter(a=>a.nearby).length} artiști deja în zonă</div>
               </div>
             )}
           </div>
 
-          <div className="border-t border-stone-100">
-            <div className="p-3 bg-stone-50">
-              <div className="text-xs font-semibold text-stone-500 uppercase tracking-wider">{filtered.length} artiști în {radius}km</div>
+          <div style={{borderTop:'1px solid #f5f5f4', flexShrink:0}}>
+            <div style={{padding:'8px 16px', background:'#fafaf9'}}>
+              <div style={{fontSize:'10px', fontWeight:700, color:'#a8a29e', textTransform:'uppercase', letterSpacing:'0.06em'}}>{filtered.length} artiști în {radius}km</div>
             </div>
-            <div style={{maxHeight:'280px', overflowY:'auto'}}>
+            <div style={{overflowY:'auto', maxHeight:'240px'}}>
               {filtered.map(a => (
                 <div key={a.id} onClick={() => setSelectedArtist(a)}
-                  className={`p-3 border-b border-stone-100 cursor-pointer transition-all hover:bg-stone-50 ${selectedArtist?.id === a.id ? 'bg-amber-50 border-l-2 border-l-amber-400' : ''}`}>
-                  <div className="flex items-center justify-between mb-1">
-                    <div className="flex items-center gap-2">
-                      <span className="font-medium text-sm text-stone-900">{a.name}</span>
-                      {a.nearby && <span className="text-xs bg-green-500 text-white px-1.5 py-0.5 rounded-full">📍</span>}
+                  style={{padding:'10px 16px', borderBottom:'1px solid #f5f5f4', cursor:'pointer',
+                    background: selectedArtist?.id === a.id ? '#fffbeb' : 'white',
+                    borderLeft: selectedArtist?.id === a.id ? '3px solid #f59e0b' : '3px solid transparent'
+                  }}>
+                  <div style={{display:'flex', alignItems:'center', justifyContent:'space-between', marginBottom:'3px'}}>
+                    <div style={{display:'flex', alignItems:'center', gap:'6px'}}>
+                      <span style={{fontWeight:700, fontSize:'12px', color:'#1c1917'}}>{a.name}</span>
+                      {a.nearby && <span style={{background:'#22c55e', color:'white', fontSize:'9px', fontWeight:700, padding:'1px 6px', borderRadius:'10px'}}>📍</span>}
                     </div>
-                    <span className={`text-xs font-semibold px-2 py-0.5 rounded-full ${
-                      a.tier === 'Premium' ? 'bg-amber-100 text-amber-700' :
-                      a.tier === 'A+' ? 'bg-blue-100 text-blue-700' : 'bg-stone-100 text-stone-600'
-                    }`}>{a.tier}</span>
+                    <span style={{fontSize:'10px', fontWeight:700, padding:'2px 6px', borderRadius:'6px',
+                      background: a.tier === 'Premium' ? '#fef3c7' : a.tier === 'A+' ? '#eff6ff' : '#f5f5f4',
+                      color: a.tier === 'Premium' ? '#92400e' : a.tier === 'A+' ? '#1e40af' : '#78716c'
+                    }}>{a.tier}</span>
                   </div>
-                  <div className="flex items-center justify-between">
-                    <span className="text-xs text-stone-400">{a.genres[0]} • {a.dist}km</span>
-                    {isPremium ? <span className="text-xs font-semibold text-green-600">{a.fee}</span>
-                      : <span className="text-xs text-stone-300 blur-sm select-none">X.XXX€</span>}
+                  <div style={{display:'flex', justifyContent:'space-between', alignItems:'center'}}>
+                    <span style={{fontSize:'11px', color:'#a8a29e'}}>{a.genres[0]} • {a.dist}km</span>
+                    {isPremium
+                      ? <span style={{fontSize:'11px', fontWeight:700, color:'#16a34a'}}>{a.fee}</span>
+                      : <span style={{fontSize:'11px', color:'#d4d4d4', filter:'blur(4px)', userSelect:'none'}}>X.XXX€</span>
+                    }
                   </div>
                 </div>
               ))}
@@ -276,7 +263,8 @@ export default function SearchPage() {
           </div>
         </div>
 
-        <div className="flex-1 relative">
+        {/* HARTA */}
+        <div style={{flex:1, position:'relative', overflow:'hidden'}}>
           <MapComponent
             artists={mapLayer !== 'venues' ? filtered : []}
             venues={mapLayer !== 'artisti' ? VENUES : []}
@@ -286,29 +274,32 @@ export default function SearchPage() {
           />
 
           {selectedArtist && (
-            <div className="absolute bottom-6 left-1/2 -translate-x-1/2 w-96 bg-white rounded-2xl border border-stone-200 shadow-lg p-5 z-50">
-              <div className="flex items-center justify-between mb-3">
+            <div style={{position:'absolute', bottom:'20px', left:'50%', transform:'translateX(-50%)', width:'360px', background:'white', borderRadius:'16px', border:'1px solid #e7e5e4', boxShadow:'0 8px 32px rgba(0,0,0,0.12)', padding:'16px 20px', zIndex:50}}>
+              <div style={{display:'flex', justifyContent:'space-between', alignItems:'flex-start', marginBottom:'10px'}}>
                 <div>
-                  <div className="flex items-center gap-2 mb-1">
-                    <span className="font-semibold text-stone-900">{selectedArtist.name}</span>
-                    <span className={`text-xs font-semibold px-2 py-0.5 rounded-full ${
-                      selectedArtist.tier === 'Premium' ? 'bg-amber-100 text-amber-700' :
-                      selectedArtist.tier === 'A+' ? 'bg-blue-100 text-blue-700' : 'bg-stone-100 text-stone-600'
-                    }`}>{selectedArtist.tier}</span>
-                    {selectedArtist.nearby && <span className="bg-green-500 text-white text-xs px-2 py-0.5 rounded-full">📍 În zonă</span>}
+                  <div style={{display:'flex', alignItems:'center', gap:'8px', marginBottom:'3px'}}>
+                    <span style={{fontWeight:800, fontSize:'14px', color:'#1c1917'}}>{selectedArtist.name}</span>
+                    <span style={{fontSize:'10px', fontWeight:700, padding:'2px 7px', borderRadius:'6px',
+                      background: selectedArtist.tier === 'Premium' ? '#fef3c7' : selectedArtist.tier === 'A+' ? '#eff6ff' : '#f5f5f4',
+                      color: selectedArtist.tier === 'Premium' ? '#92400e' : selectedArtist.tier === 'A+' ? '#1e40af' : '#78716c'
+                    }}>{selectedArtist.tier}</span>
+                    {selectedArtist.nearby && <span style={{background:'#22c55e', color:'white', fontSize:'9px', fontWeight:700, padding:'2px 8px', borderRadius:'10px'}}>📍 În zonă</span>}
                   </div>
-                  <div className="text-xs text-stone-400">{selectedArtist.genres.join(', ')} • {selectedArtist.dist}km</div>
+                  <div style={{fontSize:'11px', color:'#a8a29e'}}>{selectedArtist.genres.join(', ')} • {selectedArtist.dist}km distanță</div>
                 </div>
-                <button onClick={() => setSelectedArtist(null)} className="text-stone-400 hover:text-stone-600 text-lg">✕</button>
+                <button onClick={() => setSelectedArtist(null)} style={{background:'none', border:'none', cursor:'pointer', fontSize:'18px', color:'#a8a29e', padding:'0'}}>✕</button>
               </div>
-              <div className="flex items-center justify-between">
-                {isPremium ? <span className="text-lg font-bold text-green-600">{selectedArtist.fee}</span>
-                  : <span className="text-lg font-bold text-stone-300 blur-sm select-none">X.XXX€</span>}
+              <div style={{display:'flex', alignItems:'center', justifyContent:'space-between'}}>
+                {isPremium
+                  ? <span style={{fontSize:'18px', fontWeight:800, color:'#16a34a'}}>{selectedArtist.fee}</span>
+                  : <span style={{fontSize:'18px', fontWeight:800, color:'#d4d4d4', filter:'blur(5px)', userSelect:'none'}}>X.XXX€</span>
+                }
                 <button onClick={() => selectedArtist.available && setBookingModal(true)}
                   disabled={!selectedArtist.available}
-                  className={`px-5 py-2.5 rounded-xl text-sm font-semibold transition-colors ${
-                    selectedArtist.available ? 'bg-stone-900 text-white hover:bg-stone-800' : 'bg-stone-100 text-stone-400 cursor-not-allowed'
-                  }`}>
+                  style={{padding:'10px 20px', borderRadius:'10px', border:'none', cursor: selectedArtist.available ? 'pointer' : 'not-allowed', fontSize:'13px', fontWeight:700, fontFamily:'Montserrat,sans-serif',
+                    background: selectedArtist.available ? '#1c1917' : '#f5f5f4',
+                    color: selectedArtist.available ? 'white' : '#a8a29e'
+                  }}>
                   {selectedArtist.available ? 'Trimite cerere' : 'Indisponibil'}
                 </button>
               </div>
@@ -318,42 +309,44 @@ export default function SearchPage() {
       </div>
 
       {bookingModal && selectedArtist && (
-        <div className="fixed inset-0 bg-black/40 z-[100] flex items-center justify-center p-4" onClick={() => setBookingModal(false)}>
-          <div className="bg-white rounded-2xl p-6 w-full max-w-md" onClick={e => e.stopPropagation()}>
+        <div style={{position:'fixed', inset:0, background:'rgba(0,0,0,0.4)', zIndex:100, display:'flex', alignItems:'center', justifyContent:'center', padding:'16px'}}
+          onClick={() => setBookingModal(false)}>
+          <div style={{background:'white', borderRadius:'20px', padding:'24px', width:'100%', maxWidth:'420px', fontFamily:'Montserrat,sans-serif'}}
+            onClick={e => e.stopPropagation()}>
             {bookingSent ? (
-              <div className="text-center py-8">
-                <div className="text-5xl mb-4">✅</div>
-                <div className="font-semibold text-stone-900">Cerere trimisă!</div>
-                <div className="text-stone-500 text-sm mt-1">Artistul va răspunde în 24h</div>
+              <div style={{textAlign:'center', padding:'32px 0'}}>
+                <div style={{fontSize:'48px', marginBottom:'16px'}}>✅</div>
+                <div style={{fontWeight:800, fontSize:'16px', color:'#1c1917', marginBottom:'4px'}}>Cerere trimisă!</div>
+                <div style={{fontSize:'13px', color:'#78716c'}}>Artistul va răspunde în 24h</div>
               </div>
             ) : (
               <>
-                <div className="flex items-center justify-between mb-4">
-                  <h3 className="font-semibold text-stone-900">Booking — {selectedArtist.name}</h3>
-                  <button onClick={() => setBookingModal(false)} className="text-stone-400 hover:text-stone-600">✕</button>
+                <div style={{display:'flex', justifyContent:'space-between', alignItems:'center', marginBottom:'16px'}}>
+                  <span style={{fontWeight:800, fontSize:'15px', color:'#1c1917'}}>Booking — {selectedArtist.name}</span>
+                  <button onClick={() => setBookingModal(false)} style={{background:'none', border:'none', cursor:'pointer', fontSize:'18px', color:'#a8a29e'}}>✕</button>
                 </div>
-                <div className="space-y-3">
+                <div style={{display:'flex', flexDirection:'column', gap:'12px'}}>
                   <div>
-                    <label className="block text-xs font-semibold text-stone-500 uppercase tracking-wider mb-1">Data</label>
-                    <input type="date" className="w-full px-3 py-2.5 rounded-xl border border-stone-200 text-sm focus:outline-none focus:border-amber-400" />
+                    <div style={{fontSize:'10px', fontWeight:700, color:'#a8a29e', textTransform:'uppercase', letterSpacing:'0.06em', marginBottom:'6px'}}>Data</div>
+                    <input type="date" style={{width:'100%', padding:'10px 12px', borderRadius:'10px', border:'1px solid #e7e5e4', fontSize:'13px', fontFamily:'Montserrat,sans-serif', color:'#1c1917', outline:'none', boxSizing:'border-box'}} />
                   </div>
                   <div>
-                    <label className="block text-xs font-semibold text-stone-500 uppercase tracking-wider mb-1">Tip eveniment</label>
-                    <select className="w-full px-3 py-2.5 rounded-xl border border-stone-200 text-sm focus:outline-none focus:border-amber-400">
+                    <div style={{fontSize:'10px', fontWeight:700, color:'#a8a29e', textTransform:'uppercase', letterSpacing:'0.06em', marginBottom:'6px'}}>Tip eveniment</div>
+                    <select style={{width:'100%', padding:'10px 12px', borderRadius:'10px', border:'1px solid #e7e5e4', fontSize:'13px', fontFamily:'Montserrat,sans-serif', color:'#1c1917', outline:'none', boxSizing:'border-box'}}>
                       {EVENT_TYPES.map(e => <option key={e}>{e}</option>)}
                     </select>
                   </div>
                   <div>
-                    <label className="block text-xs font-semibold text-stone-500 uppercase tracking-wider mb-1">Buget propus</label>
-                    <input type="text" placeholder="ex: 8.000€" className="w-full px-3 py-2.5 rounded-xl border border-stone-200 text-sm focus:outline-none focus:border-amber-400" />
+                    <div style={{fontSize:'10px', fontWeight:700, color:'#a8a29e', textTransform:'uppercase', letterSpacing:'0.06em', marginBottom:'6px'}}>Buget propus</div>
+                    <input type="text" placeholder="ex: 8.000€" style={{width:'100%', padding:'10px 12px', borderRadius:'10px', border:'1px solid #e7e5e4', fontSize:'13px', fontFamily:'Montserrat,sans-serif', color:'#1c1917', outline:'none', boxSizing:'border-box'}} />
                   </div>
                   <div>
-                    <label className="block text-xs font-semibold text-stone-500 uppercase tracking-wider mb-1">Mesaj</label>
+                    <div style={{fontSize:'10px', fontWeight:700, color:'#a8a29e', textTransform:'uppercase', letterSpacing:'0.06em', marginBottom:'6px'}}>Mesaj</div>
                     <textarea rows={3} placeholder="Descrie evenimentul..."
-                      className="w-full px-3 py-2.5 rounded-xl border border-stone-200 text-sm focus:outline-none focus:border-amber-400 resize-none" />
+                      style={{width:'100%', padding:'10px 12px', borderRadius:'10px', border:'1px solid #e7e5e4', fontSize:'13px', fontFamily:'Montserrat,sans-serif', color:'#1c1917', outline:'none', resize:'none', boxSizing:'border-box'}} />
                   </div>
                   <button onClick={sendBooking}
-                    className="w-full bg-stone-900 text-white py-3 rounded-xl text-sm font-semibold hover:bg-stone-800 transition-colors">
+                    style={{width:'100%', background:'#1c1917', color:'white', padding:'13px', borderRadius:'10px', border:'none', cursor:'pointer', fontSize:'14px', fontWeight:700, fontFamily:'Montserrat,sans-serif'}}>
                     Trimite cererea
                   </button>
                 </div>
