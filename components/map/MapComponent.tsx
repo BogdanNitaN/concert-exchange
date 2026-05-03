@@ -17,14 +17,25 @@ interface Artist {
   dist: number
 }
 
+interface Venue {
+  id: number
+  name: string
+  lat: number
+  lng: number
+  type: string
+  city: string
+  capacity: number
+}
+
 interface MapProps {
   artists: Artist[]
+  venues?: Venue[]
   center: [number, number]
   radius: number
   onSelectArtist: (artist: Artist) => void
 }
 
-export default function MapComponent({ artists, center, radius, onSelectArtist }: MapProps) {
+export default function MapComponent({ artists, venues = [], center, radius, onSelectArtist }: MapProps) {
   const mapRef = useRef<HTMLDivElement>(null)
   const mapInstanceRef = useRef<any>(null)
   const markersRef = useRef<any[]>([])
@@ -37,9 +48,9 @@ export default function MapComponent({ artists, center, radius, onSelectArtist }
         center: [45.9432, 24.9668],
         zoom: 7,
         minZoom: 6,
-        maxZoom: 13,
-        maxBounds: [[43.5, 20.0],[48.5, 30.5]],
-        maxBoundsViscosity: 1.0
+        maxZoom: 16,
+        maxBounds: [[43.0, 19.0],[48.8, 31.5]],
+        maxBoundsViscosity: 0.8
       })
       mapInstanceRef.current = map
 
@@ -79,6 +90,7 @@ export default function MapComponent({ artists, center, radius, onSelectArtist }
       fillOpacity: 1,
       weight: 2
     }).addTo(map)
+    centerPin.bindTooltip('📍 Locația evenimentului')
     markersRef.current.push(centerPin)
 
     artists.forEach(artist => {
@@ -96,9 +108,23 @@ export default function MapComponent({ artists, center, radius, onSelectArtist }
         .addTo(map)
         .on('click', () => onSelectArtist(artist))
 
-      marker.bindTooltip(`<div style="font-family:sans-serif;font-size:12px;padding:2px 4px"><strong>${artist.name}</strong><br/>${artist.tier} • ${artist.fee}<br/>${artist.dist}km distanță${artist.nearby ? '<br/><span style="color:#16a34a;font-weight:600">📍 Deja în zonă</span>' : ''}</div>`)
+      marker.bindTooltip(`<div style="font-family:sans-serif;font-size:12px;padding:2px 4px"><strong>${artist.name}</strong><br/>${artist.tier} • ${artist.fee}<br/>${artist.dist}km${artist.nearby ? '<br/><span style="color:#16a34a;font-weight:600">📍 Deja în zonă</span>' : ''}</div>`)
       markersRef.current.push(marker)
     })
+
+    venues.forEach(venue => {
+      const icon = L.divIcon({
+        html: `<div style="background:#7c3aed;color:white;border:2px solid white;border-radius:8px;padding:4px 10px;font-size:11px;font-weight:700;white-space:nowrap;box-shadow:0 2px 8px rgba(0,0,0,0.25);font-family:sans-serif;">🏛️ ${venue.name.split(' ')[0]}</div>`,
+        className: '',
+        iconAnchor: [0, 0]
+      })
+
+      const marker = L.marker([venue.lat, venue.lng], { icon }).addTo(map)
+      marker.bindTooltip(`<div style="font-family:sans-serif;font-size:12px;padding:2px 4px"><strong>${venue.name}</strong><br/>${venue.type} • ${venue.city}<br/>Capacitate: ${venue.capacity} pers.</div>`)
+      markersRef.current.push(marker)
+    })
+
+    map.setView(center, map.getZoom())
   }
 
   useEffect(() => {
@@ -106,7 +132,7 @@ export default function MapComponent({ artists, center, radius, onSelectArtist }
     import('leaflet').then(L => {
       updateMarkers(L.default, mapInstanceRef.current)
     })
-  }, [artists, radius])
+  }, [artists, venues, radius, center])
 
   return <div ref={mapRef} style={{ width: '100%', height: '100%' }} />
 }
