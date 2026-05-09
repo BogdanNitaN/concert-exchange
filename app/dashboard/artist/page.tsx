@@ -88,6 +88,7 @@ export default function ArtistDashboard() {
         <div className="mb-8">
           <h1 className="text-2xl font-bold text-stone-900 mb-1">Dashboard Artist</h1>
           <p className="text-stone-500 text-sm">Gestionează profilul, disponibilitatea și cererile de booking</p>
+          <a href="/dashboard/artist/venues" className="inline-flex items-center gap-2 mt-3 px-4 py-2 bg-purple-600 text-white text-sm font-semibold rounded-xl hover:bg-purple-700 transition-colors">🏛️ Caută venue-uri →</a>
         </div>
 
         {/* STATS */}
