@@ -7,15 +7,15 @@ import Link from 'next/link'
 const MapComponent = dynamic(() => import('@/components/map/MapComponent'), { ssr: false })
 
 const ARTISTS = [
-  { id:1, name:"DJ Armin V.", lat:46.77, lng:23.59, tier:"Premium", fee:"12.000€", genres:["EDM","Dance"], events:["Club","Festival"], nearby:true, available:true, dist:87 },
-  { id:2, name:"Maria Cânt", lat:47.16, lng:27.58, tier:"A+", fee:"8.500€", genres:["Pop","Folk"], events:["Wedding","Corporate"], nearby:false, available:true, dist:142 },
-  { id:3, name:"Florentin", lat:44.33, lng:23.79, tier:"A", fee:"5.000€", genres:["Cover Band","Lăutărească"], events:["Wedding","City Days"], nearby:false, available:true, dist:210 },
-  { id:4, name:"KORE", lat:44.43, lng:26.10, tier:"A+", fee:"9.000€", genres:["Hip-Hop","Urban"], events:["Club","Festival"], nearby:true, available:false, dist:65 },
-  { id:5, name:"Electra Duo", lat:45.75, lng:21.23, tier:"A", fee:"4.500€", genres:["Dance","Pop"], events:["Club","Corporate"], nearby:false, available:true, dist:320 },
-  { id:6, name:"DJ Suna", lat:45.65, lng:25.61, tier:"A", fee:"3.000€", genres:["Urban","Trap"], events:["Club"], nearby:false, available:true, dist:180 },
-  { id:7, name:"Costel Folk", lat:46.54, lng:24.56, tier:"A", fee:"3.500€", genres:["Folk","Populară"], events:["Wedding","City Days"], nearby:false, available:true, dist:95 },
-  { id:8, name:"DJ Chisinau", lat:47.00, lng:28.86, tier:"A+", fee:"6.000€", genres:["EDM","Dance"], events:["Club","Festival"], nearby:false, available:true, dist:280 },
-  { id:9, name:"Lăutarii MD", lat:47.41, lng:28.37, tier:"A", fee:"4.000€", genres:["Lăutărească","Folk"], events:["Wedding"], nearby:false, available:true, dist:310 },
+  { id:1, name:"DJ Armin V.", lat:46.77, lng:23.59, tier:"Premium", fee:"10.000-15.000€", genres:["EDM","Dance"], events:["Club","Festival"], nearby:true, available:true, dist:87 },
+  { id:2, name:"Maria Cant", lat:47.16, lng:27.58, tier:"A+", fee:"7.000-10.000€", genres:["Pop","Folk"], events:["Wedding","Corporate"], nearby:false, available:true, dist:142 },
+  { id:3, name:"Florentin", lat:44.33, lng:23.79, tier:"A", fee:"4.000-6.000€", genres:["Cover Band","Lautareasca"], events:["Wedding","City Days"], nearby:false, available:true, dist:210 },
+  { id:4, name:"KORE", lat:44.43, lng:26.10, tier:"A+", fee:"7.000-10.000€", genres:["Hip-Hop","Urban"], events:["Club","Festival"], nearby:true, available:false, dist:65 },
+  { id:5, name:"Electra Duo", lat:45.75, lng:21.23, tier:"A", fee:"3.500-5.000€", genres:["Dance","Pop"], events:["Club","Corporate"], nearby:false, available:true, dist:320 },
+  { id:6, name:"DJ Suna", lat:45.65, lng:25.61, tier:"A", fee:"2.500-4.000€", genres:["Urban","Trap"], events:["Club"], nearby:false, available:true, dist:180 },
+  { id:7, name:"Costel Folk", lat:46.54, lng:24.56, tier:"A", fee:"3.000-4.500€", genres:["Folk","Populara"], events:["Wedding","City Days"], nearby:false, available:true, dist:95 },
+  { id:8, name:"DJ Chisinau", lat:47.00, lng:28.86, tier:"A+", fee:"5.000-8.000€", genres:["EDM","Dance"], events:["Club","Festival"], nearby:false, available:true, dist:280 },
+  { id:9, name:"Lautarii MD", lat:47.41, lng:28.37, tier:"A", fee:"3.000-5.000€", genres:["Lautareasca","Folk"], events:["Wedding"], nearby:false, available:true, dist:310 },
 ]
 
 const VENUES = [
