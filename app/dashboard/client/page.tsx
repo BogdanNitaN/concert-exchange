@@ -27,12 +27,10 @@ const ATMOSFERA = [
   { id: 'petrecere', icon: '🎊', label: 'Petrecere & Mainstream', desc: 'Hituri cunoscute, toată lumea cântă' },
   { id: 'balcanic', icon: '⚡', label: 'Balcanic & Românesc', desc: 'Manele, populară, lăutari, energie pură' },
   { id: 'chill', icon: '🌅', label: 'Chill & Lounge', desc: 'Relaxat, ambient, fundal muzical plăcut' },
-  { id: 'live', icon: '🎺', label: 'Live & Formație', desc: 'Muzică live, trupe, instrumente' },
-  { id: 'surprise', icon: '🎤', label: 'Surprinde-mă', desc: 'Lăsăm noi să alegem ce se potrivește' },
+
 ]
 
 const TIP_ARTIST = [
-  { id: 'dj', icon: '🎧', label: 'DJ' },
   { id: 'mc', icon: '🎤', label: 'MC / Prezentator' },
   { id: 'trupa_cover', icon: '🎸', label: 'Trupă Cover / Formație' },
   { id: 'vocal', icon: '🎤', label: 'Artist Vocal / Solist' },
