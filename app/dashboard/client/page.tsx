@@ -4,6 +4,8 @@ import { useState, useEffect, useRef } from 'react'
 import dynamic from 'next/dynamic'
 import Link from 'next/link'
 import TransportCalculator from '@/components/widgets/TransportCalculator'
+import PriceExactModal from '@/components/PriceExactModal'
+import TransportBreakdown from '@/components/TransportBreakdown'
 import VenueSearch from '@/components/widgets/VenueSearch'
 
 const MapVenues = dynamic(() => import('@/components/map/MapVenues'), { ssr: false })
@@ -30,7 +32,8 @@ const ATMOSFERA = [
 ]
 
 const TIP_ARTIST = [
-  { id: 'dj_mc', icon: '🎧', label: 'DJ + MC' },
+  { id: 'dj', icon: '🎧', label: 'DJ' },
+  { id: 'mc', icon: '🎤', label: 'MC / Prezentator' },
   { id: 'trupa_cover', icon: '🎸', label: 'Trupă Cover / Formație' },
   { id: 'vocal', icon: '🎤', label: 'Artist Vocal / Solist' },
   { id: 'instrumental', icon: '🎺', label: 'Instrumentiști Live' },
@@ -41,7 +44,7 @@ const TIP_ARTIST = [
 
 const CAPACITY_OPTIONS = [100, 150, 200, 250, 350, 400, 600, 1000, 5000, 10000, 50000]
 
-const VENUE_TYPES_CLIENT = ["Toate", "Ballroom", "Restaurant cu scenă", "Hotel conference", "Conac/Vilă", "Sală Evenimente", "Casă de cultură", "Parc evenimente", "Amfiteatru", "Piață centrală", "Stadion"]
+const VENUE_TYPES_CLIENT = ["Toate", "Ballroom", "Restaurant cu scenă", "Hotel conference", "Sală Evenimente", "Casă de cultură", "Parc evenimente", "Amfiteatru", "Piață centrală", "Stadion", "Pool/Piscină", "Terasă", "Castel", "Cramă/Vie", "Altele"]
 
 const VENUES = [
   { id:1, name:"Ballroom Grand", lat:44.43, lng:26.10, type:"Ballroom", city:"București", capacity:500, priceEstimate:"3.000-5.000€" },
@@ -77,7 +80,7 @@ export default function ClientDashboard() {
   const [eventDate, setEventDate] = useState('')
   const [guestCount, setGuestCount] = useState(0)
   const [budget, setBudget] = useState(0)
-  const [atmosfera, setAtmosfera] = useState('')
+  const [atmosfera, setAtmosfera] = useState<string[]>([])
   const [tipArtist, setTipArtist] = useState<string[]>([])
   const [venueType, setVenueType] = useState('Toate')
   const [selectedVenues, setSelectedVenues] = useState<any[]>([])
@@ -88,6 +91,10 @@ export default function ClientDashboard() {
   const [selectedCity, setSelectedCity] = useState('')
   const [requestSent, setRequestSent] = useState(false)
   const [transportResult, setTransportResult] = useState<any>(null)
+  const [showPretExactModal, setShowPretExactModal] = useState(false)
+  const [selectedSeturi, setSelectedSeturi] = useState('1x45')
+  const totalMin = Math.round(((selectedArtist?.feeMin || 0) + (selectedArtist?.transport || 0) + (selectedArtist?.cazare || 0)) * 1.05)
+  const totalMax = Math.round(((selectedArtist?.feeMax || 0) + (selectedArtist?.transport || 0) + (selectedArtist?.cazare || 0)) * 1.05)
   const [venueSearchResult, setVenueSearchResult] = useState<any>(null)
   const [showVenueGrid, setShowVenueGrid] = useState(true)
   const searchTimer = useRef<any>(null)
@@ -116,6 +123,11 @@ export default function ClientDashboard() {
     setCenter([s.lat, s.lng]); setCitySuggestions([])
   }
 
+  const toggleAtmosfera = (id: string) => {
+    setAtmosfera(prev =>
+      prev.includes(id) ? prev.filter(x => x !== id) : prev.length < 3 ? [...prev, id] : prev
+    )
+  }
   const toggleTipArtist = (id: string) => {
     setTipArtist(prev => prev.includes(id) ? prev.filter(x => x !== id) : [...prev, id])
   }
@@ -215,7 +227,7 @@ export default function ClientDashboard() {
                   <span style={{position:'absolute', left:'10px', top:'50%', transform:'translateY(-50%)', fontSize:'14px'}}>📍</span>
                   <input type="text" value={citySearch} onChange={e => { setCitySearch(e.target.value); setSelectedCity('') }} placeholder="Caută orașul..."
                     style={{width:'100%', paddingLeft:'32px', paddingRight:'10px', paddingTop:'10px', paddingBottom:'10px', borderRadius:'10px', border:'1px solid #e7e5e4', fontSize:'13px', fontFamily:'Montserrat,sans-serif', color:'#1c1917', outline:'none', boxSizing:'border-box'}} />
-                  {citySuggestions.length > 0 && (
+                  {citySuggestions.length > 0 && !selectedCity && (
                     <div style={{position:'absolute', top:'100%', left:0, right:0, background:'white', border:'1px solid #e7e5e4', borderRadius:'10px', marginTop:'4px', zIndex:200, boxShadow:'0 8px 24px rgba(0,0,0,0.12)', overflow:'hidden'}}>
                       {citySuggestions.map((s, i) => (
                         <button key={i} onClick={() => selectCity(s)}
@@ -226,7 +238,14 @@ export default function ClientDashboard() {
                       ))}
                     </div>
                   )}
-                  {selectedCity && <div style={{fontSize:'11px', color:'#22c55e', marginTop:'4px', fontWeight:600}}>✓ {selectedCity}</div>}
+                  {selectedCity && (
+                    <div style={{fontSize:'11px', color:'#22c55e', marginTop:'6px', fontWeight:700, display:'flex', alignItems:'center', gap:'4px'}}>
+                      ✓ {selectedCity}
+                      <button onClick={() => { setSelectedCity(''); setCitySearch('') }}
+                        style={{background:'none', border:'none', cursor:'pointer', color:'#a8a29e', fontSize:'12px', marginLeft:'4px'}}>✕</button>
+                    </div>
+                  )}
+                  
                 </div>
               </div>
             </div>
@@ -246,12 +265,12 @@ export default function ClientDashboard() {
             </div>
             <div style={{display:'grid', gridTemplateColumns:'repeat(4, 1fr)', gap:'12px', marginBottom:'32px'}}>
               {ATMOSFERA.map(a => (
-                <div key={a.id} onClick={() => setAtmosfera(a.id)}
-                  style={{background: atmosfera === a.id ? '#1c1917' : 'white', border:'2px solid ' + (atmosfera === a.id ? '#1c1917' : '#e7e5e4'), borderRadius:'16px', padding:'20px 14px', cursor:'pointer', textAlign:'center', transform: atmosfera === a.id ? 'scale(1.03)' : 'scale(1)', boxShadow: atmosfera === a.id ? '0 8px 24px rgba(0,0,0,0.15)' : '0 2px 4px rgba(0,0,0,0.04)', transition:'all 0.2s', position:'relative'}}>
+                <div key={a.id} onClick={() => toggleAtmosfera(a.id)}
+                  style={{background: atmosfera.includes(a.id) ? '#1c1917' : 'white', border:'2px solid ' + (atmosfera.includes(a.id) ? '#1c1917' : '#e7e5e4'), borderRadius:'16px', padding:'20px 14px', cursor:'pointer', textAlign:'center', transform: atmosfera.includes(a.id) ? 'scale(1.03)' : 'scale(1)', boxShadow: atmosfera.includes(a.id) ? '0 8px 24px rgba(0,0,0,0.15)' : '0 2px 4px rgba(0,0,0,0.04)', transition:'all 0.2s', position:'relative'}}>
                   {atmosfera === a.id && <div style={{position:'absolute', top:'8px', right:'10px', fontSize:'10px', color:'#22c55e', fontWeight:800}}>✓</div>}
                   <div style={{fontSize:'28px', marginBottom:'8px'}}>{a.icon}</div>
-                  <div style={{fontWeight:700, fontSize:'12px', color: atmosfera === a.id ? 'white' : '#1c1917', marginBottom:'4px'}}>{a.label}</div>
-                  <div style={{fontSize:'10px', color: atmosfera === a.id ? '#a8a29e' : '#78716c', lineHeight:1.4}}>{a.desc}</div>
+                  <div style={{fontWeight:700, fontSize:'12px', color: atmosfera.includes(a.id) ? 'white' : '#1c1917', marginBottom:'4px'}}>{a.label}</div>
+                  <div style={{fontSize:'10px', color: atmosfera.includes(a.id) ? '#a8a29e' : '#78716c', lineHeight:1.4}}>{a.desc}</div>
                 </div>
               ))}
             </div>
@@ -271,8 +290,8 @@ export default function ClientDashboard() {
             </div>
             <div style={{display:'flex', gap:'12px'}}>
               <button onClick={() => setStep('event')} style={{padding:'12px 24px', borderRadius:'12px', border:'1px solid #e7e5e4', background:'white', color:'#78716c', fontSize:'13px', fontWeight:600, cursor:'pointer', fontFamily:'Montserrat,sans-serif'}}>← Înapoi</button>
-              <button onClick={() => { if(atmosfera) setStep('artist') }} disabled={!atmosfera}
-                style={{flex:1, background:'#1c1917', color:'white', padding:'12px', borderRadius:'12px', border:'none', cursor: atmosfera ? 'pointer' : 'not-allowed', fontSize:'14px', fontWeight:700, fontFamily:'Montserrat,sans-serif', opacity: atmosfera ? 1 : 0.4}}>
+              <button onClick={() => { if(atmosfera.length > 0) setStep('artist') }} disabled={atmosfera.length === 0}
+                style={{flex:1, background:'#1c1917', color:'white', padding:'12px', borderRadius:'12px', border:'none', cursor: atmosfera.length > 0 ? 'pointer' : 'not-allowed', fontSize:'14px', fontWeight:700, fontFamily:'Montserrat,sans-serif', opacity: atmosfera.length > 0 ? 1 : 0.4}}>
                 Continuă — Alege artistul →
               </button>
             </div>
@@ -537,18 +556,41 @@ export default function ClientDashboard() {
                   </div>
                 </div>
 
+                <div style={{background:'white', border:'1px solid #e7e5e4', borderRadius:'16px', padding:'20px', marginBottom:'16px'}}>
+                  <div style={{fontSize:'12px', fontWeight:700, color:'#1c1917', marginBottom:'12px'}}>🎵 Seturi artist</div>
+                  <div style={{display:'flex', gap:'8px', flexWrap:'wrap'}}>
+                    {[
+                      { id: '1x45', label: '1 set × 45 min' },
+                      { id: '2x45', label: '2 seturi × 45 min' },
+                      { id: '3x45', label: '3 seturi × 45 min' },
+                      { id: 'allnight', label: 'All Night' },
+                    ].map(s => (
+                      <button key={s.id} onClick={() => setSelectedSeturi(s.id)}
+                        style={{padding:'8px 16px', borderRadius:'20px', border:'2px solid', cursor:'pointer', fontSize:'12px', fontWeight:600, fontFamily:'Montserrat,sans-serif',
+                          background: selectedSeturi === s.id ? '#1c1917' : 'white',
+                          color: selectedSeturi === s.id ? 'white' : '#78716c',
+                          borderColor: selectedSeturi === s.id ? '#1c1917' : '#e7e5e4'
+                        }}>{s.label}</button>
+                    ))}
+                  </div>
+                </div>
+
                 <div style={{background:'#f0fdf4', border:'1px solid #bbf7d0', borderRadius:'16px', padding:'20px', marginBottom:'16px'}}>
                   <div style={{fontSize:'12px', fontWeight:700, color:'#166534', marginBottom:'16px'}}>💰 Deviz estimativ</div>
                   <div style={{marginBottom:'16px'}}>
-                    <div style={{fontSize:'11px', fontWeight:700, color:'#166534', marginBottom:'8px'}}>🚗 Calculator transport</div>
-                    <TransportCalculator costPerKm={2} currency="EUR" onResult={(r) => setTransportResult(r)} />
+                    <div style={{fontSize:'11px', fontWeight:700, color:'#166534', marginBottom:'8px'}}>🚗 Transport</div>
+                    <TransportBreakdown
+                      distantaKm={transportResult?.distantaInterna || 200}
+                      artist={{ costPerKm: 2, nrBileteAvion: 1, cazareTip: 'Camera dubla', cazareNrCamere: 1 }}
+                      currency="EUR"
+                    />
                   </div>
                   <div style={{display:'flex', flexDirection:'column', gap:'8px', borderTop:'1px solid #bbf7d0', paddingTop:'16px'}}>
                     {[
                       { label:'Fee artist (minim)', value: selectedArtist?.feeMin.toLocaleString() + '€' },
                       { label:'Fee artist (maxim)', value: selectedArtist?.feeMax.toLocaleString() + '€' },
                       { label:'Transport estimat', value: transportResult ? transportResult.costTotal.toLocaleString() + '€' : selectedArtist?.transport + '€' },
-                      { label:'Cazare', value: transportResult?.necesitaCazare ? '150-300€/noapte' : selectedArtist?.cazare + '€' },
+                      { label:'Cazare necesara', value: '1x Camera dubla' },
 
                     ].map(row => (
                       <div key={row.label} style={{display:'flex', justifyContent:'space-between', fontSize:'13px', color:'#166534'}}>
@@ -566,7 +608,21 @@ export default function ClientDashboard() {
 
                 <div style={{display:'flex', gap:'12px'}}>
                   <button onClick={() => setStep('venue')} style={{padding:'12px 24px', borderRadius:'12px', border:'1px solid #e7e5e4', background:'white', color:'#78716c', fontSize:'13px', fontWeight:600, cursor:'pointer', fontFamily:'Montserrat,sans-serif'}}>← Înapoi</button>
-                  <button onClick={() => setRequestSent(true)}
+                  <button onClick={() => {
+                    const msg = encodeURIComponent(
+                      'Cerere noua Concert Exchange\n' +
+                      'Artist: ' + (selectedArtist?.name || '') + '\n' +
+                      'Data: ' + eventDate + '\n' +
+                      'Oras: ' + selectedCity + '\n' +
+                      'Locatie: ' + (selectedVenues[0]?.name || 'nespecificata') + '\n' +
+                      'Invitati: ' + guestCount + '\n' +
+                      'Buget: ' + budget + 'EUR\n' +
+                      'Seturi: ' + selectedSeturi
+                    )
+                    window.open('https://wa.me/40751144109?text=' + msg, '_blank')
+                    window.open('mailto:me@bogdannita.ro?subject=Cerere Concert Exchange&body=' + msg, '_blank')
+                    setRequestSent(true)
+                  }}
                     style={{flex:1, background:'#1c1917', color:'white', padding:'14px', borderRadius:'12px', border:'none', cursor:'pointer', fontSize:'14px', fontWeight:700, fontFamily:'Montserrat,sans-serif'}}>
                     Trimite cererea 🎉
                   </button>
@@ -576,6 +632,15 @@ export default function ClientDashboard() {
           </div>
         )}
       </div>
+    <PriceExactModal
+      isOpen={showPretExactModal}
+      onClose={() => setShowPretExactModal(false)}
+      artist={selectedArtist?.name}
+      eventDate={eventDate}
+      location={selectedVenues[0]?.name || selectedCity}
+      budgetMin={totalMin}
+      budgetMax={totalMax}
+    />
     </div>
   )
 }
