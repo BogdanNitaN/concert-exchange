@@ -192,8 +192,11 @@ export default function ClientDashboard() {
 
             {showVenueGrid && (
               <>
-                <div style={{fontSize:'13px', fontWeight:700, color:'#1c1917', marginBottom:'12px'}}>
-                  Locatii recomandate {selectedCity ? 'in ' + selectedCity.split(',')[0] : 'in Romania'}
+                <div style={{display:'flex', alignItems:'center', justifyContent:'space-between', marginBottom:'14px'}}>
+                  <div style={{fontSize:'13px', fontWeight:700, color:'#1c1917'}}>
+                    Locatii recomandate {selectedCity ? 'in ' + selectedCity.split(',')[0] : 'in Romania'}
+                  </div>
+                  <div style={{fontSize:'11px', color:'#7c3aed', fontWeight:600}}>Pe viitor: boost vizibilitate</div>
                 </div>
                 <div style={{display:'flex', flexWrap:'wrap', gap:'6px', marginBottom:'14px'}}>
                   {VENUE_TYPES_CLIENT.map(t => (
@@ -205,7 +208,7 @@ export default function ClientDashboard() {
                   <MapVenues venues={filteredVenues} center={center} radius={200} onSelectVenue={(v: any) => toggleVenueSelect(v)} />
                 </div>
                 <div style={{display:'grid', gridTemplateColumns:'1fr 1fr', gap:'12px', marginBottom:'20px'}}>
-                  {filteredVenues.slice(0,6).map(v => {
+                  {(selectedCity ? filteredVenues.filter(v => v.city && selectedCity.toLowerCase().includes(v.city.toLowerCase().split('-')[0])).slice(0,2).concat(filteredVenues.filter(v => !v.city || !selectedCity.toLowerCase().includes(v.city.toLowerCase().split('-')[0])).slice(0,4)) : filteredVenues.slice(0,6)).map(v => {
                     const isSelected = selectedVenues.find(sv => sv.id === v.id)
                     return (
                       <div key={v.id} onClick={() => toggleVenueSelect(v)}
