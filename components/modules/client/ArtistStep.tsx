@@ -8,6 +8,7 @@ interface Props {
   setBudget: (v: number) => void
   eventTypeLabel: string
   atmosfera?: string[]
+  tipEntertainment?: string[]
   selectedArtists: any[]
   setSelectedArtists: (a: any[]) => void
   onBack: () => void
@@ -18,6 +19,24 @@ const tierInfo = (tier: string) => {
   if (tier === 'Premium') return { bg: '#1c1917', color: 'white', label: 'A++ · Icon' }
   if (tier === 'A+') return { bg: '#7c3aed', color: 'white', label: 'A+ · Premium' }
   return { bg: '#f5f5f4', color: '#44403c', label: 'A · Select' }
+}
+
+const ENTERTAINMENT_GENRE_MAP: Record<string, string[]> = {
+  dj: ['DJ', 'Dance', 'EDM', 'Lounge'],
+  formatie: ['Cover Band', 'Rock', 'Pop', 'Folk', 'Lautareasca', 'Jazz', 'Populara', 'Balcanic', 'Latino'],
+  vocal: ['Pop', 'Folk', 'Jazz', 'R&B', 'Rap', 'Hip-Hop', 'Trap', 'Manele'],
+  instrumental: ['Jazz', 'Piano', 'Clasica'],
+  dansatori: ['Dance', 'Pop', 'EDM'],
+}
+
+const matchesEntertainment = (artistGenres: string[], tipEntertainment: string[]) => {
+  if (!tipEntertainment || tipEntertainment.length === 0) return true
+  return tipEntertainment.some(tip => {
+    const allowedGenres = ENTERTAINMENT_GENRE_MAP[tip] || []
+    return artistGenres.some(g => 
+      allowedGenres.some(ag => g.toLowerCase().includes(ag.toLowerCase()) || ag.toLowerCase().includes(g.toLowerCase()))
+    )
+  })
 }
 
 const VIBE_GENRE_MAP: Record<string, string[]> = {
@@ -62,10 +81,11 @@ const Legenda = () => (
   </div>
 )
 
-export default function ArtistStep({ budget, setBudget, eventTypeLabel, atmosfera = [], selectedArtists, setSelectedArtists, onBack, onNext }: Props) {
+export default function ArtistStep({ budget, setBudget, eventTypeLabel, atmosfera = [], tipEntertainment = [], selectedArtists, setSelectedArtists, onBack, onNext }: Props) {
   const ARTISTS = ARTISTS_DATA as unknown as any[]
-  const inBudgetArtists = budget > 0 ? ARTISTS.filter(a => a.feeMax <= budget) : ARTISTS
-  const overBudgetArtists = budget > 0 ? ARTISTS.filter(a => a.feeMax > budget && a.feeMin <= budget * 1.5) : []
+  const filteredByType = ARTISTS.filter(a => matchesEntertainment(a.genres, tipEntertainment))
+  const inBudgetArtists = budget > 0 ? filteredByType.filter(a => a.feeMax <= budget) : filteredByType
+  const overBudgetArtists = budget > 0 ? filteredByType.filter(a => a.feeMax > budget && a.feeMin <= budget * 1.5) : []
 
   const toggleArtist = (a: any) => {
     const isSelected = selectedArtists.some(s => s.id === a.id)

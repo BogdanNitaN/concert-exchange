@@ -1,7 +1,7 @@
 'use client'
 
 import { useRef, useEffect, useState } from 'react'
-import { Heart, Baby, Building2, PartyPopper, Wine, Music, Flame, Rocket, MapPin, Calendar, Users, Wallet, Disc3, Star, Sunset, Globe, HelpCircle } from 'lucide-react'
+import { Heart, Baby, Building2, PartyPopper, Wine, Music, Flame, Rocket, MapPin, Calendar, Users, Wallet, Disc3, Star, Sunset, Sun, Globe, HelpCircle } from 'lucide-react'
 
 interface GeoSuggestion { name: string; fullName: string; lat: number; lng: number }
 

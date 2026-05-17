@@ -95,9 +95,14 @@ export default function SummaryStep({ eventType, eventDate, guestCount, selected
         </div>
         <h2 style={{fontSize:'28px', fontWeight:800, color:'#1c1917', marginBottom:'8px', letterSpacing:'-0.5px'}}>Cerere trimisă!</h2>
         <p style={{fontSize:'15px', color:'#78716c', marginBottom:'32px'}}>Te contactăm în mai puțin de 30 min.</p>
-        <Link href="/" style={{display:'inline-flex', alignItems:'center', gap:'8px', background:'#1c1917', color:'white', padding:'13px 28px', borderRadius:'14px', fontSize:'14px', fontWeight:700, textDecoration:'none'}}>
-          Înapoi acasă <ArrowRight size={16} strokeWidth={2} />
-        </Link>
+        <div style={{display:'flex', gap:'12px', justifyContent:'center'}}>
+          <Link href="/" style={{display:'inline-flex', alignItems:'center', gap:'8px', background:'#1c1917', color:'white', padding:'13px 28px', borderRadius:'14px', fontSize:'14px', fontWeight:700, textDecoration:'none'}}>
+            Acasă <ArrowRight size={16} strokeWidth={2} />
+          </Link>
+          <Link href="/dashboard/client" style={{display:'inline-flex', alignItems:'center', gap:'8px', background:'white', color:'#1c1917', padding:'13px 28px', borderRadius:'14px', fontSize:'14px', fontWeight:700, textDecoration:'none', border:'1.5px solid #e7e5e4'}}>
+            Cerere nouă
+          </Link>
+        </div>
       </div>
     )
   }

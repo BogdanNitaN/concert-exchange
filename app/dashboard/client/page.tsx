@@ -151,6 +151,7 @@ export default function ClientDashboard() {
             budget={budget} setBudget={setBudget}
             eventTypeLabel={eventTypeLabel}
             atmosfera={atmosfera}
+            tipEntertainment={tipEntertainment}
             selectedArtists={selectedArtists} setSelectedArtists={setSelectedArtists}
             onBack={() => setStep('atmosfera')}
             onNext={() => { if(selectedArtists.length > 0) setStep('venue') }}
