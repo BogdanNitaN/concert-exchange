@@ -94,8 +94,7 @@ export default function ClientDashboard() {
     const parts = ['Cerere Concert Exchange', 'Artisti: ' + selectedArtists.map((a) => a.name).join(', '), 'Data: ' + eventDate, 'Oras: ' + selectedCity, 'Locatie: ' + (selectedVenues[0]?.name || 'nespecificata'), 'Invitati: ' + guestCount, 'Seturi: ' + selectedSeturi, 'Total: ' + totalMin + '-' + totalMax + ' EUR']
     const msg = encodeURIComponent(parts.join('\n'))
     const subject = encodeURIComponent('Cerere Concert Exchange')
-    window.open('https://wa.me/40751144109?text=' + msg, '_blank')
-    setTimeout(() => window.open('mailto:me@bogdannita.ro?subject=' + subject + '&body=' + msg, '_blank'), 500)
+    window.open('mailto:me@bogdannita.ro?subject=' + subject + '&body=' + msg, '_blank')
     setRequestSent(true)
   }
 
@@ -189,16 +188,7 @@ export default function ClientDashboard() {
                 cityFilter={selectedCity.split(',')[0]}
               />
             </div>
-            {venueSearchResult && (
-              <div style={{background:'#f0fdf4', border:'1px solid #bbf7d0', borderRadius:'14px', padding:'14px 16px', marginBottom:'16px', display:'flex', justifyContent:'space-between', alignItems:'center'}}>
-                <div>
-                  <div style={{fontWeight:700, fontSize:'14px', color:'#1c1917'}}>{venueSearchResult.name}</div>
-                  <div style={{fontSize:'12px', color:'#78716c'}}>{venueSearchResult.city}</div>
-                </div>
-                <button onClick={() => { setVenueSearchResult(null); setSelectedVenues([]); setShowVenueGrid(true) }}
-                  style={{background:'none', border:'none', cursor:'pointer', fontSize:'13px', color:'#78716c', fontFamily:'Montserrat,sans-serif'}}>x Schimba</button>
-              </div>
-            )}
+
             {showVenueGrid && (
               <>
                 <div style={{fontSize:'13px', fontWeight:700, color:'#1c1917', marginBottom:'12px'}}>

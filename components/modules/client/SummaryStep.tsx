@@ -30,6 +30,18 @@ function haversineKm(lat1: number, lng1: number, lat2: number, lng2: number) {
   return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a))
 }
 
+const CITIES_COORDS: Record<string, {lat: number, lng: number}> = {
+  'Bucuresti': { lat: 44.4268, lng: 26.1025 },
+  'Cluj-Napoca': { lat: 46.7712, lng: 23.6236 },
+  'Timisoara': { lat: 45.7489, lng: 21.2087 },
+  'Iasi': { lat: 47.1585, lng: 27.6014 },
+  'Constanta': { lat: 44.1598, lng: 28.6348 },
+  'Brasov': { lat: 45.6427, lng: 25.5887 },
+  'Oradea': { lat: 47.0458, lng: 21.9189 },
+  'Bacau': { lat: 46.5670, lng: 26.9146 },
+  'Botoșani': { lat: 47.7487, lng: 26.6697 },
+  'Botosani': { lat: 47.7487, lng: 26.6697 },
+}
 const BUCURESTI = { lat: 44.4268, lng: 26.1025 }
 
 interface Props {
@@ -54,9 +66,18 @@ export default function SummaryStep({ eventType, eventDate, guestCount, selected
   const [openArtistId, setOpenArtistId] = useState<number | null>(selectedArtists[0]?.id || null)
   const eventInfo = EVENT_TYPES.find(e => e.id === eventType)
 
-  const distantaKm = selectedCityLat && selectedCityLng
-    ? Math.round(haversineKm(BUCURESTI.lat, BUCURESTI.lng, selectedCityLat, selectedCityLng) * 1.35)
-    : 200
+  const getArtistCoords = (artist: any) => {
+    const cityFrom = artist?.cityFrom || 'Bucuresti'
+    return CITIES_COORDS[cityFrom] || BUCURESTI
+  }
+
+  const getDistanta = (artist: any) => {
+    if (!selectedCityLat || !selectedCityLng) return 200
+    const from = getArtistCoords(artist)
+    return Math.round(haversineKm(from.lat, from.lng, selectedCityLat, selectedCityLng) * 1.35)
+  }
+
+  const distantaKm = getDistanta(selectedArtists[0])
 
   const necesitaZbor = distantaKm > 300
 
@@ -154,8 +175,10 @@ export default function SummaryStep({ eventType, eventDate, guestCount, selected
         {selectedArtists.map((a, idx) => {
           const isOpen = openArtistId === a.id
           const ts = tierInfo(a.tier)
-          const costRutier = Math.round(distantaKm * (a.costPerKm || 2) / 10) * 10
+          const distantaArtist = getDistanta(a)
+          const costRutier = Math.round(distantaArtist * (a.costPerKm || 2) / 10) * 10
           const nrBilete = a.nrBileteAvion || 0
+          const necesitaZborArtist = distantaArtist > 300
 
           return (
             <div key={a.id} style={{background:'white', border:'1.5px solid ' + (isOpen ? '#1c1917' : '#e7e5e4'), borderRadius:'16px', overflow:'hidden', transition:'all 0.2s'}}>
@@ -183,19 +206,19 @@ export default function SummaryStep({ eventType, eventDate, guestCount, selected
                         <Car size={16} color='#44403c' strokeWidth={1.5} />
                         <div>
                           <div style={{fontSize:'13px', fontWeight:600, color:'#1c1917'}}>Transport rutier</div>
-                          <div style={{fontSize:'11px', color:'#a8a29e'}}>{distantaKm} km · din București</div>
+                          <div style={{fontSize:'11px', color:'#a8a29e'}}>{distantaArtist} km · din {a.cityFrom || 'București'}</div>
                         </div>
                       </div>
                       <div style={{fontSize:'14px', fontWeight:800, color:'#1c1917'}}>{costRutier.toLocaleString()} €</div>
                     </div>
 
-                    {necesitaZbor && nrBilete > 0 && (
+                    {necesitaZborArtist && nrBilete > 0 && (
                       <div style={{display:'flex', alignItems:'center', justifyContent:'space-between', background:'#eff6ff', borderRadius:'12px', padding:'12px 14px', border:'1px solid #bfdbfe'}}>
                         <div style={{display:'flex', alignItems:'center', gap:'8px'}}>
                           <Plane size={16} color='#1e40af' strokeWidth={1.5} />
                           <div>
                             <div style={{fontSize:'13px', fontWeight:600, color:'#1e40af'}}>Zbor artist</div>
-                            <div style={{fontSize:'11px', color:'#3b82f6'}}>{nrBilete} {nrBilete === 1 ? 'bilet' : 'bilete'} · distanță {distantaKm} km</div>
+                            <div style={{fontSize:'11px', color:'#3b82f6'}}>{nrBilete} {nrBilete === 1 ? 'bilet' : 'bilete'} · distanță {distantaArtist} km</div>
                           </div>
                         </div>
                         <a href="https://masirotravel.ro" target="_blank" rel="noopener noreferrer"
