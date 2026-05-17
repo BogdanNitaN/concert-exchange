@@ -183,10 +183,10 @@ export default function ClientDashboard() {
               <VenueSearch
                 onSelectVenue={(v: any) => {
                   if (!v.name) { setVenueSearchResult(null); setSelectedVenues([]); setShowVenueGrid(true); return }
-                  const venue = {id: v.place_id, name: v.name, lat: v.lat, lng: v.lng, type: 'Locatie', city: v.address, capacity: 0, priceEstimate: 'Pret la cerere'}
+                  const venue = {id: v.place_id, name: v.name, lat: v.lat, lng: v.lng, type: 'Locatie', city: v.address || selectedCity, capacity: 0, priceEstimate: 'Pret la cerere'}
                   setVenueSearchResult(venue); setSelectedVenues([venue]); setShowVenueGrid(false)
                 }}
-                placeholder="Cauta orice locatie din Romania..."
+                cityFilter={selectedCity.split(',')[0]}
               />
             </div>
             {venueSearchResult && (

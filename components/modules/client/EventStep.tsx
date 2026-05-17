@@ -129,9 +129,8 @@ export default function EventStep({ eventType, setEventType, eventDate, setEvent
             <MapPin size={11} strokeWidth={2} /> Orașul evenimentului
           </label>
           <div style={{position:'relative'}}>
-            <MapPin size={15} color='#a8a29e' style={{position:'absolute', left:'12px', top:'50%', transform:'translateY(-50%)'}} strokeWidth={1.5} />
-            <input type="text" value={citySearch} onChange={e => { setCitySearch(e.target.value); setSelectedCity('') }} placeholder="Caută orașul..."
-              style={{width:'100%', paddingLeft:'36px', paddingRight:'12px', paddingTop:'11px', paddingBottom:'11px', borderRadius:'12px', border:'1px solid ' + (selectedCity ? '#059669' : '#e7e5e4'), fontSize:'13px', fontFamily:'Montserrat,sans-serif', color:'#1c1917', outline:'none', boxSizing:'border-box', background:'#fafaf9'}} />
+<input type="text" value={citySearch} onChange={e => { setCitySearch(e.target.value); setSelectedCity('') }} placeholder="Caută orașul..."
+              style={{width:'100%', padding:'11px 14px', borderRadius:'12px', border:'1px solid ' + (selectedCity ? '#059669' : '#e7e5e4'), fontSize:'13px', fontFamily:'Montserrat,sans-serif', color:'#1c1917', outline:'none', boxSizing:'border-box', background:'#fafaf9'}} />
             {citySuggestions.length > 0 && !selectedCity && (
               <div style={{position:'absolute', top:'100%', left:0, right:0, background:'white', border:'1px solid #e7e5e4', borderRadius:'12px', marginTop:'4px', zIndex:200, boxShadow:'0 8px 32px rgba(0,0,0,0.10)', overflow:'hidden'}}>
                 {citySuggestions.map((s, i) => (
