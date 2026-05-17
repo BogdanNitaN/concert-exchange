@@ -49,7 +49,7 @@ export default function ArtistStep({ budget, setBudget, eventTypeLabel, selected
             <div>
               <div style={{display:'flex', alignItems:'center', gap:'8px', marginBottom:'4px'}}>
                 <span style={{fontWeight:700, fontSize:'14px', color:'#1c1917'}}>{a.name}</span>
-                <span style={{fontSize:'10px', fontWeight:700, padding:'2px 8px', borderRadius:'6px', background: ts.bg, color: ts.color}}}>{ts.label}</span>
+                <span style={{fontSize:'10px', fontWeight:700, padding:'2px 8px', borderRadius:'6px', background: ts.bg, color: ts.color}}>{ts.label}</span>
               </div>
               <div style={{fontSize:'12px', color:'#78716c'}}>{a.genres.join(' · ')}</div>
             </div>
