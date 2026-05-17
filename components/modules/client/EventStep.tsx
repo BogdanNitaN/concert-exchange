@@ -1,7 +1,7 @@
 'use client'
 
 import { useRef, useEffect, useState } from 'react'
-import { Heart, Baby, Building2, PartyPopper, Wine, Music, Flame, Rocket, MapPin, Calendar, Users, Wallet } from 'lucide-react'
+import { Heart, Baby, Building2, PartyPopper, Wine, Music, Flame, Rocket, MapPin, Calendar, Users, Wallet, Disc3, Star, Sunset, Globe, HelpCircle } from 'lucide-react'
 
 interface GeoSuggestion { name: string; fullName: string; lat: number; lng: number }
 
@@ -28,17 +28,25 @@ const EVENT_TYPES = [
   { id: 'botez', icon: Baby, label: 'Botez' },
   { id: 'corporate', icon: Building2, label: 'Corporate' },
   { id: 'private', icon: PartyPopper, label: 'Petrecere privată' },
-  { id: 'gala', icon: Wine, label: 'Gală / Revelion' },
-  { id: 'festival', icon: Music, label: 'Festival' },
-  { id: 'citydays', icon: Flame, label: 'City Days' },
+  { id: 'gala', icon: Wine, label: 'Gală / Revelion / Crăciun' },
+  { id: 'festival', icon: Music, label: 'Festival / Concert' },
+  { id: 'citydays', icon: Flame, label: 'City Days / Open Air' },
+  { id: 'club', icon: Disc3, label: 'Club / Pop-Up' },
   { id: 'corporate2', icon: Rocket, label: 'Lansare / Team Building' },
+  { id: 'altele', icon: HelpCircle, label: 'Altele / Nu știu' },
 ]
 
-const CAPACITY_OPTIONS = [100, 150, 200, 250, 350, 400, 600, 1000, 5000, 10000, 50000]
+const CAPACITY_OPTIONS = [50, 100, 150, 200, 250, 350, 400, 600, 1000, 5000, 10000, 50000]
+
+const NEEDS_GUESTS = ['nunta', 'botez', 'private', 'gala']
 
 export default function EventStep({ eventType, setEventType, eventDate, setEventDate, budget, setBudget, guestCount, setGuestCount, selectedCity, setSelectedCity, citySearch, setCitySearch, setCenter, onCitySelect, onNext }: Props) {
   const [citySuggestions, setCitySuggestions] = useState<GeoSuggestion[]>([])
   const searchTimer = useRef<any>(null)
+
+  const isGuests = NEEDS_GUESTS.includes(eventType)
+  const capacityLabel = isGuests ? 'Număr invitați' : 'Participanți estimați'
+
   const daysUntil = eventDate ? Math.floor((new Date(eventDate).getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24)) : null
 
   useEffect(() => {
@@ -58,29 +66,31 @@ export default function EventStep({ eventType, setEventType, eventDate, setEvent
   }, [citySearch])
 
   const selectCity = (s: GeoSuggestion) => {
-    setSelectedCity(s.fullName); setCitySearch(s.name)
-    setCenter([s.lat, s.lng]); setCitySuggestions([])
+    setSelectedCity(s.fullName)
+    setCitySearch(s.name)
+    setCenter([s.lat, s.lng])
     onCitySelect?.(s.lat, s.lng)
+    setCitySuggestions([])
   }
 
   return (
     <div>
       <div style={{textAlign:'center', marginBottom:'40px'}}>
         <h1 style={{fontSize:'32px', fontWeight:800, color:'#1c1917', marginBottom:'8px', letterSpacing:'-0.5px'}}>Ce eveniment planifici?</h1>
-        <p style={{fontSize:'15px', color:'#78716c', fontWeight:400}}>Vom găsi artiștii și locațiile potrivite pentru tine</p>
+        <p style={{fontSize:'15px', color:'#78716c'}}>Vom găsi artiștii și locațiile potrivite pentru tine</p>
       </div>
 
-      <div style={{display:'grid', gridTemplateColumns:'repeat(4, 1fr)', gap:'10px', marginBottom:'28px'}}>
+      <div style={{display:'grid', gridTemplateColumns:'repeat(5, 1fr)', gap:'8px', marginBottom:'28px'}}>
         {EVENT_TYPES.map(e => {
           const Icon = e.icon
           const isSelected = eventType === e.id
           return (
             <div key={e.id} onClick={() => setEventType(e.id)}
-              style={{background: isSelected ? '#1c1917' : 'white', border:'1.5px solid ' + (isSelected ? '#1c1917' : '#e7e5e4'), borderRadius:'16px', padding:'20px 12px', cursor:'pointer', textAlign:'center', transform: isSelected ? 'scale(1.02)' : 'scale(1)', transition:'all 0.15s', boxShadow: isSelected ? '0 4px 20px rgba(0,0,0,0.15)' : '0 1px 3px rgba(0,0,0,0.04)'}}>
-              <div style={{display:'flex', justifyContent:'center', marginBottom:'10px'}}>
-                <Icon size={22} color={isSelected ? 'white' : '#44403c'} strokeWidth={1.5} />
+              style={{background: isSelected ? '#1c1917' : 'white', border:'1.5px solid ' + (isSelected ? '#1c1917' : '#e7e5e4'), borderRadius:'14px', padding:'16px 8px', cursor:'pointer', textAlign:'center', transform: isSelected ? 'scale(1.03)' : 'scale(1)', transition:'all 0.15s', boxShadow: isSelected ? '0 4px 20px rgba(0,0,0,0.15)' : '0 1px 3px rgba(0,0,0,0.04)'}}>
+              <div style={{display:'flex', justifyContent:'center', marginBottom:'8px'}}>
+                <Icon size={20} color={isSelected ? 'white' : '#44403c'} strokeWidth={1.5} />
               </div>
-              <div style={{fontWeight:600, fontSize:'11px', color: isSelected ? 'white' : '#1c1917', letterSpacing:'0.01em'}}>{e.label}</div>
+              <div style={{fontWeight:600, fontSize:'10px', color: isSelected ? 'white' : '#1c1917', letterSpacing:'0.01em', lineHeight:1.3}}>{e.label}</div>
             </div>
           )
         })}
@@ -93,9 +103,9 @@ export default function EventStep({ eventType, setEventType, eventDate, setEvent
               <Calendar size={11} strokeWidth={2} /> Data evenimentului
             </label>
             <input type="date" value={eventDate} onChange={e => setEventDate(e.target.value)}
-              style={{width:'100%', padding:'11px 14px', borderRadius:'12px', border:'1px solid #e7e5e4', fontSize:'13px', fontFamily:'Montserrat,sans-serif', color:'#1c1917', outline:'none', boxSizing:'border-box', background:'#fafaf9'}} />
+              style={{width:'100%', padding:'11px 14px', borderRadius:'12px', border:'1px solid #e7e5e4', fontSize:'13px', fontFamily:'Montserrat,sans-serif', color:'#1c1917', outline:'none', boxSizing:'border-box', background:'#fafaf9', cursor:'pointer'}} />
             {daysUntil !== null && daysUntil > 0 && (
-              <div style={{fontSize:'11px', color: daysUntil < 30 ? '#dc2626' : '#059669', marginTop:'6px', fontWeight:600, display:'flex', alignItems:'center', gap:'4px'}}>
+              <div style={{fontSize:'11px', color: daysUntil < 30 ? '#dc2626' : '#059669', marginTop:'6px', fontWeight:600}}>
                 {daysUntil < 30 ? 'Urgent — ' : ''} Peste {daysUntil} zile
               </div>
             )}
@@ -111,7 +121,7 @@ export default function EventStep({ eventType, setEventType, eventDate, setEvent
 
         <div style={{marginBottom:'24px'}}>
           <label style={{display:'flex', alignItems:'center', gap:'6px', fontSize:'10px', fontWeight:700, color:'#a8a29e', textTransform:'uppercase', letterSpacing:'0.08em', marginBottom:'10px'}}>
-            <Users size={11} strokeWidth={2} /> Număr invitați
+            <Users size={11} strokeWidth={2} /> {capacityLabel}
           </label>
           <div style={{display:'flex', flexWrap:'wrap', gap:'6px'}}>
             {CAPACITY_OPTIONS.map(c => (
@@ -131,7 +141,7 @@ export default function EventStep({ eventType, setEventType, eventDate, setEvent
             <MapPin size={11} strokeWidth={2} /> Orașul evenimentului
           </label>
           <div style={{position:'relative'}}>
-<input type="text" value={citySearch} onChange={e => { setCitySearch(e.target.value); setSelectedCity('') }} placeholder="Caută orașul..."
+            <input type="text" value={citySearch} onChange={e => { setCitySearch(e.target.value); setSelectedCity('') }} placeholder="Caută orașul..."
               style={{width:'100%', padding:'11px 14px', borderRadius:'12px', border:'1px solid ' + (selectedCity ? '#059669' : '#e7e5e4'), fontSize:'13px', fontFamily:'Montserrat,sans-serif', color:'#1c1917', outline:'none', boxSizing:'border-box', background:'#fafaf9'}} />
             {citySuggestions.length > 0 && !selectedCity && (
               <div style={{position:'absolute', top:'100%', left:0, right:0, background:'white', border:'1px solid #e7e5e4', borderRadius:'12px', marginTop:'4px', zIndex:200, boxShadow:'0 8px 32px rgba(0,0,0,0.10)', overflow:'hidden'}}>

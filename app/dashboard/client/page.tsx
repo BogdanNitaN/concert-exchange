@@ -91,7 +91,7 @@ export default function ClientDashboard() {
   })
 
   const handleTrimite = () => {
-    const parts = ['Cerere Concert Exchange', 'Artisti: ' + selectedArtists.map((a) => a.name).join(', '), 'Data: ' + eventDate, 'Oras: ' + selectedCity, 'Locatie: ' + (selectedVenues[0]?.name || 'nespecificata'), 'Invitati: ' + guestCount, 'Seturi: ' + selectedSeturi, 'Total: ' + totalMin + '-' + totalMax + ' EUR']
+    const parts = ['Cerere Concert Exchange', 'Artisti: ' + selectedArtists.map((a) => a.name).join(', '), 'Data: ' + eventDate, 'Oras: ' + selectedCity, 'Locatie: ' + (selectedVenues[0]?.name || 'nespecificata'), 'Participanti: ' + guestCount, 'Seturi: ' + selectedSeturi, 'Total: ' + totalMin + '-' + totalMax + ' EUR']
     const msg = encodeURIComponent(parts.join('\n'))
     const subject = encodeURIComponent('Cerere Concert Exchange')
     window.open('mailto:me@bogdannita.ro?subject=' + subject + '&body=' + msg, '_blank')
@@ -142,6 +142,7 @@ export default function ClientDashboard() {
             tipEntertainment={tipEntertainment} toggleEntertainment={toggleEntertainment}
             onBack={() => setStep('event')}
             onNext={() => setStep('artist')}
+            onExpert={() => setShowExpertModal(true)}
           />
         )}
 
