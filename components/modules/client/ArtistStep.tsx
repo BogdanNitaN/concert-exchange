@@ -1,14 +1,14 @@
 'use client'
 
 import { ARTISTS_DATA } from '@/lib/artists-data'
-import { CheckCircle2, Star, TrendingUp } from 'lucide-react'
+import { Star, TrendingUp, X } from 'lucide-react'
 
 interface Props {
   budget: number
   setBudget: (v: number) => void
   eventTypeLabel: string
-  selectedArtist: any
-  setSelectedArtist: (a: any) => void
+  selectedArtists: any[]
+  setSelectedArtists: (a: any[]) => void
   onBack: () => void
   onNext: () => void
 }
@@ -22,37 +22,58 @@ const tierInfo = (tier: string) => {
 const Legenda = () => (
   <div style={{display:'flex', alignItems:'center', gap:'16px', padding:'10px 18px', background:'white', borderBottom:'1px solid #f0f0ef', flexWrap:'wrap', position:'sticky', top:'56px', zIndex:50}}>
     <span style={{fontSize:'10px', color:'#a8a29e', fontWeight:700, textTransform:'uppercase', letterSpacing:'0.08em'}}>Tier</span>
-    <span style={{fontSize:'11px', color:'#1c1917', display:'flex', alignItems:'center', gap:'6px'}}>
+    <span style={{fontSize:'11px', display:'flex', alignItems:'center', gap:'6px'}}>
       <span style={{background:'#1c1917', fontSize:'10px', fontWeight:700, padding:'2px 8px', borderRadius:'6px', color:'white'}}>A++ · Icon</span> 10.000€+
     </span>
-    <span style={{fontSize:'11px', color:'#7c3aed', display:'flex', alignItems:'center', gap:'6px'}}>
+    <span style={{fontSize:'11px', display:'flex', alignItems:'center', gap:'6px'}}>
       <span style={{background:'#7c3aed', fontSize:'10px', fontWeight:700, padding:'2px 8px', borderRadius:'6px', color:'white'}}>A+ · Premium</span> 5.000–10.000€
     </span>
-    <span style={{fontSize:'11px', color:'#44403c', display:'flex', alignItems:'center', gap:'6px'}}>
+    <span style={{fontSize:'11px', display:'flex', alignItems:'center', gap:'6px'}}>
       <span style={{background:'#f5f5f4', fontSize:'10px', fontWeight:700, padding:'2px 8px', borderRadius:'6px', color:'#44403c'}}>A · Select</span> până la 5.000€
     </span>
+    <span style={{fontSize:'10px', color:'#a8a29e', marginLeft:'auto'}}>Max 3 artiști</span>
   </div>
 )
 
-export default function ArtistStep({ budget, setBudget, eventTypeLabel, selectedArtist, setSelectedArtist, onBack, onNext }: Props) {
+export default function ArtistStep({ budget, setBudget, eventTypeLabel, selectedArtists, setSelectedArtists, onBack, onNext }: Props) {
   const ARTISTS = ARTISTS_DATA as any[]
   const inBudgetArtists = budget > 0 ? ARTISTS.filter(a => a.feeMax <= budget) : ARTISTS
   const overBudgetArtists = budget > 0 ? ARTISTS.filter(a => a.feeMax > budget && a.feeMin <= budget * 1.5) : []
 
+  const toggleArtist = (a: any) => {
+    const isSelected = selectedArtists.some(s => s.id === a.id)
+    if (isSelected) {
+      setSelectedArtists(selectedArtists.filter(s => s.id !== a.id))
+    } else if (selectedArtists.length < 3) {
+      setSelectedArtists([...selectedArtists, a])
+    }
+  }
+
   const ArtistCard = ({ a, isOverBudget }: { a: any, isOverBudget?: boolean }) => {
-    const isSelected = selectedArtist?.id === a.id
+    const isSelected = selectedArtists.some(s => s.id === a.id)
+    const selIndex = selectedArtists.findIndex(s => s.id === a.id)
     const ts = tierInfo(a.tier)
+    const cannotSelect = !isSelected && selectedArtists.length >= 3
+
     return (
-      <div onClick={() => setSelectedArtist(isSelected ? null : a)}
-        style={{background: isOverBudget ? '#f0fdf4' : 'white', border:'1.5px solid ' + (isSelected ? (isOverBudget ? '#059669' : '#1c1917') : (isOverBudget ? '#bbf7d0' : '#e7e5e4')), borderRadius:'16px', padding:'16px 20px', cursor:'pointer', transition:'all 0.15s', position:'relative', boxShadow: isSelected ? '0 4px 16px rgba(0,0,0,0.10)' : '0 1px 3px rgba(0,0,0,0.04)'}}>
+      <div onClick={() => !cannotSelect && toggleArtist(a)}
+        style={{
+          background: isSelected ? '#f0fdf4' : 'white',
+          border: '1.5px solid ' + (isSelected ? '#059669' : '#e7e5e4'),
+          borderRadius:'16px', padding:'16px 20px',
+          cursor: cannotSelect ? 'not-allowed' : 'pointer',
+          transition:'all 0.15s', position:'relative',
+          opacity: cannotSelect ? 0.4 : 1,
+          boxShadow: isSelected ? '0 4px 16px rgba(5,150,105,0.12)' : '0 1px 3px rgba(0,0,0,0.04)'
+        }}>
         {isSelected && (
-          <div style={{position:'absolute', top:'14px', right:'16px'}}>
-            <CheckCircle2 size={18} color={isOverBudget ? '#059669' : '#1c1917'} strokeWidth={2} />
+          <div style={{position:'absolute', top:'14px', right:'16px', width:'22px', height:'22px', borderRadius:'50%', background:'#059669', display:'flex', alignItems:'center', justifyContent:'center', color:'white', fontSize:'11px', fontWeight:800}}>
+            {selIndex + 1}
           </div>
         )}
         <div style={{display:'flex', alignItems:'center', justifyContent:'space-between'}}>
           <div style={{display:'flex', alignItems:'center', gap:'14px'}}>
-            <div style={{width:'46px', height:'46px', borderRadius:'14px', background: isOverBudget ? '#059669' : '#1c1917', display:'flex', alignItems:'center', justifyContent:'center', color:'white', fontWeight:800, fontSize:'14px', letterSpacing:'-0.5px'}}>
+            <div style={{width:'46px', height:'46px', borderRadius:'14px', background: isSelected ? '#059669' : '#1c1917', display:'flex', alignItems:'center', justifyContent:'center', color:'white', fontWeight:800, fontSize:'14px'}}>
               {a.name.split(' ').map((n: string) => n[0]).join('').slice(0,2)}
             </div>
             <div>
@@ -64,14 +85,12 @@ export default function ArtistStep({ budget, setBudget, eventTypeLabel, selected
               {isOverBudget && (
                 <div style={{display:'flex', alignItems:'center', gap:'4px', marginTop:'4px'}}>
                   <TrendingUp size={11} color='#059669' strokeWidth={2} />
-                  <span style={{fontSize:'11px', color:'#059669', fontWeight:600}}>Recomandat pentru evenimentul tău</span>
+                  <span style={{fontSize:'11px', color:'#059669', fontWeight:600}}>puțin peste buget, dar merită</span>
                 </div>
               )}
             </div>
           </div>
-          <div style={{textAlign:'right'}}>
-            <div style={{fontSize:'11px', color:'#a8a29e'}}>fee la cerere</div>
-          </div>
+          <div style={{fontSize:'11px', color:'#a8a29e'}}>fee la cerere</div>
         </div>
       </div>
     )
@@ -94,9 +113,32 @@ export default function ArtistStep({ budget, setBudget, eventTypeLabel, selected
           </div>
         </div>
 
+        {selectedArtists.length > 0 && (
+          <div style={{background:'#f0fdf4', border:'1px solid #bbf7d0', borderRadius:'14px', padding:'14px 16px', marginBottom:'20px'}}>
+            <div style={{fontSize:'11px', fontWeight:700, color:'#059669', textTransform:'uppercase', letterSpacing:'0.08em', marginBottom:'10px'}}>
+              Artiști selectați ({selectedArtists.length}/3)
+            </div>
+            <div style={{display:'flex', gap:'8px', flexWrap:'wrap'}}>
+              {selectedArtists.map((a, i) => (
+                <div key={a.id} style={{display:'flex', alignItems:'center', gap:'8px', background:'white', border:'1px solid #bbf7d0', borderRadius:'20px', padding:'6px 12px'}}>
+                  <span style={{width:'18px', height:'18px', borderRadius:'50%', background:'#059669', color:'white', fontSize:'10px', fontWeight:800, display:'flex', alignItems:'center', justifyContent:'center'}}>{i+1}</span>
+                  <span style={{fontSize:'13px', fontWeight:600, color:'#1c1917'}}>{a.name}</span>
+                  <button onClick={(e) => { e.stopPropagation(); toggleArtist(a) }} style={{background:'none', border:'none', cursor:'pointer', color:'#a8a29e', padding:'0', display:'flex'}}>
+                    <X size={14} strokeWidth={2} />
+                  </button>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
         {inBudgetArtists.length > 0 && (
-          <div style={{marginBottom:'24px'}}>
-            <div style={{fontSize:'11px', fontWeight:700, color:'#a8a29e', textTransform:'uppercase', letterSpacing:'0.08em', marginBottom:'12px'}}>În bugetul tău</div>
+          <div style={{marginBottom:'28px'}}>
+            <div style={{display:'flex', alignItems:'center', gap:'8px', marginBottom:'12px', padding:'8px 14px', background:'#f5f5f4', borderRadius:'10px'}}>
+              <div style={{width:'8px', height:'8px', borderRadius:'50%', background:'#059669'}} />
+              <span style={{fontSize:'11px', fontWeight:700, color:'#1c1917', textTransform:'uppercase', letterSpacing:'0.08em'}}>În bugetul tău</span>
+              <span style={{fontSize:'11px', color:'#78716c'}}>— {inBudgetArtists.length} artiști disponibili</span>
+            </div>
             <div style={{display:'flex', flexDirection:'column', gap:'8px'}}>
               {inBudgetArtists.map(a => <ArtistCard key={a.id} a={a} />)}
             </div>
@@ -105,10 +147,10 @@ export default function ArtistStep({ budget, setBudget, eventTypeLabel, selected
 
         {overBudgetArtists.length > 0 && (
           <div style={{marginBottom:'24px'}}>
-            <div style={{display:'flex', alignItems:'center', gap:'8px', marginBottom:'12px'}}>
-              <Star size={12} color='#059669' strokeWidth={2} />
-              <div style={{fontSize:'11px', fontWeight:700, color:'#059669', textTransform:'uppercase', letterSpacing:'0.08em'}}>Recomandăm</div>
-              <div style={{fontSize:'11px', color:'#78716c'}}>artiști potriviți pentru evenimentul tău</div>
+            <div style={{display:'flex', alignItems:'center', gap:'8px', marginBottom:'12px', padding:'8px 14px', background:'#f0fdf4', borderRadius:'10px', border:'1px solid #bbf7d0'}}>
+              <Star size={12} color='#059669' strokeWidth={2} fill='#059669' />
+              <span style={{fontSize:'11px', fontWeight:700, color:'#059669', textTransform:'uppercase', letterSpacing:'0.08em'}}>Recomandăm</span>
+              <span style={{fontSize:'11px', color:'#78716c'}}>— puțin peste buget, dar merită</span>
             </div>
             <div style={{display:'flex', flexDirection:'column', gap:'8px'}}>
               {overBudgetArtists.map(a => <ArtistCard key={a.id} a={a} isOverBudget />)}
@@ -118,9 +160,9 @@ export default function ArtistStep({ budget, setBudget, eventTypeLabel, selected
 
         <div style={{display:'flex', gap:'10px', marginTop:'8px'}}>
           <button onClick={onBack} style={{padding:'13px 24px', borderRadius:'14px', border:'1.5px solid #e7e5e4', background:'white', color:'#78716c', fontSize:'13px', fontWeight:600, cursor:'pointer', fontFamily:'Montserrat,sans-serif'}}>Înapoi</button>
-          <button onClick={() => { if(selectedArtist) onNext() }} disabled={!selectedArtist}
-            style={{flex:1, background:'#1c1917', color:'white', padding:'13px', borderRadius:'14px', border:'none', cursor: selectedArtist ? 'pointer' : 'not-allowed', fontSize:'14px', fontWeight:700, fontFamily:'Montserrat,sans-serif', opacity: selectedArtist ? 1 : 0.35}}>
-            Continuă — Alege locația
+          <button onClick={() => { if(selectedArtists.length > 0) onNext() }} disabled={selectedArtists.length === 0}
+            style={{flex:1, background:'#1c1917', color:'white', padding:'13px', borderRadius:'14px', border:'none', cursor: selectedArtists.length > 0 ? 'pointer' : 'not-allowed', fontSize:'14px', fontWeight:700, fontFamily:'Montserrat,sans-serif', opacity: selectedArtists.length > 0 ? 1 : 0.35}}>
+            {selectedArtists.length === 0 ? 'Alege cel puțin un artist' : selectedArtists.length === 1 ? 'Continuă cu ' + selectedArtists[0].name : 'Continuă cu ' + selectedArtists.length + ' artiști selectați'}
           </button>
         </div>
       </div>

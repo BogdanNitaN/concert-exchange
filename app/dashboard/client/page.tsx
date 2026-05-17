@@ -51,7 +51,7 @@ export default function ClientDashboard() {
   const [selectedVenues, setSelectedVenues] = useState<any[]>([])
   const [venueSearchResult, setVenueSearchResult] = useState<any>(null)
   const [showVenueGrid, setShowVenueGrid] = useState(true)
-  const [selectedArtist, setSelectedArtist] = useState<any>(null)
+  const [selectedArtists, setSelectedArtists] = useState<any[]>([])
   const [citySearch, setCitySearch] = useState('')
   const [center, setCenter] = useState<[number, number]>([45.7489, 24.9668])
   const [selectedCity, setSelectedCity] = useState('')
@@ -63,8 +63,8 @@ export default function ClientDashboard() {
   const steps = ['event', 'atmosfera', 'artist', 'venue', 'summary']
   const stepIndex = steps.indexOf(step)
 
-  const totalMin = Math.round(((selectedArtist?.feeMin || 0) + (selectedArtist?.transport || 0)) * 1.05)
-  const totalMax = Math.round(((selectedArtist?.feeMax || 0) + (selectedArtist?.transport || 0)) * 1.05)
+  const totalMin = Math.round(((selectedArtists[0]?.feeMin || 0) + (selectedArtists[0]?.transport || 0)) * 1.05)
+  const totalMax = Math.round(((selectedArtists[0]?.feeMax || 0) + (selectedArtists[0]?.transport || 0)) * 1.05)
 
   const toggleAtmosfera = (id: string) => {
     setAtmosfera(prev => prev.includes(id) ? prev.filter(x => x !== id) : prev.length < 3 ? [...prev, id] : prev)
@@ -146,9 +146,9 @@ export default function ClientDashboard() {
           <ArtistStep
             budget={budget} setBudget={setBudget}
             eventTypeLabel={eventTypeLabel}
-            selectedArtist={selectedArtist} setSelectedArtist={setSelectedArtist}
+            selectedArtists={selectedArtists} setSelectedArtists={setSelectedArtists}
             onBack={() => setStep('atmosfera')}
-            onNext={() => setStep('venue')}
+            onNext={() => { if(selectedArtists.length > 0) setStep('venue') }}
           />
         )}
 
@@ -230,7 +230,7 @@ export default function ClientDashboard() {
             eventType={eventType}
             eventDate={eventDate}
             guestCount={guestCount}
-            selectedArtist={selectedArtist}
+            selectedArtist={selectedArtists[0]}
             selectedVenues={selectedVenues}
             selectedCity={selectedCity}
             selectedSeturi={selectedSeturi}
