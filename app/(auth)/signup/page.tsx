@@ -44,7 +44,7 @@ export default function SignupPage() {
     }
 
     if (data.user) {
-      await supabase.from('profiles').upsert({
+      await (supabase as any).from('profiles').upsert({
         id: data.user.id,
         name,
         email,
