@@ -20,9 +20,9 @@ export default function ArtistStep({ budget, setBudget, eventTypeLabel, selected
   const overBudgetArtists = budget > 0 ? ARTISTS.filter(a => a.feeMax > budget && a.feeMin <= budget * 1.5) : []
 
   const tierStyle = (tier: string) => {
-    if (tier === 'Premium') return { bg: '#f3f0ff', color: '#7c3aed' }
-    if (tier === 'A+') return { bg: '#f0fdf4', color: '#059669' }
-    return { bg: '#f5f5f4', color: '#44403c' }
+    if (tier === 'Premium') return { bg: '#1c1917', color: 'white', label: 'A++ · Icon' }
+    if (tier === 'A+') return { bg: '#7c3aed', color: 'white', label: 'A+ · Premium' }
+    return { bg: '#f5f5f4', color: '#44403c', label: 'A · Select' }
   }
 
   const ArtistCard = ({ a, isOverBudget }: { a: any, isOverBudget?: boolean }) => {
@@ -49,7 +49,7 @@ export default function ArtistStep({ budget, setBudget, eventTypeLabel, selected
             <div>
               <div style={{display:'flex', alignItems:'center', gap:'8px', marginBottom:'4px'}}>
                 <span style={{fontWeight:700, fontSize:'14px', color:'#1c1917'}}>{a.name}</span>
-                <span style={{fontSize:'10px', fontWeight:700, padding:'2px 8px', borderRadius:'6px', background: ts.bg, color: ts.color}}>{a.tier}</span>
+                <span style={{fontSize:'10px', fontWeight:700, padding:'2px 8px', borderRadius:'6px', background: ts.bg, color: ts.color}}}>{ts.label}</span>
               </div>
               <div style={{fontSize:'12px', color:'#78716c'}}>{a.genres.join(' · ')}</div>
             </div>
