@@ -1,8 +1,9 @@
+import { ARTISTS_DATA } from '@/lib/artists-data'
 'use client'
 
 import { CheckCircle2, Star, TrendingUp } from 'lucide-react'
 
-const ARTISTS = [
+// const ARTISTS = [
   { id:1, name:"Maria Cânt", genres:["Pop","Folk"], feeMin:3000, feeMax:5000, tier:"A+", available:true, transport:200, cazare:"1x Cameră dublă", nrBileteAvion:0, costPerKm:2 },
   { id:2, name:"Florentin & Band", genres:["Cover Band","Lăutărească"], feeMin:2000, feeMax:3500, tier:"A", available:true, transport:150, cazare:"2x Cameră dublă", nrBileteAvion:0, costPerKm:2 },
   { id:3, name:"DJ Cristian", genres:["Dance","Pop"], feeMin:1500, feeMax:2500, tier:"A", available:true, transport:100, cazare:"1x Cameră dublă", nrBileteAvion:1, costPerKm:2 },
@@ -23,6 +24,7 @@ interface Props {
 }
 
 export default function ArtistStep({ budget, setBudget, eventTypeLabel, selectedArtist, setSelectedArtist, onBack, onNext }: Props) {
+  const ARTISTS = ARTISTS_DATA as any[]
   const inBudgetArtists = budget > 0 ? ARTISTS.filter(a => a.feeMax <= budget) : ARTISTS
   const overBudgetArtists = budget > 0 ? ARTISTS.filter(a => a.feeMax > budget && a.feeMin <= budget * 1.5) : []
 
