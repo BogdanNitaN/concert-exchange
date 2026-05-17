@@ -89,7 +89,7 @@ export default function ClientDashboard() {
   })
 
   const handleTrimite = () => {
-    const parts = ['Cerere Concert Exchange', 'Artist: ' + (selectedArtist?.name || ''), 'Data: ' + eventDate, 'Oras: ' + selectedCity, 'Locatie: ' + (selectedVenues[0]?.name || 'nespecificata'), 'Invitati: ' + guestCount, 'Seturi: ' + selectedSeturi, 'Total: ' + totalMin + '-' + totalMax + ' EUR']
+    const parts = ['Cerere Concert Exchange', 'Artisti: ' + selectedArtists.map((a) => a.name).join(', '), 'Data: ' + eventDate, 'Oras: ' + selectedCity, 'Locatie: ' + (selectedVenues[0]?.name || 'nespecificata'), 'Invitati: ' + guestCount, 'Seturi: ' + selectedSeturi, 'Total: ' + totalMin + '-' + totalMax + ' EUR']
     const msg = encodeURIComponent(parts.join('\n'))
     window.open('https://wa.me/40751144109?text=' + msg, '_blank')
     window.open('mailto:me@bogdannita.ro?subject=Cerere Concert Exchange&body=' + msg, '_blank')
@@ -266,11 +266,12 @@ export default function ClientDashboard() {
       <PriceExactModal
         isOpen={showPretExactModal}
         onClose={() => setShowPretExactModal(false)}
-        artist={selectedArtists[0]?.name}
+        artists={selectedArtists}
         eventDate={eventDate}
-        location={selectedVenues[0]?.name || selectedCity}
-        budgetMin={totalMin}
-        budgetMax={totalMax}
+        location={selectedVenues[0]?.name}
+        locationCity={selectedVenues[0]?.city || selectedCity}
+        budget={budget}
+        guestCount={guestCount}
       />
 
       <ExpertModal
