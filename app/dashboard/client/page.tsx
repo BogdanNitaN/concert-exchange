@@ -93,8 +93,9 @@ export default function ClientDashboard() {
   const handleTrimite = () => {
     const parts = ['Cerere Concert Exchange', 'Artisti: ' + selectedArtists.map((a) => a.name).join(', '), 'Data: ' + eventDate, 'Oras: ' + selectedCity, 'Locatie: ' + (selectedVenues[0]?.name || 'nespecificata'), 'Invitati: ' + guestCount, 'Seturi: ' + selectedSeturi, 'Total: ' + totalMin + '-' + totalMax + ' EUR']
     const msg = encodeURIComponent(parts.join('\n'))
+    const subject = encodeURIComponent('Cerere Concert Exchange')
     window.open('https://wa.me/40751144109?text=' + msg, '_blank')
-    window.open('mailto:me@bogdannita.ro?subject=Cerere Concert Exchange&body=' + msg, '_blank')
+    setTimeout(() => window.open('mailto:me@bogdannita.ro?subject=' + subject + '&body=' + msg, '_blank'), 500)
     setRequestSent(true)
   }
 
