@@ -86,7 +86,7 @@ export default function AtmosferaStep({ atmosfera, toggleAtmosfera, tipEntertain
       <div style={{background:'#f5f3ff', border:'1px solid #ddd6fe', borderRadius:'14px', padding:'16px 20px', marginBottom:'24px', display:'flex', alignItems:'center', justifyContent:'space-between'}}>
         <div>
           <div style={{fontSize:'13px', fontWeight:700, color:'#7c3aed', marginBottom:'2px'}}>Nu știi ce să alegi?</div>
-          <div style={{fontSize:'12px', color:'#8b5cf6'}}>Un expert te ajută gratuit în mai puțin de 30 min.</div>
+          <div style={{fontSize:'12px', color:'#059669', fontWeight:600}}>Răspuns garantat în mai puțin de 30 min.</div>
         </div>
         <button onClick={onExpert}
           style={{background:'#7c3aed', color:'white', padding:'9px 18px', borderRadius:'10px', border:'none', cursor:'pointer', fontSize:'12px', fontWeight:700, fontFamily:'Montserrat,sans-serif', whiteSpace:'nowrap'}}>

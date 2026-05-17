@@ -80,7 +80,7 @@ export default function ExpertModal({ isOpen, onClose, eventDate, guestCount, se
             <div style={{display:'flex', justifyContent:'space-between', alignItems:'flex-start', marginBottom:'24px'}}>
               <div>
                 <div style={{fontWeight:800, fontSize:'22px', color:'#1c1917', marginBottom:'6px'}}>Vorbește cu un expert</div>
-                <div style={{fontSize:'13px', color:'#78716c'}}>Răspuns garantat în mai puțin de 30 min.</div>
+                <div style={{fontSize:'13px', color:'#059669', fontWeight:700}}>Răspuns garantat în mai puțin de 30 min.</div>
               </div>
               <button onClick={onClose} style={{background:'none', border:'none', cursor:'pointer', color:'#a8a29e', padding:'4px'}}>
                 <X size={20} strokeWidth={2} />
