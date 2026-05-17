@@ -1,7 +1,8 @@
 'use client'
 
 import { useRef, useEffect, useState } from 'react'
-import { Heart, Baby, Building2, PartyPopper, Wine, Music, Flame, Rocket, MapPin, Calendar, Users, Wallet, Disc3, Star, Sunset, Sun, Globe, HelpCircle } from 'lucide-react'
+import { Heart, Baby, Building2, PartyPopper, Wine, Music, Flame, Rocket, MapPin, Users, Wallet, Disc3, Star, Sunset, Sun, Globe, HelpCircle } from 'lucide-react'
+import DatePicker from '@/components/modules/shared/DatePicker'
 
 interface GeoSuggestion { name: string; fullName: string; lat: number; lng: number }
 
@@ -105,10 +106,9 @@ export default function EventStep({ eventType, setEventType, eventDate, setEvent
         <div style={{display:'grid', gridTemplateColumns:'1fr 1fr', gap:'20px', marginBottom:'24px'}}>
           <div>
             <label style={{display:'flex', alignItems:'center', gap:'6px', fontSize:'10px', fontWeight:700, color:'#a8a29e', textTransform:'uppercase', letterSpacing:'0.08em', marginBottom:'8px'}}>
-              <Calendar size={11} strokeWidth={2} /> Data evenimentului
+              Data evenimentului
             </label>
-            <input type="date" value={eventDate} onChange={e => setEventDate(e.target.value)}
-              style={{width:'100%', padding:'11px 14px', borderRadius:'12px', border:'1px solid #e7e5e4', fontSize:'13px', fontFamily:'Montserrat,sans-serif', color:'#1c1917', outline:'none', boxSizing:'border-box', background:'#fafaf9', cursor:'pointer'}} />
+            <DatePicker value={eventDate} onChange={setEventDate} placeholder="Selectează data evenimentului" />
             {daysUntil !== null && daysUntil > 0 && (
               <div style={{fontSize:'11px', color: daysUntil < 30 ? '#dc2626' : '#059669', marginTop:'6px', fontWeight:600}}>
                 {daysUntil < 30 ? 'Urgent — ' : ''} Peste {daysUntil} zile

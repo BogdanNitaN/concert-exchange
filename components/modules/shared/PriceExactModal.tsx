@@ -19,6 +19,7 @@ export default function PriceExactModal({ isOpen, onClose, artists = [], eventDa
   const [email, setEmail] = useState('')
   const [name, setName] = useState('')
   const [sent, setSent] = useState(false)
+  const [honeypot, setHoneypot] = useState('')
 
   if (!isOpen) return null
 
@@ -28,7 +29,7 @@ export default function PriceExactModal({ isOpen, onClose, artists = [], eventDa
   }).join(', ')
 
   const handleSubmit = () => {
-    if (!phone) return
+    if (!phone || !name || honeypot) return
 
     const lines = [
       'Cerere pret exact — Concert Exchange',
@@ -117,6 +118,7 @@ export default function PriceExactModal({ isOpen, onClose, artists = [], eventDa
             )}
 
             <div style={{display:'flex', flexDirection:'column', gap:'12px', marginBottom:'20px'}}>
+              <input type="text" value={honeypot} onChange={e => setHoneypot(e.target.value)} style={{display:'none'}} tabIndex={-1} autoComplete="off" />
               <div>
                 <div style={{fontSize:'10px', fontWeight:700, color:'#a8a29e', textTransform:'uppercase', letterSpacing:'0.08em', marginBottom:'6px'}}>Nume și prenume</div>
                 <input type="text" placeholder="ex: Ion Popescu" value={name} onChange={e => setName(e.target.value)}
@@ -135,7 +137,7 @@ export default function PriceExactModal({ isOpen, onClose, artists = [], eventDa
             </div>
 
             <button onClick={handleSubmit} disabled={!phone}
-              style={{width:'100%', background: phone ? '#1c1917' : '#e7e5e4', color: phone ? 'white' : '#a8a29e', padding:'14px', borderRadius:'14px', border:'none', cursor: phone ? 'pointer' : 'not-allowed', fontSize:'14px', fontWeight:700, fontFamily:'Montserrat,sans-serif', marginBottom:'12px', transition:'all 0.2s'}}>
+              style={{width:'100%', background: phone && name ? '#1c1917' : '#e7e5e4', color: phone && name ? 'white' : '#a8a29e', padding:'14px', borderRadius:'14px', border:'none', cursor: phone && name ? 'pointer' : 'not-allowed', fontSize:'14px', fontWeight:700, fontFamily:'Montserrat,sans-serif', marginBottom:'12px', transition:'all 0.2s'}}>
               Confirmă — prețul exact în 30 min
             </button>
 
