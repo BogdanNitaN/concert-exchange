@@ -1,17 +1,8 @@
-import { ARTISTS_DATA } from '@/lib/artists-data'
 'use client'
+import { ARTISTS_DATA } from '@/lib/artists-data'
 
 import { CheckCircle2, Star, TrendingUp } from 'lucide-react'
 
-// const ARTISTS = [
-  { id:1, name:"Maria Cânt", genres:["Pop","Folk"], feeMin:3000, feeMax:5000, tier:"A+", available:true, transport:200, cazare:"1x Cameră dublă", nrBileteAvion:0, costPerKm:2 },
-  { id:2, name:"Florentin & Band", genres:["Cover Band","Lăutărească"], feeMin:2000, feeMax:3500, tier:"A", available:true, transport:150, cazare:"2x Cameră dublă", nrBileteAvion:0, costPerKm:2 },
-  { id:3, name:"DJ Cristian", genres:["Dance","Pop"], feeMin:1500, feeMax:2500, tier:"A", available:true, transport:100, cazare:"1x Cameră dublă", nrBileteAvion:1, costPerKm:2 },
-  { id:4, name:"Formația Bucuria", genres:["Populară","Lăutărească"], feeMin:2500, feeMax:4000, tier:"A+", available:true, transport:180, cazare:"2x Cameră dublă", nrBileteAvion:0, costPerKm:1.5 },
-  { id:5, name:"Jazz Quartet", genres:["Jazz"], feeMin:1800, feeMax:3000, tier:"A", available:true, transport:120, cazare:"2x Cameră dublă", nrBileteAvion:0, costPerKm:2 },
-  { id:6, name:"DJ Armin V.", genres:["EDM","Dance"], feeMin:8000, feeMax:15000, tier:"Premium", available:true, transport:500, cazare:"1x Suită", nrBileteAvion:2, costPerKm:3 },
-  { id:7, name:"Taraful Regal", genres:["Populară","Lăutărească"], feeMin:1500, feeMax:2500, tier:"A", available:true, transport:120, cazare:"3x Cameră dublă", nrBileteAvion:0, costPerKm:1.5 },
-]
 
 interface Props {
   budget: number

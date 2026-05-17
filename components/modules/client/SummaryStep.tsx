@@ -105,7 +105,7 @@ export default function SummaryStep({ eventType, eventDate, guestCount, selected
                 )}
               </div>
               <div style={{fontSize:'12px', color:'#78716c', marginBottom:'6px'}}>{selectedArtist?.genres?.join(' · ')}</div>
-              <div style={{fontSize:'14px', fontWeight:800, color:'#1c1917'}}>{selectedArtist?.feeMin?.toLocaleString()}–{selectedArtist?.feeMax?.toLocaleString()}€</div>
+              <div style={{fontSize:'14px', fontWeight:800, color:'#1c1917'}}>Fee la cerere</div>
             </div>
           </div>
           <div>
@@ -146,13 +146,13 @@ export default function SummaryStep({ eventType, eventDate, guestCount, selected
         </div>
         <div style={{display:'flex', flexDirection:'column', gap:'8px', borderTop:'1px solid #bbf7d0', paddingTop:'14px'}}>
           <div style={{display:'flex', justifyContent:'space-between', fontSize:'13px', color:'#166534'}}>
-            <span>Fee artist (minim)</span><span style={{fontWeight:700}}>{selectedArtist?.feeMin?.toLocaleString()}€</span>
+            <span>Fee artist</span><span style={{fontWeight:700}}>La cerere</span>
           </div>
           <div style={{display:'flex', justifyContent:'space-between', fontSize:'13px', color:'#166534'}}>
-            <span>Fee artist (maxim)</span><span style={{fontWeight:700}}>{selectedArtist?.feeMax?.toLocaleString()}€</span>
+            
           </div>
           <div style={{borderTop:'1px solid #bbf7d0', paddingTop:'10px', display:'flex', justifyContent:'space-between', fontSize:'16px', color:'#1c1917', fontWeight:800}}>
-            <span>Total estimat</span><span>{totalMin.toLocaleString()}–{totalMax.toLocaleString()}€</span>
+            <span>Total estimat</span><span>La cerere — confirmat in 30 min</span>
           </div>
           <div style={{fontSize:'10px', color:'#a8a29e', textAlign:'right'}}>* include toate taxele și comisioanele platformei</div>
         </div>
