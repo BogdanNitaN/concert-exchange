@@ -24,18 +24,19 @@ interface Props {
 }
 
 const EVENT_TYPES = [
+  { id: 'festival', icon: Music, label: 'Festival' },
+  { id: 'popup', icon: Globe, label: 'Pop-Up Event' },
+  { id: 'citydays', icon: Flame, label: 'City Days / Open Air' },
+  { id: 'club', icon: Disc3, label: 'Club Night' },
+  { id: 'corporate', icon: Building2, label: 'Corporate' },
+  { id: 'lansare', icon: Rocket, label: 'Team Building' },
+  { id: 'pool', icon: Sunset, label: 'Pool Party' },
+  { id: 'dayparty', icon: Sun, label: 'Day Party' },
+  { id: 'dinner', icon: Wine, label: 'Dinner & Show' },
   { id: 'nunta', icon: Heart, label: 'Nuntă' },
   { id: 'botez', icon: Baby, label: 'Botez' },
   { id: 'private', icon: PartyPopper, label: 'Petrecere privată' },
-  { id: 'revelion', icon: Wine, label: 'Revelion / Crăciun' },
-  { id: 'corporate', icon: Building2, label: 'Corporate' },
-  { id: 'lansare', icon: Rocket, label: 'Lansare / Team Building' },
-  { id: 'festival', icon: Music, label: 'Festival' },
-  { id: 'concert', icon: Star, label: 'Concert' },
-  { id: 'citydays', icon: Flame, label: 'City Days / Open Air' },
-  { id: 'club', icon: Disc3, label: 'Club Night' },
-  { id: 'popup', icon: Globe, label: 'Pop-Up Event' },
-  { id: 'pool', icon: Sunset, label: 'Pool Party' },
+  { id: 'revelion', icon: Star, label: 'Revelion / Crăciun' },
   { id: 'altele', icon: HelpCircle, label: 'Nu știu / Altele' },
 ]
 
