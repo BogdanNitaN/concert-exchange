@@ -4,15 +4,23 @@ import { useState } from 'react'
 import Link from 'next/link'
 import { MapPin, User, Calendar, Users, ArrowRight, CheckCircle2, ChevronDown, ChevronUp, Plane, Car, Hotel } from 'lucide-react'
 
-const SETURI_OPTIONS = [
+const SETURI_ARTIST = [
   { id: '1x45', label: '1 set · 45 min' },
-  { id: '1x90', label: '1 set · 90 min' },
-  { id: '1x120', label: 'Extended Set · 2h' },
-  { id: '1x180', label: 'Long Set · 3h' },
   { id: '2x45', label: '2 seturi · 45 min' },
   { id: '3x45', label: '3 seturi · 45 min' },
   { id: 'allnight', label: 'All Night' },
 ]
+
+const SETURI_DJ = [
+  { id: '1x90', label: '1 set · 90 min' },
+  { id: '1x120', label: 'Extended Set · 2h' },
+  { id: '1x180', label: 'Long Set · 3h' },
+  { id: 'allnight', label: 'All Night' },
+]
+
+const isDJ = (artists: any[]) => artists.some(a => 
+  a.genres?.some((g: string) => g.toLowerCase().includes('dj') || g.toLowerCase().includes('dance') || g.toLowerCase().includes('edm'))
+)
 
 const EVENT_TYPES = [
   { id: 'nunta', label: 'Nuntă' },
@@ -166,7 +174,7 @@ export default function SummaryStep({ eventType, eventDate, guestCount, selected
       <div style={{background:'white', border:'1px solid #e7e5e4', borderRadius:'16px', padding:'18px 20px', marginBottom:'14px'}}>
         <div style={{fontSize:'11px', fontWeight:700, color:'#a8a29e', textTransform:'uppercase', letterSpacing:'0.08em', marginBottom:'12px'}}>Seturi artist</div>
         <div style={{display:'flex', gap:'8px', flexWrap:'wrap'}}>
-          {SETURI_OPTIONS.map(s => (
+          {(isDJ(selectedArtists) ? SETURI_DJ : SETURI_ARTIST).map(s => (
             <button key={s.id} onClick={() => setSelectedSeturi(s.id)}
               style={{padding:'8px 18px', borderRadius:'20px', border:'1.5px solid', cursor:'pointer', fontSize:'12px', fontWeight:600, fontFamily:'Montserrat,sans-serif', transition:'all 0.15s',
                 background: selectedSeturi === s.id ? '#1c1917' : 'white',

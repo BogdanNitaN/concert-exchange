@@ -31,17 +31,16 @@ export default function ExpertModal({ isOpen, onClose, eventDate, guestCount, se
     const lines = [
       'Vorbește cu un expert — Concert Exchange',
       '',
+      'DETALII EVENIMENT:',
+      eventDate ? `Data: ${eventDate}` : '',
+      `Oras: ${city || selectedCity || 'nespecificat'}`,
+      guestCount ? `Participanti: ${guestCount}` : '',
+      desc ? `Descriere: ${desc}` : '',
+      '',
       'DATE CONTACT:',
       `Nume: ${name}`,
       `Telefon: ${phone}`,
       email ? `Email: ${email}` : '',
-      '',
-      'DETALII EVENIMENT:',
-      `Oras: ${city || selectedCity || 'nespecificat'}`,
-      eventDate ? `Data: ${eventDate}` : '',
-      guestCount ? `Participanti: ${guestCount}` : '',
-      '',
-      desc ? `Descriere: ${desc}` : '',
     ].filter(Boolean)
 
     const msg = encodeURIComponent(lines.join('\n'))

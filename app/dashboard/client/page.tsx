@@ -199,7 +199,7 @@ export default function ClientDashboard() {
                   <div style={{fontSize:'13px', fontWeight:700, color:'#1c1917'}}>
                     Locatii recomandate {selectedCity ? 'in ' + selectedCity.split(',')[0] : 'in Romania'}
                   </div>
-                  <div style={{fontSize:'11px', color:'#7c3aed', fontWeight:600}}>Pe viitor: boost vizibilitate</div>
+
                 </div>
                 <div style={{display:'flex', flexWrap:'wrap', gap:'6px', marginBottom:'14px'}}>
                   {VENUE_TYPES_CLIENT.map(t => (
