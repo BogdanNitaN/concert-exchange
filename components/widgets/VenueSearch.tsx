@@ -57,7 +57,7 @@ export default function VenueSearch({ onSelectVenue, placeholder = 'Caută sala,
   const saveToDatabase = async (venue: Venue) => {
     try {
       const { supabase } = await import('@/lib/supabase')
-      await supabase.from('venues_cache').upsert({
+      await (supabase as any).from('venues_cache').upsert({
         place_id: venue.place_id,
         name: venue.name,
         address: venue.address,
