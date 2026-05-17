@@ -280,7 +280,7 @@ export default function ArtistVenueSearch() {
         </div>
 
         <div style={{flex:1, position:'relative', overflow:'hidden'}}>
-          <MapVenues venues={filtered} center={center} radius={radius} onSelectVenue={(v) => setSelectedVenue(v)} />
+          <MapVenues venues={filtered} center={center} radius={radius} onSelectVenue={(v) => setSelectedVenue(v as any)} />
 
           {selectedVenue && (
             <div style={{position:'absolute', bottom:'20px', left:'50%', transform:'translateX(-50%)', width:'380px', background:'white', borderRadius:'16px', border:'1px solid #e7e5e4', boxShadow:'0 8px 32px rgba(0,0,0,0.12)', padding:'16px 20px', zIndex:50}}>
