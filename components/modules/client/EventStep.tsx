@@ -19,6 +19,7 @@ interface Props {
   citySearch: string
   setCitySearch: (v: string) => void
   setCenter: (v: [number, number]) => void
+  onCitySelect?: (lat: number, lng: number) => void
   onNext: () => void
 }
 
@@ -35,7 +36,7 @@ const EVENT_TYPES = [
 
 const CAPACITY_OPTIONS = [100, 150, 200, 250, 350, 400, 600, 1000, 5000, 10000, 50000]
 
-export default function EventStep({ eventType, setEventType, eventDate, setEventDate, budget, setBudget, guestCount, setGuestCount, selectedCity, setSelectedCity, citySearch, setCitySearch, setCenter, onNext }: Props) {
+export default function EventStep({ eventType, setEventType, eventDate, setEventDate, budget, setBudget, guestCount, setGuestCount, selectedCity, setSelectedCity, citySearch, setCitySearch, setCenter, onCitySelect, onNext }: Props) {
   const [citySuggestions, setCitySuggestions] = useState<GeoSuggestion[]>([])
   const searchTimer = useRef<any>(null)
   const daysUntil = eventDate ? Math.floor((new Date(eventDate).getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24)) : null
@@ -59,6 +60,7 @@ export default function EventStep({ eventType, setEventType, eventDate, setEvent
   const selectCity = (s: GeoSuggestion) => {
     setSelectedCity(s.fullName); setCitySearch(s.name)
     setCenter([s.lat, s.lng]); setCitySuggestions([])
+    onCitySelect?.(s.lat, s.lng)
   }
 
   return (
