@@ -6,6 +6,9 @@ import { MapPin, User, Calendar, Users, ArrowRight, CheckCircle2, ChevronDown, C
 
 const SETURI_OPTIONS = [
   { id: '1x45', label: '1 set · 45 min' },
+  { id: '1x90', label: '1 set · 90 min' },
+  { id: '1x120', label: 'Extended Set · 2h' },
+  { id: '1x180', label: 'Long Set · 3h' },
   { id: '2x45', label: '2 seturi · 45 min' },
   { id: '3x45', label: '3 seturi · 45 min' },
   { id: 'allnight', label: 'All Night' },

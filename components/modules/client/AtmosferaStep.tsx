@@ -90,7 +90,7 @@ export default function AtmosferaStep({ atmosfera, toggleAtmosfera, tipEntertain
         </div>
         <button onClick={onExpert}
           style={{background:'#7c3aed', color:'white', padding:'9px 18px', borderRadius:'10px', border:'none', cursor:'pointer', fontSize:'12px', fontWeight:700, fontFamily:'Montserrat,sans-serif', whiteSpace:'nowrap'}}>
-          Consultă un expert
+          Vorbește cu un expert
         </button>
       </div>
 
