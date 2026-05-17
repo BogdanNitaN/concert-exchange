@@ -31,7 +31,7 @@ const Legenda = () => (
     <span style={{fontSize:'11px', display:'flex', alignItems:'center', gap:'6px'}}>
       <span style={{background:'#f5f5f4', fontSize:'10px', fontWeight:700, padding:'2px 8px', borderRadius:'6px', color:'#44403c'}}>A · Select</span> până la 5.000€
     </span>
-    <span style={{fontSize:'10px', color:'#a8a29e', marginLeft:'auto'}}>Max 3 artiști</span>
+    
   </div>
 )
 
@@ -138,6 +138,7 @@ export default function ArtistStep({ budget, setBudget, eventTypeLabel, selected
               <div style={{width:'8px', height:'8px', borderRadius:'50%', background:'#059669'}} />
               <span style={{fontSize:'11px', fontWeight:700, color:'#1c1917', textTransform:'uppercase', letterSpacing:'0.08em'}}>În bugetul tău</span>
               <span style={{fontSize:'11px', color:'#78716c'}}>— {inBudgetArtists.length} artiști disponibili</span>
+              <span style={{fontSize:'11px', color:'#7c3aed', fontWeight:600, marginLeft:'auto'}}>Poți verifica max 3 simultan</span>
             </div>
             <div style={{display:'flex', flexDirection:'column', gap:'8px'}}>
               {inBudgetArtists.map(a => <ArtistCard key={a.id} a={a} />)}

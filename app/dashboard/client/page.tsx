@@ -55,6 +55,8 @@ export default function ClientDashboard() {
   const [citySearch, setCitySearch] = useState('')
   const [center, setCenter] = useState<[number, number]>([45.7489, 24.9668])
   const [selectedCity, setSelectedCity] = useState('')
+  const [selectedCityLat, setSelectedCityLat] = useState<number | undefined>(undefined)
+  const [selectedCityLng, setSelectedCityLng] = useState<number | undefined>(undefined)
   const [requestSent, setRequestSent] = useState(false)
   const [showPretExactModal, setShowPretExactModal] = useState(false)
   const [showExpertModal, setShowExpertModal] = useState(false)
@@ -248,13 +250,14 @@ export default function ClientDashboard() {
             eventType={eventType}
             eventDate={eventDate}
             guestCount={guestCount}
-            selectedArtist={selectedArtists[0]}
+            selectedArtists={selectedArtists}
             selectedVenues={selectedVenues}
             selectedCity={selectedCity}
+            selectedCityLat={selectedCityLat}
+            selectedCityLng={selectedCityLng}
+            budget={budget}
             selectedSeturi={selectedSeturi}
             setSelectedSeturi={setSelectedSeturi}
-            totalMin={totalMin}
-            totalMax={totalMax}
             requestSent={requestSent}
             onTrimite={handleTrimite}
             onBack={() => setStep('venue')}
