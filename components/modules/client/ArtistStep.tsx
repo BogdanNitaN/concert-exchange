@@ -7,6 +7,7 @@ interface Props {
   budget: number
   setBudget: (v: number) => void
   eventTypeLabel: string
+  atmosfera?: string[]
   selectedArtists: any[]
   setSelectedArtists: (a: any[]) => void
   onBack: () => void
@@ -17,6 +18,32 @@ const tierInfo = (tier: string) => {
   if (tier === 'Premium') return { bg: '#1c1917', color: 'white', label: 'A++ · Icon' }
   if (tier === 'A+') return { bg: '#7c3aed', color: 'white', label: 'A+ · Premium' }
   return { bg: '#f5f5f4', color: '#44403c', label: 'A · Select' }
+}
+
+const VIBE_GENRE_MAP: Record<string, string[]> = {
+  hype: ['Dance', 'Pop', 'Hip-Hop', 'EDM', 'Trap'],
+  elegant: ['Jazz', 'Pop', 'Folk', 'Clasica', 'Piano'],
+  petrecere: ['Pop', 'Dance', 'Cover Band', 'Trap'],
+  balcanic: ['Manele', 'Lautareasca', 'Balcanic', 'Populara', 'Folk'],
+  chill: ['Jazz', 'Lounge', 'Acoustic', 'Neo-Soul', 'Pop'],
+  dayparty: ['Dance', 'Pop', 'EDM', 'Latino'],
+  festival: ['Rock', 'Pop', 'EDM', 'Hip-Hop', 'Dance'],
+  rooftop: ['Jazz', 'Lounge', 'Pop', 'Dance'],
+  nostalgic: ['Pop', 'Rock', 'Folk', 'Slagare'],
+}
+
+const getMatchScore = (artistGenres: string[], atmosfera: string[]) => {
+  if (!atmosfera || atmosfera.length === 0) return 100
+  let matches = 0
+  atmosfera.forEach(vibe => {
+    const vibeGenres = VIBE_GENRE_MAP[vibe] || []
+    artistGenres.forEach(g => {
+      if (vibeGenres.some(vg => g.toLowerCase().includes(vg.toLowerCase()) || vg.toLowerCase().includes(g.toLowerCase()))) {
+        matches++
+      }
+    })
+  })
+  return matches > 0 ? 100 : 0
 }
 
 const Legenda = () => (
@@ -35,7 +62,7 @@ const Legenda = () => (
   </div>
 )
 
-export default function ArtistStep({ budget, setBudget, eventTypeLabel, selectedArtists, setSelectedArtists, onBack, onNext }: Props) {
+export default function ArtistStep({ budget, setBudget, eventTypeLabel, atmosfera = [], selectedArtists, setSelectedArtists, onBack, onNext }: Props) {
   const ARTISTS = ARTISTS_DATA as unknown as any[]
   const inBudgetArtists = budget > 0 ? ARTISTS.filter(a => a.feeMax <= budget) : ARTISTS
   const overBudgetArtists = budget > 0 ? ARTISTS.filter(a => a.feeMax > budget && a.feeMin <= budget * 1.5) : []
@@ -82,6 +109,11 @@ export default function ArtistStep({ budget, setBudget, eventTypeLabel, selected
                 <span style={{fontSize:'10px', fontWeight:700, padding:'2px 8px', borderRadius:'6px', background: ts.bg, color: ts.color}}>{ts.label}</span>
               </div>
               <div style={{fontSize:'12px', color:'#78716c'}}>{a.genres.join(' · ')}</div>
+              {atmosfera.length > 0 && getMatchScore(a.genres, atmosfera) === 0 && (
+                <div style={{fontSize:'11px', color:'#d97706', fontWeight:600, marginTop:'4px'}}>
+                  ⚠️ Potrivire parțială cu atmosfera aleasă
+                </div>
+              )}
               {isOverBudget && (
                 <div style={{display:'flex', alignItems:'center', gap:'4px', marginTop:'4px'}}>
                   <TrendingUp size={11} color='#059669' strokeWidth={2} />

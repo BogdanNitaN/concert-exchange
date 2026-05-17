@@ -53,9 +53,6 @@ export default function PriceExactModal({ isOpen, onClose, artists = [], eventDa
     const body = encodeURIComponent(lines.join('\n'))
 
     window.open(`https://wa.me/40751144109?text=${msg}`, '_blank')
-    setTimeout(() => {
-      window.open(`mailto:me@bogdannita.ro?subject=${subject}&body=${body}`, '_blank')
-    }, 500)
 
     setSent(true)
   }

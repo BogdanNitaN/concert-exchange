@@ -150,6 +150,7 @@ export default function ClientDashboard() {
           <ArtistStep
             budget={budget} setBudget={setBudget}
             eventTypeLabel={eventTypeLabel}
+            atmosfera={atmosfera}
             selectedArtists={selectedArtists} setSelectedArtists={setSelectedArtists}
             onBack={() => setStep('atmosfera')}
             onNext={() => { if(selectedArtists.length > 0) setStep('venue') }}
@@ -233,9 +234,9 @@ export default function ClientDashboard() {
             )}
             <div style={{display:'flex', gap:'12px'}}>
               <button onClick={() => setStep('artist')} style={{padding:'12px 24px', borderRadius:'12px', border:'1px solid #e7e5e4', background:'white', color:'#78716c', fontSize:'13px', fontWeight:600, cursor:'pointer', fontFamily:'Montserrat,sans-serif'}}>Inapoi</button>
-              <button onClick={() => { if(selectedVenues.length > 0) setStep('summary') }} disabled={selectedVenues.length === 0}
-                style={{flex:1, background:'#1c1917', color:'white', padding:'12px', borderRadius:'12px', border:'none', cursor: selectedVenues.length > 0 ? 'pointer' : 'not-allowed', fontSize:'14px', fontWeight:700, fontFamily:'Montserrat,sans-serif', opacity: selectedVenues.length > 0 ? 1 : 0.4}}>
-                Continua - Rezumat
+              <button onClick={() => setStep('summary')}
+                style={{flex:1, background:'#1c1917', color:'white', padding:'12px', borderRadius:'12px', border:'none', cursor:'pointer', fontSize:'14px', fontWeight:700, fontFamily:'Montserrat,sans-serif'}}>
+                {selectedVenues.length > 0 ? 'Continuă — Rezumat' : 'Continuă fără locație'}
               </button>
             </div>
           </div>

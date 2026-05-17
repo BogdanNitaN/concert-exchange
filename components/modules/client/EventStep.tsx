@@ -26,14 +26,17 @@ interface Props {
 const EVENT_TYPES = [
   { id: 'nunta', icon: Heart, label: 'Nuntă' },
   { id: 'botez', icon: Baby, label: 'Botez' },
-  { id: 'corporate', icon: Building2, label: 'Corporate' },
   { id: 'private', icon: PartyPopper, label: 'Petrecere privată' },
-  { id: 'gala', icon: Wine, label: 'Gală / Revelion / Crăciun' },
-  { id: 'festival', icon: Music, label: 'Festival / Concert' },
+  { id: 'revelion', icon: Wine, label: 'Revelion / Crăciun' },
+  { id: 'corporate', icon: Building2, label: 'Corporate' },
+  { id: 'lansare', icon: Rocket, label: 'Lansare / Team Building' },
+  { id: 'festival', icon: Music, label: 'Festival' },
+  { id: 'concert', icon: Star, label: 'Concert' },
   { id: 'citydays', icon: Flame, label: 'City Days / Open Air' },
-  { id: 'club', icon: Disc3, label: 'Club / Pop-Up' },
-  { id: 'corporate2', icon: Rocket, label: 'Lansare / Team Building' },
-  { id: 'altele', icon: HelpCircle, label: 'Altele / Nu știu' },
+  { id: 'club', icon: Disc3, label: 'Club Night' },
+  { id: 'popup', icon: Globe, label: 'Pop-Up Event' },
+  { id: 'pool', icon: Sunset, label: 'Pool Party' },
+  { id: 'altele', icon: HelpCircle, label: 'Nu știu / Altele' },
 ]
 
 const CAPACITY_OPTIONS = [50, 100, 150, 200, 250, 350, 400, 600, 1000, 5000, 10000, 50000]
@@ -80,7 +83,7 @@ export default function EventStep({ eventType, setEventType, eventDate, setEvent
         <p style={{fontSize:'15px', color:'#78716c'}}>Vom găsi artiștii și locațiile potrivite pentru tine</p>
       </div>
 
-      <div style={{display:'grid', gridTemplateColumns:'repeat(5, 1fr)', gap:'8px', marginBottom:'28px'}}>
+      <div style={{display:'grid', gridTemplateColumns:'repeat(4, 1fr)', gap:'8px', marginBottom:'28px'}}>
         {EVENT_TYPES.map(e => {
           const Icon = e.icon
           const isSelected = eventType === e.id
