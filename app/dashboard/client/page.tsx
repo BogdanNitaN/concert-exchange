@@ -154,6 +154,24 @@ export default function ClientDashboard() {
 
         {step === 'venue' && (
           <div>
+            {selectedArtists.length > 0 && (
+              <div style={{background:'#1c1917', borderRadius:'12px', padding:'12px 16px', marginBottom:'20px', display:'flex', alignItems:'center', justifyContent:'space-between', flexWrap:'wrap', gap:'8px'}}>
+                <div style={{display:'flex', alignItems:'center', gap:'10px', flexWrap:'wrap'}}>
+                  {selectedArtists.map((a, i) => {
+                    const tier = a.tier === 'Premium' ? 'A++ · Icon' : a.tier === 'A+' ? 'A+ · Premium' : 'A · Select'
+                    const tierBg = a.tier === 'Premium' ? '#44403c' : a.tier === 'A+' ? '#7c3aed' : '#44403c'
+                    return (
+                      <div key={a.id} style={{display:'flex', alignItems:'center', gap:'8px'}}>
+                        {i > 0 && <span style={{color:'#44403c', fontSize:'12px'}}>·</span>}
+                        <span style={{fontSize:'13px', fontWeight:700, color:'white'}}>{a.name}</span>
+                        <span style={{fontSize:'10px', fontWeight:700, padding:'2px 8px', borderRadius:'6px', background: tierBg, color:'white'}}>{tier}</span>
+                      </div>
+                    )
+                  })}
+                </div>
+                <span style={{fontSize:'11px', color:'#78716c'}}>fee la cerere</span>
+              </div>
+            )}
             <div style={{textAlign:'center', marginBottom:'24px'}}>
               <h1 style={{fontSize:'28px', fontWeight:800, color:'#1c1917', marginBottom:'8px'}}>Alege locatia</h1>
               <p style={{fontSize:'14px', color:'#78716c'}}>{guestCount} invitati - {selectedCity || 'Romania'}</p>
@@ -248,7 +266,7 @@ export default function ClientDashboard() {
       <PriceExactModal
         isOpen={showPretExactModal}
         onClose={() => setShowPretExactModal(false)}
-        artist={selectedArtist?.name}
+        artist={selectedArtists[0]?.name}
         eventDate={eventDate}
         location={selectedVenues[0]?.name || selectedCity}
         budgetMin={totalMin}
