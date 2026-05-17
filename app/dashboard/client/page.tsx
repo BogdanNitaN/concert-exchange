@@ -278,6 +278,9 @@ export default function ClientDashboard() {
       <ExpertModal
         isOpen={showExpertModal}
         onClose={() => setShowExpertModal(false)}
+        eventDate={eventDate}
+        selectedCity={selectedCity}
+        guestCount={guestCount}
       />
     </div>
   )
