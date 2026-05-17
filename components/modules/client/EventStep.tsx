@@ -20,6 +20,7 @@ interface Props {
   setCitySearch: (v: string) => void
   setCenter: (v: [number, number]) => void
   onCitySelect?: (lat: number, lng: number) => void
+  onExpert?: () => void
   onNext: () => void
 }
 
@@ -44,7 +45,7 @@ const CAPACITY_OPTIONS = [50, 100, 150, 200, 250, 350, 400, 600, 1000, 5000, 100
 
 const NEEDS_GUESTS = ['nunta', 'botez', 'private', 'gala']
 
-export default function EventStep({ eventType, setEventType, eventDate, setEventDate, budget, setBudget, guestCount, setGuestCount, selectedCity, setSelectedCity, citySearch, setCitySearch, setCenter, onCitySelect, onNext }: Props) {
+export default function EventStep({ eventType, setEventType, eventDate, setEventDate, budget, setBudget, guestCount, setGuestCount, selectedCity, setSelectedCity, citySearch, setCitySearch, setCenter, onCitySelect, onExpert, onNext }: Props) {
   const [citySuggestions, setCitySuggestions] = useState<GeoSuggestion[]>([])
   const searchTimer = useRef<any>(null)
 
@@ -89,7 +90,7 @@ export default function EventStep({ eventType, setEventType, eventDate, setEvent
           const Icon = e.icon
           const isSelected = eventType === e.id
           return (
-            <div key={e.id} onClick={() => setEventType(e.id)}
+            <div key={e.id} onClick={() => { if(e.id === 'altele' && onExpert) { onExpert(); return } setEventType(e.id) }}
               style={{background: isSelected ? '#1c1917' : 'white', border:'1.5px solid ' + (isSelected ? '#1c1917' : '#e7e5e4'), borderRadius:'14px', padding:'16px 8px', cursor:'pointer', textAlign:'center', transform: isSelected ? 'scale(1.03)' : 'scale(1)', transition:'all 0.15s', boxShadow: isSelected ? '0 4px 20px rgba(0,0,0,0.15)' : '0 1px 3px rgba(0,0,0,0.04)'}}>
               <div style={{display:'flex', justifyContent:'center', marginBottom:'8px'}}>
                 <Icon size={20} color={isSelected ? 'white' : '#44403c'} strokeWidth={1.5} />
