@@ -36,7 +36,7 @@ const Legenda = () => (
 )
 
 export default function ArtistStep({ budget, setBudget, eventTypeLabel, selectedArtists, setSelectedArtists, onBack, onNext }: Props) {
-  const ARTISTS = ARTISTS_DATA as any[]
+  const ARTISTS = ARTISTS_DATA as unknown as any[]
   const inBudgetArtists = budget > 0 ? ARTISTS.filter(a => a.feeMax <= budget) : ARTISTS
   const overBudgetArtists = budget > 0 ? ARTISTS.filter(a => a.feeMax > budget && a.feeMin <= budget * 1.5) : []
 

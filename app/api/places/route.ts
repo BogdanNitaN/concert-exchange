@@ -4,7 +4,7 @@ export async function GET(request: NextRequest) {
   const input = request.nextUrl.searchParams.get('input')
   if (!input) return NextResponse.json({ error: 'No input' }, { status: 400 })
 
-  const apiKey = process.env.NEXT_PUBLIC_GOOGLE_PLACES_KEY
+  const apiKey = process.env.GOOGLE_PLACES_SERVER_KEY || process.env.NEXT_PUBLIC_GOOGLE_PLACES_KEY
 
   try {
     const res = await fetch(
