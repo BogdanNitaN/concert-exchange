@@ -208,7 +208,32 @@ export default function ClientDashboard() {
                 </div>
                 <div style={{display:'flex', flexWrap:'wrap', gap:'6px', marginBottom:'14px'}}>
                   {VENUE_TYPES_CLIENT.map(t => (
-                    <button key={t} onClick={() => setVenueType(t)}
+                    <button key={t} onClick={() => {
+                      setVenueType(t)
+                      if (t !== 'Toate' && selectedCity) {
+                        const searchTerm = t + ' ' + selectedCity.split(',')[0]
+                        fetch('/api/places?input=' + encodeURIComponent(searchTerm))
+                          .then(r => r.json())
+                          .then(data => {
+                            if (data.predictions && data.predictions.length > 0) {
+                              const venues = data.predictions.map((p: any) => ({
+                                id: p.place_id,
+                                name: p.structured_formatting?.main_text || p.description,
+                                city: selectedCity.split(',')[0],
+                                address: p.structured_formatting?.secondary_text || '',
+                                lat: 0, lng: 0,
+                                type: t,
+                                capacity: 500,
+                                priceEstimate: 'La cerere'
+                              }))
+                              setVenueSearchResult(venues[0])
+                              setSelectedVenues([venues[0]])
+                              setShowVenueGrid(false)
+                            }
+                          })
+                          .catch(() => {})
+                      }
+                    }}
                       style={{padding:'5px 12px', borderRadius:'20px', border:'1px solid', cursor:'pointer', fontSize:'11px', fontWeight:600, fontFamily:'Montserrat,sans-serif', background: venueType === t ? '#1c1917' : 'white', color: venueType === t ? 'white' : '#78716c', borderColor: venueType === t ? '#1c1917' : '#e7e5e4'}}>{t}</button>
                   ))}
                 </div>
