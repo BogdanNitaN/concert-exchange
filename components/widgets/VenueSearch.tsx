@@ -27,8 +27,6 @@ export default function VenueSearch({ onSelectVenue, placeholder = 'Caută sala,
   const [selectedVenue, setSelectedVenue] = useState<Venue | null>(null)
   const [loading, setLoading] = useState(false)
   const timer = useRef<any>(null)
-  const apiKey = process.env.NEXT_PUBLIC_GOOGLE_PLACES_KEY
-
   const searchPlaces = async (input: string) => {
     if (!input || input.length < 2) { setSuggestions([]); return }
     setLoading(true)
@@ -36,23 +34,18 @@ export default function VenueSearch({ onSelectVenue, placeholder = 'Caută sala,
     const searchQuery = cityFilter ? `${input} ${cityFilter}` : input
     
     try {
-      // Incercam Google Places mai intai
-      if (apiKey) {
-        const res = await fetch(
-          `/api/places?input=${encodeURIComponent(searchQuery)}`
-        )
-        if (res.ok) {
-          const data = await res.json()
-          if (data.predictions && data.predictions.length > 0) {
-            setSuggestions(data.predictions.map((p: any) => ({
-              place_id: p.place_id,
-              name: p.structured_formatting?.main_text || p.description,
-              address: p.structured_formatting?.secondary_text || '',
-              lat: 0, lng: 0
-            })))
-            setLoading(false)
-            return
-          }
+      const res = await fetch(`/api/places?input=${encodeURIComponent(searchQuery)}`)
+      if (res.ok) {
+        const data = await res.json()
+        if (data.predictions && data.predictions.length > 0) {
+          setSuggestions(data.predictions.map((p: any) => ({
+            place_id: p.place_id,
+            name: p.structured_formatting?.main_text || p.description,
+            address: p.structured_formatting?.secondary_text || '',
+            lat: 0, lng: 0
+          })))
+          setLoading(false)
+          return
         }
       }
     } catch {}
