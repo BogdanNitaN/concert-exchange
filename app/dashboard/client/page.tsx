@@ -84,9 +84,14 @@ export default function ClientDashboard() {
     })
   }
 
+  const cityName = selectedCity.split(',')[0].toLowerCase().trim()
   const filteredVenues = VENUES.filter(v => {
     if (venueType !== 'Toate' && v.type !== venueType) return false
     if (guestCount > 0 && v.capacity < guestCount) return false
+    if (cityName && v.city) {
+      const vCity = v.city.toLowerCase()
+      if (!vCity.includes(cityName) && !cityName.includes(vCity)) return false
+    }
     return true
   })
 
