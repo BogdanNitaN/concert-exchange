@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import dynamic from 'next/dynamic'
 import Link from 'next/link'
 import EventStep from '@/components/modules/client/EventStep'
@@ -50,6 +50,8 @@ export default function ClientDashboard() {
   const [venueType, setVenueType] = useState('Toate')
   const [selectedVenues, setSelectedVenues] = useState<any[]>([])
   const [venueSearchResult, setVenueSearchResult] = useState<any>(null)
+  const [googleVenues, setGoogleVenues] = useState<any[]>([])
+  const [loadingVenues, setLoadingVenues] = useState(false)
   const [showVenueGrid, setShowVenueGrid] = useState(true)
   const [selectedArtists, setSelectedArtists] = useState<any[]>([])
   const [citySearch, setCitySearch] = useState('')
@@ -83,6 +85,36 @@ export default function ClientDashboard() {
       return exists ? prev.filter(v => v.id !== venue.id) : prev.length >= 3 ? prev : [...prev, venue]
     })
   }
+
+  useEffect(() => {
+    if (step === 'venue' && selectedCity && googleVenues.length === 0) {
+      setLoadingVenues(true)
+      const city = selectedCity.split(',')[0]
+      const searches = ['sala evenimente ' + city, 'ballroom ' + city, 'restaurant evenimente ' + city, 'club ' + city, 'hotel conferinte ' + city]
+      Promise.all(searches.map(q => 
+        fetch('/api/places?input=' + encodeURIComponent(q))
+          .then(r => r.json())
+          .then(d => d.predictions || [])
+          .catch(() => [])
+      )).then(results => {
+        const all = results.flat()
+        const unique = all.filter((p: any, i: number, arr: any[]) => 
+          arr.findIndex((x: any) => x.place_id === p.place_id) === i
+        ).map((p: any) => ({
+          id: p.place_id,
+          name: p.structured_formatting?.main_text || p.description,
+          city: city,
+          address: p.structured_formatting?.secondary_text || '',
+          lat: 0, lng: 0,
+          type: 'Sală Evenimente',
+          capacity: 500,
+          priceEstimate: 'La cerere'
+        }))
+        setGoogleVenues(unique)
+        setLoadingVenues(false)
+      })
+    }
+  }, [step, selectedCity])
 
   const cityName = selectedCity.split(',')[0].toLowerCase().trim()
   const filteredVenues = VENUES.filter(v => {
