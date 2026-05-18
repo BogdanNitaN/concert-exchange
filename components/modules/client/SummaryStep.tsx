@@ -82,7 +82,6 @@ interface Props {
 
 export default function SummaryStep({ eventType, eventDate, guestCount, selectedArtists, selectedVenues, selectedCity, selectedCityLat, selectedCityLng, budget, selectedSeturi, setSelectedSeturi, requestSent, onTrimite, onBack, onPretExact }: Props) {
   const [openArtistId, setOpenArtistId] = useState<number | null>(selectedArtists[0]?.id || null)
-  const [customSeturi, setCustomSeturi] = useState<Record<number, string>>({})
   const eventInfo = EVENT_TYPES.find(e => e.id === eventType)
 
   const getArtistCoords = (artist: any) => {
@@ -266,10 +265,7 @@ export default function SummaryStep({ eventType, eventDate, guestCount, selected
                           </button>
                         ))}
                       </div>
-                      <input type="text" placeholder="Alt timing (ex: 1x60min, 2x30min...)"
-                        value={customSeturi[a.id] || ''}
-                        onChange={e => setCustomSeturi({...customSeturi, [a.id]: e.target.value})}
-                        style={{width:'100%', padding:'8px 12px', borderRadius:'10px', border:'1px solid #e7e5e4', fontSize:'12px', fontFamily:'Montserrat,sans-serif', color:'#1c1917', outline:'none', boxSizing:'border-box', background:'#fafaf9'}} />
+
                     </div>
                   </div>
 
