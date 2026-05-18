@@ -12,7 +12,7 @@ export const ARTISTS_DATA = [
     "cazare": "1 suita + 7 duble",
     "nrBileteAvion": 3,
     "costPerKm": 3
-  },
+  , "setType": "vocal"},
   {
     "id": 2,
     "name": "Carla's Dreams",
@@ -25,7 +25,7 @@ export const ARTISTS_DATA = [
     "cazare": "3 duble",
     "nrBileteAvion": 1,
     "costPerKm": 2
-  },
+  , "setType": "vocal"},
   {
     "id": 3,
     "name": "The Motans",
@@ -38,7 +38,7 @@ export const ARTISTS_DATA = [
     "cazare": "1 single + 5 duble",
     "nrBileteAvion": 1,
     "costPerKm": 2
-  },
+  , "setType": "vocal"},
   {
     "id": 4,
     "name": "Irina Rimes",
@@ -51,7 +51,7 @@ export const ARTISTS_DATA = [
     "cazare": "7 single + 3 duble",
     "nrBileteAvion": 2,
     "costPerKm": 2
-  },
+  , "setType": "vocal"},
   {
     "id": 5,
     "name": "Smiley",
@@ -64,7 +64,7 @@ export const ARTISTS_DATA = [
     "cazare": "4 duble + 5 single + 1 suita",
     "nrBileteAvion": 9,
     "costPerKm": 3
-  },
+  , "setType": "vocal"},
   {
     "id": 6,
     "name": "Connect-R",
@@ -77,7 +77,7 @@ export const ARTISTS_DATA = [
     "cazare": "4 duble + 4 single",
     "nrBileteAvion": 2,
     "costPerKm": 3
-  },
+  , "setType": "vocal"},
   {
     "id": 7,
     "name": "Theo Rose",
@@ -90,7 +90,7 @@ export const ARTISTS_DATA = [
     "cazare": "7 duble + 3 matrimoniale",
     "nrBileteAvion": 2,
     "costPerKm": 2
-  },
+  , "setType": "vocal"},
   {
     "id": 8,
     "name": "Horia Brenciu",
@@ -104,7 +104,7 @@ export const ARTISTS_DATA = [
     "cazare": "1 apartament + 4 single + 6 duble",
     "nrBileteAvion": 0,
     "costPerKm": 2
-  },
+  , "setType": "vocal"},
   {
     "id": 9,
     "name": "Damian & Brothers",
@@ -117,7 +117,7 @@ export const ARTISTS_DATA = [
     "cazare": "6 single + 7 duble",
     "nrBileteAvion": 0,
     "costPerKm": 2
-  },
+  , "setType": "vocal"},
   {
     "id": 10,
     "name": "Holograf",
@@ -130,7 +130,7 @@ export const ARTISTS_DATA = [
     "cazare": "8 single + 1 twin",
     "nrBileteAvion": 0,
     "costPerKm": 2
-  },
+  , "setType": "vocal"},
   {
     "id": 11,
     "name": "Parazitii",
@@ -143,7 +143,7 @@ export const ARTISTS_DATA = [
     "cazare": "4 single",
     "nrBileteAvion": 4,
     "costPerKm": 1
-  },
+  , "setType": "vocal"},
   {
     "id": 12,
     "name": "Grasu XXL",
@@ -157,7 +157,7 @@ export const ARTISTS_DATA = [
     "cazare": "4 single",
     "nrBileteAvion": 3,
     "costPerKm": 1.5
-  },
+  , "setType": "vocal"},
   {
     "id": 13,
     "name": "La Familia",
@@ -171,7 +171,7 @@ export const ARTISTS_DATA = [
     "cazare": "4 single",
     "nrBileteAvion": 2,
     "costPerKm": 1
-  },
+  , "setType": "vocal"},
   {
     "id": 14,
     "name": "Puya",
@@ -185,7 +185,7 @@ export const ARTISTS_DATA = [
     "cazare": "3 single",
     "nrBileteAvion": 2,
     "costPerKm": 1
-  },
+  , "setType": "vocal"},
   {
     "id": 15,
     "name": "Florin Ristei",
@@ -198,7 +198,7 @@ export const ARTISTS_DATA = [
     "cazare": "5 duble + 2 single",
     "nrBileteAvion": 1,
     "costPerKm": 0
-  },
+  , "setType": "vocal"},
   {
     "id": 16,
     "name": "Delia",
@@ -211,7 +211,7 @@ export const ARTISTS_DATA = [
     "cazare": "5 twin + 3 single",
     "nrBileteAvion": 2,
     "costPerKm": 1.6
-  },
+  , "setType": "vocal"},
   {
     "id": 17,
     "name": "Loredana",
@@ -224,7 +224,7 @@ export const ARTISTS_DATA = [
     "cazare": "7 duble + 2 single",
     "nrBileteAvion": 3,
     "costPerKm": 1.5
-  },
+  , "setType": "vocal"},
   {
     "id": 18,
     "name": "Stefan Banica",
@@ -237,7 +237,7 @@ export const ARTISTS_DATA = [
     "cazare": "1 suita + 9 duble",
     "nrBileteAvion": 0,
     "costPerKm": 2
-  },
+  , "setType": "vocal"},
   {
     "id": 19,
     "name": "Andra",
@@ -250,7 +250,7 @@ export const ARTISTS_DATA = [
     "cazare": "8 duble + 3 single",
     "nrBileteAvion": 3,
     "costPerKm": 1.5
-  },
+  , "setType": "vocal"},
   {
     "id": 20,
     "name": "3 Sud Est",
@@ -263,7 +263,7 @@ export const ARTISTS_DATA = [
     "cazare": "8 single + 1 dubla",
     "nrBileteAvion": 9,
     "costPerKm": 2
-  },
+  , "setType": "vocal"},
   {
     "id": 21,
     "name": "Vunk",
@@ -276,7 +276,7 @@ export const ARTISTS_DATA = [
     "cazare": "4 single + 3 twin",
     "nrBileteAvion": 2,
     "costPerKm": 2
-  },
+  , "setType": "vocal"},
   {
     "id": 22,
     "name": "Vita de Vie",
@@ -289,7 +289,7 @@ export const ARTISTS_DATA = [
     "cazare": "3 single + 5 duble",
     "nrBileteAvion": 6,
     "costPerKm": 2
-  },
+  , "setType": "vocal"},
   {
     "id": 23,
     "name": "Proconsul",
@@ -302,7 +302,7 @@ export const ARTISTS_DATA = [
     "cazare": "3 single + 3 duble",
     "nrBileteAvion": 0,
     "costPerKm": 1
-  },
+  , "setType": "vocal"},
   {
     "id": 24,
     "name": "Mira",
@@ -315,7 +315,7 @@ export const ARTISTS_DATA = [
     "cazare": "4 duble + 1 single",
     "nrBileteAvion": 1,
     "costPerKm": 1.5
-  },
+  , "setType": "vocal"},
   {
     "id": 25,
     "name": "Andia",
@@ -328,7 +328,7 @@ export const ARTISTS_DATA = [
     "cazare": "1 suita + 2 single + 4 duble",
     "nrBileteAvion": 1,
     "costPerKm": 2
-  },
+  , "setType": "vocal"},
   {
     "id": 26,
     "name": "Minelli",
@@ -341,7 +341,7 @@ export const ARTISTS_DATA = [
     "cazare": "3 duble + 2 single",
     "nrBileteAvion": 2,
     "costPerKm": 1.5
-  },
+  , "setType": "vocal"},
   {
     "id": 27,
     "name": "Tania Turtureanu",
@@ -354,7 +354,7 @@ export const ARTISTS_DATA = [
     "cazare": "2 single + 4 duble",
     "nrBileteAvion": 2,
     "costPerKm": 1.5
-  },
+  , "setType": "vocal"},
   {
     "id": 28,
     "name": "Babasha",
@@ -367,7 +367,7 @@ export const ARTISTS_DATA = [
     "cazare": "3 single + 1 twin",
     "nrBileteAvion": 5,
     "costPerKm": 1.5
-  },
+  , "setType": "vocal"},
   {
     "id": 29,
     "name": "Alexandra Stan",
@@ -381,7 +381,7 @@ export const ARTISTS_DATA = [
     "cazare": "1 suita + 1 single + 4 duble",
     "nrBileteAvion": 1,
     "costPerKm": 1.5
-  },
+  , "setType": "vocal"},
   {
     "id": 30,
     "name": "Antonia",
@@ -394,7 +394,7 @@ export const ARTISTS_DATA = [
     "cazare": "1 suita + 4 single + 2 duble",
     "nrBileteAvion": 2,
     "costPerKm": 1.5
-  },
+  , "setType": "vocal"},
   {
     "id": 31,
     "name": "Alina Eremia",
@@ -407,7 +407,7 @@ export const ARTISTS_DATA = [
     "cazare": "1 single + 4 duble",
     "nrBileteAvion": 1,
     "costPerKm": 1.5
-  },
+  , "setType": "vocal"},
   {
     "id": 32,
     "name": "Nicole Cherry",
@@ -420,7 +420,7 @@ export const ARTISTS_DATA = [
     "cazare": "5 duble + 2 single",
     "nrBileteAvion": 2,
     "costPerKm": 1.5
-  },
+  , "setType": "vocal"},
   {
     "id": 33,
     "name": "Feli",
@@ -433,7 +433,7 @@ export const ARTISTS_DATA = [
     "cazare": "4 duble + 1 single",
     "nrBileteAvion": 1,
     "costPerKm": 1.5
-  },
+  , "setType": "vocal"},
   {
     "id": 34,
     "name": "Bere Gratis",
@@ -447,7 +447,7 @@ export const ARTISTS_DATA = [
     "cazare": "4 duble + 1 single",
     "nrBileteAvion": 0,
     "costPerKm": 1.5
-  },
+  , "setType": "vocal"},
   {
     "id": 35,
     "name": "Lora",
@@ -460,7 +460,7 @@ export const ARTISTS_DATA = [
     "cazare": "4 duble twin + 1 dubla matrimoniala",
     "nrBileteAvion": 0,
     "costPerKm": 1.5
-  },
+  , "setType": "vocal"},
   {
     "id": 36,
     "name": "JO",
@@ -473,7 +473,7 @@ export const ARTISTS_DATA = [
     "cazare": "4 duble + 1 single",
     "nrBileteAvion": 3,
     "costPerKm": 2
-  },
+  , "setType": "vocal"},
   {
     "id": 37,
     "name": "Guess Who",
@@ -487,7 +487,7 @@ export const ARTISTS_DATA = [
     "cazare": "4 single",
     "nrBileteAvion": 3,
     "costPerKm": 1
-  },
+  , "setType": "vocal"},
   {
     "id": 38,
     "name": "Randi",
@@ -500,7 +500,7 @@ export const ARTISTS_DATA = [
     "cazare": "5 duble + 2 single",
     "nrBileteAvion": 1,
     "costPerKm": 1.5
-  },
+  , "setType": "vocal"},
   {
     "id": 39,
     "name": "Ami",
@@ -513,7 +513,7 @@ export const ARTISTS_DATA = [
     "cazare": "3 duble + 2 single",
     "nrBileteAvion": 1,
     "costPerKm": 1
-  },
+  , "setType": "vocal"},
   {
     "id": 40,
     "name": "Emaa",
@@ -526,7 +526,7 @@ export const ARTISTS_DATA = [
     "cazare": "4 duble + 2 single",
     "nrBileteAvion": 1,
     "costPerKm": 1.5
-  },
+  , "setType": "vocal"},
   {
     "id": 41,
     "name": "Spike",
@@ -540,7 +540,7 @@ export const ARTISTS_DATA = [
     "cazare": "1 suita + 2 single + 4 duble",
     "nrBileteAvion": 1,
     "costPerKm": 2
-  },
+  , "setType": "vocal"},
   {
     "id": 42,
     "name": "Killa Fonic",
@@ -554,7 +554,7 @@ export const ARTISTS_DATA = [
     "cazare": "4 single + 2 duble",
     "nrBileteAvion": 0,
     "costPerKm": 1
-  },
+  , "setType": "vocal"},
   {
     "id": 43,
     "name": "Alex Velea",
@@ -567,7 +567,7 @@ export const ARTISTS_DATA = [
     "cazare": "3 twin + 2 single + 1 suita",
     "nrBileteAvion": 0,
     "costPerKm": 1.5
-  },
+  , "setType": "vocal"},
   {
     "id": 44,
     "name": "Satra Benz",
@@ -581,7 +581,7 @@ export const ARTISTS_DATA = [
     "cazare": "4 duble + 2 single",
     "nrBileteAvion": 6,
     "costPerKm": 1
-  },
+  , "setType": "vocal"},
   {
     "id": 45,
     "name": "Erika",
@@ -594,7 +594,7 @@ export const ARTISTS_DATA = [
     "cazare": "3 single + 2 duble",
     "nrBileteAvion": 2,
     "costPerKm": 1.5
-  },
+  , "setType": "vocal"},
   {
     "id": 46,
     "name": "Lidia Buble",
@@ -607,7 +607,7 @@ export const ARTISTS_DATA = [
     "cazare": "3 duble + 3 single",
     "nrBileteAvion": 1,
     "costPerKm": 2
-  },
+  , "setType": "vocal"},
   {
     "id": 47,
     "name": "Speak",
@@ -620,7 +620,7 @@ export const ARTISTS_DATA = [
     "cazare": "5 single",
     "nrBileteAvion": 3,
     "costPerKm": 1.5
-  },
+  , "setType": "vocal"},
   {
     "id": 48,
     "name": "Stefania",
@@ -633,7 +633,7 @@ export const ARTISTS_DATA = [
     "cazare": "1 single + 5 duble",
     "nrBileteAvion": 2,
     "costPerKm": 1.5
-  },
+  , "setType": "vocal"},
   {
     "id": 49,
     "name": "Andrei Banuta",
@@ -646,7 +646,7 @@ export const ARTISTS_DATA = [
     "cazare": "5 duble + 3 single",
     "nrBileteAvion": 1,
     "costPerKm": 1.5
-  },
+  , "setType": "vocal"},
   {
     "id": 50,
     "name": "Petre Stefan",
@@ -660,7 +660,7 @@ export const ARTISTS_DATA = [
     "cazare": "4 single",
     "nrBileteAvion": 4,
     "costPerKm": 1
-  },
+  , "setType": "vocal"},
   {
     "id": 51,
     "name": "Johny Romano",
@@ -674,7 +674,7 @@ export const ARTISTS_DATA = [
     "cazare": "4 single",
     "nrBileteAvion": 0,
     "costPerKm": 1
-  },
+  , "setType": "vocal"},
   {
     "id": 52,
     "name": "Rares",
@@ -687,7 +687,7 @@ export const ARTISTS_DATA = [
     "cazare": "2 duble + 2 single",
     "nrBileteAvion": 1,
     "costPerKm": 1.5
-  },
+  , "setType": "vocal"},
   {
     "id": 53,
     "name": "DJ Project",
@@ -700,7 +700,7 @@ export const ARTISTS_DATA = [
     "cazare": "3 single",
     "nrBileteAvion": 3,
     "costPerKm": 1
-  },
+  , "setType": "vocal"},
   {
     "id": 54,
     "name": "Vescan",
@@ -713,7 +713,7 @@ export const ARTISTS_DATA = [
     "cazare": "3 single",
     "nrBileteAvion": 3,
     "costPerKm": 1
-  },
+  , "setType": "vocal"},
   {
     "id": 55,
     "name": "Adda",
@@ -726,7 +726,7 @@ export const ARTISTS_DATA = [
     "cazare": "4 duble",
     "nrBileteAvion": 0,
     "costPerKm": 1
-  },
+  , "setType": "vocal"},
   {
     "id": 56,
     "name": "Raluka",
@@ -739,7 +739,7 @@ export const ARTISTS_DATA = [
     "cazare": "6 duble + 1 single",
     "nrBileteAvion": 2,
     "costPerKm": 1.5
-  },
+  , "setType": "vocal"},
   {
     "id": 57,
     "name": "Mahala Rai Banda",
@@ -752,7 +752,7 @@ export const ARTISTS_DATA = [
     "cazare": "5 duble + 2 single",
     "nrBileteAvion": 0,
     "costPerKm": 1
-  },
+  , "setType": "vocal"},
   {
     "id": 58,
     "name": "Bibi",
@@ -765,7 +765,7 @@ export const ARTISTS_DATA = [
     "cazare": "3 duble matrimoniale",
     "nrBileteAvion": 0,
     "costPerKm": 1
-  },
+  , "setType": "vocal"},
   {
     "id": 59,
     "name": "Majii",
@@ -778,7 +778,7 @@ export const ARTISTS_DATA = [
     "cazare": "1 single + 2 duble",
     "nrBileteAvion": 1,
     "costPerKm": 1
-  },
+  , "setType": "vocal"},
   {
     "id": 60,
     "name": "Liviu Teodorescu",
@@ -791,7 +791,7 @@ export const ARTISTS_DATA = [
     "cazare": "5 duble",
     "nrBileteAvion": 1,
     "costPerKm": 1.5
-  },
+  , "setType": "vocal"},
   {
     "id": 61,
     "name": "Andreea Banica",
@@ -804,7 +804,7 @@ export const ARTISTS_DATA = [
     "cazare": "2 duble + 2 single",
     "nrBileteAvion": 1,
     "costPerKm": 1
-  },
+  , "setType": "vocal"},
   {
     "id": 62,
     "name": "Monica Anghel",
@@ -817,7 +817,7 @@ export const ARTISTS_DATA = [
     "cazare": "3 single",
     "nrBileteAvion": 3,
     "costPerKm": 1
-  },
+  , "setType": "vocal"},
   {
     "id": 63,
     "name": "Dara",
@@ -830,7 +830,7 @@ export const ARTISTS_DATA = [
     "cazare": "3 duble + 1 single",
     "nrBileteAvion": 1,
     "costPerKm": 1
-  },
+  , "setType": "vocal"},
   {
     "id": 64,
     "name": "Florian Rus",
@@ -843,7 +843,7 @@ export const ARTISTS_DATA = [
     "cazare": "3 duble + 1 single",
     "nrBileteAvion": 1,
     "costPerKm": 1
-  },
+  , "setType": "vocal"},
   {
     "id": 65,
     "name": "IDK",
@@ -857,7 +857,7 @@ export const ARTISTS_DATA = [
     "cazare": "1 dubla + 3 single + 1 twin",
     "nrBileteAvion": 3,
     "costPerKm": 1
-  },
+  , "setType": "vocal"},
   {
     "id": 66,
     "name": "Shift",
@@ -871,7 +871,7 @@ export const ARTISTS_DATA = [
     "cazare": "2 duble + 2 single",
     "nrBileteAvion": 0,
     "costPerKm": 1
-  },
+  , "setType": "vocal"},
   {
     "id": 67,
     "name": "Maximilian",
@@ -885,7 +885,7 @@ export const ARTISTS_DATA = [
     "cazare": "4 single",
     "nrBileteAvion": 0,
     "costPerKm": 1
-  },
+  , "setType": "vocal"},
   {
     "id": 68,
     "name": "Cleopatra Stratan",
@@ -898,7 +898,7 @@ export const ARTISTS_DATA = [
     "cazare": "2 single",
     "nrBileteAvion": 2,
     "costPerKm": 1
-  },
+  , "setType": "vocal"},
   {
     "id": 69,
     "name": "Holy Molly",
@@ -911,7 +911,7 @@ export const ARTISTS_DATA = [
     "cazare": "4 duble + 1 matrimoniala",
     "nrBileteAvion": 1,
     "costPerKm": 1.5
-  },
+  , "setType": "vocal"},
   {
     "id": 70,
     "name": "Matteo",
@@ -924,7 +924,7 @@ export const ARTISTS_DATA = [
     "cazare": "4 duble",
     "nrBileteAvion": 0,
     "costPerKm": 1
-  },
+  , "setType": "vocal"},
   {
     "id": 71,
     "name": "Edward Sanda",
@@ -937,7 +937,7 @@ export const ARTISTS_DATA = [
     "cazare": "1 dubla + 1 single",
     "nrBileteAvion": 0,
     "costPerKm": 1
-  },
+  , "setType": "vocal"},
   {
     "id": 72,
     "name": "Eva Timush",
@@ -950,7 +950,7 @@ export const ARTISTS_DATA = [
     "cazare": "2 single + 1 dubla",
     "nrBileteAvion": 1,
     "costPerKm": 1
-  },
+  , "setType": "vocal"},
   {
     "id": 73,
     "name": "Cabron",
@@ -964,7 +964,7 @@ export const ARTISTS_DATA = [
     "cazare": "1 dubla + 2 single",
     "nrBileteAvion": 0,
     "costPerKm": 1
-  },
+  , "setType": "vocal"},
   {
     "id": 74,
     "name": "Anda Adam",
@@ -977,7 +977,7 @@ export const ARTISTS_DATA = [
     "cazare": "1 dubla + 2 single",
     "nrBileteAvion": 1,
     "costPerKm": 1
-  },
+  , "setType": "vocal"},
   {
     "id": 75,
     "name": "Corina",
@@ -990,7 +990,7 @@ export const ARTISTS_DATA = [
     "cazare": "2 single",
     "nrBileteAvion": 1,
     "costPerKm": 1
-  },
+  , "setType": "vocal"},
   {
     "id": 76,
     "name": "Sore",
@@ -1003,7 +1003,7 @@ export const ARTISTS_DATA = [
     "cazare": "4 duble + 1 single",
     "nrBileteAvion": 1,
     "costPerKm": 1
-  },
+  , "setType": "vocal"},
   {
     "id": 77,
     "name": "Nicoleta Nuca",
@@ -1016,7 +1016,7 @@ export const ARTISTS_DATA = [
     "cazare": "3 duble + 1 single",
     "nrBileteAvion": 0,
     "costPerKm": 1
-  },
+  , "setType": "vocal"},
   {
     "id": 78,
     "name": "Elena Ionescu",
@@ -1029,7 +1029,7 @@ export const ARTISTS_DATA = [
     "cazare": "3 duble",
     "nrBileteAvion": 0,
     "costPerKm": 1
-  },
+  , "setType": "vocal"},
   {
     "id": 79,
     "name": "Mandinga",
@@ -1043,7 +1043,7 @@ export const ARTISTS_DATA = [
     "cazare": "5 duble + 2 single",
     "nrBileteAvion": 0,
     "costPerKm": 1
-  },
+  , "setType": "vocal"},
   {
     "id": 80,
     "name": "Whats Up",
@@ -1056,7 +1056,7 @@ export const ARTISTS_DATA = [
     "cazare": "1 dubla + 2 single",
     "nrBileteAvion": 0,
     "costPerKm": 1
-  }
+  , "setType": "vocal"}
 ] as const;
 
 export type Artist = typeof ARTISTS_DATA[number];

@@ -4,7 +4,11 @@ import { useState } from 'react'
 import Link from 'next/link'
 import { MapPin, User, Calendar, Users, ArrowRight, CheckCircle2, ChevronDown, ChevronUp, Plane, Car, Hotel } from 'lucide-react'
 
-const SETURI_ARTIST = [
+const SETURI_VOCAL = [
+  { id: '1x45', label: '1 set · 45 min' },
+]
+
+const SETURI_COVER = [
   { id: '1x45', label: '1 set · 45 min' },
   { id: '2x45', label: '2 seturi · 45 min' },
   { id: '3x45', label: '3 seturi · 45 min' },
@@ -18,9 +22,12 @@ const SETURI_DJ = [
   { id: 'allnight', label: 'All Night' },
 ]
 
-const isDJ = (artists: any[]) => artists.some(a => 
-  a.genres?.some((g: string) => g.toLowerCase().includes('dj') || g.toLowerCase().includes('dance') || g.toLowerCase().includes('edm'))
-)
+const getSeturi = (artist: any) => {
+  const type = artist?.setType || 'vocal'
+  if (type === 'dj') return SETURI_DJ
+  if (type === 'cover') return SETURI_COVER
+  return SETURI_VOCAL
+}
 
 const EVENT_TYPES = [
   { id: 'nunta', label: 'Nuntă' },
@@ -174,7 +181,7 @@ export default function SummaryStep({ eventType, eventDate, guestCount, selected
       <div style={{background:'white', border:'1px solid #e7e5e4', borderRadius:'16px', padding:'18px 20px', marginBottom:'14px'}}>
         <div style={{fontSize:'11px', fontWeight:700, color:'#a8a29e', textTransform:'uppercase', letterSpacing:'0.08em', marginBottom:'12px'}}>Seturi artist</div>
         <div style={{display:'flex', gap:'8px', flexWrap:'wrap'}}>
-          {(isDJ(selectedArtists) ? SETURI_DJ : SETURI_ARTIST).map(s => (
+          {getSeturi(a).map(s => (
             <button key={s.id} onClick={() => setSelectedSeturi(s.id)}
               style={{padding:'8px 18px', borderRadius:'20px', border:'1.5px solid', cursor:'pointer', fontSize:'12px', fontWeight:600, fontFamily:'Montserrat,sans-serif', transition:'all 0.15s',
                 background: selectedSeturi === s.id ? '#1c1917' : 'white',
@@ -266,6 +273,40 @@ export default function SummaryStep({ eventType, eventDate, guestCount, selected
                         <div style={{fontSize:'11px', color:'#a8a29e'}}>Tier {ts.label} · {ts.range}</div>
                       </div>
                       <div style={{fontSize:'13px', fontWeight:700, color:'#78716c'}}>La cerere</div>
+                    </div>
+
+                    <div style={{borderTop:'1px solid #f0f0ef', padding:'12px 14px'}}>
+                      <div style={{fontSize:'11px', fontWeight:700, color:'#a8a29e', textTransform:'uppercase', letterSpacing:'0.08em', marginBottom:'10px'}}>Seturi</div>
+                      <div style={{display:'flex', gap:'6px', flexWrap:'wrap', marginBottom:'8px'}}>
+                        {getSeturi(a).map(s => (
+                          <button key={s.id} onClick={() => setSelectedSeturi(s.id)}
+                            style={{padding:'6px 14px', borderRadius:'20px', border:'1.5px solid', cursor:'pointer', fontSize:'11px', fontWeight:600, fontFamily:'Montserrat,sans-serif', transition:'all 0.15s',
+                              background: selectedSeturi === s.id ? '#1c1917' : 'white',
+                              color: selectedSeturi === s.id ? 'white' : '#44403c',
+                              borderColor: selectedSeturi === s.id ? '#1c1917' : '#e7e5e4'}}>
+                            {s.label}
+                          </button>
+                        ))}
+                      </div>
+                      <input type="text" placeholder="Alt timing (ex: 1x60min, 2x30min...)"
+                        style={{width:'100%', padding:'8px 12px', borderRadius:'10px', border:'1px solid #e7e5e4', fontSize:'12px', fontFamily:'Montserrat,sans-serif', color:'#1c1917', outline:'none', boxSizing:'border-box', background:'#fafaf9'}} />
+                    </div>
+
+                    <div style={{borderTop:'1px solid #f0f0ef', padding:'12px 14px'}}>
+                      <div style={{fontSize:'11px', fontWeight:700, color:'#a8a29e', textTransform:'uppercase', letterSpacing:'0.08em', marginBottom:'10px'}}>Seturi</div>
+                      <div style={{display:'flex', gap:'6px', flexWrap:'wrap', marginBottom:'8px'}}>
+                        {getSeturi(a).map(s => (
+                          <button key={s.id} onClick={() => setSelectedSeturi(s.id)}
+                            style={{padding:'6px 14px', borderRadius:'20px', border:'1.5px solid', cursor:'pointer', fontSize:'11px', fontWeight:600, fontFamily:'Montserrat,sans-serif', transition:'all 0.15s',
+                              background: selectedSeturi === s.id ? '#1c1917' : 'white',
+                              color: selectedSeturi === s.id ? 'white' : '#44403c',
+                              borderColor: selectedSeturi === s.id ? '#1c1917' : '#e7e5e4'}}>
+                            {s.label}
+                          </button>
+                        ))}
+                      </div>
+                      <input type="text" placeholder="Alt timing (ex: 1x60min, 2x30min...)"
+                        style={{width:'100%', padding:'8px 12px', borderRadius:'10px', border:'1px solid #e7e5e4', fontSize:'12px', fontFamily:'Montserrat,sans-serif', color:'#1c1917', outline:'none', boxSizing:'border-box', background:'#fafaf9'}} />
                     </div>
                   </div>
 
