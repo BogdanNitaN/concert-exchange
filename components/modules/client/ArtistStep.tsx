@@ -207,14 +207,13 @@ export default function ArtistStep({ budget, setBudget, eventTypeLabel, atmosfer
           </div>
         )}
 
-        <div style={{position:'sticky', bottom:'0', background:'white', padding:'12px 0', borderTop:'1px solid #f0f0ef', marginTop:'8px'}}>
-        <div style={{display:'flex', gap:'10px'}}>
-          <button onClick={onBack} style={{padding:'13px 24px', borderRadius:'14px', border:'1.5px solid #e7e5e4', background:'white', color:'#78716c', fontSize:'13px', fontWeight:600, cursor:'pointer', fontFamily:'Montserrat,sans-serif'}}>Înapoi</button>
+        <div style={{height:'80px'}} />
+        <div style={{position:'fixed', bottom:'24px', left:'50%', transform:'translateX(-50%)', zIndex:200, display:'flex', gap:'10px', background:'white', padding:'14px 20px', borderRadius:'20px', boxShadow:'0 8px 32px rgba(0,0,0,0.15)', border:'1px solid #e7e5e4', maxWidth:'520px', width:'calc(100% - 48px)'}}>
+          <button onClick={onBack} style={{padding:'13px 24px', borderRadius:'12px', border:'1.5px solid #e7e5e4', background:'white', color:'#78716c', fontSize:'14px', fontWeight:600, cursor:'pointer', fontFamily:'Montserrat,sans-serif', whiteSpace:'nowrap'}}>Înapoi</button>
           <button onClick={() => { if(selectedArtists.length > 0) onNext() }} disabled={selectedArtists.length === 0}
-            style={{flex:1, background:'#1c1917', color:'white', padding:'13px', borderRadius:'14px', border:'none', cursor: selectedArtists.length > 0 ? 'pointer' : 'not-allowed', fontSize:'14px', fontWeight:700, fontFamily:'Montserrat,sans-serif', opacity: selectedArtists.length > 0 ? 1 : 0.35}}>
-            {selectedArtists.length === 0 ? 'Alege cel puțin un artist' : selectedArtists.length === 1 ? 'Continuă cu ' + selectedArtists[0].name : 'Continuă cu ' + selectedArtists.length + ' artiști selectați'}
+            style={{flex:1, background:'#1c1917', color:'white', padding:'13px', borderRadius:'12px', border:'none', cursor: selectedArtists.length > 0 ? 'pointer' : 'not-allowed', fontSize:'14px', fontWeight:700, fontFamily:'Montserrat,sans-serif', opacity: selectedArtists.length > 0 ? 1 : 0.35, whiteSpace:'nowrap'}}>
+            {selectedArtists.length === 0 ? 'Alege un artist' : selectedArtists.length === 1 ? 'Continuă cu ' + selectedArtists[0].name : 'Continuă cu ' + selectedArtists.length + ' artiști'}
           </button>
-        </div>
         </div>
       </div>
     </div>
