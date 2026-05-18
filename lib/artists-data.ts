@@ -117,7 +117,7 @@ export const ARTISTS_DATA = [
     "cazare": "6 single + 7 duble",
     "nrBileteAvion": 0,
     "costPerKm": 2
-  , "setType": "vocal"},
+  , "setType": "cover"},
   {
     "id": 10,
     "name": "Holograf",
@@ -130,7 +130,7 @@ export const ARTISTS_DATA = [
     "cazare": "8 single + 1 twin",
     "nrBileteAvion": 0,
     "costPerKm": 2
-  , "setType": "vocal"},
+  , "setType": "cover"},
   {
     "id": 11,
     "name": "Parazitii",
@@ -263,7 +263,7 @@ export const ARTISTS_DATA = [
     "cazare": "8 single + 1 dubla",
     "nrBileteAvion": 9,
     "costPerKm": 2
-  , "setType": "vocal"},
+  , "setType": "cover"},
   {
     "id": 21,
     "name": "Vunk",
@@ -276,7 +276,7 @@ export const ARTISTS_DATA = [
     "cazare": "4 single + 3 twin",
     "nrBileteAvion": 2,
     "costPerKm": 2
-  , "setType": "vocal"},
+  , "setType": "cover"},
   {
     "id": 22,
     "name": "Vita de Vie",
@@ -289,7 +289,7 @@ export const ARTISTS_DATA = [
     "cazare": "3 single + 5 duble",
     "nrBileteAvion": 6,
     "costPerKm": 2
-  , "setType": "vocal"},
+  , "setType": "cover"},
   {
     "id": 23,
     "name": "Proconsul",
@@ -302,7 +302,7 @@ export const ARTISTS_DATA = [
     "cazare": "3 single + 3 duble",
     "nrBileteAvion": 0,
     "costPerKm": 1
-  , "setType": "vocal"},
+  , "setType": "cover"},
   {
     "id": 24,
     "name": "Mira",
@@ -447,7 +447,7 @@ export const ARTISTS_DATA = [
     "cazare": "4 duble + 1 single",
     "nrBileteAvion": 0,
     "costPerKm": 1.5
-  , "setType": "vocal"},
+  , "setType": "cover"},
   {
     "id": 35,
     "name": "Lora",
@@ -620,7 +620,7 @@ export const ARTISTS_DATA = [
     "cazare": "5 single",
     "nrBileteAvion": 3,
     "costPerKm": 1.5
-  , "setType": "vocal"},
+  , "setType": "dj"},
   {
     "id": 48,
     "name": "Stefania",
@@ -700,7 +700,7 @@ export const ARTISTS_DATA = [
     "cazare": "3 single",
     "nrBileteAvion": 3,
     "costPerKm": 1
-  , "setType": "vocal"},
+  , "setType": "dj"},
   {
     "id": 54,
     "name": "Vescan",
@@ -752,7 +752,7 @@ export const ARTISTS_DATA = [
     "cazare": "5 duble + 2 single",
     "nrBileteAvion": 0,
     "costPerKm": 1
-  , "setType": "vocal"},
+  , "setType": "cover"},
   {
     "id": 58,
     "name": "Bibi",
@@ -1043,7 +1043,7 @@ export const ARTISTS_DATA = [
     "cazare": "5 duble + 2 single",
     "nrBileteAvion": 0,
     "costPerKm": 1
-  , "setType": "vocal"},
+  , "setType": "cover"},
   {
     "id": 80,
     "name": "Whats Up",
