@@ -129,11 +129,7 @@ export default function ArtistStep({ budget, setBudget, eventTypeLabel, atmosfer
                 <span style={{fontSize:'10px', fontWeight:700, padding:'2px 8px', borderRadius:'6px', background: ts.bg, color: ts.color}}>{ts.label}</span>
               </div>
               <div style={{fontSize:'12px', color:'#78716c'}}>{a.genres.join(' · ')}</div>
-              {atmosfera.length > 0 && getMatchScore(a.genres, atmosfera) === 0 && (
-                <div style={{fontSize:'11px', color:'#d97706', fontWeight:600, marginTop:'4px'}}>
-                  ⚠️ Potrivire parțială cu atmosfera aleasă
-                </div>
-              )}
+
               {isOverBudget && (
                 <div style={{display:'flex', alignItems:'center', gap:'4px', marginTop:'4px'}}>
                   <TrendingUp size={11} color='#059669' strokeWidth={2} />
@@ -211,12 +207,14 @@ export default function ArtistStep({ budget, setBudget, eventTypeLabel, atmosfer
           </div>
         )}
 
-        <div style={{display:'flex', gap:'10px', marginTop:'8px'}}>
+        <div style={{position:'sticky', bottom:'0', background:'white', padding:'12px 0', borderTop:'1px solid #f0f0ef', marginTop:'8px'}}>
+        <div style={{display:'flex', gap:'10px'}}>
           <button onClick={onBack} style={{padding:'13px 24px', borderRadius:'14px', border:'1.5px solid #e7e5e4', background:'white', color:'#78716c', fontSize:'13px', fontWeight:600, cursor:'pointer', fontFamily:'Montserrat,sans-serif'}}>Înapoi</button>
           <button onClick={() => { if(selectedArtists.length > 0) onNext() }} disabled={selectedArtists.length === 0}
             style={{flex:1, background:'#1c1917', color:'white', padding:'13px', borderRadius:'14px', border:'none', cursor: selectedArtists.length > 0 ? 'pointer' : 'not-allowed', fontSize:'14px', fontWeight:700, fontFamily:'Montserrat,sans-serif', opacity: selectedArtists.length > 0 ? 1 : 0.35}}>
             {selectedArtists.length === 0 ? 'Alege cel puțin un artist' : selectedArtists.length === 1 ? 'Continuă cu ' + selectedArtists[0].name : 'Continuă cu ' + selectedArtists.length + ' artiști selectați'}
           </button>
+        </div>
         </div>
       </div>
     </div>
