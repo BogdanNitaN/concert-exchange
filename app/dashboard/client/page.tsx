@@ -243,6 +243,7 @@ export default function ClientDashboard() {
                     <button key={t} onClick={() => {
                       setVenueType(t)
                       if (t !== 'Toate' && selectedCity) {
+                        setLoadingVenues(true)
                         const searchTerm = t + ' ' + selectedCity.split(',')[0]
                         fetch('/api/places?input=' + encodeURIComponent(searchTerm))
                           .then(r => r.json())
@@ -258,12 +259,13 @@ export default function ClientDashboard() {
                                 capacity: 500,
                                 priceEstimate: 'La cerere'
                               }))
-                              setVenueSearchResult(venues[0])
-                              setSelectedVenues([venues[0]])
-                              setShowVenueGrid(false)
+                              setGoogleVenues(venues)
                             }
+                            setLoadingVenues(false)
                           })
-                          .catch(() => {})
+                          .catch(() => setLoadingVenues(false))
+                      } else if (t === 'Toate') {
+                        setGoogleVenues([])
                       }
                     }}
                       style={{padding:'5px 12px', borderRadius:'20px', border:'1px solid', cursor:'pointer', fontSize:'11px', fontWeight:600, fontFamily:'Montserrat,sans-serif', background: venueType === t ? '#1c1917' : 'white', color: venueType === t ? 'white' : '#78716c', borderColor: venueType === t ? '#1c1917' : '#e7e5e4'}}>{t}</button>
