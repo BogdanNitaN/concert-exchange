@@ -60,7 +60,7 @@ export default function ClientDashboard() {
   const [requestSent, setRequestSent] = useState(false)
   const [showPretExactModal, setShowPretExactModal] = useState(false)
   const [showExpertModal, setShowExpertModal] = useState(false)
-  const [selectedSeturi, setSelectedSeturi] = useState('1x45')
+  const [selectedSeturi, setSelectedSeturi] = useState<Record<number,string>>({})
 
   const steps = ['event', 'atmosfera', 'artist', 'venue', 'summary']
   const stepIndex = steps.indexOf(step)
@@ -255,7 +255,7 @@ export default function ClientDashboard() {
             selectedCityLng={selectedCityLng}
             budget={budget}
             selectedSeturi={selectedSeturi}
-            setSelectedSeturi={setSelectedSeturi}
+            setSelectedSeturi={(artistId: number, val: string) => setSelectedSeturi(prev => ({...prev, [artistId]: val}))}
             requestSent={requestSent}
             onTrimite={handleTrimite}
             onBack={() => setStep('venue')}

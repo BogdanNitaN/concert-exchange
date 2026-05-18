@@ -72,8 +72,8 @@ interface Props {
   selectedCityLat?: number
   selectedCityLng?: number
   budget: number
-  selectedSeturi: string
-  setSelectedSeturi: (v: string) => void
+  selectedSeturi: Record<number, string>
+  setSelectedSeturi: (artistId: number, val: string) => void
   requestSent: boolean
   onTrimite: () => void
   onBack: () => void
@@ -257,11 +257,11 @@ export default function SummaryStep({ eventType, eventDate, guestCount, selected
                       <div style={{fontSize:'11px', fontWeight:700, color:'#a8a29e', textTransform:'uppercase', letterSpacing:'0.08em', marginBottom:'10px'}}>Seturi</div>
                       <div style={{display:'flex', gap:'6px', flexWrap:'wrap', marginBottom:'8px'}}>
                         {seturiArtist.map(s => (
-                          <button key={s.id} onClick={() => setSelectedSeturi(s.id)}
+                          <button key={s.id} onClick={() => setSelectedSeturi(a.id, s.id)}
                             style={{padding:'6px 14px', borderRadius:'20px', border:'1.5px solid', cursor:'pointer', fontSize:'11px', fontWeight:600, fontFamily:'Montserrat,sans-serif', transition:'all 0.15s',
-                              background: selectedSeturi === s.id ? '#1c1917' : 'white',
-                              color: selectedSeturi === s.id ? 'white' : '#44403c',
-                              borderColor: selectedSeturi === s.id ? '#1c1917' : '#e7e5e4'}}>
+                              background: (selectedSeturi[a.id] || seturiArtist[0]?.id) === s.id ? '#1c1917' : 'white',
+                              color: (selectedSeturi[a.id] || seturiArtist[0]?.id) === s.id ? 'white' : '#44403c',
+                              borderColor: (selectedSeturi[a.id] || seturiArtist[0]?.id) === s.id ? '#1c1917' : '#e7e5e4'}}>
                             {s.label}
                           </button>
                         ))}
