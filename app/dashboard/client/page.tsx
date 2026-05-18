@@ -273,7 +273,8 @@ export default function ClientDashboard() {
                   <MapVenues venues={filteredVenues} center={center} radius={200} onSelectVenue={(v: any) => toggleVenueSelect(v)} />
                 </div>
                 <div style={{display:'grid', gridTemplateColumns:'1fr 1fr', gap:'12px', marginBottom:'20px'}}>
-                  {(selectedCity ? filteredVenues.filter(v => v.city && selectedCity.toLowerCase().includes(v.city.toLowerCase().split('-')[0])).slice(0,2).concat(filteredVenues.filter(v => !v.city || !selectedCity.toLowerCase().includes(v.city.toLowerCase().split('-')[0])).slice(0,4)) : filteredVenues.slice(0,6)).map(v => {
+                  {loadingVenues && <div style={{gridColumn:'1/-1', textAlign:'center', padding:'20px', fontSize:'13px', color:'#a8a29e'}}>Se caută locații în {selectedCity.split(',')[0]}...</div>}
+                  {(googleVenues.length > 0 ? googleVenues : filteredVenues).slice(0,8).map(v => {
                     const isSelected = selectedVenues.find(sv => sv.id === v.id)
                     return (
                       <div key={v.id} onClick={() => toggleVenueSelect(v)}
