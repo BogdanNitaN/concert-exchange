@@ -51,6 +51,7 @@ export default function ClientDashboard() {
   const [selectedVenues, setSelectedVenues] = useState<any[]>([])
   const [venueSearchResult, setVenueSearchResult] = useState<any>(null)
   const [googleVenues, setGoogleVenues] = useState<any[]>([])
+  const [venuesByType, setVenuesByType] = useState<Record<string, any[]>>({})
   const [loadingVenues, setLoadingVenues] = useState(false)
   const [showVenueGrid, setShowVenueGrid] = useState(true)
   const [selectedArtists, setSelectedArtists] = useState<any[]>([])
@@ -276,7 +277,7 @@ export default function ClientDashboard() {
                 </div>
                 <div style={{display:'grid', gridTemplateColumns:'1fr 1fr', gap:'12px', marginBottom:'20px'}}>
                   {loadingVenues && <div style={{gridColumn:'1/-1', textAlign:'center', padding:'20px', fontSize:'13px', color:'#a8a29e'}}>Se caută locații în {selectedCity.split(',')[0]}...</div>}
-                  {(googleVenues.length > 0 ? googleVenues : filteredVenues).slice(0,8).map(v => {
+                  {(venueType !== 'Toate' && venuesByType[venueType] ? venuesByType[venueType] : googleVenues.length > 0 ? googleVenues : filteredVenues).slice(0,8).map(v => {
                     const isSelected = selectedVenues.find(sv => sv.id === v.id)
                     return (
                       <div key={v.id} onClick={() => toggleVenueSelect(v)}
