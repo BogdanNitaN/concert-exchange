@@ -147,7 +147,43 @@ export default function ClientDashboard() {
     }
   }, [step, selectedCity])
 
-  const cityName = selectedCity.split(',')[0].toLowerCase().trim()
+  const fetchVenuesByType = (type: string) => {
+    if (type === 'Toate') { setVenuesByType({}); return }
+    const city = selectedCity.split(',')[0]
+    const cityEn = city === 'București' ? 'Bucharest' : city
+    const typeQueries: Record<string, string> = {
+      'Sală Evenimente': 'event hall', 'Ballroom': 'ballroom wedding',
+      'Restaurant': 'restaurant', 'Club': 'nightclub',
+      'Venue / Concert Hall': 'concert venue', 'Terasă': 'terrace bar',
+      'Rooftop': 'rooftop bar', 'Hotel Conference': 'hotel conference',
+      'Resort / Hotel': 'resort hotel', 'Spațiu alternativ': 'event space',
+      'Beach Club': 'beach club', 'Parc / Open Air': 'park outdoor',
+      'Amfiteatru / Arene': 'amphitheater', 'Stadion': 'stadium',
+      'Arenă / Sală Polivalentă': 'arena hall', 'Filarmonică / Operă / Teatru': 'philharmonic theater',
+      'Castel / Conac': 'castle manor', 'Cramă': 'winery',
+      'Casă de cultură': 'cultural center', 'Shopping Mall': 'shopping mall',
+      'Muzeu / Galerie': 'museum gallery', 'Centru expozițional': 'exhibition center',
+      'Altele': 'event venue',
+    }
+    const q = (typeQueries[type] || 'event venue') + ' in ' + cityEn
+    setLoadingVenues(true)
+    fetch('/api/places?input=' + encodeURIComponent(q) + '&type=search')
+      .then(r => r.json())
+      .then(d => {
+        const venues = (d.results || []).map((p: any) => ({
+          id: p.place_id, name: p.name, city: city,
+          address: p.formatted_address || '',
+          lat: p.geometry?.location?.lat || 0,
+          lng: p.geometry?.location?.lng || 0,
+          type, capacity: 0, rating: p.rating, priceEstimate: 'La cerere'
+        }))
+        setVenuesByType((prev: any) => ({...prev, [type]: venues}))
+        setLoadingVenues(false)
+      })
+      .catch(() => setLoadingVenues(false))
+  }
+
+    const cityName = selectedCity.split(',')[0].toLowerCase().trim()
   const filteredVenues = VENUES.filter(v => {
     if (venueType !== 'Toate' && v.type !== venueType) return false
     if (guestCount > 0 && v.capacity < guestCount) return false
