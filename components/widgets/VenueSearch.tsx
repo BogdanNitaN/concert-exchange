@@ -19,9 +19,10 @@ interface Props {
   onSelectVenue?: (venue: Venue) => void
   placeholder?: string
   cityFilter?: string
+  venueType?: string
 }
 
-export default function VenueSearch({ onSelectVenue, placeholder = 'Caută sala, restaurantul, clubul...', cityFilter }: Props) {
+export default function VenueSearch({ onSelectVenue, placeholder = 'Caută sala, restaurantul, clubul...', cityFilter, venueType }: Props) {
   const [query, setQuery] = useState('')
   const [suggestions, setSuggestions] = useState<Venue[]>([])
   const [selectedVenue, setSelectedVenue] = useState<Venue | null>(null)
@@ -85,6 +86,7 @@ export default function VenueSearch({ onSelectVenue, placeholder = 'Caută sala,
         rating: venue.rating,
         phone: venue.phone,
         website: venue.website,
+        venue_type: venueType || 'Altele',
         search_count: 1,
         last_searched: new Date().toISOString()
       }, { onConflict: 'place_id' })
