@@ -88,29 +88,58 @@ export default function ClientDashboard() {
   }
 
   useEffect(() => {
-    if (step === 'venue' && selectedCity && googleVenues.length === 0) {
+    if (step === 'venue' && selectedCity) {
       setLoadingVenues(true)
+      setGoogleVenues([])
+      setVenuesByType({})
       const city = selectedCity.split(',')[0]
-      const searches = ['sala evenimente ' + city, 'ballroom nunta ' + city, 'restaurant events ' + city, 'club venue ' + city, 'hotel conferinte ' + city, 'spatiu evenimente ' + city]
-      Promise.all(searches.map(q => 
+      const typeSearches = [
+        { type: 'Sală Evenimente', q: 'sala evenimente ' + city },
+        { type: 'Ballroom', q: 'ballroom nunta ' + city },
+        { type: 'Restaurant', q: 'restaurant evenimente ' + city },
+        { type: 'Club', q: 'club nightclub ' + city },
+        { type: 'Venue / Concert Hall', q: 'venue concert hall ' + city },
+        { type: 'Terasă', q: 'terasa bar ' + city },
+        { type: 'Rooftop', q: 'rooftop ' + city },
+        { type: 'Hotel Conference', q: 'hotel conferinte ' + city },
+        { type: 'Resort / Hotel', q: 'resort hotel ' + city },
+        { type: 'Spațiu alternativ', q: 'spatiu evenimente ' + city },
+        { type: 'Beach Club', q: 'beach club plaja ' + city },
+        { type: 'Parc / Open Air', q: 'parc gradina ' + city },
+        { type: 'Amfiteatru', q: 'amfiteatru ' + city },
+        { type: 'Stadion', q: 'stadion ' + city },
+        { type: 'Arenă / Sală Polivalentă', q: 'arena sala polivalenta ' + city },
+        { type: 'Filarmonică / Operă', q: 'filarmonica opera teatru ' + city },
+        { type: 'Castel', q: 'castel conac ' + city },
+        { type: 'Cramă', q: 'crama pivnita ' + city },
+        { type: 'Casă de cultură', q: 'casa de cultura ' + city },
+        { type: 'Shopping Mall', q: 'mall shopping center ' + city },
+        { type: 'Muzeu / Galerie', q: 'muzeu galerie ' + city },
+      ]
+      Promise.all(typeSearches.map(({type, q}) =>
         fetch('/api/places?input=' + encodeURIComponent(q))
           .then(r => r.json())
-          .then(d => d.predictions || [])
-          .catch(() => [])
+          .then(d => ({ type, predictions: d.predictions || [] }))
+          .catch(() => ({ type, predictions: [] }))
       )).then(results => {
-        const all = results.flat()
-        const unique = all.filter((p: any, i: number, arr: any[]) => 
-          arr.findIndex((x: any) => x.place_id === p.place_id) === i
-        ).map((p: any) => ({
-          id: p.place_id,
-          name: p.structured_formatting?.main_text || p.description,
-          city: city,
-          address: p.structured_formatting?.secondary_text || '',
-          lat: 0, lng: 0,
-          type: 'Sală Evenimente',
-          capacity: 500,
-          priceEstimate: 'La cerere'
-        }))
+        const byType: Record<string, any[]> = {}
+        const allVenues: any[] = []
+        results.forEach(({type, predictions}) => {
+          const venues = predictions.map((p: any) => ({
+            id: p.place_id,
+            name: p.structured_formatting?.main_text || p.description,
+            city: city,
+            address: p.structured_formatting?.secondary_text || '',
+            lat: 0, lng: 0,
+            type,
+            capacity: 0,
+            priceEstimate: 'La cerere'
+          }))
+          byType[type] = venues
+          allVenues.push(...venues)
+        })
+        const unique = allVenues.filter((v, i, arr) => arr.findIndex(x => x.id === v.id) === i)
+        setVenuesByType(byType)
         setGoogleVenues(unique)
         setLoadingVenues(false)
       })
