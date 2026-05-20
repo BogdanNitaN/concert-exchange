@@ -24,7 +24,7 @@ const EVENT_TYPES = [
   { id: 'corporate2', icon: '\u{1F680}', label: 'Lansare / Team Building' },
 ]
 
-const VENUE_TYPES_CLIENT = ["Toate", "Sală Evenimente", "Ballroom", "Restaurant", "Club / Venue", "Hotel Conference", "Spațiu alternativ", "Terasă / Rooftop", "Parc / Open Air", "Castel / Cramă", "Amfiteatru", "Stadion / Arenă", "Pool / Piscină", "Casă de cultură", "Altele"]
+const VENUE_TYPES_CLIENT = ["Toate", "Sală Evenimente", "Ballroom", "Restaurant", "Club", "Venue / Concert Hall", "Terasă", "Rooftop", "Hotel Conference", "Resort / Hotel", "Spațiu alternativ", "Beach Club", "Parc / Open Air", "Amfiteatru", "Stadion", "Arenă / Sală Polivalentă", "Filarmonică / Operă", "Castel", "Cramă", "Casă de cultură", "Shopping Mall", "Muzeu / Galerie", "Altele"]
 
 const VENUES = [
   { id:1, name:"Ballroom Grand", lat:44.43, lng:26.10, type:"Ballroom", city:"Bucure\u0219ti", capacity:500, priceEstimate:"3.000-5.000\u20ac" },
