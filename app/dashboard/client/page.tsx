@@ -24,7 +24,7 @@ const EVENT_TYPES = [
   { id: 'corporate2', icon: '\u{1F680}', label: 'Lansare / Team Building' },
 ]
 
-const VENUE_TYPES_CLIENT = ["Toate", "Ballroom", "Restaurant cu scen\u0103", "Hotel conference", "Sal\u0103 Evenimente", "Cas\u0103 de cultur\u0103", "Parc evenimente", "Amfiteatru", "Pia\u021B\u0103 central\u0103", "Stadion", "Pool/Piscin\u0103", "Teras\u0103", "Castel", "Cram\u0103/Vie", "Altele"]
+const VENUE_TYPES_CLIENT = ["Toate", "Sală Evenimente", "Ballroom", "Restaurant", "Club / Venue", "Hotel Conference", "Spațiu alternativ", "Terasă / Rooftop", "Parc / Open Air", "Castel / Cramă", "Amfiteatru", "Stadion / Arenă", "Pool / Piscină", "Casă de cultură", "Altele"]
 
 const VENUES = [
   { id:1, name:"Ballroom Grand", lat:44.43, lng:26.10, type:"Ballroom", city:"Bucure\u0219ti", capacity:500, priceEstimate:"3.000-5.000\u20ac" },
@@ -90,7 +90,7 @@ export default function ClientDashboard() {
     if (step === 'venue' && selectedCity && googleVenues.length === 0) {
       setLoadingVenues(true)
       const city = selectedCity.split(',')[0]
-      const searches = ['sala evenimente ' + city, 'ballroom ' + city, 'restaurant evenimente ' + city, 'club ' + city, 'hotel conferinte ' + city]
+      const searches = ['sala evenimente ' + city, 'ballroom nunta ' + city, 'restaurant events ' + city, 'club venue ' + city, 'hotel conferinte ' + city, 'spatiu evenimente ' + city]
       Promise.all(searches.map(q => 
         fetch('/api/places?input=' + encodeURIComponent(q))
           .then(r => r.json())
@@ -256,7 +256,7 @@ export default function ClientDashboard() {
                                 address: p.structured_formatting?.secondary_text || '',
                                 lat: 0, lng: 0,
                                 type: t,
-                                capacity: 500,
+                                capacity: 0,
                                 priceEstimate: 'La cerere'
                               }))
                               setGoogleVenues(venues)
