@@ -24,7 +24,7 @@ const EVENT_TYPES = [
   { id: 'corporate2', icon: '\u{1F680}', label: 'Lansare / Team Building' },
 ]
 
-const VENUE_TYPES_CLIENT = ["Toate", "Sală Evenimente", "Ballroom", "Restaurant", "Club", "Venue / Concert Hall", "Terasă", "Rooftop", "Hotel Conference", "Resort / Hotel", "Spațiu alternativ", "Beach Club", "Parc / Open Air", "Amfiteatru", "Stadion", "Arenă / Sală Polivalentă", "Filarmonică / Operă", "Castel", "Cramă", "Casă de cultură", "Shopping Mall", "Muzeu / Galerie", "Altele"]
+const VENUE_TYPES_CLIENT = ["Toate", "Sală Evenimente", "Ballroom", "Restaurant", "Club", "Venue / Concert Hall", "Terasă", "Rooftop", "Hotel Conference", "Resort / Hotel", "Spațiu alternativ", "Beach Club", "Parc / Open Air", "Amfiteatru / Arene", "Stadion", "Arenă / Sală Polivalentă", "Filarmonică / Operă / Teatru", "Castel / Conac", "Cramă", "Casă de cultură", "Shopping Mall", "Muzeu / Galerie", "Centru expozițional", "Altele"]
 
 const VENUES = [
   { id:1, name:"Ballroom Grand", lat:44.43, lng:26.10, type:"Ballroom", city:"Bucure\u0219ti", capacity:500, priceEstimate:"3.000-5.000\u20ac" },
@@ -93,28 +93,29 @@ export default function ClientDashboard() {
       setGoogleVenues([])
       setVenuesByType({})
       const city = selectedCity.split(',')[0]
+      const cityEn = city === 'București' ? 'Bucharest' : city
       const typeSearches = [
-        { type: 'Sală Evenimente', q: 'sala evenimente ' + city },
-        { type: 'Ballroom', q: 'ballroom nunta ' + city },
-        { type: 'Restaurant', q: 'restaurant evenimente ' + city },
-        { type: 'Club', q: 'club nightclub ' + city },
-        { type: 'Venue / Concert Hall', q: 'venue concert hall ' + city },
-        { type: 'Terasă', q: 'terasa bar ' + city },
-        { type: 'Rooftop', q: 'rooftop ' + city },
-        { type: 'Hotel Conference', q: 'hotel conferinte ' + city },
-        { type: 'Resort / Hotel', q: 'resort hotel ' + city },
-        { type: 'Spațiu alternativ', q: 'spatiu evenimente ' + city },
-        { type: 'Beach Club', q: 'beach club plaja ' + city },
-        { type: 'Parc / Open Air', q: 'parc gradina ' + city },
-        { type: 'Amfiteatru', q: 'amfiteatru ' + city },
-        { type: 'Stadion', q: 'stadion ' + city },
-        { type: 'Arenă / Sală Polivalentă', q: 'arena sala polivalenta ' + city },
-        { type: 'Filarmonică / Operă', q: 'filarmonica opera teatru ' + city },
-        { type: 'Castel', q: 'castel conac ' + city },
-        { type: 'Cramă', q: 'crama pivnita ' + city },
-        { type: 'Casă de cultură', q: 'casa de cultura ' + city },
-        { type: 'Shopping Mall', q: 'mall shopping center ' + city },
-        { type: 'Muzeu / Galerie', q: 'muzeu galerie ' + city },
+        { type: 'Sală Evenimente', q: 'event hall ' + cityEn },
+        { type: 'Ballroom', q: 'ballroom wedding ' + cityEn },
+        { type: 'Restaurant', q: 'restaurant events ' + cityEn },
+        { type: 'Club', q: 'nightclub club ' + cityEn },
+        { type: 'Venue / Concert Hall', q: 'concert venue ' + cityEn },
+        { type: 'Terasă', q: 'terrace bar ' + cityEn },
+        { type: 'Rooftop', q: 'rooftop bar ' + cityEn },
+        { type: 'Hotel Conference', q: 'hotel conference ' + cityEn },
+        { type: 'Resort / Hotel', q: 'resort hotel ' + cityEn },
+        { type: 'Spațiu alternativ', q: 'event space ' + cityEn },
+        { type: 'Beach Club', q: 'beach club ' + cityEn },
+        { type: 'Parc / Open Air', q: 'park garden outdoor ' + cityEn },
+        { type: 'Amfiteatru', q: 'amphitheater ' + cityEn },
+        { type: 'Stadion', q: 'stadium ' + cityEn },
+        { type: 'Arenă / Sală Polivalentă', q: 'arena hall ' + cityEn },
+        { type: 'Filarmonică / Operă', q: 'philharmonic opera theater ' + cityEn },
+        { type: 'Castel', q: 'castle manor ' + cityEn },
+        { type: 'Cramă', q: 'winery cellar ' + cityEn },
+        { type: 'Casă de cultură', q: 'cultural center ' + cityEn },
+        { type: 'Shopping Mall', q: 'shopping mall ' + cityEn },
+        { type: 'Muzeu / Galerie', q: 'museum gallery ' + cityEn },
       ]
       Promise.all(typeSearches.map(({type, q}) =>
         fetch('/api/places?input=' + encodeURIComponent(q))
