@@ -43,6 +43,8 @@ export default function ArtistDashboard() {
   const [website, setWebsite] = useState('')
   const [phone, setPhone] = useState('')
   const [genreDropdownOpen, setGenreDropdownOpen] = useState(false)
+  const [spotifyLoading, setSpotifyLoading] = useState(false)
+  const [spotifyError, setSpotifyError] = useState('')
 
   useEffect(() => {
     supabase.auth.getUser().then(({ data }) => {
@@ -206,8 +208,15 @@ export default function ArtistDashboard() {
               <div style={{fontSize:'10px', fontWeight:700, color:'#a8a29e', textTransform:'uppercase', letterSpacing:'0.08em', marginBottom:'6px', display:'flex', alignItems:'center', gap:'4px'}}>
                 <SpotifyLogo size={10} /> Spotify
               </div>
-              <input type="text" value={spotify} onChange={e => setSpotify(e.target.value)} placeholder="link artist"
-                style={{width:'100%', padding:'11px 14px', borderRadius:'12px', border:'1px solid #e7e5e4', fontSize:'13px', fontFamily:'Montserrat,sans-serif', color:'#1c1917', outline:'none', boxSizing:'border-box', background:'#fafaf9'}} />
+              <div style={{display:'flex', gap:'8px'}}>
+                <input type="text" value={spotify} onChange={e => setSpotify(e.target.value)} placeholder="link artist"
+                  style={{flex:1, padding:'11px 14px', borderRadius:'12px', border:'1px solid #e7e5e4', fontSize:'13px', fontFamily:'Montserrat,sans-serif', color:'#1c1917', outline:'none', boxSizing:'border-box', background:'#fafaf9'}} />
+                <button onClick={importFromSpotify} disabled={spotifyLoading}
+                  style={{padding:'11px 16px', borderRadius:'12px', background:'#1DB954', color:'white', border:'none', cursor:'pointer', fontSize:'12px', fontWeight:700, fontFamily:'Montserrat,sans-serif', whiteSpace:'nowrap'}}>
+                  {spotifyLoading ? '...' : 'Import'}
+                </button>
+              </div>
+              {spotifyError && <div style={{fontSize:'12px', color: spotifyError.startsWith('✅') ? '#059669' : '#dc2626', marginTop:'6px'}}>{spotifyError}</div>}
             </div>
             <div>
               <div style={{fontSize:'10px', fontWeight:700, color:'#a8a29e', textTransform:'uppercase', letterSpacing:'0.08em', marginBottom:'6px', display:'flex', alignItems:'center', gap:'4px'}}>
