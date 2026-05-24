@@ -2,7 +2,8 @@
 
 import { useState, useEffect } from 'react'
 import { supabase } from '@/lib/supabase'
-import { User, Music, MapPin, Car, Hotel, Plane, Save, CheckCircle2, Mic2, Disc3, Guitar, Instagram, Youtube, Globe, Phone } from 'lucide-react'
+import { User, Music, MapPin, Car, Hotel, Plane, Save, CheckCircle2, Mic2, Disc3, Guitar, Globe, Phone } from 'lucide-react'
+import { InstagramLogo, YoutubeLogo, SpotifyLogo } from '@phosphor-icons/react'
 
 const GENRES = ['Pop', 'Dance', 'Hip-Hop', 'Rap', 'Trap', 'Rock', 'Jazz', 'Folk', 'Manele', 'Lăutărească', 'Balcanic', 'Populară', 'Cover Band', 'EDM', 'R&B', 'Latino', 'Clasică', 'Altele']
 
@@ -175,21 +176,21 @@ export default function ArtistDashboard() {
           <div style={{display:'grid', gridTemplateColumns:'1fr 1fr', gap:'14px'}}>
             <div>
               <div style={{fontSize:'10px', fontWeight:700, color:'#a8a29e', textTransform:'uppercase', letterSpacing:'0.08em', marginBottom:'6px', display:'flex', alignItems:'center', gap:'4px'}}>
-                <Instagram size={10} strokeWidth={2} /> Instagram
+                <InstagramLogo size={10} strokeWidth={2} /> Instagram
               </div>
               <input type="text" value={profile.instagram} onChange={e => setProfile(p => ({...p, instagram: e.target.value}))} placeholder="@numeartist"
                 style={{width:'100%', padding:'11px 14px', borderRadius:'12px', border:'1px solid #e7e5e4', fontSize:'13px', fontFamily:'Montserrat,sans-serif', color:'#1c1917', outline:'none', boxSizing:'border-box', background:'#fafaf9'}} />
             </div>
             <div>
               <div style={{fontSize:'10px', fontWeight:700, color:'#a8a29e', textTransform:'uppercase', letterSpacing:'0.08em', marginBottom:'6px', display:'flex', alignItems:'center', gap:'4px'}}>
-                <Youtube size={10} strokeWidth={2} /> YouTube
+                <YoutubeLogo size={10} strokeWidth={2} /> YouTube
               </div>
               <input type="text" value={profile.youtube} onChange={e => setProfile(p => ({...p, youtube: e.target.value}))} placeholder="link canal"
                 style={{width:'100%', padding:'11px 14px', borderRadius:'12px', border:'1px solid #e7e5e4', fontSize:'13px', fontFamily:'Montserrat,sans-serif', color:'#1c1917', outline:'none', boxSizing:'border-box', background:'#fafaf9'}} />
             </div>
             <div>
               <div style={{fontSize:'10px', fontWeight:700, color:'#a8a29e', textTransform:'uppercase', letterSpacing:'0.08em', marginBottom:'6px', display:'flex', alignItems:'center', gap:'4px'}}>
-                <Music size={10} strokeWidth={2} /> Spotify
+                <SpotifyLogo size={10} /> Spotify
               </div>
               <input type="text" value={profile.spotify} onChange={e => setProfile(p => ({...p, spotify: e.target.value}))} placeholder="link artist"
                 style={{width:'100%', padding:'11px 14px', borderRadius:'12px', border:'1px solid #e7e5e4', fontSize:'13px', fontFamily:'Montserrat,sans-serif', color:'#1c1917', outline:'none', boxSizing:'border-box', background:'#fafaf9'}} />
