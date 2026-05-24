@@ -372,7 +372,26 @@ export default function ArtistDashboard() {
               </div>
               {spotifyError && <div style={{fontSize:'12px', color: spotifyError.startsWith('✅') ? '#059669' : '#dc2626', marginTop:'6px'}}>{spotifyError}</div>}
             </div>
-
+            <div>
+              <div style={{fontSize:'10px', fontWeight:700, color:'#a8a29e', textTransform:'uppercase', letterSpacing:'0.08em', marginBottom:'6px'}}>TikTok</div>
+              <input type="text" value={tiktok} onChange={e => setTiktok(e.target.value)} placeholder="@numeartist"
+                style={{width:'100%', padding:'11px 14px', borderRadius:'12px', border:'1px solid #e7e5e4', fontSize:'13px', fontFamily:'Montserrat,sans-serif', color:'#1c1917', outline:'none', boxSizing:'border-box', background:'#fafaf9'}} />
+            </div>
+            <div>
+              <div style={{fontSize:'10px', fontWeight:700, color:'#a8a29e', textTransform:'uppercase', letterSpacing:'0.08em', marginBottom:'6px'}}>Facebook</div>
+              <input type="text" value={facebook} onChange={e => setFacebook(e.target.value)} placeholder="link pagina"
+                style={{width:'100%', padding:'11px 14px', borderRadius:'12px', border:'1px solid #e7e5e4', fontSize:'13px', fontFamily:'Montserrat,sans-serif', color:'#1c1917', outline:'none', boxSizing:'border-box', background:'#fafaf9'}} />
+            </div>
+            <div>
+              <div style={{fontSize:'10px', fontWeight:700, color:'#a8a29e', textTransform:'uppercase', letterSpacing:'0.08em', marginBottom:'6px'}}>SoundCloud</div>
+              <input type="text" value={soundcloud} onChange={e => setSoundcloud(e.target.value)} placeholder="link profil"
+                style={{width:'100%', padding:'11px 14px', borderRadius:'12px', border:'1px solid #e7e5e4', fontSize:'13px', fontFamily:'Montserrat,sans-serif', color:'#1c1917', outline:'none', boxSizing:'border-box', background:'#fafaf9'}} />
+            </div>
+            <div>
+              <div style={{fontSize:'10px', fontWeight:700, color:'#a8a29e', textTransform:'uppercase', letterSpacing:'0.08em', marginBottom:'6px'}}>Website</div>
+              <input type="text" value={website} onChange={e => setWebsite(e.target.value)} placeholder="https://..."
+                style={{width:'100%', padding:'11px 14px', borderRadius:'12px', border:'1px solid #e7e5e4', fontSize:'13px', fontFamily:'Montserrat,sans-serif', color:'#1c1917', outline:'none', boxSizing:'border-box', background:'#fafaf9'}} />
+            </div>
           </div>
         </Section>
 
