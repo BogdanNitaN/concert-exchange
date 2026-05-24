@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { supabase } from '@/lib/supabase'
-import { User, Music, MapPin, Car, Hotel, Plane, Save, CheckCircle2, Mic2, Disc3, Guitar, Globe, Phone } from 'lucide-react'
+import { User, Music, MapPin, Car, Hotel, Plane, Save, CheckCircle2, Mic2, Disc3, Guitar, Globe } from 'lucide-react'
 import { InstagramLogo, YoutubeLogo, SpotifyLogo } from '@phosphor-icons/react'
 
 const GENRES = ['Pop', 'Dance', 'Hip-Hop', 'Rap', 'Trap', 'Rock', 'Jazz', 'Folk', 'Manele', 'Lăutărească', 'Balcanic', 'Populară', 'Cover Band', 'EDM', 'R&B', 'Latino', 'Clasică', 'Altele']
@@ -41,7 +41,7 @@ export default function ArtistDashboard() {
   const [spotify, setSpotify] = useState('')
   const [youtube, setYoutube] = useState('')
   const [website, setWebsite] = useState('')
-  const [phone, setPhone] = useState('')
+  const [kmCurrency, setKmCurrency] = useState('RON')
   const [genreDropdownOpen, setGenreDropdownOpen] = useState(false)
   const [spotifyLoading, setSpotifyLoading] = useState(false)
   const [spotifyError, setSpotifyError] = useState('')
@@ -109,7 +109,10 @@ export default function ArtistDashboard() {
         }).filter((v: string, i: number, a: string[]) => a.indexOf(v) === i)
         setGenres(mappedGenres)
       }
-      setSpotifyError('Import reusit! Genuri: ' + (data.genres?.join(', ') || 'nedetectate'))
+      const vibeLabels: Record<string,string> = {hype:'Hype & Energie', festival:'Festival Energy', dayparty:'Day Party', petrecere:'Petrecere & Mainstream', chill:'Chill & Lounge', elegant:'Elegant & Luxury', rooftop:'Rooftop Cool', nostalgic:'Nostalgic & Evergreen'}
+        const vibeNames = (data.vibes || []).map((v: string) => vibeLabels[v] || v).join(', ')
+        setSpotifyError('Import reușit! Vibe-uri detectate: ' + (vibeNames || 'nedetectate'))
+        if (data.vibes && data.vibes.length > 0) setGenres(prev => [...new Set([...prev])])
     } catch { setSpotifyError('Eroare la import') }
     setSpotifyLoading(false)
   }
@@ -176,7 +179,10 @@ export default function ArtistDashboard() {
         }).filter((v: string, i: number, a: string[]) => a.indexOf(v) === i)
         setGenres(mappedGenres)
       }
-      setSpotifyError('Import reusit! Genuri: ' + (data.genres?.join(', ') || 'nedetectate'))
+      const vibeLabels: Record<string,string> = {hype:'Hype & Energie', festival:'Festival Energy', dayparty:'Day Party', petrecere:'Petrecere & Mainstream', chill:'Chill & Lounge', elegant:'Elegant & Luxury', rooftop:'Rooftop Cool', nostalgic:'Nostalgic & Evergreen'}
+        const vibeNames = (data.vibes || []).map((v: string) => vibeLabels[v] || v).join(', ')
+        setSpotifyError('Import reușit! Vibe-uri detectate: ' + (vibeNames || 'nedetectate'))
+        if (data.vibes && data.vibes.length > 0) setGenres(prev => [...new Set([...prev])])
     } catch { setSpotifyError('Eroare la import') }
     setSpotifyLoading(false)
   }
@@ -232,7 +238,10 @@ export default function ArtistDashboard() {
         }).filter((v: string, i: number, a: string[]) => a.indexOf(v) === i)
         setGenres(mappedGenres)
       }
-      setSpotifyError('Import reusit! Genuri: ' + (data.genres?.join(', ') || 'nedetectate'))
+      const vibeLabels: Record<string,string> = {hype:'Hype & Energie', festival:'Festival Energy', dayparty:'Day Party', petrecere:'Petrecere & Mainstream', chill:'Chill & Lounge', elegant:'Elegant & Luxury', rooftop:'Rooftop Cool', nostalgic:'Nostalgic & Evergreen'}
+        const vibeNames = (data.vibes || []).map((v: string) => vibeLabels[v] || v).join(', ')
+        setSpotifyError('Import reușit! Vibe-uri detectate: ' + (vibeNames || 'nedetectate'))
+        if (data.vibes && data.vibes.length > 0) setGenres(prev => [...new Set([...prev])])
     } catch { setSpotifyError('Eroare la import') }
     setSpotifyLoading(false)
   }
@@ -274,8 +283,15 @@ export default function ArtistDashboard() {
               <div style={{fontSize:'10px', fontWeight:700, color:'#a8a29e', textTransform:'uppercase', letterSpacing:'0.08em', marginBottom:'6px', display:'flex', alignItems:'center', gap:'4px'}}>
                 <Car size={10} strokeWidth={2} /> Cost/km (€)
               </div>
-              <input type="number" value={costPerKm} onChange={e => setCostPerKm(Number(e.target.value))} step="0.5" min="0"
-                style={{width:'100%', padding:'11px 14px', borderRadius:'12px', border:'1px solid #e7e5e4', fontSize:'13px', fontFamily:'Montserrat,sans-serif', color:'#1c1917', outline:'none', boxSizing:'border-box', background:'#fafaf9'}} />
+              <div style={{display:'flex', gap:'8px'}}>
+                <input type="number" value={costPerKm} onChange={e => setCostPerKm(Number(e.target.value))} step="0.5" min="0"
+                  style={{flex:1, padding:'11px 14px', borderRadius:'12px', border:'1px solid #e7e5e4', fontSize:'13px', fontFamily:'Montserrat,sans-serif', color:'#1c1917', outline:'none', boxSizing:'border-box', background:'#fafaf9'}} />
+                <select value={kmCurrency} onChange={e => setKmCurrency(e.target.value)}
+                  style={{padding:'11px 14px', borderRadius:'12px', border:'1px solid #e7e5e4', fontSize:'13px', fontFamily:'Montserrat,sans-serif', color:'#1c1917', outline:'none', background:'#fafaf9'}}>
+                  <option value="RON">RON</option>
+                  <option value="EUR">EUR</option>
+                </select>
+              </div>
             </div>
             <div>
               <div style={{fontSize:'10px', fontWeight:700, color:'#a8a29e', textTransform:'uppercase', letterSpacing:'0.08em', marginBottom:'6px', display:'flex', alignItems:'center', gap:'4px'}}>
@@ -324,13 +340,7 @@ export default function ArtistDashboard() {
               </div>
               {spotifyError && <div style={{fontSize:'12px', color: spotifyError.startsWith('✅') ? '#059669' : '#dc2626', marginTop:'6px'}}>{spotifyError}</div>}
             </div>
-            <div>
-              <div style={{fontSize:'10px', fontWeight:700, color:'#a8a29e', textTransform:'uppercase', letterSpacing:'0.08em', marginBottom:'6px', display:'flex', alignItems:'center', gap:'4px'}}>
-                <Phone size={10} strokeWidth={2} /> Telefon / WhatsApp
-              </div>
-              <input type="tel" value={phone} onChange={e => setPhone(e.target.value)} placeholder="+40 7xx xxx xxx"
-                style={{width:'100%', padding:'11px 14px', borderRadius:'12px', border:'1px solid #e7e5e4', fontSize:'13px', fontFamily:'Montserrat,sans-serif', color:'#1c1917', outline:'none', boxSizing:'border-box', background:'#fafaf9'}} />
-            </div>
+
           </div>
         </Section>
 
