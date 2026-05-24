@@ -60,6 +60,10 @@ export default function ArtistDashboard() {
   }
 
   const handleSave = async () => {
+    if (hasPhone(bio) || hasPhone(artistName)) {
+      alert('Nu poți include numere de telefon în profil. Clienții te contactează prin platformă.')
+      return
+    }
     setLoading(true)
     try {
       await (supabase as any).from('artist_profiles').upsert({
@@ -75,6 +79,11 @@ export default function ArtistDashboard() {
   }
 
 
+
+  const hasPhone = (text: string) => {
+    const phoneRegex = /(\+?4?0?[\s.-]?7\d{2}[\s.-]?\d{3}[\s.-]?\d{3}|\d{10})/g
+    return phoneRegex.test(text)
+  }
 
   const importFromSpotify = async () => {
     if (!spotify) { setSpotifyError('Adaugă mai întâi link-ul Spotify'); return }
@@ -138,7 +147,12 @@ export default function ArtistDashboard() {
               {SET_TYPES.map(s => {
                 const Icon = s.icon
                 const isSelected = setType === s.id
-                const importFromSpotify = async () => {
+                const hasPhone = (text: string) => {
+    const phoneRegex = /(\+?4?0?[\s.-]?7\d{2}[\s.-]?\d{3}[\s.-]?\d{3}|\d{10})/g
+    return phoneRegex.test(text)
+  }
+
+  const importFromSpotify = async () => {
     if (!spotify) { setSpotifyError('Adaugă mai întâi link-ul Spotify'); return }
     setSpotifyLoading(true)
     setSpotifyError('')
@@ -189,7 +203,12 @@ export default function ArtistDashboard() {
                 <div style={{position:'absolute', top:'calc(100% + 4px)', left:0, right:0, background:'white', border:'1.5px solid #e7e5e4', borderRadius:'14px', zIndex:200, boxShadow:'0 8px 32px rgba(0,0,0,0.12)', overflow:'hidden', maxHeight:'240px', overflowY:'auto'}}>
                   {GENRES.map(g => {
                     const isSelected = genres.includes(g)
-                    const importFromSpotify = async () => {
+                    const hasPhone = (text: string) => {
+    const phoneRegex = /(\+?4?0?[\s.-]?7\d{2}[\s.-]?\d{3}[\s.-]?\d{3}|\d{10})/g
+    return phoneRegex.test(text)
+  }
+
+  const importFromSpotify = async () => {
     if (!spotify) { setSpotifyError('Adaugă mai întâi link-ul Spotify'); return }
     setSpotifyLoading(true)
     setSpotifyError('')
