@@ -55,6 +55,9 @@ export default function ArtistDashboard() {
   const [website, setWebsite] = useState('')
   const [kmCurrency, setKmCurrency] = useState('RON')
   const [genreDropdownOpen, setGenreDropdownOpen] = useState(false)
+  const [tiktok, setTiktok] = useState('')
+  const [facebook, setFacebook] = useState('')
+  const [soundcloud, setSoundcloud] = useState('')
   const [vibes, setVibes] = useState<string[]>([])
   const [spotifyLoading, setSpotifyLoading] = useState(false)
   const [spotifyError, setSpotifyError] = useState('')
@@ -82,7 +85,7 @@ export default function ArtistDashboard() {
       await (supabase as any).from('artist_profiles').upsert({
         user_id: user?.id,
         artistName, bio, genres, vibes, setType, cityFrom, costPerKm,
-        nrBileteAvion, cazare, instagram, spotify, youtube, website,
+        nrBileteAvion, cazare, instagram, spotify, youtube, website, tiktok, facebook, soundcloud,
         updated_at: new Date().toISOString()
       }, { onConflict: 'user_id' })
       setSaved(true)
