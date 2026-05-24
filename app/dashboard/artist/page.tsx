@@ -5,6 +5,18 @@ import { supabase } from '@/lib/supabase'
 import { User, Music, MapPin, Car, Hotel, Plane, Save, CheckCircle2, Mic2, Disc3, Guitar, Globe } from 'lucide-react'
 import { InstagramLogo, YoutubeLogo, SpotifyLogo } from '@phosphor-icons/react'
 
+const VIBES = [
+  { id: 'hype', label: 'Hype & Energie' },
+  { id: 'elegant', label: 'Elegant & Luxury' },
+  { id: 'petrecere', label: 'Petrecere & Mainstream' },
+  { id: 'balcanic', label: 'Balkan Energy' },
+  { id: 'chill', label: 'Chill & Lounge' },
+  { id: 'dayparty', label: 'Day Party' },
+  { id: 'festival', label: 'Festival Energy' },
+  { id: 'rooftop', label: 'Rooftop Cool' },
+  { id: 'nostalgic', label: 'Nostalgic & Evergreen' },
+]
+
 const GENRES = ['Pop', 'Dance', 'Hip-Hop', 'Rap', 'Trap', 'Rock', 'Jazz', 'Folk', 'Manele', 'Lăutărească', 'Balcanic', 'Populară', 'Cover Band', 'EDM', 'R&B', 'Latino', 'Clasică', 'Altele']
 
 const SET_TYPES = [
@@ -43,6 +55,7 @@ export default function ArtistDashboard() {
   const [website, setWebsite] = useState('')
   const [kmCurrency, setKmCurrency] = useState('RON')
   const [genreDropdownOpen, setGenreDropdownOpen] = useState(false)
+  const [vibes, setVibes] = useState<string[]>([])
   const [spotifyLoading, setSpotifyLoading] = useState(false)
   const [spotifyError, setSpotifyError] = useState('')
 
@@ -68,8 +81,8 @@ export default function ArtistDashboard() {
     try {
       await (supabase as any).from('artist_profiles').upsert({
         user_id: user?.id,
-        artistName, bio, genres, setType, cityFrom, costPerKm,
-        nrBileteAvion, cazare, instagram, spotify, youtube, website, phone,
+        artistName, bio, genres, vibes, setType, cityFrom, costPerKm,
+        nrBileteAvion, cazare, instagram, spotify, youtube, website,
         updated_at: new Date().toISOString()
       }, { onConflict: 'user_id' })
       setSaved(true)
@@ -267,6 +280,22 @@ export default function ArtistDashboard() {
                 ))}
               </div>
             )}
+          </div>
+        </Section>
+
+        <Section icon={Music} title="Vibe-uri & Atmosferă">
+          <div style={{fontSize:'12px', color:'#78716c', marginBottom:'12px'}}>Ce atmosferă creezi la evenimentele tale?</div>
+          <div style={{display:'flex', flexWrap:'wrap', gap:'8px'}}>
+            {VIBES.map(v => {
+              const isSelected = vibes.includes(v.id)
+              return (
+                <button key={v.id} onClick={() => setVibes(prev => prev.includes(v.id) ? prev.filter(x => x !== v.id) : [...prev, v.id])}
+                  style={{padding:'8px 16px', borderRadius:'20px', border:'1.5px solid', cursor:'pointer', fontSize:'12px', fontWeight:600, fontFamily:'Montserrat,sans-serif', transition:'all 0.15s',
+                    background: isSelected ? '#7c3aed' : 'white', color: isSelected ? 'white' : '#44403c', borderColor: isSelected ? '#7c3aed' : '#e7e5e4'}}>
+                  {v.label}
+                </button>
+              )
+            })}
           </div>
         </Section>
 
