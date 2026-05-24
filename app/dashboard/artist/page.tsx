@@ -76,6 +76,35 @@ export default function ArtistDashboard() {
 
 
 
+  const importFromSpotify = async () => {
+    if (!spotify) { setSpotifyError('Adaugă mai întâi link-ul Spotify'); return }
+    setSpotifyLoading(true)
+    setSpotifyError('')
+    try {
+      const res = await fetch('/api/spotify?url=' + encodeURIComponent(spotify))
+      const data = await res.json()
+      if (data.error) { setSpotifyError(data.error); return }
+      if (data.name) setArtistName(data.name)
+      if (data.genres && data.genres.length > 0) {
+        const mappedGenres = data.genres.map((g: string) => {
+          const lower = g.toLowerCase()
+          if (lower.includes('pop')) return 'Pop'
+          if (lower.includes('hip hop') || lower.includes('rap')) return 'Hip-Hop'
+          if (lower.includes('dance') || lower.includes('edm') || lower.includes('electronic')) return 'Dance'
+          if (lower.includes('rock')) return 'Rock'
+          if (lower.includes('jazz')) return 'Jazz'
+          if (lower.includes('r&b') || lower.includes('soul')) return 'R&B'
+          if (lower.includes('folk') || lower.includes('country')) return 'Folk'
+          if (lower.includes('latin')) return 'Latino'
+          return 'Altele'
+        }).filter((v: string, i: number, a: string[]) => a.indexOf(v) === i)
+        setGenres(mappedGenres)
+      }
+      setSpotifyError('Import reusit! Genuri: ' + (data.genres?.join(', ') || 'nedetectate'))
+    } catch { setSpotifyError('Eroare la import') }
+    setSpotifyLoading(false)
+  }
+
   return (
     <div style={{minHeight:'100vh', background:'#fafaf9', fontFamily:'Montserrat,sans-serif'}}>
       <nav style={{background:'white', borderBottom:'1px solid #e7e5e4', padding:'0 24px', height:'56px', display:'flex', alignItems:'center', justifyContent:'space-between', position:'sticky', top:0, zIndex:100}}>
@@ -109,7 +138,36 @@ export default function ArtistDashboard() {
               {SET_TYPES.map(s => {
                 const Icon = s.icon
                 const isSelected = setType === s.id
-                return (
+                const importFromSpotify = async () => {
+    if (!spotify) { setSpotifyError('Adaugă mai întâi link-ul Spotify'); return }
+    setSpotifyLoading(true)
+    setSpotifyError('')
+    try {
+      const res = await fetch('/api/spotify?url=' + encodeURIComponent(spotify))
+      const data = await res.json()
+      if (data.error) { setSpotifyError(data.error); return }
+      if (data.name) setArtistName(data.name)
+      if (data.genres && data.genres.length > 0) {
+        const mappedGenres = data.genres.map((g: string) => {
+          const lower = g.toLowerCase()
+          if (lower.includes('pop')) return 'Pop'
+          if (lower.includes('hip hop') || lower.includes('rap')) return 'Hip-Hop'
+          if (lower.includes('dance') || lower.includes('edm') || lower.includes('electronic')) return 'Dance'
+          if (lower.includes('rock')) return 'Rock'
+          if (lower.includes('jazz')) return 'Jazz'
+          if (lower.includes('r&b') || lower.includes('soul')) return 'R&B'
+          if (lower.includes('folk') || lower.includes('country')) return 'Folk'
+          if (lower.includes('latin')) return 'Latino'
+          return 'Altele'
+        }).filter((v: string, i: number, a: string[]) => a.indexOf(v) === i)
+        setGenres(mappedGenres)
+      }
+      setSpotifyError('Import reusit! Genuri: ' + (data.genres?.join(', ') || 'nedetectate'))
+    } catch { setSpotifyError('Eroare la import') }
+    setSpotifyLoading(false)
+  }
+
+  return (
                   <button key={s.id} onClick={() => setSetType(s.id)}
                     style={{display:'flex', alignItems:'center', gap:'7px', padding:'9px 16px', borderRadius:'20px', border:'1.5px solid', cursor:'pointer', fontSize:'12px', fontWeight:600, fontFamily:'Montserrat,sans-serif', transition:'all 0.15s',
                       background: isSelected ? '#1c1917' : 'white', color: isSelected ? 'white' : '#44403c', borderColor: isSelected ? '#1c1917' : '#e7e5e4'}}>
@@ -131,7 +189,36 @@ export default function ArtistDashboard() {
                 <div style={{position:'absolute', top:'calc(100% + 4px)', left:0, right:0, background:'white', border:'1.5px solid #e7e5e4', borderRadius:'14px', zIndex:200, boxShadow:'0 8px 32px rgba(0,0,0,0.12)', overflow:'hidden', maxHeight:'240px', overflowY:'auto'}}>
                   {GENRES.map(g => {
                     const isSelected = genres.includes(g)
-                    return (
+                    const importFromSpotify = async () => {
+    if (!spotify) { setSpotifyError('Adaugă mai întâi link-ul Spotify'); return }
+    setSpotifyLoading(true)
+    setSpotifyError('')
+    try {
+      const res = await fetch('/api/spotify?url=' + encodeURIComponent(spotify))
+      const data = await res.json()
+      if (data.error) { setSpotifyError(data.error); return }
+      if (data.name) setArtistName(data.name)
+      if (data.genres && data.genres.length > 0) {
+        const mappedGenres = data.genres.map((g: string) => {
+          const lower = g.toLowerCase()
+          if (lower.includes('pop')) return 'Pop'
+          if (lower.includes('hip hop') || lower.includes('rap')) return 'Hip-Hop'
+          if (lower.includes('dance') || lower.includes('edm') || lower.includes('electronic')) return 'Dance'
+          if (lower.includes('rock')) return 'Rock'
+          if (lower.includes('jazz')) return 'Jazz'
+          if (lower.includes('r&b') || lower.includes('soul')) return 'R&B'
+          if (lower.includes('folk') || lower.includes('country')) return 'Folk'
+          if (lower.includes('latin')) return 'Latino'
+          return 'Altele'
+        }).filter((v: string, i: number, a: string[]) => a.indexOf(v) === i)
+        setGenres(mappedGenres)
+      }
+      setSpotifyError('Import reusit! Genuri: ' + (data.genres?.join(', ') || 'nedetectate'))
+    } catch { setSpotifyError('Eroare la import') }
+    setSpotifyLoading(false)
+  }
+
+  return (
                       <div key={g} onClick={() => toggleGenre(g)}
                         style={{padding:'11px 16px', cursor:'pointer', display:'flex', alignItems:'center', justifyContent:'space-between', borderBottom:'1px solid #f5f5f4', background: isSelected ? '#f0fdf4' : 'white'}}>
                         <span style={{fontSize:'13px', fontWeight: isSelected ? 700 : 400, color:'#1c1917'}}>{g}</span>
