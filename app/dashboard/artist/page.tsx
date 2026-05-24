@@ -15,40 +15,46 @@ const SET_TYPES = [
 
 const CITIES = ['București', 'Cluj-Napoca', 'Timișoara', 'Iași', 'Constanța', 'Brașov', 'Oradea', 'Bacău', 'Galați', 'Craiova', 'Sibiu', 'Pitești', 'Târgu Mureș', 'Arad', 'Chișinău']
 
+const Section = ({ icon: Icon, title, children }: any) => (
+  <div style={{background:'white', border:'1px solid #e7e5e4', borderRadius:'20px', padding:'24px', marginBottom:'14px', boxShadow:'0 1px 4px rgba(0,0,0,0.04)'}}>
+    <div style={{display:'flex', alignItems:'center', gap:'8px', marginBottom:'20px'}}>
+      <Icon size={16} color='#1c1917' strokeWidth={1.5} />
+      <span style={{fontWeight:700, fontSize:'14px', color:'#1c1917'}}>{title}</span>
+    </div>
+    {children}
+  </div>
+)
+
 export default function ArtistDashboard() {
   const [user, setUser] = useState<any>(null)
   const [saved, setSaved] = useState(false)
   const [loading, setLoading] = useState(false)
-  const [profile, setProfile] = useState({
-    artistName: '',
-    bio: '',
-    genres: [] as string[],
-    setType: 'vocal',
-    cityFrom: 'București',
-    costPerKm: 2,
-    nrBileteAvion: 0,
-    cazare: '',
-    instagram: '',
-    spotify: '',
-    youtube: '',
-    website: '',
-    phone: '',
-  })
+  const [artistName, setArtistName] = useState('')
+  const [bio, setBio] = useState('')
+  const [genres, setGenres] = useState<string[]>([])
+  const [setType, setSetType] = useState('vocal')
+  const [cityFrom, setCityFrom] = useState('București')
+  const [costPerKm, setCostPerKm] = useState(2)
+  const [nrBileteAvion, setNrBileteAvion] = useState(0)
+  const [cazare, setCazare] = useState('')
+  const [instagram, setInstagram] = useState('')
+  const [spotify, setSpotify] = useState('')
+  const [youtube, setYoutube] = useState('')
+  const [website, setWebsite] = useState('')
+  const [phone, setPhone] = useState('')
+  const [genreDropdownOpen, setGenreDropdownOpen] = useState(false)
 
   useEffect(() => {
     supabase.auth.getUser().then(({ data }) => {
       if (data.user) {
         setUser(data.user)
-        setProfile(p => ({ ...p, artistName: data.user.user_metadata?.name || '' }))
+        setArtistName(data.user.user_metadata?.name || '')
       }
     })
   }, [])
 
   const toggleGenre = (g: string) => {
-    setProfile(p => ({
-      ...p,
-      genres: p.genres.includes(g) ? p.genres.filter(x => x !== g) : [...p.genres, g]
-    }))
+    setGenres(prev => prev.includes(g) ? prev.filter(x => x !== g) : [...prev, g])
   }
 
   const handleSave = async () => {
@@ -56,7 +62,8 @@ export default function ArtistDashboard() {
     try {
       await (supabase as any).from('artist_profiles').upsert({
         user_id: user?.id,
-        ...profile,
+        artistName, bio, genres, setType, cityFrom, costPerKm,
+        nrBileteAvion, cazare, instagram, spotify, youtube, website, phone,
         updated_at: new Date().toISOString()
       }, { onConflict: 'user_id' })
       setSaved(true)
@@ -65,23 +72,7 @@ export default function ArtistDashboard() {
     setLoading(false)
   }
 
-  const Section = ({ icon: Icon, title, children }: any) => (
-    <div style={{background:'white', border:'1px solid #e7e5e4', borderRadius:'20px', padding:'24px', marginBottom:'14px', boxShadow:'0 1px 4px rgba(0,0,0,0.04)'}}>
-      <div style={{display:'flex', alignItems:'center', gap:'8px', marginBottom:'20px'}}>
-        <Icon size={16} color='#1c1917' strokeWidth={1.5} />
-        <span style={{fontWeight:700, fontSize:'14px', color:'#1c1917'}}>{title}</span>
-      </div>
-      {children}
-    </div>
-  )
 
-  const Input = ({ label, value, onChange, placeholder, type = 'text' }: any) => (
-    <div style={{marginBottom:'14px'}}>
-      <div style={{fontSize:'10px', fontWeight:700, color:'#a8a29e', textTransform:'uppercase', letterSpacing:'0.08em', marginBottom:'6px'}}>{label}</div>
-      <input type={type} value={value} onChange={e => onChange(e.target.value)} placeholder={placeholder}
-        style={{width:'100%', padding:'11px 14px', borderRadius:'12px', border:'1px solid #e7e5e4', fontSize:'13px', fontFamily:'Montserrat,sans-serif', color:'#1c1917', outline:'none', boxSizing:'border-box', background:'#fafaf9'}} />
-    </div>
-  )
 
   return (
     <div style={{minHeight:'100vh', background:'#fafaf9', fontFamily:'Montserrat,sans-serif'}}>
@@ -97,10 +88,14 @@ export default function ArtistDashboard() {
         </div>
 
         <Section icon={User} title="Informații de bază">
-          <Input label="Nume artistic / Nume scenă" value={profile.artistName} onChange={(v: string) => setProfile(p => ({...p, artistName: v}))} placeholder="ex: DJ Sava, Antonia, Bere Gratis" />
+          <div style={{marginBottom:'14px'}}>
+            <div style={{fontSize:'10px', fontWeight:700, color:'#a8a29e', textTransform:'uppercase', letterSpacing:'0.08em', marginBottom:'6px'}}>Nume artistic / Nume scenă</div>
+            <input type="text" value={artistName} onChange={e => setArtistName(e.target.value)} placeholder="ex: DJ Sava, Antonia, Bere Gratis"
+              style={{width:'100%', padding:'11px 14px', borderRadius:'12px', border:'1px solid #e7e5e4', fontSize:'13px', fontFamily:'Montserrat,sans-serif', color:'#1c1917', outline:'none', boxSizing:'border-box', background:'#fafaf9'}} />
+          </div>
           <div>
             <div style={{fontSize:'10px', fontWeight:700, color:'#a8a29e', textTransform:'uppercase', letterSpacing:'0.08em', marginBottom:'6px'}}>Bio scurt</div>
-            <textarea value={profile.bio} onChange={e => setProfile(p => ({...p, bio: e.target.value}))} placeholder="Descrie-te în 2-3 propoziții..." rows={3}
+            <textarea value={bio} onChange={e => setBio(e.target.value)} placeholder="Descrie-te în 2-3 propoziții..." rows={3}
               style={{width:'100%', padding:'11px 14px', borderRadius:'12px', border:'1px solid #e7e5e4', fontSize:'13px', fontFamily:'Montserrat,sans-serif', color:'#1c1917', outline:'none', resize:'none', boxSizing:'border-box', background:'#fafaf9'}} />
           </div>
         </Section>
@@ -111,9 +106,9 @@ export default function ArtistDashboard() {
             <div style={{display:'flex', gap:'8px', flexWrap:'wrap'}}>
               {SET_TYPES.map(s => {
                 const Icon = s.icon
-                const isSelected = profile.setType === s.id
+                const isSelected = setType === s.id
                 return (
-                  <button key={s.id} onClick={() => setProfile(p => ({...p, setType: s.id}))}
+                  <button key={s.id} onClick={() => setSetType(s.id)}
                     style={{display:'flex', alignItems:'center', gap:'7px', padding:'9px 16px', borderRadius:'20px', border:'1.5px solid', cursor:'pointer', fontSize:'12px', fontWeight:600, fontFamily:'Montserrat,sans-serif', transition:'all 0.15s',
                       background: isSelected ? '#1c1917' : 'white', color: isSelected ? 'white' : '#44403c', borderColor: isSelected ? '#1c1917' : '#e7e5e4'}}>
                     <Icon size={13} strokeWidth={1.5} /> {s.label}
@@ -123,26 +118,45 @@ export default function ArtistDashboard() {
             </div>
           </div>
           <div>
-            <div style={{fontSize:'10px', fontWeight:700, color:'#a8a29e', textTransform:'uppercase', letterSpacing:'0.08em', marginBottom:'10px'}}>Genuri muzicale</div>
-            <div style={{display:'flex', flexWrap:'wrap', gap:'6px'}}>
-              {GENRES.map(g => {
-                const isSelected = profile.genres.includes(g)
-                return (
-                  <button key={g} onClick={() => toggleGenre(g)}
-                    style={{padding:'6px 14px', borderRadius:'20px', border:'1.5px solid', cursor:'pointer', fontSize:'11px', fontWeight:600, fontFamily:'Montserrat,sans-serif', transition:'all 0.15s',
-                      background: isSelected ? '#1c1917' : 'white', color: isSelected ? 'white' : '#78716c', borderColor: isSelected ? '#1c1917' : '#e7e5e4'}}>
-                    {g}
-                  </button>
-                )
-              })}
+            <div style={{fontSize:'10px', fontWeight:700, color:'#a8a29e', textTransform:'uppercase', letterSpacing:'0.08em', marginBottom:'6px'}}>Genuri muzicale</div>
+            <div style={{position:'relative'}}>
+              <div onClick={() => setGenreDropdownOpen(!genreDropdownOpen)}
+                style={{width:'100%', padding:'11px 14px', borderRadius:'12px', border:'1px solid #e7e5e4', fontSize:'13px', fontFamily:'Montserrat,sans-serif', color: genres.length > 0 ? '#1c1917' : '#a8a29e', background:'#fafaf9', cursor:'pointer', display:'flex', justifyContent:'space-between', alignItems:'center', boxSizing:'border-box'}}>
+                <span>{genres.length > 0 ? genres.join(', ') : 'Selectează genuri muzicale...'}</span>
+                <span style={{fontSize:'10px'}}>{genreDropdownOpen ? '▲' : '▼'}</span>
+              </div>
+              {genreDropdownOpen && (
+                <div style={{position:'absolute', top:'calc(100% + 4px)', left:0, right:0, background:'white', border:'1.5px solid #e7e5e4', borderRadius:'14px', zIndex:200, boxShadow:'0 8px 32px rgba(0,0,0,0.12)', overflow:'hidden', maxHeight:'240px', overflowY:'auto'}}>
+                  {GENRES.map(g => {
+                    const isSelected = genres.includes(g)
+                    return (
+                      <div key={g} onClick={() => toggleGenre(g)}
+                        style={{padding:'11px 16px', cursor:'pointer', display:'flex', alignItems:'center', justifyContent:'space-between', borderBottom:'1px solid #f5f5f4', background: isSelected ? '#f0fdf4' : 'white'}}>
+                        <span style={{fontSize:'13px', fontWeight: isSelected ? 700 : 400, color:'#1c1917'}}>{g}</span>
+                        {isSelected && <span style={{color:'#059669', fontSize:'14px'}}>✓</span>}
+                      </div>
+                    )
+                  })}
+                </div>
+              )}
+              {genreDropdownOpen && <div style={{position:'fixed', inset:0, zIndex:199}} onClick={() => setGenreDropdownOpen(false)} />}
             </div>
+            {genres.length > 0 && (
+              <div style={{display:'flex', flexWrap:'wrap', gap:'6px', marginTop:'8px'}}>
+                {genres.map(g => (
+                  <span key={g} onClick={() => toggleGenre(g)} style={{padding:'4px 12px', borderRadius:'20px', background:'#1c1917', color:'white', fontSize:'11px', fontWeight:600, cursor:'pointer'}}>
+                    {g} ✕
+                  </span>
+                ))}
+              </div>
+            )}
           </div>
         </Section>
 
         <Section icon={MapPin} title="Transport & Logistică">
           <div style={{marginBottom:'14px'}}>
             <div style={{fontSize:'10px', fontWeight:700, color:'#a8a29e', textTransform:'uppercase', letterSpacing:'0.08em', marginBottom:'8px'}}>Oraș de reședință (de unde plec)</div>
-            <select value={profile.cityFrom} onChange={e => setProfile(p => ({...p, cityFrom: e.target.value}))}
+            <select value={cityFrom} onChange={e => setCityFrom(e.target.value)}
               style={{width:'100%', padding:'11px 14px', borderRadius:'12px', border:'1px solid #e7e5e4', fontSize:'13px', fontFamily:'Montserrat,sans-serif', color:'#1c1917', outline:'none', background:'#fafaf9'}}>
               {CITIES.map(c => <option key={c} value={c}>{c}</option>)}
             </select>
@@ -152,14 +166,14 @@ export default function ArtistDashboard() {
               <div style={{fontSize:'10px', fontWeight:700, color:'#a8a29e', textTransform:'uppercase', letterSpacing:'0.08em', marginBottom:'6px', display:'flex', alignItems:'center', gap:'4px'}}>
                 <Car size={10} strokeWidth={2} /> Cost/km (€)
               </div>
-              <input type="number" value={profile.costPerKm} onChange={e => setProfile(p => ({...p, costPerKm: Number(e.target.value)}))} step="0.5" min="0"
+              <input type="number" value={costPerKm} onChange={e => setCostPerKm(Number(e.target.value))} step="0.5" min="0"
                 style={{width:'100%', padding:'11px 14px', borderRadius:'12px', border:'1px solid #e7e5e4', fontSize:'13px', fontFamily:'Montserrat,sans-serif', color:'#1c1917', outline:'none', boxSizing:'border-box', background:'#fafaf9'}} />
             </div>
             <div>
               <div style={{fontSize:'10px', fontWeight:700, color:'#a8a29e', textTransform:'uppercase', letterSpacing:'0.08em', marginBottom:'6px', display:'flex', alignItems:'center', gap:'4px'}}>
                 <Plane size={10} strokeWidth={2} /> Bilete avion (nr.)
               </div>
-              <input type="number" value={profile.nrBileteAvion} onChange={e => setProfile(p => ({...p, nrBileteAvion: Number(e.target.value)}))} min="0"
+              <input type="number" value={nrBileteAvion} onChange={e => setNrBileteAvion(Number(e.target.value))} min="0"
                 style={{width:'100%', padding:'11px 14px', borderRadius:'12px', border:'1px solid #e7e5e4', fontSize:'13px', fontFamily:'Montserrat,sans-serif', color:'#1c1917', outline:'none', boxSizing:'border-box', background:'#fafaf9'}} />
             </div>
           </div>
@@ -167,7 +181,7 @@ export default function ArtistDashboard() {
             <div style={{fontSize:'10px', fontWeight:700, color:'#a8a29e', textTransform:'uppercase', letterSpacing:'0.08em', marginBottom:'6px', display:'flex', alignItems:'center', gap:'4px'}}>
               <Hotel size={10} strokeWidth={2} /> Cazare necesară
             </div>
-            <input type="text" value={profile.cazare} onChange={e => setProfile(p => ({...p, cazare: e.target.value}))} placeholder="ex: 2 camere single + 1 dubla"
+            <input type="text" value={cazare} onChange={e => setCazare(e.target.value)} placeholder="ex: 2 camere single + 1 dubla"
               style={{width:'100%', padding:'11px 14px', borderRadius:'12px', border:'1px solid #e7e5e4', fontSize:'13px', fontFamily:'Montserrat,sans-serif', color:'#1c1917', outline:'none', boxSizing:'border-box', background:'#fafaf9'}} />
           </div>
         </Section>
@@ -178,28 +192,28 @@ export default function ArtistDashboard() {
               <div style={{fontSize:'10px', fontWeight:700, color:'#a8a29e', textTransform:'uppercase', letterSpacing:'0.08em', marginBottom:'6px', display:'flex', alignItems:'center', gap:'4px'}}>
                 <InstagramLogo size={10} strokeWidth={2} /> Instagram
               </div>
-              <input type="text" value={profile.instagram} onChange={e => setProfile(p => ({...p, instagram: e.target.value}))} placeholder="@numeartist"
+              <input type="text" value={instagram} onChange={e => setInstagram(e.target.value)} placeholder="@numeartist"
                 style={{width:'100%', padding:'11px 14px', borderRadius:'12px', border:'1px solid #e7e5e4', fontSize:'13px', fontFamily:'Montserrat,sans-serif', color:'#1c1917', outline:'none', boxSizing:'border-box', background:'#fafaf9'}} />
             </div>
             <div>
               <div style={{fontSize:'10px', fontWeight:700, color:'#a8a29e', textTransform:'uppercase', letterSpacing:'0.08em', marginBottom:'6px', display:'flex', alignItems:'center', gap:'4px'}}>
                 <YoutubeLogo size={10} strokeWidth={2} /> YouTube
               </div>
-              <input type="text" value={profile.youtube} onChange={e => setProfile(p => ({...p, youtube: e.target.value}))} placeholder="link canal"
+              <input type="text" value={youtube} onChange={e => setYoutube(e.target.value)} placeholder="link canal"
                 style={{width:'100%', padding:'11px 14px', borderRadius:'12px', border:'1px solid #e7e5e4', fontSize:'13px', fontFamily:'Montserrat,sans-serif', color:'#1c1917', outline:'none', boxSizing:'border-box', background:'#fafaf9'}} />
             </div>
             <div>
               <div style={{fontSize:'10px', fontWeight:700, color:'#a8a29e', textTransform:'uppercase', letterSpacing:'0.08em', marginBottom:'6px', display:'flex', alignItems:'center', gap:'4px'}}>
                 <SpotifyLogo size={10} /> Spotify
               </div>
-              <input type="text" value={profile.spotify} onChange={e => setProfile(p => ({...p, spotify: e.target.value}))} placeholder="link artist"
+              <input type="text" value={spotify} onChange={e => setSpotify(e.target.value)} placeholder="link artist"
                 style={{width:'100%', padding:'11px 14px', borderRadius:'12px', border:'1px solid #e7e5e4', fontSize:'13px', fontFamily:'Montserrat,sans-serif', color:'#1c1917', outline:'none', boxSizing:'border-box', background:'#fafaf9'}} />
             </div>
             <div>
               <div style={{fontSize:'10px', fontWeight:700, color:'#a8a29e', textTransform:'uppercase', letterSpacing:'0.08em', marginBottom:'6px', display:'flex', alignItems:'center', gap:'4px'}}>
                 <Phone size={10} strokeWidth={2} /> Telefon / WhatsApp
               </div>
-              <input type="tel" value={profile.phone} onChange={e => setProfile(p => ({...p, phone: e.target.value}))} placeholder="+40 7xx xxx xxx"
+              <input type="tel" value={phone} onChange={e => setPhone(e.target.value)} placeholder="+40 7xx xxx xxx"
                 style={{width:'100%', padding:'11px 14px', borderRadius:'12px', border:'1px solid #e7e5e4', fontSize:'13px', fontFamily:'Montserrat,sans-serif', color:'#1c1917', outline:'none', boxSizing:'border-box', background:'#fafaf9'}} />
             </div>
           </div>
