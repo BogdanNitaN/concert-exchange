@@ -66,7 +66,7 @@ export default function ArtistDashboard() {
     supabase.auth.getUser().then(async ({ data }) => {
       if (data.user) {
         setUser(data.user)
-        setArtistName(data.user.user_metadata?.name || '')
+        // setArtistName(data.user.user_metadata?.name || '')
         // Incarcam profilul existent
         const { data: profile } = await (supabase as any).from('artists').select('*').eq('user_id', data.user.id).single()
         if (profile) {
