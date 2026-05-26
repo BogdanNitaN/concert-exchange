@@ -37,6 +37,7 @@ export default function AdminDashboard() {
   const [selectedMessage, setSelectedMessage] = useState('')
   const [actionLoading, setActionLoading] = useState<string | null>(null)
   const [tab, setTab] = useState<'pending' | 'approved' | 'all'>('pending')
+  const [artistProfiles, setArtistProfiles] = useState<Record<string, any>>({})
 
   useEffect(() => {
     supabase.auth.getUser().then(async ({ data }) => {
