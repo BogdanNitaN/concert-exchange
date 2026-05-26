@@ -195,9 +195,9 @@ export default function ClientDashboard() {
   })
 
   const handleTrimite = () => {
-    const parts = ['Cerere Concert Exchange', 'Artisti: ' + selectedArtists.map((a) => a.name).join(', '), 'Data: ' + eventDate, 'Oras: ' + selectedCity, 'Locatie: ' + (selectedVenues[0]?.name || 'nespecificata'), 'Participanti: ' + guestCount, 'Seturi: ' + (Object.values(selectedSeturi).length > 0 ? Object.values(selectedSeturi).join(', ') : 'la cerere'), 'Buget eveniment: ' + budget + ' EUR']
+    const parts = ['Cerere GIGx', 'Artisti: ' + selectedArtists.map((a) => a.name).join(', '), 'Data: ' + eventDate, 'Oras: ' + selectedCity, 'Locatie: ' + (selectedVenues[0]?.name || 'nespecificata'), 'Participanti: ' + guestCount, 'Seturi: ' + (Object.values(selectedSeturi).length > 0 ? Object.values(selectedSeturi).join(', ') : 'la cerere'), 'Buget eveniment: ' + budget + ' EUR']
     const msg = encodeURIComponent(parts.join('\n'))
-    const subject = encodeURIComponent('Cerere Concert Exchange')
+    const subject = encodeURIComponent('Cerere GIGx')
     window.open('mailto:me@bogdannita.ro?subject=' + subject + '&body=' + msg, '_blank')
     setRequestSent(true)
   }

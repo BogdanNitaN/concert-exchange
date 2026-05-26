@@ -158,7 +158,7 @@ export default function ArtistDashboard() {
   return (
     <div style={{minHeight:'100vh', background:'#fafaf9', fontFamily:'Montserrat,sans-serif'}}>
       <nav style={{background:'white', borderBottom:'1px solid #e7e5e4', padding:'0 24px', height:'56px', display:'flex', alignItems:'center', justifyContent:'space-between', position:'sticky', top:0, zIndex:100}}>
-        <div style={{fontWeight:800, fontSize:'16px', color:'#1c1917', letterSpacing:'-0.5px'}}>Concert Exchange</div>
+        <div style={{fontWeight:800, fontSize:'16px', color:'#1c1917', letterSpacing:'-0.5px'}}>GIGx</div>
         <div style={{fontSize:'13px', color:'#78716c'}}>Dashboard Artist</div>
       </nav>
 

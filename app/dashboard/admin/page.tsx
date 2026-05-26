@@ -59,7 +59,7 @@ export default function AdminDashboard() {
 
   const handleApprove = async (id: string) => {
     setActionLoading(id)
-    await (supabase as any).from('profiles').update({ status: 'approved', admin_message: 'Profil aprobat. Bine ai venit pe Concert Exchange!' }).eq('id', id)
+    await (supabase as any).from('profiles').update({ status: 'approved', admin_message: 'Profil aprobat. Bine ai venit pe GIGx!' }).eq('id', id)
     await loadProfiles()
     setActionLoading(null)
   }
@@ -93,7 +93,7 @@ export default function AdminDashboard() {
   return (
     <div style={{minHeight:'100vh', background:'#fafaf9', fontFamily:'Montserrat,sans-serif'}}>
       <nav style={{background:'#1c1917', padding:'0 24px', height:'56px', display:'flex', alignItems:'center', justifyContent:'space-between'}}>
-        <div style={{fontWeight:800, fontSize:'16px', color:'white', letterSpacing:'-0.5px'}}>Concert Exchange — Admin</div>
+        <div style={{fontWeight:800, fontSize:'16px', color:'white', letterSpacing:'-0.5px'}}>GIGx — Admin</div>
         <div style={{fontSize:'12px', color:'rgba(255,255,255,0.6)'}}>{user?.email}</div>
       </nav>
 

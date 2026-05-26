@@ -65,7 +65,7 @@ export default function HomePage() {
       {/* Features */}
       <section style={{maxWidth:'900px', margin:'0 auto', padding:'60px 24px'}}>
         <h2 style={{fontSize:'32px', fontWeight:800, color:'#1c1917', textAlign:'center', marginBottom:'40px', letterSpacing:'-0.5px'}}>
-          De ce Concert Exchange?
+          De ce GIGx?
         </h2>
         <div style={{display:'grid', gridTemplateColumns:'repeat(3, 1fr)', gap:'20px'}}>
           {[
@@ -97,8 +97,8 @@ export default function HomePage() {
 
       {/* Footer */}
       <footer style={{background:'#1c1917', padding:'32px 24px', textAlign:'center'}}>
-        <div style={{fontWeight:800, fontSize:'16px', color:'white', marginBottom:'8px'}}>Concert Exchange</div>
-        <div style={{fontSize:'12px', color:'rgba(255,255,255,0.4)'}}>© 2026 Concert Exchange. Toate drepturile rezervate.</div>
+        <div style={{fontWeight:800, fontSize:'16px', color:'white', marginBottom:'8px'}}>GIGx</div>
+        <div style={{fontSize:'12px', color:'rgba(255,255,255,0.4)'}}>© 2026 GIGx. Toate drepturile rezervate.</div>
         <div style={{display:'flex', justifyContent:'center', gap:'20px', marginTop:'16px'}}>
           <Link href="/signup" style={{fontSize:'12px', color:'rgba(255,255,255,0.5)', textDecoration:'none'}}>Înregistrare</Link>
           <Link href="/login" style={{fontSize:'12px', color:'rgba(255,255,255,0.5)', textDecoration:'none'}}>Login</Link>

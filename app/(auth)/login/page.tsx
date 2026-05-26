@@ -30,7 +30,7 @@ export default function LoginPage() {
       <div style={{width:'100%', maxWidth:'400px'}}>
         <div style={{textAlign:'center', marginBottom:'32px'}}>
           <Link href="/" style={{textDecoration:'none'}}>
-            <div style={{fontWeight:800, fontSize:'22px', color:'#1c1917', letterSpacing:'-0.5px', marginBottom:'8px'}}>Concert Exchange</div>
+            <div style={{fontWeight:800, fontSize:'22px', color:'#1c1917', letterSpacing:'-0.5px', marginBottom:'8px'}}>GIGx</div>
           </Link>
           <h1 style={{fontSize:'24px', fontWeight:800, color:'#1c1917', marginBottom:'6px', letterSpacing:'-0.5px'}}>Intră în cont</h1>
           <p style={{fontSize:'14px', color:'#78716c'}}>Bine ai revenit</p>
