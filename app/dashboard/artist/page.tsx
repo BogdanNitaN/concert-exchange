@@ -63,10 +63,30 @@ export default function ArtistDashboard() {
   const [spotifyError, setSpotifyError] = useState('')
 
   useEffect(() => {
-    supabase.auth.getUser().then(({ data }) => {
+    supabase.auth.getUser().then(async ({ data }) => {
       if (data.user) {
         setUser(data.user)
         setArtistName(data.user.user_metadata?.name || '')
+        // Incarcam profilul existent
+        const { data: profile } = await (supabase as any).from('artists').select('*').eq('user_id', data.user.id).single()
+        if (profile) {
+          if (profile.artistName) setArtistName(profile.artistName)
+          if (profile.bio) setBio(profile.bio)
+          if (profile.genres) setGenres(profile.genres)
+          if (profile.vibes) setVibes(profile.vibes)
+          if (profile.setType) setSetType(profile.setType)
+          if (profile.cityFrom) setCityFrom(profile.cityFrom)
+          if (profile.costPerKm) setCostPerKm(profile.costPerKm)
+          if (profile.kmCurrency) setKmCurrency(profile.kmCurrency)
+          if (profile.nrBileteAvion) setNrBileteAvion(profile.nrBileteAvion)
+          if (profile.cazare) setCazare(profile.cazare)
+          if (profile.instagram) setInstagram(profile.instagram)
+          if (profile.spotify) setSpotify(profile.spotify)
+          if (profile.youtube) setYoutube(profile.youtube)
+          if (profile.tiktok) setTiktok(profile.tiktok)
+          if (profile.facebook) setFacebook(profile.facebook)
+          if (profile.soundcloud) setSoundcloud(profile.soundcloud)
+        }
       }
     })
   }, [])
