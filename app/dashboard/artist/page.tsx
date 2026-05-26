@@ -82,7 +82,7 @@ export default function ArtistDashboard() {
     }
     setLoading(true)
     try {
-      await (supabase as any).from('artist_profiles').upsert({
+      await (supabase as any).from('artists').upsert({
         user_id: user?.id,
         artistName, bio, genres, vibes, setType, cityFrom, costPerKm,
         nrBileteAvion, cazare, instagram, spotify, youtube, website, tiktok, facebook, soundcloud,
