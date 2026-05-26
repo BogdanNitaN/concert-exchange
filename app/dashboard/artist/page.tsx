@@ -102,12 +102,14 @@ export default function ArtistDashboard() {
     }
     setLoading(true)
     try {
-      await (supabase as any).from('artists').upsert({
+      const { data: upsertData, error: upsertError } = await (supabase as any).from('artists').upsert({
         user_id: user?.id,
         artistName, bio, genres, vibes, setType, cityFrom, costPerKm,
-        nrBileteAvion, cazare, instagram, spotify, youtube, website, tiktok, facebook, soundcloud,
-        updated_at: new Date().toISOString()
+        nrBileteAvion, cazare, instagram, spotify, youtube, tiktok, facebook, soundcloud,
+        // updated_at: new Date().toISOString()
       }, { onConflict: 'user_id' })
+      console.log('Upsert result:', upsertData, 'Error:', upsertError)
+      if (upsertError) { alert('Eroare: ' + upsertError.message); return }
       setSaved(true)
       setTimeout(() => setSaved(false), 3000)
     } catch (e) {}
