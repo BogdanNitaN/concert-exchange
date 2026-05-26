@@ -18,6 +18,8 @@ export default function LoginPage() {
     setError('')
     const { data, error } = await supabase.auth.signInWithPassword({ email, password })
     if (error) { setError(error.message); setLoading(false); return }
+    const email = data.user?.email
+    if (email === 'me@bogdannita.ro') { router.push('/dashboard/admin'); return }
     const role = data.user?.user_metadata?.role
     if (role === 'artist' || role === 'agency') router.push('/dashboard/artist')
     else if (role === 'promoter') router.push('/dashboard/promoter')
