@@ -169,7 +169,7 @@ export default function ArtistDashboard() {
         <Section icon={User} title="Informații de bază">
           <div style={{marginBottom:'14px'}}>
             <div style={{fontSize:'10px', fontWeight:700, color:'#a8a29e', textTransform:'uppercase', letterSpacing:'0.08em', marginBottom:'6px'}}>Nume artistic / Nume scenă</div>
-            <input type="text" value={artistName} onChange={e => setArtistName(e.target.value)} placeholder="ex: DJ Sava, Antonia, Bere Gratis"
+            <input type="text" value={artistName} onChange={e => setArtistName(e.target.value)} placeholder="ex: The Motans, Irina Rimes, Delia"
               style={{width:'100%', padding:'11px 14px', borderRadius:'12px', border:'1px solid #e7e5e4', fontSize:'13px', fontFamily:'Montserrat,sans-serif', color:'#1c1917', outline:'none', boxSizing:'border-box', background:'#fafaf9'}} />
           </div>
           <div>
