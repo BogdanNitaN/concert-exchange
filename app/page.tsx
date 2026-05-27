@@ -9,7 +9,7 @@ export default function HomePage() {
       <nav style={{background:'white', borderBottom:'1px solid #e7e5e4', position:'sticky', top:0, zIndex:100}}>
         <div style={{maxWidth:'1100px', margin:'0 auto', padding:'0 24px', height:'60px', display:'flex', alignItems:'center', justifyContent:'space-between'}}>
           <div style={{fontWeight:800, fontSize:'18px', color:'#1c1917', letterSpacing:'-0.5px'}}>
-            Concert <span style={{color:'#059669'}}>Exchange</span>
+            GIG<span style={{color:'#059669'}}>x</span>
           </div>
           <div style={{display:'flex', alignItems:'center', gap:'12px'}}>
             <Link href="/login" style={{fontSize:'13px', fontWeight:600, color:'#78716c', textDecoration:'none'}}>Conectare</Link>
