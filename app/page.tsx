@@ -27,12 +27,11 @@ export default function HomePage() {
           <span style={{fontSize:'12px', fontWeight:700, color:'#059669'}}>Platforma #1 de booking artistic în România</span>
         </div>
         <h1 style={{fontSize:'52px', fontWeight:800, color:'#1c1917', lineHeight:1.1, letterSpacing:'-1px', marginBottom:'20px'}}>
-          Booking artistic.<br/>
-          <span style={{color:'#059669'}}>Simplu și rapid.</span>
+          Toată industria.<br/>
+          <span style={{color:'#059669'}}>Un singur loc.</span>
         </h1>
-        <p style={{fontSize:'18px', color:'#78716c', maxWidth:'600px', margin:'0 auto 40px', lineHeight:1.6}}>
-          Conectăm clienți cu artiști verificați din România și Rep. Moldova. 
-          Cerere în 5 minute, răspuns în 30.
+        <p style={{fontSize:'18px', color:'#78716c', maxWidth:'600px', margin:'0 auto 12px', lineHeight:1.6}}>
+          Artiști verificați, prețuri reale, răspuns în 30 de minute.
         </p>
         <div style={{display:'flex', alignItems:'center', justifyContent:'center', gap:'12px', flexWrap:'wrap'}}>
           <Link href="/dashboard/client" style={{background:'#1c1917', color:'white', padding:'14px 32px', borderRadius:'14px', fontSize:'15px', fontWeight:700, textDecoration:'none', display:'flex', alignItems:'center', gap:'8px', boxShadow:'0 4px 20px rgba(0,0,0,0.15)'}}>
