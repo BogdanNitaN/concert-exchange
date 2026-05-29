@@ -120,16 +120,7 @@ export default async function ArtistPage({ params }: { params: Promise<{ slug: s
             </div>
           )}
 
-          {/* Vibe-uri */}
-          {vibes.length > 0 && (
-            <div style={{display:'flex', flexWrap:'wrap', gap:'6px'}}>
-              {vibes.map((v: string) => (
-                <span key={v} style={{padding:'4px 12px', borderRadius:'20px', background:'#f3f0ff', fontSize:'11px', fontWeight:600, color:'#7c3aed'}}>
-                  {VIBE_LABELS[v] || v}
-                </span>
-              ))}
-            </div>
-          )}
+
         </div>
 
         {/* Social links */}
