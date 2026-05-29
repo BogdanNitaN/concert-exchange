@@ -57,7 +57,6 @@ export default function ArtistDashboard() {
   const [genreDropdownOpen, setGenreDropdownOpen] = useState(false)
   const [pressKitUrl, setPressKitUrl] = useState('')
   const [riderUrl, setRiderUrl] = useState('')
-  const [riderUrl, setRiderUrl] = useState('')
   const [tiktok, setTiktok] = useState('')
   const [facebook, setFacebook] = useState('')
   const [soundcloud, setSoundcloud] = useState('')
