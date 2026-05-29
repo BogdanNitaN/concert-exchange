@@ -55,6 +55,7 @@ export default function ArtistDashboard() {
   const [website, setWebsite] = useState('')
   const [kmCurrency, setKmCurrency] = useState('RON')
   const [genreDropdownOpen, setGenreDropdownOpen] = useState(false)
+  const [pressKitUrl, setPressKitUrl] = useState('')
   const [tiktok, setTiktok] = useState('')
   const [facebook, setFacebook] = useState('')
   const [soundcloud, setSoundcloud] = useState('')
@@ -86,6 +87,7 @@ export default function ArtistDashboard() {
           if (profile.tiktok) setTiktok(profile.tiktok)
           if (profile.facebook) setFacebook(profile.facebook)
           if (profile.soundcloud) setSoundcloud(profile.soundcloud)
+          if (profile.press_kit_url) setPressKitUrl(profile.press_kit_url)
         }
       }
     })
@@ -105,7 +107,7 @@ export default function ArtistDashboard() {
       const slug = artistName.toLowerCase().replace(/[^a-z0-9]/g, '-').replace(/-+/g, '-').replace(/^-|-$/g, '')
       const { data: upsertData, error: upsertError } = await (supabase as any).from('artists').upsert({
         user_id: user?.id,
-        artistName, slug, bio, genres, vibes, setType, cityFrom, costPerKm,
+        artistName, slug, bio, genres, vibes, setType, cityFrom, costPerKm, press_kit_url: pressKitUrl,
         nrBileteAvion, cazare, instagram, spotify, youtube, tiktok, facebook, soundcloud,
         // updated_at: new Date().toISOString()
       }, { onConflict: 'user_id' })
@@ -413,6 +415,15 @@ export default function ArtistDashboard() {
 
           </div>
         </Section>
+
+        <div style={{background:'white', border:'1px solid #e7e5e4', borderRadius:'20px', padding:'24px', marginBottom:'14px'}}>
+          <div style={{display:'flex', alignItems:'center', gap:'8px', marginBottom:'16px'}}>
+            <span style={{fontWeight:700, fontSize:'14px', color:'#1c1917'}}>Press Kit</span>
+          </div>
+          <div style={{fontSize:'12px', color:'#78716c', marginBottom:'12px'}}>Link Google Drive sau Dropbox cu materiale de presă (foto, bio, logo).</div>
+          <input type="text" value={pressKitUrl} onChange={e => setPressKitUrl(e.target.value)} placeholder="https://drive.google.com/..."
+            style={{width:'100%', padding:'11px 14px', borderRadius:'12px', border:'1px solid #e7e5e4', fontSize:'13px', fontFamily:'Montserrat,sans-serif', color:'#1c1917', outline:'none', boxSizing:'border-box', background:'#fafaf9'}} />
+        </div>
 
         <button onClick={handleSave} disabled={loading}
           style={{width:'100%', background:'#1c1917', color:'white', padding:'15px', borderRadius:'14px', border:'none', cursor: loading ? 'not-allowed' : 'pointer', fontSize:'14px', fontWeight:700, fontFamily:'Montserrat,sans-serif', display:'flex', alignItems:'center', justifyContent:'center', gap:'8px', opacity: loading ? 0.7 : 1, marginBottom:'24px'}}>
