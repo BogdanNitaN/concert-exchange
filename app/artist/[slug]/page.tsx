@@ -26,13 +26,15 @@ const SET_TYPE_LABELS: Record<string, string> = {
   cover: 'Trupă / Cover Band',
 }
 
-export default async function ArtistPage({ params }: { params: { slug: string } }) {
+export default async function ArtistPage({ params }: { params: Promise<{ slug: string }> }) {
+  const { slug } = await params
   const { data: artist } = await supabase
     .from('artists')
     .select('*')
-    .eq('slug', params.slug)
+    .eq('slug', slug)
     .single()
 
+  console.log("Slug:", slug, "Artist:", artist)
   if (!artist) notFound()
 
   // Fetch disponibilitate urmatoarele 3 luni
@@ -50,7 +52,12 @@ export default async function ArtistPage({ params }: { params: { slug: string } 
   const blockedDates = (availability || []).filter((a: any) => a.status === 'blocked').map((a: any) => a.date)
 
   const displayName = artist.artistName || artist.slug
-  const vibes = Array.isArray(artist.vibes) ? artist.vibes : (artist.vibes ? [artist.vibes] : [])
+  let vibes: string[] = []
+  if (Array.isArray(artist.vibes)) {
+    vibes = artist.vibes
+  } else if (typeof artist.vibes === 'string') {
+    try { vibes = JSON.parse(artist.vibes) } catch { vibes = [artist.vibes] }
+  }
   const genres = Array.isArray(artist.genres) ? artist.genres : []
 
   return (
