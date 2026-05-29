@@ -59,8 +59,6 @@ export default function ArtistDashboard() {
   const [riderUrl, setRiderUrl] = useState('')
   const [cazareTip, setCazareTip] = useState('')
   const [durata, setDurata] = useState<string[]>([])
-  const [cazareTip, setCazareTip] = useState('')
-  const [durata, setDurata] = useState<string[]>([])
   const [tiktok, setTiktok] = useState('')
   const [facebook, setFacebook] = useState('')
   const [soundcloud, setSoundcloud] = useState('')
