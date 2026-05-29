@@ -257,6 +257,34 @@ export default async function ArtistPage({ params }: { params: Promise<{ slug: s
           </div>
         )}
 
+        {/* Rider Tehnic */}
+        {artist.rider_url && (
+          <div style={{background:'white', border:'1px solid #e7e5e4', borderRadius:'20px', padding:'20px', marginBottom:'16px', display:'flex', alignItems:'center', justifyContent:'space-between'}}>
+            <div>
+              <div style={{fontWeight:700, fontSize:'14px', color:'#1c1917', marginBottom:'4px'}}>Rider Tehnic</div>
+              <div style={{fontSize:'12px', color:'#78716c'}}>Cerințe scenă, sunet și lumini</div>
+            </div>
+            <a href={artist.rider_url} target="_blank" rel="noopener noreferrer"
+              style={{background:'#1c1917', color:'white', padding:'10px 20px', borderRadius:'12px', fontSize:'12px', fontWeight:700, textDecoration:'none', display:'flex', alignItems:'center', gap:'6px', whiteSpace:'nowrap'}}>
+              Vezi rider <ArrowRight size={14} strokeWidth={2} />
+            </a>
+          </div>
+        )}
+
+        {/* Rider Tehnic */}
+        {artist.rider_url && (
+          <div style={{background:'white', border:'1px solid #e7e5e4', borderRadius:'20px', padding:'20px', marginBottom:'16px', display:'flex', alignItems:'center', justifyContent:'space-between'}}>
+            <div>
+              <div style={{fontWeight:700, fontSize:'14px', color:'#1c1917', marginBottom:'4px'}}>Rider Tehnic</div>
+              <div style={{fontSize:'12px', color:'#78716c'}}>Cerințe scenă, sunet și lumini</div>
+            </div>
+            <a href={artist.rider_url} target="_blank" rel="noopener noreferrer"
+              style={{background:'#1c1917', color:'white', padding:'10px 20px', borderRadius:'12px', fontSize:'12px', fontWeight:700, textDecoration:'none', display:'flex', alignItems:'center', gap:'6px', whiteSpace:'nowrap'}}>
+              Vezi rider <ArrowRight size={14} strokeWidth={2} />
+            </a>
+          </div>
+        )}
+
         {/* CTA Booking */}
         <div style={{background:'#1c1917', borderRadius:'20px', padding:'28px', textAlign:'center'}}>
           <div style={{fontWeight:800, fontSize:'18px', color:'white', marginBottom:'8px', letterSpacing:'-0.5px'}}>

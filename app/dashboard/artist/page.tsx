@@ -56,6 +56,8 @@ export default function ArtistDashboard() {
   const [kmCurrency, setKmCurrency] = useState('RON')
   const [genreDropdownOpen, setGenreDropdownOpen] = useState(false)
   const [pressKitUrl, setPressKitUrl] = useState('')
+  const [riderUrl, setRiderUrl] = useState('')
+  const [riderUrl, setRiderUrl] = useState('')
   const [tiktok, setTiktok] = useState('')
   const [facebook, setFacebook] = useState('')
   const [soundcloud, setSoundcloud] = useState('')
@@ -88,6 +90,8 @@ export default function ArtistDashboard() {
           if (profile.facebook) setFacebook(profile.facebook)
           if (profile.soundcloud) setSoundcloud(profile.soundcloud)
           if (profile.press_kit_url) setPressKitUrl(profile.press_kit_url)
+          if (profile.rider_url) setRiderUrl(profile.rider_url)
+          if (profile.rider_url) setRiderUrl(profile.rider_url)
         }
       }
     })
@@ -107,7 +111,7 @@ export default function ArtistDashboard() {
       const slug = artistName.toLowerCase().replace(/[^a-z0-9]/g, '-').replace(/-+/g, '-').replace(/^-|-$/g, '')
       const { data: upsertData, error: upsertError } = await (supabase as any).from('artists').upsert({
         user_id: user?.id,
-        artistName, slug, bio, genres, vibes, setType, cityFrom, costPerKm, press_kit_url: pressKitUrl,
+        artistName, slug, bio, genres, vibes, setType, cityFrom, costPerKm, press_kit_url: pressKitUrl, rider_url: riderUrl, rider_url: riderUrl,
         nrBileteAvion, cazare, instagram, spotify, youtube, tiktok, facebook, soundcloud,
         // updated_at: new Date().toISOString()
       }, { onConflict: 'user_id' })
@@ -423,6 +427,13 @@ export default function ArtistDashboard() {
           <div style={{fontSize:'12px', color:'#78716c', marginBottom:'12px'}}>Link Google Drive sau Dropbox cu materiale de presă (foto, bio, logo).</div>
           <input type="text" value={pressKitUrl} onChange={e => setPressKitUrl(e.target.value)} placeholder="https://drive.google.com/..."
             style={{width:'100%', padding:'11px 14px', borderRadius:'12px', border:'1px solid #e7e5e4', fontSize:'13px', fontFamily:'Montserrat,sans-serif', color:'#1c1917', outline:'none', boxSizing:'border-box', background:'#fafaf9'}} />
+          
+          <div style={{marginTop:'16px'}}>
+            <div style={{fontWeight:700, fontSize:'13px', color:'#1c1917', marginBottom:'6px'}}>Rider Tehnic</div>
+            <div style={{fontSize:'12px', color:'#78716c', marginBottom:'8px'}}>Link Google Drive sau Dropbox cu rider-ul tehnic (scenă, sunet, lumini).</div>
+            <input type="text" value={riderUrl} onChange={e => setRiderUrl(e.target.value)} placeholder="https://drive.google.com/..."
+              style={{width:'100%', padding:'11px 14px', borderRadius:'12px', border:'1px solid #e7e5e4', fontSize:'13px', fontFamily:'Montserrat,sans-serif', color:'#1c1917', outline:'none', boxSizing:'border-box', background:'#fafaf9'}} />
+          </div>
         </div>
 
         <button onClick={handleSave} disabled={loading}
