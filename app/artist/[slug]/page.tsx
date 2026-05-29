@@ -2,7 +2,7 @@ import { createClient } from '@supabase/supabase-js'
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import { Music2, MapPin, CheckCircle2, ArrowRight, Mic2, Disc3, Guitar } from 'lucide-react'
-import { InstagramLogo, SpotifyLogo, YoutubeLogo, TiktokLogo, FacebookLogo, SoundcloudLogo } from '@phosphor-icons/react/dist/ssr'
+
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -53,6 +53,25 @@ export default async function ArtistPage({ params }: { params: Promise<{ slug: s
   const blockedDates = (availability || []).filter((a: any) => a.status === 'blocked').map((a: any) => a.date)
 
   const displayName = artist.artistName || artist.slug
+
+  // Fetch imagine din Spotify daca exista link
+  let spotifyImage = null
+  if (artist.spotify) {
+    try {
+      const spotifyRes = await fetch(
+        process.env.NEXT_PUBLIC_SUPABASE_URL?.replace('supabase.co', 'supabase.co') + 
+        '/functions/v1/spotify?url=' + encodeURIComponent(artist.spotify),
+        { next: { revalidate: 86400 } }
+      )
+    } catch {}
+    // Folosim API-ul nostru intern
+    const baseUrl = process.env.VERCEL_URL ? 'https://' + process.env.VERCEL_URL : 'http://localhost:3000'
+    try {
+      const res = await fetch(baseUrl + '/api/spotify?url=' + encodeURIComponent(artist.spotify), { next: { revalidate: 86400 } })
+      const data = await res.json()
+      if (data.image) spotifyImage = data.image
+    } catch {}
+  }
   let vibes: string[] = []
   if (Array.isArray(artist.vibes)) {
     vibes = artist.vibes
@@ -81,8 +100,12 @@ export default async function ArtistPage({ params }: { params: Promise<{ slug: s
         {/* Header artist */}
         <div style={{background:'white', border:'1px solid #e7e5e4', borderRadius:'24px', padding:'32px', marginBottom:'16px', boxShadow:'0 1px 4px rgba(0,0,0,0.04)'}}>
           <div style={{display:'flex', alignItems:'flex-start', gap:'20px', marginBottom:'20px'}}>
-            <div style={{width:'72px', height:'72px', borderRadius:'18px', background:'#1c1917', display:'flex', alignItems:'center', justifyContent:'center', flexShrink:0}}>
-              <span style={{fontSize:'28px', color:'white', fontWeight:800}}>{displayName.charAt(0).toUpperCase()}</span>
+            <div style={{width:'72px', height:'72px', borderRadius:'18px', background:'#1c1917', display:'flex', alignItems:'center', justifyContent:'center', flexShrink:0, overflow:'hidden'}}>
+              {spotifyImage ? (
+                <img src={spotifyImage} alt={displayName} style={{width:'100%', height:'100%', objectFit:'cover'}} />
+              ) : (
+                <span style={{fontSize:'28px', color:'white', fontWeight:800}}>{displayName.charAt(0).toUpperCase()}</span>
+              )}
             </div>
             <div style={{flex:1}}>
               <div style={{display:'flex', alignItems:'center', gap:'8px', marginBottom:'4px'}}>
