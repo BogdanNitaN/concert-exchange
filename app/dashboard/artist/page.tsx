@@ -57,6 +57,10 @@ export default function ArtistDashboard() {
   const [genreDropdownOpen, setGenreDropdownOpen] = useState(false)
   const [pressKitUrl, setPressKitUrl] = useState('')
   const [riderUrl, setRiderUrl] = useState('')
+  const [cazareTip, setCazareTip] = useState('')
+  const [durata, setDurata] = useState<string[]>([])
+  const [cazareTip, setCazareTip] = useState('')
+  const [durata, setDurata] = useState<string[]>([])
   const [tiktok, setTiktok] = useState('')
   const [facebook, setFacebook] = useState('')
   const [soundcloud, setSoundcloud] = useState('')
@@ -90,7 +94,15 @@ export default function ArtistDashboard() {
           if (profile.soundcloud) setSoundcloud(profile.soundcloud)
           if (profile.press_kit_url) setPressKitUrl(profile.press_kit_url)
           if (profile.rider_url) setRiderUrl(profile.rider_url)
+          if (profile.cazare_tip) setCazareTip(profile.cazare_tip)
+          if (profile.durata) setDurata(Array.isArray(profile.durata) ? profile.durata : [])
+          if (profile.cazare_tip) setCazareTip(profile.cazare_tip)
+          if (profile.durata) setDurata(Array.isArray(profile.durata) ? profile.durata : [])
           if (profile.rider_url) setRiderUrl(profile.rider_url)
+          if (profile.cazare_tip) setCazareTip(profile.cazare_tip)
+          if (profile.durata) setDurata(Array.isArray(profile.durata) ? profile.durata : [])
+          if (profile.cazare_tip) setCazareTip(profile.cazare_tip)
+          if (profile.durata) setDurata(Array.isArray(profile.durata) ? profile.durata : [])
         }
       }
     })
@@ -110,7 +122,7 @@ export default function ArtistDashboard() {
       const slug = artistName.toLowerCase().replace(/[^a-z0-9]/g, '-').replace(/-+/g, '-').replace(/^-|-$/g, '')
       const { data: upsertData, error: upsertError } = await (supabase as any).from('artists').upsert({
         user_id: user?.id,
-        artistName, slug, bio, genres, vibes, setType, cityFrom, costPerKm, press_kit_url: pressKitUrl, rider_url: riderUrl, rider_url: riderUrl,
+        artistName, slug, bio, genres, vibes, setType, cityFrom, costPerKm, press_kit_url: pressKitUrl, rider_url: riderUrl, cazare_tip: cazareTip, durata, cazare_tip: cazareTip, durata, rider_url: riderUrl,
         nrBileteAvion, cazare, instagram, spotify, youtube, tiktok, facebook, soundcloud,
         // updated_at: new Date().toISOString()
       }, { onConflict: 'user_id' })
@@ -362,11 +374,44 @@ export default function ArtistDashboard() {
             </div>
           </div>
           <div style={{marginTop:'14px'}}>
-            <div style={{fontSize:'10px', fontWeight:700, color:'#a8a29e', textTransform:'uppercase', letterSpacing:'0.08em', marginBottom:'6px', display:'flex', alignItems:'center', gap:'4px'}}>
+            <div style={{fontSize:'10px', fontWeight:700, color:'#a8a29e', textTransform:'uppercase', letterSpacing:'0.08em', marginBottom:'10px', display:'flex', alignItems:'center', gap:'4px'}}>
               <Hotel size={10} strokeWidth={2} /> Cazare necesară
             </div>
-            <input type="text" value={cazare} onChange={e => setCazare(e.target.value)} placeholder="ex: 2 camere single + 1 dubla"
+            <div style={{display:'grid', gridTemplateColumns:'1fr 1fr', gap:'8px', marginBottom:'8px'}}>
+              {[
+                {id:'single', label:'Single'},
+                {id:'matrimoniala', label:'Matrimonială'},
+                {id:'dubla_twin', label:'Dublă Twin'},
+                {id:'dubla_matrimoniala', label:'Dublă Matrimonială'},
+              ].map(tip => (
+                <label key={tip.id} style={{display:'flex', alignItems:'center', gap:'8px', padding:'10px 14px', borderRadius:'12px', border:'1.5px solid', cursor:'pointer',
+                  borderColor: cazareTip === tip.id ? '#1c1917' : '#e7e5e4', background: cazareTip === tip.id ? '#1c1917' : 'white'}}>
+                  <input type="radio" name="cazare" value={tip.id} checked={cazareTip === tip.id} onChange={() => setCazareTip(tip.id)} style={{display:'none'}} />
+                  <span style={{fontSize:'12px', fontWeight:600, color: cazareTip === tip.id ? 'white' : '#44403c'}}>{tip.label}</span>
+                </label>
+              ))}
+            </div>
+            <input type="text" value={cazare} onChange={e => setCazare(e.target.value)} placeholder="ex: 2 camere single + 1 dubla twin"
               style={{width:'100%', padding:'11px 14px', borderRadius:'12px', border:'1px solid #e7e5e4', fontSize:'13px', fontFamily:'Montserrat,sans-serif', color:'#1c1917', outline:'none', boxSizing:'border-box', background:'#fafaf9'}} />
+          </div>
+
+          <div style={{marginTop:'14px'}}>
+            <div style={{fontSize:'10px', fontWeight:700, color:'#a8a29e', textTransform:'uppercase', letterSpacing:'0.08em', marginBottom:'10px'}}>Durata setului</div>
+            <div style={{display:'flex', flexWrap:'wrap', gap:'8px'}}>
+              {(setType === 'vocal' ? ['1x45 min', '2x45 min', '1x60 min', 'Personalizat'] :
+                setType === 'dj' ? ['1h', '2h', '3h', '4h', '5h', '6h', 'Personalizat'] :
+                setType === 'cover' ? ['1x45 min', '2x45 min', '3x45 min', 'Personalizat'] :
+                ['1h', '2h', '3h', 'Personalizat']).map(d => {
+                const isSelected = durata.includes(d)
+                return (
+                  <button key={d} onClick={() => setDurata(prev => prev.includes(d) ? prev.filter(x => x !== d) : [...prev, d])}
+                    style={{padding:'8px 16px', borderRadius:'20px', border:'1.5px solid', cursor:'pointer', fontSize:'12px', fontWeight:600, fontFamily:'Montserrat,sans-serif',
+                      background: isSelected ? '#1c1917' : 'white', color: isSelected ? 'white' : '#44403c', borderColor: isSelected ? '#1c1917' : '#e7e5e4'}}>
+                    {d}
+                  </button>
+                )
+              })}
+            </div>
           </div>
         </Section>
 
