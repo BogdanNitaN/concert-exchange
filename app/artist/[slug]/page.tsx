@@ -44,22 +44,44 @@ export default async function ArtistPage({ params }: { params: Promise<{ slug: s
 
   // Fetch imagine din Spotify daca exista link
   let spotifyImage = null
+  let chartexStats: any = null
+  const baseUrl = process.env.VERCEL_URL ? 'https://' + process.env.VERCEL_URL : 'http://localhost:3000'
+  
   if (artist.spotify) {
-    try {
-      const spotifyRes = await fetch(
-        process.env.NEXT_PUBLIC_SUPABASE_URL?.replace('supabase.co', 'supabase.co') + 
-        '/functions/v1/spotify?url=' + encodeURIComponent(artist.spotify),
-        { next: { revalidate: 86400 } }
-      )
-    } catch {}
-    // Folosim API-ul nostru intern
-    const baseUrl = process.env.VERCEL_URL ? 'https://' + process.env.VERCEL_URL : 'http://localhost:3000'
     try {
       const res = await fetch(baseUrl + '/api/spotify?url=' + encodeURIComponent(artist.spotify), { next: { revalidate: 86400 } })
       const data = await res.json()
       if (data.image) spotifyImage = data.image
     } catch {}
   }
+
+  // Fetch Chartex stats - caut artistul in trending
+  try {
+    const chartexRes = await fetch(baseUrl + '/api/chartex?action=trending&country=RO&limit=100', { next: { revalidate: 3600 } })
+    const chartexData = await chartexRes.json()
+    const items = chartexData.data?.items || []
+    
+    // Calcul stats agregate pentru artist
+    let totalViews = 0
+    let total7DaysVideos = 0
+    let soundsCount = 0
+    let bestPosition = 0
+    
+    items.forEach((item: any, idx: number) => {
+      const itemArtist = (item.artists || item.tiktok_sound_creator_name || '').toLowerCase()
+      const ourArtist = (artist.artistName || '').toLowerCase()
+      if (itemArtist && ourArtist && (itemArtist.includes(ourArtist) || ourArtist.includes(itemArtist))) {
+        totalViews += item.total_video_views || 0
+        total7DaysVideos += item.tiktok_last_7_days_video_count || 0
+        soundsCount++
+        if (bestPosition === 0 || idx + 1 < bestPosition) bestPosition = idx + 1
+      }
+    })
+    
+    if (soundsCount > 0) {
+      chartexStats = { totalViews, total7DaysVideos, soundsCount, bestPosition }
+    }
+  } catch {}
   let vibes: string[] = []
   if (Array.isArray(artist.vibes)) {
     vibes = artist.vibes
@@ -127,6 +149,41 @@ export default async function ArtistPage({ params }: { params: Promise<{ slug: s
 
 
         </div>
+
+        {/* Chartex Live Stats */}
+        {chartexStats && (
+          <div style={{background:'#fef2f2', border:'1px solid #fecaca', borderRadius:'20px', padding:'20px', marginBottom:'16px'}}>
+            <div style={{display:'flex', alignItems:'center', gap:'6px', marginBottom:'12px'}}>
+              <span style={{fontSize:'10px', fontWeight:700, color:'#dc2626', textTransform:'uppercase', letterSpacing:'0.08em'}}>● Live Stats — TikTok România</span>
+            </div>
+            <div style={{display:'grid', gridTemplateColumns:'repeat(auto-fit, minmax(140px, 1fr))', gap:'12px'}}>
+              {chartexStats.totalViews > 1000000 && (
+                <div style={{textAlign:'center', padding:'14px 10px', background:'white', borderRadius:'12px'}}>
+                  <div style={{fontWeight:800, fontSize:'18px', color:'#dc2626', letterSpacing:'-0.5px'}}>{(chartexStats.totalViews / 1000000).toFixed(1)}M</div>
+                  <div style={{fontSize:'10px', color:'#78716c', fontWeight:600, marginTop:'4px', textTransform:'uppercase'}}>Views TikTok</div>
+                </div>
+              )}
+              {chartexStats.total7DaysVideos > 100 && (
+                <div style={{textAlign:'center', padding:'14px 10px', background:'white', borderRadius:'12px'}}>
+                  <div style={{fontWeight:800, fontSize:'18px', color:'#1c1917', letterSpacing:'-0.5px'}}>{chartexStats.total7DaysVideos.toLocaleString('ro-RO')}</div>
+                  <div style={{fontSize:'10px', color:'#78716c', fontWeight:600, marginTop:'4px', textTransform:'uppercase'}}>Video-uri / 7 zile</div>
+                </div>
+              )}
+              {chartexStats.bestPosition > 0 && chartexStats.bestPosition <= 50 && (
+                <div style={{textAlign:'center', padding:'14px 10px', background:'white', borderRadius:'12px'}}>
+                  <div style={{fontWeight:800, fontSize:'18px', color:'#dc2626', letterSpacing:'-0.5px'}}>Top {chartexStats.bestPosition}</div>
+                  <div style={{fontSize:'10px', color:'#78716c', fontWeight:600, marginTop:'4px', textTransform:'uppercase'}}>Trending RO</div>
+                </div>
+              )}
+              {chartexStats.soundsCount > 0 && (
+                <div style={{textAlign:'center', padding:'14px 10px', background:'white', borderRadius:'12px'}}>
+                  <div style={{fontWeight:800, fontSize:'18px', color:'#dc2626', letterSpacing:'-0.5px'}}>{chartexStats.soundsCount}</div>
+                  <div style={{fontSize:'10px', color:'#78716c', fontWeight:600, marginTop:'4px', textTransform:'uppercase'}}>Sound{chartexStats.soundsCount > 1 ? '-uri' : ''} viral{chartexStats.soundsCount > 1 ? 'e' : ''}</div>
+                </div>
+              )}
+            </div>
+          </div>
+        )}
 
         {/* Stats FOMO */}
         <div style={{display:'grid', gridTemplateColumns:'repeat(3, 1fr)', gap:'10px', marginBottom:'16px'}}>
