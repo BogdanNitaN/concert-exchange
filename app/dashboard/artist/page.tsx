@@ -613,11 +613,15 @@ export default function ArtistDashboard() {
           </div>
 
           {/* Navigare luna */}
-          <div style={{display:'flex', alignItems:'center', justifyContent:'space-between', marginBottom:'12px'}}>
+          <div style={{display:'flex', alignItems:'center', justifyContent:'space-between', marginBottom:'12px', gap:'8px'}}>
             <button type="button" onClick={() => setCurrentMonth(new Date(currentMonth.getFullYear(), currentMonth.getMonth() - 1, 1))}
               style={{padding:'8px 14px', borderRadius:'10px', border:'1px solid #e7e5e4', background:'white', cursor:'pointer', fontSize:'13px', fontWeight:600, color:'#44403c'}}>←</button>
-            <div style={{fontWeight:700, fontSize:'14px', color:'#1c1917'}}>
-              {currentMonth.toLocaleDateString('ro-RO', {month:'long', year:'numeric'})}
+            <div style={{flex:1, textAlign:'center', display:'flex', alignItems:'center', justifyContent:'center', gap:'8px'}}>
+              <span style={{fontWeight:700, fontSize:'14px', color:'#1c1917', textTransform:'capitalize'}}>
+                {currentMonth.toLocaleDateString('ro-RO', {month:'long'})} {currentMonth.getFullYear()}
+              </span>
+              <button type="button" onClick={() => setCurrentMonth(new Date())}
+                style={{padding:'4px 10px', borderRadius:'8px', border:'1px solid #059669', background:'#f0fdf4', cursor:'pointer', fontSize:'11px', fontWeight:700, color:'#059669'}}>Azi</button>
             </div>
             <button type="button" onClick={() => setCurrentMonth(new Date(currentMonth.getFullYear(), currentMonth.getMonth() + 1, 1))}
               style={{padding:'8px 14px', borderRadius:'10px', border:'1px solid #e7e5e4', background:'white', cursor:'pointer', fontSize:'13px', fontWeight:600, color:'#44403c'}}>→</button>
@@ -636,14 +640,18 @@ export default function ArtistDashboard() {
               if (day === null) return <div key={i}></div>
               const dateStr = formatDate(currentMonth.getFullYear(), currentMonth.getMonth(), day)
               const status = availability[dateStr]
-              const bg = status === 'booked' ? '#dc2626' : status === 'partial' ? '#f97316' : status === 'active' ? '#eab308' : 'white'
-              const color = status ? 'white' : '#44403c'
+              const today = new Date()
+              const isToday = day === today.getDate() && currentMonth.getMonth() === today.getMonth() && currentMonth.getFullYear() === today.getFullYear()
+              const isPast = new Date(dateStr) < new Date(today.getFullYear(), today.getMonth(), today.getDate())
+              const bg = status === 'booked' ? '#dc2626' : status === 'partial' ? '#f97316' : status === 'active' ? '#eab308' : isToday ? '#f0fdf4' : 'white'
+              const color = status ? 'white' : isToday ? '#059669' : isPast ? '#d6d3d1' : '#44403c'
+              const borderColor = isToday && !status ? '#059669' : '#e7e5e4'
               return (
                 <button type="button" key={i} onClick={() => {
                   const nextStatus = status === 'booked' ? 'partial' : status === 'partial' ? 'active' : status === 'active' ? 'available' : 'booked'
                   setDateStatus(dateStr, nextStatus)
                 }}
-                  style={{padding:'10px 0', borderRadius:'8px', border:'1px solid #e7e5e4', background:bg, color:color, cursor:'pointer', fontSize:'13px', fontWeight: status ? 700 : 500, fontFamily:'Montserrat,sans-serif'}}>
+                  disabled={isPast} style={{padding:'10px 0', borderRadius:'8px', border:'1.5px solid ' + borderColor, background:bg, color:color, cursor: isPast ? 'not-allowed' : 'pointer', fontSize:'13px', fontWeight: status || isToday ? 700 : 500, fontFamily:'Montserrat,sans-serif', opacity: isPast ? 0.4 : 1}}>
                   {day}
                 </button>
               )
