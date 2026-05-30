@@ -17,7 +17,7 @@ const VIBES = [
   { id: 'nostalgic', label: 'Nostalgic & Evergreen' },
 ]
 
-const GENRES = ['Pop', 'Dance', 'Hip-Hop', 'Rap', 'Trap', 'Rock', 'Jazz', 'Folk', 'Manele', 'Lăutărească', 'Balcanic', 'Populară', 'Cover Band', 'EDM', 'R&B', 'Latino', 'Clasică', 'Altele']
+const GENRES = ['Pop', 'Open Format', 'Dance', 'Hip-Hop', 'Rap', 'Trap', 'Rock', 'Jazz', 'Folk', 'Manele', 'Lăutărească', 'Balcanic', 'Populară', 'Cover Band', 'EDM', 'R&B', 'Latino', 'Clasică', 'Altele']
 
 const SET_TYPES = [
   { id: 'vocal', icon: Mic2, label: 'Artist vocal' },

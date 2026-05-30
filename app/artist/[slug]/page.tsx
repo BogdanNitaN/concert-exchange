@@ -123,33 +123,24 @@ export default async function ArtistPage({ params }: { params: Promise<{ slug: s
             <p style={{fontSize:'14px', color:'#44403c', lineHeight:1.7, margin:'0 0 20px'}}>{artist.bio}</p>
           )}
 
-          {/* Genuri */}
-          {genres.length > 0 && (
-            <div style={{display:'flex', flexWrap:'wrap', gap:'6px', marginBottom:'16px'}}>
-              {genres.map((g: string, i: number) => (
-                <span key={g} style={{padding:'4px 12px', borderRadius:'20px', background:'#f5f5f4', fontSize:'11px', fontWeight:600, color:'#44403c', marginRight:'4px'}}>{g}</span>
-              ))}
-            </div>
-          )}
+
 
 
         </div>
 
         {/* Stats FOMO */}
-        <div style={{background:'white', border:'1px solid #e7e5e4', borderRadius:'20px', padding:'20px', marginBottom:'16px'}}>
-          <div style={{display:'grid', gridTemplateColumns:'repeat(3, 1fr)', gap:'12px'}}>
-            <div style={{textAlign:'center', padding:'12px', background:'#f0fdf4', borderRadius:'14px'}}>
-              <div style={{fontWeight:800, fontSize:'20px', color:'#059669', marginTop:'4px'}}>30 min</div>
-              <div style={{fontSize:'11px', color:'#78716c', fontWeight:600, marginTop:'4px'}}>Răspuns garantat</div>
-            </div>
-            <div style={{textAlign:'center', padding:'12px', background:'#fef3c7', borderRadius:'14px'}}>
-              <div style={{fontWeight:800, fontSize:'20px', color:'#d97706', marginTop:'4px'}}>Activ</div>
-              <div style={{fontSize:'11px', color:'#78716c', fontWeight:600, marginTop:'4px'}}>Cereri în această lună</div>
-            </div>
-            <div style={{textAlign:'center', padding:'12px', background:'#dbeafe', borderRadius:'14px'}}>
-              <div style={{fontWeight:800, fontSize:'20px', color:'#1d4ed8', marginTop:'4px'}}>Verificat</div>
-              <div style={{fontSize:'11px', color:'#78716c', fontWeight:600, marginTop:'4px'}}>Artist GIGx</div>
-            </div>
+        <div style={{display:'grid', gridTemplateColumns:'repeat(3, 1fr)', gap:'10px', marginBottom:'16px'}}>
+          <div style={{textAlign:'center', padding:'18px 12px', background:'#1c1917', borderRadius:'16px', boxShadow:'0 1px 4px rgba(0,0,0,0.08)'}}>
+            <div style={{fontWeight:800, fontSize:'20px', color:'white', letterSpacing:'-0.5px'}}>30 min</div>
+            <div style={{fontSize:'10px', color:'rgba(255,255,255,0.6)', fontWeight:600, marginTop:'6px', textTransform:'uppercase', letterSpacing:'0.05em'}}>Răspuns garantat</div>
+          </div>
+          <div style={{textAlign:'center', padding:'18px 12px', background:'white', border:'1px solid #e7e5e4', borderRadius:'16px', boxShadow:'0 1px 4px rgba(0,0,0,0.04)'}}>
+            <div style={{fontWeight:800, fontSize:'20px', color:'#059669', letterSpacing:'-0.5px'}}>Activ</div>
+            <div style={{fontSize:'10px', color:'#78716c', fontWeight:600, marginTop:'6px', textTransform:'uppercase', letterSpacing:'0.05em'}}>Cereri luna aceasta</div>
+          </div>
+          <div style={{textAlign:'center', padding:'18px 12px', background:'white', border:'1px solid #e7e5e4', borderRadius:'16px', boxShadow:'0 1px 4px rgba(0,0,0,0.04)'}}>
+            <div style={{fontWeight:800, fontSize:'20px', color:'#1c1917', letterSpacing:'-0.5px'}}>GIGx</div>
+            <div style={{fontSize:'10px', color:'#78716c', fontWeight:600, marginTop:'6px', textTransform:'uppercase', letterSpacing:'0.05em'}}>Artist verificat</div>
           </div>
         </div>
 
