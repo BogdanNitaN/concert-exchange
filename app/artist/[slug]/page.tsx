@@ -38,19 +38,7 @@ export default async function ArtistPage({ params }: { params: Promise<{ slug: s
   console.log("Slug:", slug, "Artist:", artist)
   if (!artist) notFound()
 
-  // Fetch disponibilitate urmatoarele 3 luni
-  const today = new Date().toISOString().split('T')[0]
-  const threeMonths = new Date(Date.now() + 90 * 24 * 60 * 60 * 1000).toISOString().split('T')[0]
-  const { data: availability } = await supabase
-    .from('availability')
-    .select('date, status')
-    .eq('artist_id', artist.id)
-    .gte('date', today)
-    .lte('date', threeMonths)
-    .order('date', { ascending: true })
 
-  const bookedDates = (availability || []).filter((a: any) => a.status === 'booked').map((a: any) => a.date)
-  const blockedDates = (availability || []).filter((a: any) => a.status === 'blocked').map((a: any) => a.date)
 
   const displayName = artist.artistName || artist.slug
 
@@ -147,6 +135,27 @@ export default async function ArtistPage({ params }: { params: Promise<{ slug: s
 
         </div>
 
+        {/* Stats FOMO */}
+        <div style={{background:'white', border:'1px solid #e7e5e4', borderRadius:'20px', padding:'20px', marginBottom:'16px'}}>
+          <div style={{display:'grid', gridTemplateColumns:'repeat(3, 1fr)', gap:'12px'}}>
+            <div style={{textAlign:'center', padding:'12px', background:'#f0fdf4', borderRadius:'14px'}}>
+              <div style={{fontSize:'24px'}}>⚡</div>
+              <div style={{fontWeight:800, fontSize:'18px', color:'#059669', marginTop:'4px'}}>30 min</div>
+              <div style={{fontSize:'10px', color:'#78716c', fontWeight:600, marginTop:'2px'}}>Răspuns garantat</div>
+            </div>
+            <div style={{textAlign:'center', padding:'12px', background:'#fef3c7', borderRadius:'14px'}}>
+              <div style={{fontSize:'24px'}}>🔥</div>
+              <div style={{fontWeight:800, fontSize:'18px', color:'#d97706', marginTop:'4px'}}>Activ</div>
+              <div style={{fontSize:'10px', color:'#78716c', fontWeight:600, marginTop:'2px'}}>Cereri în această lună</div>
+            </div>
+            <div style={{textAlign:'center', padding:'12px', background:'#dbeafe', borderRadius:'14px'}}>
+              <div style={{fontSize:'24px'}}>✨</div>
+              <div style={{fontWeight:800, fontSize:'18px', color:'#1d4ed8', marginTop:'4px'}}>Verificat</div>
+              <div style={{fontSize:'10px', color:'#78716c', fontWeight:600, marginTop:'2px'}}>Artist confirmat GIGx</div>
+            </div>
+          </div>
+        </div>
+
         {/* Social links */}
         {(artist.instagram || artist.spotify || artist.youtube || artist.tiktok || artist.facebook || artist.soundcloud) && (
           <div style={{background:'white', border:'1px solid #e7e5e4', borderRadius:'20px', padding:'20px', marginBottom:'16px'}}>
@@ -189,71 +198,6 @@ export default async function ArtistPage({ params }: { params: Promise<{ slug: s
                 </a>
               )}
             </div>
-          </div>
-        )}
-
-        {/* Calendar disponibilitate */}
-        <div style={{background:'white', border:'1px solid #e7e5e4', borderRadius:'20px', padding:'24px', marginBottom:'16px'}}>
-          <div style={{fontSize:'10px', fontWeight:700, color:'#a8a29e', textTransform:'uppercase', letterSpacing:'0.08em', marginBottom:'16px'}}>Disponibilitate — urmatoarele 90 zile</div>
-          <div style={{display:'flex', gap:'16px', flexWrap:'wrap', marginBottom:'16px'}}>
-            <div style={{display:'flex', alignItems:'center', gap:'6px'}}>
-              <div style={{width:'12px', height:'12px', borderRadius:'3px', background:'#059669'}}></div>
-              <span style={{fontSize:'11px', color:'#78716c', fontWeight:600}}>Disponibil</span>
-            </div>
-            <div style={{display:'flex', alignItems:'center', gap:'6px'}}>
-              <div style={{width:'12px', height:'12px', borderRadius:'3px', background:'#dc2626'}}></div>
-              <span style={{fontSize:'11px', color:'#78716c', fontWeight:600}}>Rezervat</span>
-            </div>
-            <div style={{display:'flex', alignItems:'center', gap:'6px'}}>
-              <div style={{width:'12px', height:'12px', borderRadius:'3px', background:'#e7e5e4'}}></div>
-              <span style={{fontSize:'11px', color:'#78716c', fontWeight:600}}>Blocat</span>
-            </div>
-          </div>
-          {bookedDates.length === 0 && blockedDates.length === 0 ? (
-            <div style={{fontSize:'13px', color:'#78716c', padding:'16px', background:'#f0fdf4', borderRadius:'12px', textAlign:'center'}}>
-              ✅ Disponibil pentru evenimente în această perioadă
-            </div>
-          ) : (
-            <div>
-              {bookedDates.length > 0 && (
-                <div style={{marginBottom:'12px'}}>
-                  <div style={{fontSize:'11px', fontWeight:700, color:'#dc2626', marginBottom:'8px'}}>Date rezervate:</div>
-                  <div style={{display:'flex', flexWrap:'wrap', gap:'6px'}}>
-                    {bookedDates.map((d: string) => (
-                      <span key={d} style={{padding:'4px 10px', borderRadius:'8px', background:'#fef2f2', border:'1px solid #fecaca', fontSize:'11px', fontWeight:600, color:'#dc2626'}}>
-                        {new Date(d).toLocaleDateString('ro-RO', {day:'numeric', month:'short'})}
-                      </span>
-                    ))}
-                  </div>
-                </div>
-              )}
-              {blockedDates.length > 0 && (
-                <div>
-                  <div style={{fontSize:'11px', fontWeight:700, color:'#78716c', marginBottom:'8px'}}>Date indisponibile:</div>
-                  <div style={{display:'flex', flexWrap:'wrap', gap:'6px'}}>
-                    {blockedDates.map((d: string) => (
-                      <span key={d} style={{padding:'4px 10px', borderRadius:'8px', background:'#f5f5f4', border:'1px solid #e7e5e4', fontSize:'11px', fontWeight:600, color:'#78716c'}}>
-                        {new Date(d).toLocaleDateString('ro-RO', {day:'numeric', month:'short'})}
-                      </span>
-                    ))}
-                  </div>
-                </div>
-              )}
-            </div>
-          )}
-        </div>
-
-        {/* Press Kit */}
-        {artist.press_kit_url && (
-          <div style={{background:'white', border:'1px solid #e7e5e4', borderRadius:'20px', padding:'20px', marginBottom:'16px', display:'flex', alignItems:'center', justifyContent:'space-between'}}>
-            <div>
-              <div style={{fontWeight:700, fontSize:'14px', color:'#1c1917', marginBottom:'4px'}}>Press Kit</div>
-              <div style={{fontSize:'12px', color:'#78716c'}}>Foto, bio, logo — materiale oficiale</div>
-            </div>
-            <a href={artist.press_kit_url} target="_blank" rel="noopener noreferrer"
-              style={{background:'#1c1917', color:'white', padding:'10px 20px', borderRadius:'12px', fontSize:'12px', fontWeight:700, textDecoration:'none', display:'flex', alignItems:'center', gap:'6px', whiteSpace:'nowrap'}}>
-              Descarcă <ArrowRight size={14} strokeWidth={2} />
-            </a>
           </div>
         )}
 
