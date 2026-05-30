@@ -105,37 +105,6 @@ export default function ArtistDashboard() {
             avData.forEach((a: any) => { map[a.date] = a.status })
             setAvailability(map)
           }
-          if (profile.cazare_tip) setCazareTip(profile.cazare_tip)
-          if (profile.durata) setDurata(Array.isArray(profile.durata) ? profile.durata : [])
-          if (profile.id) setArtistId(profile.id)
-          // Incarcam availability
-          const { data: avData } = await (supabase as any).from('availability').select('date, status').eq('artist_id', profile.id)
-          if (avData) {
-            const map: Record<string, string> = {}
-            avData.forEach((a: any) => { map[a.date] = a.status })
-            setAvailability(map)
-          }
-          if (profile.rider_url) setRiderUrl(profile.rider_url)
-          if (profile.cazare_tip) setCazareTip(profile.cazare_tip)
-          if (profile.durata) setDurata(Array.isArray(profile.durata) ? profile.durata : [])
-          if (profile.id) setArtistId(profile.id)
-          // Incarcam availability
-          const { data: avData } = await (supabase as any).from('availability').select('date, status').eq('artist_id', profile.id)
-          if (avData) {
-            const map: Record<string, string> = {}
-            avData.forEach((a: any) => { map[a.date] = a.status })
-            setAvailability(map)
-          }
-          if (profile.cazare_tip) setCazareTip(profile.cazare_tip)
-          if (profile.durata) setDurata(Array.isArray(profile.durata) ? profile.durata : [])
-          if (profile.id) setArtistId(profile.id)
-          // Incarcam availability
-          const { data: avData } = await (supabase as any).from('availability').select('date, status').eq('artist_id', profile.id)
-          if (avData) {
-            const map: Record<string, string> = {}
-            avData.forEach((a: any) => { map[a.date] = a.status })
-            setAvailability(map)
-          }
         }
       }
     })
