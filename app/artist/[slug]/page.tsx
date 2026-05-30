@@ -130,17 +130,20 @@ export default async function ArtistPage({ params }: { params: Promise<{ slug: s
 
         {/* Stats FOMO */}
         <div style={{display:'grid', gridTemplateColumns:'repeat(3, 1fr)', gap:'10px', marginBottom:'16px'}}>
-          <div style={{textAlign:'center', padding:'18px 12px', background:'#1c1917', borderRadius:'16px', boxShadow:'0 1px 4px rgba(0,0,0,0.08)'}}>
+          <div style={{textAlign:'center', padding:'18px 12px', background:'#059669', borderRadius:'16px', boxShadow:'0 1px 4px rgba(5,150,105,0.15)'}}>
             <div style={{fontWeight:800, fontSize:'20px', color:'white', letterSpacing:'-0.5px'}}>30 min</div>
-            <div style={{fontSize:'10px', color:'rgba(255,255,255,0.6)', fontWeight:600, marginTop:'6px', textTransform:'uppercase', letterSpacing:'0.05em'}}>Răspuns garantat</div>
+            <div style={{fontSize:'10px', color:'rgba(255,255,255,0.85)', fontWeight:600, marginTop:'6px', textTransform:'uppercase', letterSpacing:'0.05em'}}>Răspuns garantat</div>
           </div>
           <div style={{textAlign:'center', padding:'18px 12px', background:'white', border:'1px solid #e7e5e4', borderRadius:'16px', boxShadow:'0 1px 4px rgba(0,0,0,0.04)'}}>
-            <div style={{fontWeight:800, fontSize:'20px', color:'#059669', letterSpacing:'-0.5px'}}>Activ</div>
+            <div style={{fontWeight:800, fontSize:'20px', color:'#1c1917', letterSpacing:'-0.5px'}}>Activ</div>
             <div style={{fontSize:'10px', color:'#78716c', fontWeight:600, marginTop:'6px', textTransform:'uppercase', letterSpacing:'0.05em'}}>Cereri luna aceasta</div>
           </div>
-          <div style={{textAlign:'center', padding:'18px 12px', background:'white', border:'1px solid #e7e5e4', borderRadius:'16px', boxShadow:'0 1px 4px rgba(0,0,0,0.04)'}}>
-            <div style={{fontWeight:800, fontSize:'20px', color:'#1c1917', letterSpacing:'-0.5px'}}>GIGx</div>
-            <div style={{fontSize:'10px', color:'#78716c', fontWeight:600, marginTop:'6px', textTransform:'uppercase', letterSpacing:'0.05em'}}>Artist verificat</div>
+          <div style={{textAlign:'center', padding:'18px 12px', background:'#1c1917', borderRadius:'16px', boxShadow:'0 1px 4px rgba(0,0,0,0.08)'}}>
+            <div style={{fontWeight:800, fontSize:'18px', color:'white', letterSpacing:'-0.5px', display:'flex', alignItems:'center', justifyContent:'center', gap:'4px'}}>
+              <CheckCircle2 size={18} color='#9ca3af' strokeWidth={2.5} />
+              GIGx
+            </div>
+            <div style={{fontSize:'10px', color:'rgba(255,255,255,0.6)', fontWeight:600, marginTop:'6px', textTransform:'uppercase', letterSpacing:'0.05em'}}>Artist verificat</div>
           </div>
         </div>
 
