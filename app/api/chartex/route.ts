@@ -17,29 +17,51 @@ export async function GET(request: NextRequest) {
   const action = request.nextUrl.searchParams.get('action') || 'trending'
   const country = request.nextUrl.searchParams.get('country') || 'RO'
   const limit = request.nextUrl.searchParams.get('limit') || '20'
+  const artistName = request.nextUrl.searchParams.get('artist') || ''
 
   try {
     if (action === 'trending') {
-      // Top TikTok sounds in Romania
       const data = await chartexFetch(
         `/external/v1/tiktok-sounds/?country_codes=${country}&sort_by=tiktok_last_7_days_video_count&limit=${limit}&only_music=true`
       )
       return NextResponse.json(data)
     }
 
-    if (action === 'songs') {
-      // Top songs trending in Romania
-      const data = await chartexFetch(
-        `/external/v1/songs/?country_codes=${country}&sort_platform=tiktok&sort_column=tiktok_last_7_days_video_count&limit=${limit}`
-      )
-      return NextResponse.json(data)
-    }
+    if (action === 'artist_full') {
+      const result: any = {
+        topSongs: [],
+        totalTiktokViews: 0,
+        total7DaysVideos: 0,
+        soundsCount: 0,
+        bestTrendingPosition: 0,
+      }
 
-    if (action === 'artist_metadata') {
-      const spotifyId = request.nextUrl.searchParams.get('spotify_id')
-      if (!spotifyId) return NextResponse.json({ error: 'No spotify_id' }, { status: 400 })
-      const data = await chartexFetch(`/external/v1/tiktok/accounts/${spotifyId}/metadata/`)
-      return NextResponse.json(data)
+      const trending = await chartexFetch(
+        `/external/v1/tiktok-sounds/?country_codes=${country}&sort_by=tiktok_last_7_days_video_count&limit=100&only_music=true`
+      )
+      const items = trending.data?.items || []
+      const ourArtist = artistName.toLowerCase().trim()
+
+      items.forEach((s: any, idx: number) => {
+        const itemArtist = (s.artists || s.tiktok_sound_creator_name || '').toLowerCase().trim()
+        if (itemArtist && ourArtist && (itemArtist.includes(ourArtist) || ourArtist.includes(itemArtist))) {
+          result.totalTiktokViews += s.total_video_views || 0
+          result.total7DaysVideos += s.tiktok_last_7_days_video_count || 0
+          result.soundsCount++
+          result.topSongs.push({
+            name: s.song_name || s.tiktok_name_of_sound,
+            tiktokViews: s.total_video_views,
+            videos7Days: s.tiktok_last_7_days_video_count,
+            image: s.song_image_url || s.tiktok_image_url,
+            soundLink: s.tiktok_official_link,
+          })
+          if (result.bestTrendingPosition === 0 || idx + 1 < result.bestTrendingPosition) {
+            result.bestTrendingPosition = idx + 1
+          }
+        }
+      })
+
+      return NextResponse.json(result)
     }
 
     return NextResponse.json({ error: 'Invalid action' }, { status: 400 })
