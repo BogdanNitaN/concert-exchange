@@ -377,10 +377,9 @@ export default function ArtistDashboard() {
             </div>
             <div style={{display:'flex', flexDirection:'column', gap:'8px'}}>
               {[
-                {id:'single', label:'Single'},
-                {id:'matrimoniala', label:'Matrimonială'},
+                {id:'single_matrimoniala', label:'Single Matrimonială'},
                 {id:'dubla_twin', label:'Dublă Twin'},
-                {id:'dubla_matrimoniala', label:'Dublă Matrimonială'},
+                {id:'suita', label:'Suită (Apartament)'},
               ].map(tip => {
                 const count = parseInt((cazareTip.split(';').find(x => x.startsWith(tip.id + ':')) || '').split(':')[1] || '0')
                 const setCount = (n: number) => {
