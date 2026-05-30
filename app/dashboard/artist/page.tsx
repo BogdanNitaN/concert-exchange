@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { supabase } from '@/lib/supabase'
-import { User, Music, MapPin, Car, Hotel, Plane, Save, CheckCircle2, Mic2, Disc3, Guitar, Globe } from 'lucide-react'
+import { User, Music, MapPin, Car, Hotel, Plane, Save, CheckCircle2, Mic2, Disc3, Guitar, Globe, Calendar } from 'lucide-react'
 import { InstagramLogo, YoutubeLogo, SpotifyLogo } from '@phosphor-icons/react'
 
 const VIBES = [
@@ -59,6 +59,9 @@ export default function ArtistDashboard() {
   const [riderUrl, setRiderUrl] = useState('')
   const [cazareTip, setCazareTip] = useState('')
   const [durata, setDurata] = useState<string[]>([])
+  const [availability, setAvailability] = useState<Record<string, string>>({})
+  const [currentMonth, setCurrentMonth] = useState(new Date())
+  const [artistId, setArtistId] = useState<string | null>(null)
   const [tiktok, setTiktok] = useState('')
   const [facebook, setFacebook] = useState('')
   const [soundcloud, setSoundcloud] = useState('')
@@ -94,13 +97,45 @@ export default function ArtistDashboard() {
           if (profile.rider_url) setRiderUrl(profile.rider_url)
           if (profile.cazare_tip) setCazareTip(profile.cazare_tip)
           if (profile.durata) setDurata(Array.isArray(profile.durata) ? profile.durata : [])
+          if (profile.id) setArtistId(profile.id)
+          // Incarcam availability
+          const { data: avData } = await (supabase as any).from('availability').select('date, status').eq('artist_id', profile.id)
+          if (avData) {
+            const map: Record<string, string> = {}
+            avData.forEach((a: any) => { map[a.date] = a.status })
+            setAvailability(map)
+          }
           if (profile.cazare_tip) setCazareTip(profile.cazare_tip)
           if (profile.durata) setDurata(Array.isArray(profile.durata) ? profile.durata : [])
+          if (profile.id) setArtistId(profile.id)
+          // Incarcam availability
+          const { data: avData } = await (supabase as any).from('availability').select('date, status').eq('artist_id', profile.id)
+          if (avData) {
+            const map: Record<string, string> = {}
+            avData.forEach((a: any) => { map[a.date] = a.status })
+            setAvailability(map)
+          }
           if (profile.rider_url) setRiderUrl(profile.rider_url)
           if (profile.cazare_tip) setCazareTip(profile.cazare_tip)
           if (profile.durata) setDurata(Array.isArray(profile.durata) ? profile.durata : [])
+          if (profile.id) setArtistId(profile.id)
+          // Incarcam availability
+          const { data: avData } = await (supabase as any).from('availability').select('date, status').eq('artist_id', profile.id)
+          if (avData) {
+            const map: Record<string, string> = {}
+            avData.forEach((a: any) => { map[a.date] = a.status })
+            setAvailability(map)
+          }
           if (profile.cazare_tip) setCazareTip(profile.cazare_tip)
           if (profile.durata) setDurata(Array.isArray(profile.durata) ? profile.durata : [])
+          if (profile.id) setArtistId(profile.id)
+          // Incarcam availability
+          const { data: avData } = await (supabase as any).from('availability').select('date, status').eq('artist_id', profile.id)
+          if (avData) {
+            const map: Record<string, string> = {}
+            avData.forEach((a: any) => { map[a.date] = a.status })
+            setAvailability(map)
+          }
         }
       }
     })
@@ -137,6 +172,37 @@ export default function ArtistDashboard() {
   const hasPhone = (text: string) => {
     const phoneRegex = /(\+?4?0?[\s.-]?7\d{2}[\s.-]?\d{3}[\s.-]?\d{3}|\d{10})/g
     return phoneRegex.test(text)
+  }
+
+  const setDateStatus = async (date: string, status: string) => {
+    if (!artistId) return
+    setAvailability(prev => {
+      const newMap = {...prev}
+      if (status === 'available') delete newMap[date]
+      else newMap[date] = status
+      return newMap
+    })
+    if (status === 'available') {
+      await (supabase as any).from('availability').delete().eq('artist_id', artistId).eq('date', date)
+    } else {
+      await (supabase as any).from('availability').upsert({ artist_id: artistId, date, status }, { onConflict: 'artist_id,date' })
+    }
+  }
+
+  const getDaysInMonth = (date: Date) => {
+    const year = date.getFullYear()
+    const month = date.getMonth()
+    const firstDay = new Date(year, month, 1).getDay()
+    const daysInMonth = new Date(year, month + 1, 0).getDate()
+    const days: (number | null)[] = []
+    const startOffset = firstDay === 0 ? 6 : firstDay - 1
+    for (let i = 0; i < startOffset; i++) days.push(null)
+    for (let i = 1; i <= daysInMonth; i++) days.push(i)
+    return days
+  }
+
+  const formatDate = (year: number, month: number, day: number) => {
+    return `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`
   }
 
   const importFromSpotify = async () => {
@@ -209,6 +275,37 @@ export default function ArtistDashboard() {
     return phoneRegex.test(text)
   }
 
+  const setDateStatus = async (date: string, status: string) => {
+    if (!artistId) return
+    setAvailability(prev => {
+      const newMap = {...prev}
+      if (status === 'available') delete newMap[date]
+      else newMap[date] = status
+      return newMap
+    })
+    if (status === 'available') {
+      await (supabase as any).from('availability').delete().eq('artist_id', artistId).eq('date', date)
+    } else {
+      await (supabase as any).from('availability').upsert({ artist_id: artistId, date, status }, { onConflict: 'artist_id,date' })
+    }
+  }
+
+  const getDaysInMonth = (date: Date) => {
+    const year = date.getFullYear()
+    const month = date.getMonth()
+    const firstDay = new Date(year, month, 1).getDay()
+    const daysInMonth = new Date(year, month + 1, 0).getDate()
+    const days: (number | null)[] = []
+    const startOffset = firstDay === 0 ? 6 : firstDay - 1
+    for (let i = 0; i < startOffset; i++) days.push(null)
+    for (let i = 1; i <= daysInMonth; i++) days.push(i)
+    return days
+  }
+
+  const formatDate = (year: number, month: number, day: number) => {
+    return `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`
+  }
+
   const importFromSpotify = async () => {
     if (!spotify) { setSpotifyError('Adaugă mai întâi link-ul Spotify'); return }
     setSpotifyLoading(true)
@@ -266,6 +363,37 @@ export default function ArtistDashboard() {
                     const hasPhone = (text: string) => {
     const phoneRegex = /(\+?4?0?[\s.-]?7\d{2}[\s.-]?\d{3}[\s.-]?\d{3}|\d{10})/g
     return phoneRegex.test(text)
+  }
+
+  const setDateStatus = async (date: string, status: string) => {
+    if (!artistId) return
+    setAvailability(prev => {
+      const newMap = {...prev}
+      if (status === 'available') delete newMap[date]
+      else newMap[date] = status
+      return newMap
+    })
+    if (status === 'available') {
+      await (supabase as any).from('availability').delete().eq('artist_id', artistId).eq('date', date)
+    } else {
+      await (supabase as any).from('availability').upsert({ artist_id: artistId, date, status }, { onConflict: 'artist_id,date' })
+    }
+  }
+
+  const getDaysInMonth = (date: Date) => {
+    const year = date.getFullYear()
+    const month = date.getMonth()
+    const firstDay = new Date(year, month, 1).getDay()
+    const daysInMonth = new Date(year, month + 1, 0).getDate()
+    const days: (number | null)[] = []
+    const startOffset = firstDay === 0 ? 6 : firstDay - 1
+    for (let i = 0; i < startOffset; i++) days.push(null)
+    for (let i = 1; i <= daysInMonth; i++) days.push(i)
+    return days
+  }
+
+  const formatDate = (year: number, month: number, day: number) => {
+    return `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`
   }
 
   const importFromSpotify = async () => {
@@ -495,6 +623,65 @@ export default function ArtistDashboard() {
               style={{width:'100%', padding:'11px 14px', borderRadius:'12px', border:'1px solid #e7e5e4', fontSize:'13px', fontFamily:'Montserrat,sans-serif', color:'#1c1917', outline:'none', boxSizing:'border-box', background:'#fafaf9'}} />
           </div>
         </div>
+
+        <Section icon={Calendar} title="Calendar disponibilitate">
+          <div style={{fontSize:'12px', color:'#78716c', marginBottom:'16px'}}>Marchează datele cu eveniment confirmat sau în discuții. Datele nemarcate apar ca disponibile pentru cereri.</div>
+          
+          {/* Legenda */}
+          <div style={{display:'flex', gap:'10px', flexWrap:'wrap', marginBottom:'16px', padding:'12px', background:'#fafaf9', borderRadius:'12px'}}>
+            <div style={{display:'flex', alignItems:'center', gap:'6px'}}>
+              <div style={{width:'12px', height:'12px', borderRadius:'3px', background:'#dc2626'}}></div>
+              <span style={{fontSize:'11px', color:'#44403c', fontWeight:600}}>Rezervat</span>
+            </div>
+            <div style={{display:'flex', alignItems:'center', gap:'6px'}}>
+              <div style={{width:'12px', height:'12px', borderRadius:'3px', background:'#f97316'}}></div>
+              <span style={{fontSize:'11px', color:'#44403c', fontWeight:600}}>Parțial</span>
+            </div>
+            <div style={{display:'flex', alignItems:'center', gap:'6px'}}>
+              <div style={{width:'12px', height:'12px', borderRadius:'3px', background:'#eab308'}}></div>
+              <span style={{fontSize:'11px', color:'#44403c', fontWeight:600}}>Cereri active</span>
+            </div>
+          </div>
+
+          {/* Navigare luna */}
+          <div style={{display:'flex', alignItems:'center', justifyContent:'space-between', marginBottom:'12px'}}>
+            <button type="button" onClick={() => setCurrentMonth(new Date(currentMonth.getFullYear(), currentMonth.getMonth() - 1, 1))}
+              style={{padding:'8px 14px', borderRadius:'10px', border:'1px solid #e7e5e4', background:'white', cursor:'pointer', fontSize:'13px', fontWeight:600, color:'#44403c'}}>←</button>
+            <div style={{fontWeight:700, fontSize:'14px', color:'#1c1917'}}>
+              {currentMonth.toLocaleDateString('ro-RO', {month:'long', year:'numeric'})}
+            </div>
+            <button type="button" onClick={() => setCurrentMonth(new Date(currentMonth.getFullYear(), currentMonth.getMonth() + 1, 1))}
+              style={{padding:'8px 14px', borderRadius:'10px', border:'1px solid #e7e5e4', background:'white', cursor:'pointer', fontSize:'13px', fontWeight:600, color:'#44403c'}}>→</button>
+          </div>
+
+          {/* Header zile saptamana */}
+          <div style={{display:'grid', gridTemplateColumns:'repeat(7, 1fr)', gap:'4px', marginBottom:'4px'}}>
+            {['L','Ma','Mi','J','V','S','D'].map((d, i) => (
+              <div key={i} style={{textAlign:'center', fontSize:'10px', fontWeight:700, color:'#a8a29e', padding:'6px 0'}}>{d}</div>
+            ))}
+          </div>
+
+          {/* Grid calendar */}
+          <div style={{display:'grid', gridTemplateColumns:'repeat(7, 1fr)', gap:'4px'}}>
+            {getDaysInMonth(currentMonth).map((day, i) => {
+              if (day === null) return <div key={i}></div>
+              const dateStr = formatDate(currentMonth.getFullYear(), currentMonth.getMonth(), day)
+              const status = availability[dateStr]
+              const bg = status === 'booked' ? '#dc2626' : status === 'partial' ? '#f97316' : status === 'active' ? '#eab308' : 'white'
+              const color = status ? 'white' : '#44403c'
+              return (
+                <button type="button" key={i} onClick={() => {
+                  const nextStatus = status === 'booked' ? 'partial' : status === 'partial' ? 'active' : status === 'active' ? 'available' : 'booked'
+                  setDateStatus(dateStr, nextStatus)
+                }}
+                  style={{padding:'10px 0', borderRadius:'8px', border:'1px solid #e7e5e4', background:bg, color:color, cursor:'pointer', fontSize:'13px', fontWeight: status ? 700 : 500, fontFamily:'Montserrat,sans-serif'}}>
+                  {day}
+                </button>
+              )
+            })}
+          </div>
+          <div style={{fontSize:'11px', color:'#a8a29e', marginTop:'10px', textAlign:'center'}}>Click pe o zi pentru a cicla: Rezervat → Parțial → Cereri active → Disponibil</div>
+        </Section>
 
         <button onClick={handleSave} disabled={loading}
           style={{width:'100%', background:'#1c1917', color:'white', padding:'15px', borderRadius:'14px', border:'none', cursor: loading ? 'not-allowed' : 'pointer', fontSize:'14px', fontWeight:700, fontFamily:'Montserrat,sans-serif', display:'flex', alignItems:'center', justifyContent:'center', gap:'8px', opacity: loading ? 0.7 : 1, marginBottom:'24px'}}>
