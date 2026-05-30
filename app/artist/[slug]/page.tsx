@@ -126,8 +126,8 @@ export default async function ArtistPage({ params }: { params: Promise<{ slug: s
           {/* Genuri */}
           {genres.length > 0 && (
             <div style={{display:'flex', flexWrap:'wrap', gap:'6px', marginBottom:'16px'}}>
-              {genres.map((g: string) => (
-                <span key={g} style={{padding:'4px 12px', borderRadius:'20px', background:'#f5f5f4', fontSize:'11px', fontWeight:600, color:'#44403c'}}>{g}</span>
+              {genres.map((g: string, i: number) => (
+                <span key={g} style={{padding:'4px 12px', borderRadius:'20px', background:'#f5f5f4', fontSize:'11px', fontWeight:600, color:'#44403c', marginRight:'4px'}}>{g}</span>
               ))}
             </div>
           )}
@@ -139,19 +139,16 @@ export default async function ArtistPage({ params }: { params: Promise<{ slug: s
         <div style={{background:'white', border:'1px solid #e7e5e4', borderRadius:'20px', padding:'20px', marginBottom:'16px'}}>
           <div style={{display:'grid', gridTemplateColumns:'repeat(3, 1fr)', gap:'12px'}}>
             <div style={{textAlign:'center', padding:'12px', background:'#f0fdf4', borderRadius:'14px'}}>
-              <div style={{fontSize:'24px'}}>⚡</div>
-              <div style={{fontWeight:800, fontSize:'18px', color:'#059669', marginTop:'4px'}}>30 min</div>
-              <div style={{fontSize:'10px', color:'#78716c', fontWeight:600, marginTop:'2px'}}>Răspuns garantat</div>
+              <div style={{fontWeight:800, fontSize:'20px', color:'#059669', marginTop:'4px'}}>30 min</div>
+              <div style={{fontSize:'11px', color:'#78716c', fontWeight:600, marginTop:'4px'}}>Răspuns garantat</div>
             </div>
             <div style={{textAlign:'center', padding:'12px', background:'#fef3c7', borderRadius:'14px'}}>
-              <div style={{fontSize:'24px'}}>🔥</div>
-              <div style={{fontWeight:800, fontSize:'18px', color:'#d97706', marginTop:'4px'}}>Activ</div>
-              <div style={{fontSize:'10px', color:'#78716c', fontWeight:600, marginTop:'2px'}}>Cereri în această lună</div>
+              <div style={{fontWeight:800, fontSize:'20px', color:'#d97706', marginTop:'4px'}}>Activ</div>
+              <div style={{fontSize:'11px', color:'#78716c', fontWeight:600, marginTop:'4px'}}>Cereri în această lună</div>
             </div>
             <div style={{textAlign:'center', padding:'12px', background:'#dbeafe', borderRadius:'14px'}}>
-              <div style={{fontSize:'24px'}}>✨</div>
-              <div style={{fontWeight:800, fontSize:'18px', color:'#1d4ed8', marginTop:'4px'}}>Verificat</div>
-              <div style={{fontSize:'10px', color:'#78716c', fontWeight:600, marginTop:'2px'}}>Artist confirmat GIGx</div>
+              <div style={{fontWeight:800, fontSize:'20px', color:'#1d4ed8', marginTop:'4px'}}>Verificat</div>
+              <div style={{fontSize:'11px', color:'#78716c', fontWeight:600, marginTop:'4px'}}>Artist GIGx</div>
             </div>
           </div>
         </div>
@@ -164,37 +161,37 @@ export default async function ArtistPage({ params }: { params: Promise<{ slug: s
               {artist.instagram && (
                 <a href={'https://instagram.com/' + artist.instagram.replace('@','')} target="_blank" rel="noopener noreferrer"
                   style={{display:'flex', alignItems:'center', gap:'6px', padding:'8px 16px', borderRadius:'12px', background:'#fafaf9', border:'1px solid #e7e5e4', fontSize:'12px', fontWeight:600, color:'#1c1917', textDecoration:'none'}}>
-                  📷 Instagram
+                  Instagram
                 </a>
               )}
               {artist.spotify && (
                 <a href={artist.spotify} target="_blank" rel="noopener noreferrer"
                   style={{display:'flex', alignItems:'center', gap:'6px', padding:'8px 16px', borderRadius:'12px', background:'#f0fdf4', border:'1px solid #bbf7d0', fontSize:'12px', fontWeight:600, color:'#059669', textDecoration:'none'}}>
-                  🎵 Spotify
+                  Spotify
                 </a>
               )}
               {artist.youtube && (
                 <a href={artist.youtube} target="_blank" rel="noopener noreferrer"
                   style={{display:'flex', alignItems:'center', gap:'6px', padding:'8px 16px', borderRadius:'12px', background:'#fef2f2', border:'1px solid #fecaca', fontSize:'12px', fontWeight:600, color:'#dc2626', textDecoration:'none'}}>
-                  ▶ YouTube
+                  YouTube
                 </a>
               )}
               {artist.tiktok && (
                 <a href={'https://tiktok.com/@' + artist.tiktok.replace('@','')} target="_blank" rel="noopener noreferrer"
                   style={{display:'flex', alignItems:'center', gap:'6px', padding:'8px 16px', borderRadius:'12px', background:'#fafaf9', border:'1px solid #e7e5e4', fontSize:'12px', fontWeight:600, color:'#1c1917', textDecoration:'none'}}>
-                  🎵 TikTok
+                  TikTok
                 </a>
               )}
               {artist.facebook && (
                 <a href={artist.facebook} target="_blank" rel="noopener noreferrer"
                   style={{display:'flex', alignItems:'center', gap:'6px', padding:'8px 16px', borderRadius:'12px', background:'#eff6ff', border:'1px solid #bfdbfe', fontSize:'12px', fontWeight:600, color:'#1877f2', textDecoration:'none'}}>
-                  👤 Facebook
+                  Facebook
                 </a>
               )}
               {artist.soundcloud && (
                 <a href={artist.soundcloud} target="_blank" rel="noopener noreferrer"
                   style={{display:'flex', alignItems:'center', gap:'6px', padding:'8px 16px', borderRadius:'12px', background:'#fff7ed', border:'1px solid #fed7aa', fontSize:'12px', fontWeight:600, color:'#ea580c', textDecoration:'none'}}>
-                  ☁️ SoundCloud
+                  SoundCloud
                 </a>
               )}
             </div>
