@@ -170,57 +170,45 @@ export default async function ArtistPage({ params }: { params: Promise<{ slug: s
           </div>
         )}
 
-        {/* Chartex Live Stats */}
-        {chartexStats && (
-          <div style={{background:'#fef2f2', border:'1px solid #fecaca', borderRadius:'20px', padding:'20px', marginBottom:'16px'}}>
-            <div style={{display:'flex', alignItems:'center', gap:'6px', marginBottom:'12px'}}>
-              <span style={{fontSize:'10px', fontWeight:700, color:'#dc2626', textTransform:'uppercase', letterSpacing:'0.08em'}}>● Live Stats — TikTok România</span>
-            </div>
-            <div style={{display:'grid', gridTemplateColumns:'repeat(auto-fit, minmax(140px, 1fr))', gap:'12px'}}>
-              {chartexStats.totalViews > 1000000 && (
-                <div style={{textAlign:'center', padding:'14px 10px', background:'white', borderRadius:'12px'}}>
-                  <div style={{fontWeight:800, fontSize:'18px', color:'#dc2626', letterSpacing:'-0.5px'}}>{(chartexStats.totalViews / 1000000).toFixed(1)}M</div>
-                  <div style={{fontSize:'10px', color:'#78716c', fontWeight:600, marginTop:'4px', textTransform:'uppercase'}}>Views TikTok</div>
-                </div>
-              )}
-              {chartexStats.total7DaysVideos > 100 && (
-                <div style={{textAlign:'center', padding:'14px 10px', background:'white', borderRadius:'12px'}}>
-                  <div style={{fontWeight:800, fontSize:'18px', color:'#1c1917', letterSpacing:'-0.5px'}}>{chartexStats.total7DaysVideos.toLocaleString('ro-RO')}</div>
-                  <div style={{fontSize:'10px', color:'#78716c', fontWeight:600, marginTop:'4px', textTransform:'uppercase'}}>Video-uri / 7 zile</div>
-                </div>
-              )}
-              {chartexStats.bestPosition > 0 && chartexStats.bestPosition <= 50 && (
-                <div style={{textAlign:'center', padding:'14px 10px', background:'white', borderRadius:'12px'}}>
-                  <div style={{fontWeight:800, fontSize:'18px', color:'#dc2626', letterSpacing:'-0.5px'}}>Top {chartexStats.bestPosition}</div>
-                  <div style={{fontSize:'10px', color:'#78716c', fontWeight:600, marginTop:'4px', textTransform:'uppercase'}}>Trending RO</div>
-                </div>
-              )}
-              {chartexStats.soundsCount > 0 && (
-                <div style={{textAlign:'center', padding:'14px 10px', background:'white', borderRadius:'12px'}}>
-                  <div style={{fontWeight:800, fontSize:'18px', color:'#dc2626', letterSpacing:'-0.5px'}}>{chartexStats.soundsCount}</div>
-                  <div style={{fontSize:'10px', color:'#78716c', fontWeight:600, marginTop:'4px', textTransform:'uppercase'}}>Sound{chartexStats.soundsCount > 1 ? '-uri' : ''} viral{chartexStats.soundsCount > 1 ? 'e' : ''}</div>
-                </div>
-              )}
-            </div>
-          </div>
-        )}
-
-        {/* Stats FOMO */}
+        {/* Stats Cards 2026 */}
         <div style={{display:'grid', gridTemplateColumns:'repeat(3, 1fr)', gap:'10px', marginBottom:'16px'}}>
-          <div style={{textAlign:'center', padding:'18px 12px', background:'#059669', borderRadius:'16px', boxShadow:'0 1px 4px rgba(5,150,105,0.15)'}}>
-            <div style={{fontWeight:800, fontSize:'20px', color:'white', letterSpacing:'-0.5px'}}>30 min</div>
-            <div style={{fontSize:'10px', color:'rgba(255,255,255,0.85)', fontWeight:600, marginTop:'6px', textTransform:'uppercase', letterSpacing:'0.05em'}}>Răspuns garantat</div>
-          </div>
-          <div style={{textAlign:'center', padding:'18px 12px', background:'white', border:'1px solid #e7e5e4', borderRadius:'16px', boxShadow:'0 1px 4px rgba(0,0,0,0.04)'}}>
-            <div style={{fontWeight:800, fontSize:'20px', color:'#1c1917', letterSpacing:'-0.5px'}}>Activ</div>
-            <div style={{fontSize:'10px', color:'#78716c', fontWeight:600, marginTop:'6px', textTransform:'uppercase', letterSpacing:'0.05em'}}>Cereri luna aceasta</div>
-          </div>
-          <div style={{textAlign:'center', padding:'18px 12px', background:'#1c1917', borderRadius:'16px', boxShadow:'0 1px 4px rgba(0,0,0,0.08)'}}>
-            <div style={{fontWeight:800, fontSize:'18px', color:'white', letterSpacing:'-0.5px', display:'flex', alignItems:'center', justifyContent:'center', gap:'4px'}}>
-              <CheckCircle2 size={18} color='#9ca3af' strokeWidth={2.5} />
-              GIGx
+          {/* Card 1 - Raspuns */}
+          <div style={{padding:'20px 14px', background:'white', border:'1px solid #e7e5e4', borderRadius:'18px', boxShadow:'0 2px 8px rgba(0,0,0,0.04)', position:'relative', overflow:'hidden'}}>
+            <div style={{position:'absolute', top:0, right:0, width:'4px', height:'100%', background:'#059669'}}></div>
+            <div style={{fontWeight:800, fontSize:'26px', color:'#1c1917', letterSpacing:'-1px', lineHeight:1}}>30<span style={{fontSize:'14px', fontWeight:700, color:'#78716c', marginLeft:'2px'}}>min</span></div>
+            <div style={{fontSize:'10px', color:'#78716c', fontWeight:700, marginTop:'10px', textTransform:'uppercase', letterSpacing:'0.06em'}}>Răspuns garantat</div>
+            <div style={{marginTop:'8px', display:'flex', alignItems:'center', gap:'4px'}}>
+              <div style={{width:'6px', height:'6px', borderRadius:'50%', background:'#059669'}}></div>
+              <span style={{fontSize:'10px', color:'#059669', fontWeight:700}}>Activ acum</span>
             </div>
-            <div style={{fontSize:'10px', color:'rgba(255,255,255,0.6)', fontWeight:600, marginTop:'6px', textTransform:'uppercase', letterSpacing:'0.05em'}}>Artist verificat</div>
+          </div>
+
+          {/* Card 2 - Heat Score */}
+          <div style={{padding:'20px 14px', background:'white', border:'1px solid #e7e5e4', borderRadius:'18px', boxShadow:'0 2px 8px rgba(0,0,0,0.04)', position:'relative', overflow:'hidden'}}>
+            {(() => {
+              const score = chartexStats?.heatScore || 65
+              const color = score >= 90 ? '#dc2626' : score >= 75 ? '#ea580c' : score >= 65 ? '#f59e0b' : '#a8a29e'
+              const label = score >= 90 ? 'Hot' : score >= 75 ? 'Trending' : score >= 65 ? 'Active' : 'New'
+              return (
+                <>
+                  <div style={{position:'absolute', top:0, right:0, width:'4px', height:'100%', background:color}}></div>
+                  <div style={{fontWeight:800, fontSize:'26px', color:'#1c1917', letterSpacing:'-1px', lineHeight:1}}>{score}<span style={{fontSize:'14px', fontWeight:700, color:'#78716c', marginLeft:'2px'}}>/100</span></div>
+                  <div style={{fontSize:'10px', color:'#78716c', fontWeight:700, marginTop:'10px', textTransform:'uppercase', letterSpacing:'0.06em'}}>Heat Score</div>
+                  <div style={{marginTop:'8px', width:'100%', height:'4px', background:'#f5f5f4', borderRadius:'2px', overflow:'hidden'}}>
+                    <div style={{width: score + '%', height:'100%', background:color, borderRadius:'2px'}}></div>
+                  </div>
+                  <div style={{marginTop:'6px', fontSize:'10px', color:color, fontWeight:700, textTransform:'uppercase', letterSpacing:'0.05em'}}>{label}</div>
+                </>
+              )
+            })()}
+          </div>
+
+          {/* Card 3 - Verified */}
+          <div style={{padding:'20px 14px', background:'white', border:'1px solid #e7e5e4', borderRadius:'18px', boxShadow:'0 2px 8px rgba(0,0,0,0.04)', position:'relative', overflow:'hidden'}}>
+            <div style={{position:'absolute', top:0, right:0, width:'4px', height:'100%', background:'#1c1917'}}></div>
+            <CheckCircle2 size={26} color='#059669' strokeWidth={2.5} fill='#dcfce7' />
+            <div style={{fontSize:'10px', color:'#78716c', fontWeight:700, marginTop:'10px', textTransform:'uppercase', letterSpacing:'0.06em'}}>GIGx Verified</div>
+            <div style={{marginTop:'8px', fontSize:'10px', color:'#1c1917', fontWeight:700}}>Artist confirmat</div>
           </div>
         </div>
 
