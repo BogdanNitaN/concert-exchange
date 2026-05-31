@@ -55,31 +55,20 @@ export default async function ArtistPage({ params }: { params: Promise<{ slug: s
     } catch {}
   }
 
-  // Fetch Chartex stats - caut artistul in trending
   try {
-    const chartexRes = await fetch(baseUrl + '/api/chartex?action=trending&country=RO&limit=100', { next: { revalidate: 3600 } })
-    const chartexData = await chartexRes.json()
-    const items = chartexData.data?.items || []
-    
-    // Calcul stats agregate pentru artist
-    let totalViews = 0
-    let total7DaysVideos = 0
-    let soundsCount = 0
-    let bestPosition = 0
-    
-    items.forEach((item: any, idx: number) => {
-      const itemArtist = (item.artists || item.tiktok_sound_creator_name || '').toLowerCase()
-      const ourArtist = (artist.artistName || '').toLowerCase()
-      if (itemArtist && ourArtist && (itemArtist.includes(ourArtist) || ourArtist.includes(itemArtist))) {
-        totalViews += item.total_video_views || 0
-        total7DaysVideos += item.tiktok_last_7_days_video_count || 0
-        soundsCount++
-        if (bestPosition === 0 || idx + 1 < bestPosition) bestPosition = idx + 1
+    const chartexRes = await fetch(
+      baseUrl + '/api/chartex?action=artist_full&artist=' + encodeURIComponent(artist.artistName || '') + '&country=RO',
+      { next: { revalidate: 3600 } }
+    )
+    const data = await chartexRes.json()
+    if (data.soundsCount > 0) {
+      chartexStats = {
+        totalViews: data.totalTiktokViews,
+        total7DaysVideos: data.total7DaysVideos,
+        soundsCount: data.soundsCount,
+        bestPosition: data.bestTrendingPosition,
+        topSongs: data.topSongs,
       }
-    })
-    
-    if (soundsCount > 0) {
-      chartexStats = { totalViews, total7DaysVideos, soundsCount, bestPosition }
     }
   } catch {}
   let vibes: string[] = []
