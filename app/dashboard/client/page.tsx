@@ -269,10 +269,10 @@ export default function ClientDashboard() {
                 <div style={{display:'flex', alignItems:'center', gap:'10px', flexWrap:'wrap'}}>
                   {selectedArtists.map((a, i) => {
                     const tierMap: Record<string, {label: string, color: string}> = {
-                      'A++': {label: 'A++ · Headliner', color: '#f59e0b'},
-                      'Premium': {label: 'A++ · Headliner', color: '#f59e0b'},
-                      'A+': {label: 'A+ · Power Draw', color: '#7c3aed'},
-                      'A': {label: 'A · Solid', color: '#44403c'},
+                      'A++': {label: 'A++ · Icon', color: '#f59e0b'},
+                      'Premium': {label: 'A++ · Icon', color: '#f59e0b'},
+                      'A+': {label: 'A+ · Premium', color: '#7c3aed'},
+                      'A': {label: 'A · Select', color: '#44403c'},
                     }
                     const tierData = tierMap[a.tier] || {label: 'Booking Activ', color: '#059669'}
                     const tier = tierData.label
