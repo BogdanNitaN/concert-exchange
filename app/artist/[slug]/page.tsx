@@ -187,18 +187,26 @@ export default async function ArtistPage({ params }: { params: Promise<{ slug: s
           {/* Card 2 - Heat Score */}
           <div style={{padding:'20px 14px', background:'white', border:'1px solid #e7e5e4', borderRadius:'18px', boxShadow:'0 2px 8px rgba(0,0,0,0.04)', position:'relative', overflow:'hidden'}}>
             {(() => {
-              const score = chartexStats?.heatScore || 65
-              const color = score >= 90 ? '#7c3aed' : score >= 75 ? '#3b82f6' : score >= 65 ? '#06b6d4' : '#a8a29e'
-              const label = score >= 90 ? 'Hot' : score >= 75 ? 'Trending' : score >= 65 ? 'Active' : 'New'
+              const tier = artist.tier || ''
+              const tierMap: Record<string, {label: string, color: string, public: boolean, sub: string}> = {
+                'A++': {label: 'HEADLINER', color: '#7c3aed', public: true, sub: 'Top tier'},
+                'A+': {label: 'POWER DRAW', color: '#3b82f6', public: true, sub: 'Tracțiune puternică'},
+                'A': {label: 'SOLID', color: '#06b6d4', public: true, sub: 'Atracție solidă'},
+              }
+              const data = tierMap[tier] || {label: 'BOOKING ACTIV', color: '#059669', public: false, sub: 'Activ acum'}
               return (
                 <>
-                  <div style={{position:'absolute', top:0, right:0, width:'4px', height:'100%', background:color}}></div>
-                  <div style={{fontWeight:800, fontSize:'26px', color:'#1c1917', letterSpacing:'-1px', lineHeight:1}}>{score}<span style={{fontSize:'14px', fontWeight:700, color:'#78716c', marginLeft:'2px'}}>/100</span></div>
-                  <div style={{fontSize:'10px', color:'#78716c', fontWeight:700, marginTop:'10px', textTransform:'uppercase', letterSpacing:'0.06em'}}>Heat Score</div>
-                  <div style={{marginTop:'8px', width:'100%', height:'4px', background:'#f5f5f4', borderRadius:'2px', overflow:'hidden'}}>
-                    <div style={{width: score + '%', height:'100%', background:color, borderRadius:'2px'}}></div>
+                  <div style={{position:'absolute', top:0, right:0, width:'4px', height:'100%', background:data.color}}></div>
+                  {data.public && (
+                    <div style={{fontWeight:800, fontSize:'26px', color:data.color, letterSpacing:'-1px', lineHeight:1}}>{tier}</div>
+                  )}
+                  <div style={{fontWeight:800, fontSize:'14px', color:'#1c1917', letterSpacing:'-0.3px', lineHeight:1.2, marginTop: data.public ? '8px' : '28px'}}>
+                    {data.label}
                   </div>
-                  <div style={{marginTop:'6px', fontSize:'10px', color:color, fontWeight:700, textTransform:'uppercase', letterSpacing:'0.05em'}}>{label}</div>
+                  <div style={{fontSize:'10px', color:'#78716c', fontWeight:700, marginTop:'10px', textTransform:'uppercase', letterSpacing:'0.06em'}}>
+                    {data.public ? 'Box Office Tier' : 'Cereri în această lună'}
+                  </div>
+                  <div style={{marginTop:'6px', fontSize:'10px', color:data.color, fontWeight:700}}>● {data.sub}</div>
                 </>
               )
             })()}
