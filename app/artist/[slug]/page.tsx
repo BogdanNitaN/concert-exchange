@@ -237,38 +237,38 @@ export default async function ArtistPage({ params }: { params: Promise<{ slug: s
               <div style={{display:'flex', flexWrap:'wrap', gap:'8px'}}>
                 {artist.instagram && (
                   <a href={'https://instagram.com/' + artist.instagram.replace('@','')} target="_blank" rel="noopener noreferrer" className="social-btn social-btn-ig"
-                    style={{display:'flex', alignItems:'center', gap:'6px', padding:'9px 14px', borderRadius:'12px', fontSize:'12px', fontWeight:600}}>
-                    <InstagramLogo size={14} weight="fill" /> Instagram
+                    style={{display:'flex', alignItems:'center', gap:'5px', padding:'6px 12px', borderRadius:'10px', fontSize:'11px', fontWeight:500}}>
+                    <InstagramLogo size={12} weight="fill" /> Instagram
                   </a>
                 )}
                 {artist.spotify && (
                   <a href={artist.spotify} target="_blank" rel="noopener noreferrer" className="social-btn social-btn-sp"
-                    style={{display:'flex', alignItems:'center', gap:'6px', padding:'9px 14px', borderRadius:'12px', fontSize:'12px', fontWeight:600}}>
-                    <SpotifyLogo size={14} weight="fill" /> Spotify
+                    style={{display:'flex', alignItems:'center', gap:'5px', padding:'6px 12px', borderRadius:'10px', fontSize:'11px', fontWeight:500}}>
+                    <SpotifyLogo size={12} weight="fill" /> Spotify
                   </a>
                 )}
                 {artist.youtube && (
                   <a href={artist.youtube} target="_blank" rel="noopener noreferrer" className="social-btn social-btn-yt"
-                    style={{display:'flex', alignItems:'center', gap:'6px', padding:'9px 14px', borderRadius:'12px', fontSize:'12px', fontWeight:600}}>
-                    <YoutubeLogo size={14} weight="fill" /> YouTube
+                    style={{display:'flex', alignItems:'center', gap:'5px', padding:'6px 12px', borderRadius:'10px', fontSize:'11px', fontWeight:500}}>
+                    <YoutubeLogo size={12} weight="fill" /> YouTube
                   </a>
                 )}
                 {artist.tiktok && (
                   <a href={'https://tiktok.com/@' + artist.tiktok.replace('@','')} target="_blank" rel="noopener noreferrer" className="social-btn social-btn-tt"
-                    style={{display:'flex', alignItems:'center', gap:'6px', padding:'9px 14px', borderRadius:'12px', fontSize:'12px', fontWeight:600}}>
-                    <TiktokLogo size={14} weight="fill" /> TikTok
+                    style={{display:'flex', alignItems:'center', gap:'5px', padding:'6px 12px', borderRadius:'10px', fontSize:'11px', fontWeight:500}}>
+                    <TiktokLogo size={12} weight="fill" /> TikTok
                   </a>
                 )}
                 {artist.facebook && (
                   <a href={artist.facebook} target="_blank" rel="noopener noreferrer" className="social-btn social-btn-fb"
-                    style={{display:'flex', alignItems:'center', gap:'6px', padding:'9px 14px', borderRadius:'12px', fontSize:'12px', fontWeight:600}}>
-                    <FacebookLogo size={14} weight="fill" /> Facebook
+                    style={{display:'flex', alignItems:'center', gap:'5px', padding:'6px 12px', borderRadius:'10px', fontSize:'11px', fontWeight:500}}>
+                    <FacebookLogo size={12} weight="fill" /> Facebook
                   </a>
                 )}
                 {artist.soundcloud && (
                   <a href={artist.soundcloud} target="_blank" rel="noopener noreferrer" className="social-btn social-btn-sc"
-                    style={{display:'flex', alignItems:'center', gap:'6px', padding:'9px 14px', borderRadius:'12px', fontSize:'12px', fontWeight:600}}>
-                    <SoundcloudLogo size={14} weight="fill" /> SoundCloud
+                    style={{display:'flex', alignItems:'center', gap:'5px', padding:'6px 12px', borderRadius:'10px', fontSize:'11px', fontWeight:500}}>
+                    <SoundcloudLogo size={12} weight="fill" /> SoundCloud
                   </a>
                 )}
               </div>
