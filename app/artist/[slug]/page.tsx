@@ -238,37 +238,37 @@ export default async function ArtistPage({ params }: { params: Promise<{ slug: s
                 {artist.instagram && (
                   <a href={'https://instagram.com/' + artist.instagram.replace('@','')} target="_blank" rel="noopener noreferrer" className="social-btn social-btn-ig"
                     style={{display:'flex', alignItems:'center', gap:'5px', padding:'6px 12px', borderRadius:'10px', fontSize:'11px', fontWeight:500}}>
-                    <InstagramLogo size={12} weight="fill" /> Instagram
+                    <InstagramLogo size={12} /> Instagram
                   </a>
                 )}
                 {artist.spotify && (
                   <a href={artist.spotify} target="_blank" rel="noopener noreferrer" className="social-btn social-btn-sp"
                     style={{display:'flex', alignItems:'center', gap:'5px', padding:'6px 12px', borderRadius:'10px', fontSize:'11px', fontWeight:500}}>
-                    <SpotifyLogo size={12} weight="fill" /> Spotify
+                    <SpotifyLogo size={12} /> Spotify
                   </a>
                 )}
                 {artist.youtube && (
                   <a href={artist.youtube} target="_blank" rel="noopener noreferrer" className="social-btn social-btn-yt"
                     style={{display:'flex', alignItems:'center', gap:'5px', padding:'6px 12px', borderRadius:'10px', fontSize:'11px', fontWeight:500}}>
-                    <YoutubeLogo size={12} weight="fill" /> YouTube
+                    <YoutubeLogo size={12} /> YouTube
                   </a>
                 )}
                 {artist.tiktok && (
                   <a href={'https://tiktok.com/@' + artist.tiktok.replace('@','')} target="_blank" rel="noopener noreferrer" className="social-btn social-btn-tt"
                     style={{display:'flex', alignItems:'center', gap:'5px', padding:'6px 12px', borderRadius:'10px', fontSize:'11px', fontWeight:500}}>
-                    <TiktokLogo size={12} weight="fill" /> TikTok
+                    <TiktokLogo size={12} /> TikTok
                   </a>
                 )}
                 {artist.facebook && (
                   <a href={artist.facebook} target="_blank" rel="noopener noreferrer" className="social-btn social-btn-fb"
                     style={{display:'flex', alignItems:'center', gap:'5px', padding:'6px 12px', borderRadius:'10px', fontSize:'11px', fontWeight:500}}>
-                    <FacebookLogo size={12} weight="fill" /> Facebook
+                    <FacebookLogo size={12} /> Facebook
                   </a>
                 )}
                 {artist.soundcloud && (
                   <a href={artist.soundcloud} target="_blank" rel="noopener noreferrer" className="social-btn social-btn-sc"
                     style={{display:'flex', alignItems:'center', gap:'5px', padding:'6px 12px', borderRadius:'10px', fontSize:'11px', fontWeight:500}}>
-                    <SoundcloudLogo size={12} weight="fill" /> SoundCloud
+                    <SoundcloudLogo size={12} /> SoundCloud
                   </a>
                 )}
               </div>
