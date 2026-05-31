@@ -84,7 +84,7 @@ export async function GET(request: NextRequest) {
 
       // 2. Songs cross-platform search
       const songs = await chartexFetch(
-        `/external/v1/songs/?country_codes=${country}&sort_platform=spotify&sort_column=spotify_streams&limit=100&search=${encodeURIComponent(artistName)}`
+        `/external/v1/songs/?country_codes=${country}&sort_platform=spotify&sort_column=all_time&limit=100&search=${encodeURIComponent(artistName)}`
       )
       if (songs?.data?.items) {
         songs.data.items.forEach((s: any) => {

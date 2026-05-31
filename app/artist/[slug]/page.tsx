@@ -47,11 +47,13 @@ export default async function ArtistPage({ params }: { params: Promise<{ slug: s
   let chartexStats: any = null
   const baseUrl = process.env.VERCEL_URL ? 'https://' + process.env.VERCEL_URL : 'http://localhost:3000'
   
+  let spotifyData: any = null
   if (artist.spotify) {
     try {
       const res = await fetch(baseUrl + '/api/spotify?url=' + encodeURIComponent(artist.spotify), { next: { revalidate: 86400 } })
       const data = await res.json()
       if (data.image) spotifyImage = data.image
+      if (data.followers || data.popularity) spotifyData = data
     } catch {}
   }
 
@@ -138,6 +140,35 @@ export default async function ArtistPage({ params }: { params: Promise<{ slug: s
 
 
         </div>
+
+        {/* Spotify Stats (fallback cand nu avem Chartex) */}
+        {!chartexStats && spotifyData && (spotifyData.followers > 1000 || spotifyData.popularity > 30) && (
+          <div style={{background:'#f0fdf4', border:'1px solid #bbf7d0', borderRadius:'20px', padding:'20px', marginBottom:'16px'}}>
+            <div style={{display:'flex', alignItems:'center', gap:'6px', marginBottom:'12px'}}>
+              <span style={{fontSize:'10px', fontWeight:700, color:'#059669', textTransform:'uppercase', letterSpacing:'0.08em'}}>● Spotify Stats</span>
+            </div>
+            <div style={{display:'grid', gridTemplateColumns:'repeat(auto-fit, minmax(140px, 1fr))', gap:'12px'}}>
+              {spotifyData.followers > 1000 && (
+                <div style={{textAlign:'center', padding:'14px 10px', background:'white', borderRadius:'12px'}}>
+                  <div style={{fontWeight:800, fontSize:'18px', color:'#059669', letterSpacing:'-0.5px'}}>{spotifyData.followers > 1000000 ? (spotifyData.followers/1000000).toFixed(1)+'M' : spotifyData.followers > 1000 ? (spotifyData.followers/1000).toFixed(1)+'K' : spotifyData.followers}</div>
+                  <div style={{fontSize:'10px', color:'#78716c', fontWeight:600, marginTop:'4px', textTransform:'uppercase'}}>Followers Spotify</div>
+                </div>
+              )}
+              {spotifyData.popularity > 30 && (
+                <div style={{textAlign:'center', padding:'14px 10px', background:'white', borderRadius:'12px'}}>
+                  <div style={{fontWeight:800, fontSize:'18px', color:'#059669', letterSpacing:'-0.5px'}}>{spotifyData.popularity}/100</div>
+                  <div style={{fontSize:'10px', color:'#78716c', fontWeight:600, marginTop:'4px', textTransform:'uppercase'}}>Popularity Score</div>
+                </div>
+              )}
+              {spotifyData.popularity > 60 && (
+                <div style={{textAlign:'center', padding:'14px 10px', background:'white', borderRadius:'12px'}}>
+                  <div style={{fontWeight:800, fontSize:'18px', color:'#059669', letterSpacing:'-0.5px'}}>Top {Math.max(1, 100 - spotifyData.popularity)}%</div>
+                  <div style={{fontSize:'10px', color:'#78716c', fontWeight:600, marginTop:'4px', textTransform:'uppercase'}}>Artisti Spotify</div>
+                </div>
+              )}
+            </div>
+          </div>
+        )}
 
         {/* Chartex Live Stats */}
         {chartexStats && (
