@@ -207,7 +207,7 @@ export default function ArtistDashboard() {
   }
 
   return (
-    <div style={{minHeight:'100vh', background:'#fafaf9', fontFamily:'Montserrat,sans-serif'}}>
+    <div style={{minHeight:'100vh', background:'#f5f5f7', fontFamily:'Montserrat,sans-serif'}}>
       <nav style={{background:'white', borderBottom:'1px solid #e7e5e4', padding:'0 24px', height:'56px', display:'flex', alignItems:'center', justifyContent:'space-between', position:'sticky', top:0, zIndex:100}}>
         <div style={{fontWeight:800, fontSize:'16px', color:'#1c1917', letterSpacing:'-0.5px'}}>GIGx</div>
         <div style={{fontSize:'13px', color:'#78716c'}}>Dashboard Artist</div>
@@ -223,12 +223,12 @@ export default function ArtistDashboard() {
           <div style={{marginBottom:'14px'}}>
             <div style={{fontSize:'10px', fontWeight:700, color:'#a8a29e', textTransform:'uppercase', letterSpacing:'0.08em', marginBottom:'6px'}}>Nume artistic / Nume scenă</div>
             <input type="text" value={artistName} onChange={e => setArtistName(e.target.value)} placeholder="ex: The Motans, Irina Rimes, Delia"
-              style={{width:'100%', padding:'11px 14px', borderRadius:'12px', border:'1px solid #e7e5e4', fontSize:'13px', fontFamily:'Montserrat,sans-serif', color:'#1c1917', outline:'none', boxSizing:'border-box', background:'#fafaf9'}} />
+              style={{width:'100%', padding:'11px 14px', borderRadius:'12px', border:'1px solid #e7e5e4', fontSize:'13px', fontFamily:'Montserrat,sans-serif', color:'#1c1917', outline:'none', boxSizing:'border-box', background:'#f5f5f7'}} />
           </div>
           <div>
             <div style={{fontSize:'10px', fontWeight:700, color:'#a8a29e', textTransform:'uppercase', letterSpacing:'0.08em', marginBottom:'6px'}}>Bio scurt</div>
             <textarea value={bio} onChange={e => setBio(e.target.value)} placeholder="Descrie-te în 2-3 propoziții..." rows={3}
-              style={{width:'100%', padding:'11px 14px', borderRadius:'12px', border:'1px solid #e7e5e4', fontSize:'13px', fontFamily:'Montserrat,sans-serif', color:'#1c1917', outline:'none', resize:'none', boxSizing:'border-box', background:'#fafaf9'}} />
+              style={{width:'100%', padding:'11px 14px', borderRadius:'12px', border:'1px solid #e7e5e4', fontSize:'13px', fontFamily:'Montserrat,sans-serif', color:'#1c1917', outline:'none', resize:'none', boxSizing:'border-box', background:'#f5f5f7'}} />
           </div>
         </Section>
 
@@ -321,7 +321,7 @@ export default function ArtistDashboard() {
             <div style={{fontSize:'10px', fontWeight:700, color:'#a8a29e', textTransform:'uppercase', letterSpacing:'0.08em', marginBottom:'6px'}}>Genuri muzicale</div>
             <div style={{position:'relative'}}>
               <div onClick={() => setGenreDropdownOpen(!genreDropdownOpen)}
-                style={{width:'100%', padding:'11px 14px', borderRadius:'12px', border:'1px solid #e7e5e4', fontSize:'13px', fontFamily:'Montserrat,sans-serif', color: genres.length > 0 ? '#1c1917' : '#a8a29e', background:'#fafaf9', cursor:'pointer', display:'flex', justifyContent:'space-between', alignItems:'center', boxSizing:'border-box'}}>
+                style={{width:'100%', padding:'11px 14px', borderRadius:'12px', border:'1px solid #e7e5e4', fontSize:'13px', fontFamily:'Montserrat,sans-serif', color: genres.length > 0 ? '#1c1917' : '#a8a29e', background:'#f5f5f7', cursor:'pointer', display:'flex', justifyContent:'space-between', alignItems:'center', boxSizing:'border-box'}}>
                 <span>{genres.length > 0 ? genres.join(', ') : 'Selectează genuri muzicale...'}</span>
                 <span style={{fontSize:'10px'}}>{genreDropdownOpen ? '▲' : '▼'}</span>
               </div>
@@ -441,7 +441,7 @@ export default function ArtistDashboard() {
           <div style={{marginBottom:'14px'}}>
             <div style={{fontSize:'10px', fontWeight:700, color:'#a8a29e', textTransform:'uppercase', letterSpacing:'0.08em', marginBottom:'8px'}}>Oraș de reședință (de unde plec)</div>
             <select value={cityFrom} onChange={e => setCityFrom(e.target.value)}
-              style={{width:'100%', padding:'11px 14px', borderRadius:'12px', border:'1px solid #e7e5e4', fontSize:'13px', fontFamily:'Montserrat,sans-serif', color:'#1c1917', outline:'none', background:'#fafaf9'}}>
+              style={{width:'100%', padding:'11px 14px', borderRadius:'12px', border:'1px solid #e7e5e4', fontSize:'13px', fontFamily:'Montserrat,sans-serif', color:'#1c1917', outline:'none', background:'#f5f5f7'}}>
               {CITIES.map(c => <option key={c} value={c}>{c}</option>)}
             </select>
           </div>
@@ -452,9 +452,9 @@ export default function ArtistDashboard() {
               </div>
               <div style={{display:'flex', gap:'8px'}}>
                 <input type="number" value={costPerKm} onChange={e => setCostPerKm(Number(e.target.value))} step="0.5" min="0"
-                  style={{flex:1, padding:'11px 14px', borderRadius:'12px', border:'1px solid #e7e5e4', fontSize:'13px', fontFamily:'Montserrat,sans-serif', color:'#1c1917', outline:'none', boxSizing:'border-box', background:'#fafaf9'}} />
+                  style={{flex:1, padding:'11px 14px', borderRadius:'12px', border:'1px solid #e7e5e4', fontSize:'13px', fontFamily:'Montserrat,sans-serif', color:'#1c1917', outline:'none', boxSizing:'border-box', background:'#f5f5f7'}} />
                 <select value={kmCurrency} onChange={e => setKmCurrency(e.target.value)}
-                  style={{padding:'11px 14px', borderRadius:'12px', border:'1px solid #e7e5e4', fontSize:'13px', fontFamily:'Montserrat,sans-serif', color:'#1c1917', outline:'none', background:'#fafaf9'}}>
+                  style={{padding:'11px 14px', borderRadius:'12px', border:'1px solid #e7e5e4', fontSize:'13px', fontFamily:'Montserrat,sans-serif', color:'#1c1917', outline:'none', background:'#f5f5f7'}}>
                   <option value="RON">RON</option>
                   <option value="EUR">EUR</option>
                 </select>
@@ -465,7 +465,7 @@ export default function ArtistDashboard() {
                 <Plane size={10} strokeWidth={2} /> Bilete avion (nr.)
               </div>
               <input type="number" value={nrBileteAvion} onChange={e => setNrBileteAvion(Number(e.target.value))} min="0"
-                style={{width:'100%', padding:'11px 14px', borderRadius:'12px', border:'1px solid #e7e5e4', fontSize:'13px', fontFamily:'Montserrat,sans-serif', color:'#1c1917', outline:'none', boxSizing:'border-box', background:'#fafaf9'}} />
+                style={{width:'100%', padding:'11px 14px', borderRadius:'12px', border:'1px solid #e7e5e4', fontSize:'13px', fontFamily:'Montserrat,sans-serif', color:'#1c1917', outline:'none', boxSizing:'border-box', background:'#f5f5f7'}} />
             </div>
           </div>
           <div style={{marginTop:'14px'}}>
@@ -524,7 +524,7 @@ export default function ArtistDashboard() {
                 else setDurata(preset)
               }}
               placeholder="Durata personalizată (manual)"
-              style={{width:'100%', padding:'11px 14px', borderRadius:'12px', border:'1px solid #e7e5e4', fontSize:'13px', fontFamily:'Montserrat,sans-serif', color:'#1c1917', outline:'none', boxSizing:'border-box', background:'#fafaf9'}} />
+              style={{width:'100%', padding:'11px 14px', borderRadius:'12px', border:'1px solid #e7e5e4', fontSize:'13px', fontFamily:'Montserrat,sans-serif', color:'#1c1917', outline:'none', boxSizing:'border-box', background:'#f5f5f7'}} />
           </div>
         </Section>
 
@@ -535,14 +535,14 @@ export default function ArtistDashboard() {
                 <InstagramLogo size={10} strokeWidth={2} /> Instagram
               </div>
               <input type="text" value={instagram} onChange={e => setInstagram(e.target.value)} placeholder="@numeartist"
-                style={{width:'100%', padding:'11px 14px', borderRadius:'12px', border:'1px solid #e7e5e4', fontSize:'13px', fontFamily:'Montserrat,sans-serif', color:'#1c1917', outline:'none', boxSizing:'border-box', background:'#fafaf9'}} />
+                style={{width:'100%', padding:'11px 14px', borderRadius:'12px', border:'1px solid #e7e5e4', fontSize:'13px', fontFamily:'Montserrat,sans-serif', color:'#1c1917', outline:'none', boxSizing:'border-box', background:'#f5f5f7'}} />
             </div>
             <div>
               <div style={{fontSize:'10px', fontWeight:700, color:'#a8a29e', textTransform:'uppercase', letterSpacing:'0.08em', marginBottom:'6px', display:'flex', alignItems:'center', gap:'4px'}}>
                 <YoutubeLogo size={10} strokeWidth={2} /> YouTube
               </div>
               <input type="text" value={youtube} onChange={e => setYoutube(e.target.value)} placeholder="link canal"
-                style={{width:'100%', padding:'11px 14px', borderRadius:'12px', border:'1px solid #e7e5e4', fontSize:'13px', fontFamily:'Montserrat,sans-serif', color:'#1c1917', outline:'none', boxSizing:'border-box', background:'#fafaf9'}} />
+                style={{width:'100%', padding:'11px 14px', borderRadius:'12px', border:'1px solid #e7e5e4', fontSize:'13px', fontFamily:'Montserrat,sans-serif', color:'#1c1917', outline:'none', boxSizing:'border-box', background:'#f5f5f7'}} />
             </div>
             <div>
               <div style={{fontSize:'10px', fontWeight:700, color:'#a8a29e', textTransform:'uppercase', letterSpacing:'0.08em', marginBottom:'6px', display:'flex', alignItems:'center', gap:'4px'}}>
@@ -550,7 +550,7 @@ export default function ArtistDashboard() {
               </div>
               <div style={{display:'flex', gap:'8px'}}>
                 <input type="text" value={spotify} onChange={e => setSpotify(e.target.value)} placeholder="link artist"
-                  style={{flex:1, padding:'11px 14px', borderRadius:'12px', border:'1px solid #e7e5e4', fontSize:'13px', fontFamily:'Montserrat,sans-serif', color:'#1c1917', outline:'none', boxSizing:'border-box', background:'#fafaf9'}} />
+                  style={{flex:1, padding:'11px 14px', borderRadius:'12px', border:'1px solid #e7e5e4', fontSize:'13px', fontFamily:'Montserrat,sans-serif', color:'#1c1917', outline:'none', boxSizing:'border-box', background:'#f5f5f7'}} />
                 <button onClick={importFromSpotify} disabled={spotifyLoading}
                   style={{padding:'11px 16px', borderRadius:'12px', background:'#1DB954', color:'white', border:'none', cursor:'pointer', fontSize:'12px', fontWeight:700, fontFamily:'Montserrat,sans-serif', whiteSpace:'nowrap'}}>
                   {spotifyLoading ? '...' : 'Import'}
@@ -561,17 +561,17 @@ export default function ArtistDashboard() {
             <div>
               <div style={{fontSize:'10px', fontWeight:700, color:'#a8a29e', textTransform:'uppercase', letterSpacing:'0.08em', marginBottom:'6px'}}>TikTok</div>
               <input type="text" value={tiktok} onChange={e => setTiktok(e.target.value)} placeholder="@numeartist"
-                style={{width:'100%', padding:'11px 14px', borderRadius:'12px', border:'1px solid #e7e5e4', fontSize:'13px', fontFamily:'Montserrat,sans-serif', color:'#1c1917', outline:'none', boxSizing:'border-box', background:'#fafaf9'}} />
+                style={{width:'100%', padding:'11px 14px', borderRadius:'12px', border:'1px solid #e7e5e4', fontSize:'13px', fontFamily:'Montserrat,sans-serif', color:'#1c1917', outline:'none', boxSizing:'border-box', background:'#f5f5f7'}} />
             </div>
             <div>
               <div style={{fontSize:'10px', fontWeight:700, color:'#a8a29e', textTransform:'uppercase', letterSpacing:'0.08em', marginBottom:'6px'}}>Facebook</div>
               <input type="text" value={facebook} onChange={e => setFacebook(e.target.value)} placeholder="link pagina"
-                style={{width:'100%', padding:'11px 14px', borderRadius:'12px', border:'1px solid #e7e5e4', fontSize:'13px', fontFamily:'Montserrat,sans-serif', color:'#1c1917', outline:'none', boxSizing:'border-box', background:'#fafaf9'}} />
+                style={{width:'100%', padding:'11px 14px', borderRadius:'12px', border:'1px solid #e7e5e4', fontSize:'13px', fontFamily:'Montserrat,sans-serif', color:'#1c1917', outline:'none', boxSizing:'border-box', background:'#f5f5f7'}} />
             </div>
             <div>
               <div style={{fontSize:'10px', fontWeight:700, color:'#a8a29e', textTransform:'uppercase', letterSpacing:'0.08em', marginBottom:'6px'}}>SoundCloud</div>
               <input type="text" value={soundcloud} onChange={e => setSoundcloud(e.target.value)} placeholder="link profil"
-                style={{width:'100%', padding:'11px 14px', borderRadius:'12px', border:'1px solid #e7e5e4', fontSize:'13px', fontFamily:'Montserrat,sans-serif', color:'#1c1917', outline:'none', boxSizing:'border-box', background:'#fafaf9'}} />
+                style={{width:'100%', padding:'11px 14px', borderRadius:'12px', border:'1px solid #e7e5e4', fontSize:'13px', fontFamily:'Montserrat,sans-serif', color:'#1c1917', outline:'none', boxSizing:'border-box', background:'#f5f5f7'}} />
             </div>
 
           </div>
@@ -583,13 +583,13 @@ export default function ArtistDashboard() {
           </div>
           <div style={{fontSize:'12px', color:'#78716c', marginBottom:'12px'}}>Link Google Drive sau Dropbox cu materiale de presă (foto, bio, logo).</div>
           <input type="text" value={pressKitUrl} onChange={e => setPressKitUrl(e.target.value)} placeholder="https://drive.google.com/..."
-            style={{width:'100%', padding:'11px 14px', borderRadius:'12px', border:'1px solid #e7e5e4', fontSize:'13px', fontFamily:'Montserrat,sans-serif', color:'#1c1917', outline:'none', boxSizing:'border-box', background:'#fafaf9'}} />
+            style={{width:'100%', padding:'11px 14px', borderRadius:'12px', border:'1px solid #e7e5e4', fontSize:'13px', fontFamily:'Montserrat,sans-serif', color:'#1c1917', outline:'none', boxSizing:'border-box', background:'#f5f5f7'}} />
           
           <div style={{marginTop:'16px'}}>
             <div style={{fontWeight:700, fontSize:'13px', color:'#1c1917', marginBottom:'6px'}}>Rider Tehnic</div>
             <div style={{fontSize:'12px', color:'#78716c', marginBottom:'8px'}}>Link Google Drive sau Dropbox cu rider-ul tehnic (scenă, sunet, lumini).</div>
             <input type="text" value={riderUrl} onChange={e => setRiderUrl(e.target.value)} placeholder="https://drive.google.com/..."
-              style={{width:'100%', padding:'11px 14px', borderRadius:'12px', border:'1px solid #e7e5e4', fontSize:'13px', fontFamily:'Montserrat,sans-serif', color:'#1c1917', outline:'none', boxSizing:'border-box', background:'#fafaf9'}} />
+              style={{width:'100%', padding:'11px 14px', borderRadius:'12px', border:'1px solid #e7e5e4', fontSize:'13px', fontFamily:'Montserrat,sans-serif', color:'#1c1917', outline:'none', boxSizing:'border-box', background:'#f5f5f7'}} />
           </div>
         </div>
 

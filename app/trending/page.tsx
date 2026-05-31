@@ -18,7 +18,7 @@ export default function TrendingPage() {
   }, [])
 
   return (
-    <div style={{minHeight:'100vh', background:'#fafaf9', fontFamily:'Montserrat,sans-serif'}}>
+    <div style={{minHeight:'100vh', background:'#f5f5f7', fontFamily:'Montserrat,sans-serif'}}>
       <nav style={{background:'white', borderBottom:'1px solid #e7e5e4', position:'sticky', top:0, zIndex:100}}>
         <div style={{maxWidth:'1100px', margin:'0 auto', padding:'0 24px', height:'60px', display:'flex', alignItems:'center', justifyContent:'space-between'}}>
           <Link href="/" style={{fontWeight:800, fontSize:'18px', color:'#1c1917', textDecoration:'none', letterSpacing:'-0.5px'}}>

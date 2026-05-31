@@ -3,7 +3,7 @@ import { Music2, MapPin, Zap, Star, ArrowRight, CheckCircle2 } from 'lucide-reac
 
 export default function HomePage() {
   return (
-    <div style={{minHeight:'100vh', background:'#fafaf9', fontFamily:'Montserrat,sans-serif'}}>
+    <div style={{minHeight:'100vh', background:'#f5f5f7', fontFamily:'Montserrat,sans-serif'}}>
       
       {/* Navbar */}
       <nav style={{background:'white', borderBottom:'1px solid #e7e5e4', position:'sticky', top:0, zIndex:100}}>

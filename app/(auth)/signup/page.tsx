@@ -43,7 +43,7 @@ export default function SignupPage() {
   }
 
   return (
-    <div style={{minHeight:'100vh', background:'#fafaf9', fontFamily:'Montserrat,sans-serif', display:'flex', alignItems:'center', justifyContent:'center', padding:'24px'}}>
+    <div style={{minHeight:'100vh', background:'#f5f5f7', fontFamily:'Montserrat,sans-serif', display:'flex', alignItems:'center', justifyContent:'center', padding:'24px'}}>
       <div style={{width:'100%', maxWidth:'480px'}}>
         <div style={{textAlign:'center', marginBottom:'32px'}}>
           <Link href="/" style={{textDecoration:'none'}}>
