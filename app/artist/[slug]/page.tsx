@@ -82,7 +82,7 @@ export default async function ArtistPage({ params }: { params: Promise<{ slug: s
   const genres = Array.isArray(artist.genres) ? artist.genres : []
 
   return (
-    <div style={{minHeight:'100vh', background:'#fafaf9', fontFamily:'Montserrat,sans-serif'}}>
+    <div style={{minHeight:'100vh', background:'#f5f5f7', fontFamily:'Montserrat,sans-serif'}}>
       
       {/* Navbar */}
       <nav style={{background:'white', borderBottom:'1px solid #e7e5e4', position:'sticky', top:0, zIndex:100}}>
@@ -187,7 +187,7 @@ export default async function ArtistPage({ params }: { params: Promise<{ slug: s
           <div style={{padding:'20px 14px', background:'white', border:'1px solid #e7e5e4', borderRadius:'18px', boxShadow:'0 2px 8px rgba(0,0,0,0.04)', position:'relative', overflow:'hidden'}}>
             {(() => {
               const score = chartexStats?.heatScore || 65
-              const color = score >= 90 ? '#dc2626' : score >= 75 ? '#ea580c' : score >= 65 ? '#f59e0b' : '#a8a29e'
+              const color = score >= 90 ? '#7c3aed' : score >= 75 ? '#3b82f6' : score >= 65 ? '#06b6d4' : '#a8a29e'
               const label = score >= 90 ? 'Hot' : score >= 75 ? 'Trending' : score >= 65 ? 'Active' : 'New'
               return (
                 <>
