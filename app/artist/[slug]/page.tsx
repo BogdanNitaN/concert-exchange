@@ -176,12 +176,9 @@ export default async function ArtistPage({ params }: { params: Promise<{ slug: s
           {/* Card 1 - Raspuns */}
           <div style={{padding:'20px 14px', background:'white', border:'1px solid #e7e5e4', borderRadius:'18px', boxShadow:'0 2px 8px rgba(0,0,0,0.04)', position:'relative', overflow:'hidden'}}>
             <div style={{position:'absolute', top:0, right:0, width:'4px', height:'100%', background:'#059669'}}></div>
-            <div style={{fontWeight:800, fontSize:'26px', color:'#1c1917', letterSpacing:'-1px', lineHeight:1}}>30<span style={{fontSize:'14px', fontWeight:700, color:'#78716c', marginLeft:'2px'}}>min</span></div>
-            <div style={{fontSize:'10px', color:'#78716c', fontWeight:700, marginTop:'10px', textTransform:'uppercase', letterSpacing:'0.06em'}}>Răspuns garantat</div>
-            <div style={{marginTop:'8px', display:'flex', alignItems:'center', gap:'4px'}}>
-              <div style={{width:'6px', height:'6px', borderRadius:'50%', background:'#059669'}}></div>
-              <span style={{fontSize:'10px', color:'#059669', fontWeight:700}}>Activ acum</span>
-            </div>
+            <div style={{fontWeight:700, fontSize:'28px', color:'#1c1917', letterSpacing:'-1px', lineHeight:1}}>30<span style={{fontSize:'14px', fontWeight:500, color:'#78716c', marginLeft:'2px'}}>min</span></div>
+            <div style={{fontWeight:600, fontSize:'13px', color:'#1c1917', letterSpacing:'-0.2px', lineHeight:1.3, marginTop:'10px'}}>Răspuns garantat</div>
+            <div style={{fontSize:'10px', color:'#059669', fontWeight:500, marginTop:'8px', letterSpacing:'0.02em'}}>● Activ acum</div>
           </div>
 
           {/* Card 2 - Heat Score */}
@@ -198,15 +195,14 @@ export default async function ArtistPage({ params }: { params: Promise<{ slug: s
                 <>
                   <div style={{position:'absolute', top:0, right:0, width:'4px', height:'100%', background:data.color}}></div>
                   {data.public && (
-                    <div style={{fontWeight:800, fontSize:'26px', color:data.color, letterSpacing:'-1px', lineHeight:1}}>{tier}</div>
+                    <div style={{fontWeight:700, fontSize:'28px', color:data.color, letterSpacing:'-1px', lineHeight:1}}>{tier}</div>
                   )}
-                  <div style={{fontWeight:800, fontSize:'14px', color:'#1c1917', letterSpacing:'-0.3px', lineHeight:1.2, marginTop: data.public ? '8px' : '28px'}}>
+                  <div style={{fontWeight:600, fontSize:'13px', color:'#1c1917', letterSpacing:'-0.2px', lineHeight:1.3, marginTop: data.public ? '10px' : '30px'}}>
                     {data.label}
                   </div>
-                  <div style={{fontSize:'10px', color:'#78716c', fontWeight:700, marginTop:'10px', textTransform:'uppercase', letterSpacing:'0.06em'}}>
-                    {data.public ? 'Box Office Tier' : 'Cereri în această lună'}
+                  <div style={{fontSize:'10px', color:'#78716c', fontWeight:500, marginTop:'8px', letterSpacing:'0.02em'}}>
+                    {data.public ? 'Box Office Tier' : 'Activ acum'}
                   </div>
-                  <div style={{marginTop:'6px', fontSize:'10px', color:data.color, fontWeight:700}}>● {data.sub}</div>
                 </>
               )
             })()}
@@ -215,9 +211,9 @@ export default async function ArtistPage({ params }: { params: Promise<{ slug: s
           {/* Card 3 - Verified */}
           <div style={{padding:'20px 14px', background:'white', border:'1px solid #e7e5e4', borderRadius:'18px', boxShadow:'0 2px 8px rgba(0,0,0,0.04)', position:'relative', overflow:'hidden'}}>
             <div style={{position:'absolute', top:0, right:0, width:'4px', height:'100%', background:'#1c1917'}}></div>
-            <CheckCircle2 size={26} color='#059669' strokeWidth={2.5} fill='#dcfce7' />
-            <div style={{fontSize:'10px', color:'#78716c', fontWeight:700, marginTop:'10px', textTransform:'uppercase', letterSpacing:'0.06em'}}>GIGx Verified</div>
-            <div style={{marginTop:'8px', fontSize:'10px', color:'#1c1917', fontWeight:700}}>Artist confirmat</div>
+            <CheckCircle2 size={28} color='#059669' strokeWidth={2.5} fill='#dcfce7' />
+            <div style={{fontWeight:600, fontSize:'13px', color:'#1c1917', letterSpacing:'-0.2px', lineHeight:1.3, marginTop:'10px'}}>GIGx Verified</div>
+            <div style={{fontSize:'10px', color:'#78716c', fontWeight:500, marginTop:'8px', letterSpacing:'0.02em'}}>Artist confirmat</div>
           </div>
         </div>
 
