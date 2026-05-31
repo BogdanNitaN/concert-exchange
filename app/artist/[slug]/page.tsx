@@ -217,7 +217,7 @@ export default async function ArtistPage({ params }: { params: Promise<{ slug: s
         {(artist.instagram || artist.spotify || artist.youtube || artist.tiktok || artist.facebook || artist.soundcloud) && (
           <>
             <style>{`
-              .social-btn { transition: all 0.2s ease; color: #1c1917; background: white; border: 1px solid #e7e5e4; text-decoration: none; }
+              .social-btn { transition: all 0.2s ease; color: #1c1917; background: #f5f5f7; border: none; text-decoration: none; }
               .social-btn svg { transition: all 0.2s ease; color: #1c1917; }
               .social-btn-ig:hover { background: linear-gradient(135deg, #833ab4, #fd1d1d, #fcb045); color: white; border-color: transparent; }
               .social-btn-ig:hover svg { color: white; }
