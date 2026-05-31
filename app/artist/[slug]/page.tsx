@@ -2,7 +2,7 @@ import { createClient } from '@supabase/supabase-js'
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import { Music2, MapPin, CheckCircle2, ArrowRight, Mic2, Disc3, Guitar } from 'lucide-react'
-import { InstagramLogo, SpotifyLogo, YoutubeLogo, TiktokLogo, FacebookLogo, SoundcloudLogo } from '@phosphor-icons/react/dist/ssr'
+import { InstagramLogo, SpotifyLogo, YoutubeLogo, TiktokLogo, FacebookLogo, SoundcloudLogo } from '@phosphor-icons/react'
 
 
 const supabase = createClient(
