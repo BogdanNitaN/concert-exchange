@@ -97,6 +97,25 @@ export default async function ArtistPage({ params }: { params: Promise<{ slug: s
         </div>
       </nav>
 
+      {/* Legenda tier-uri */}
+      <div style={{background:'white', borderBottom:'1px solid #f5f5f4'}}>
+        <div style={{maxWidth:'900px', margin:'0 auto', padding:'10px 24px', display:'flex', alignItems:'center', justifyContent:'center', gap:'20px', flexWrap:'wrap'}}>
+          <span style={{fontSize:'10px', color:'#a8a29e', fontWeight:600, letterSpacing:'0.05em'}}>BOX OFFICE TIERS</span>
+          <div style={{display:'flex', alignItems:'center', gap:'5px'}}>
+            <span style={{width:'8px', height:'8px', borderRadius:'50%', background:'#f59e0b'}}></span>
+            <span style={{fontSize:'11px', color:'#44403c', fontWeight:600}}>A++ Headliner</span>
+          </div>
+          <div style={{display:'flex', alignItems:'center', gap:'5px'}}>
+            <span style={{width:'8px', height:'8px', borderRadius:'50%', background:'#7c3aed'}}></span>
+            <span style={{fontSize:'11px', color:'#44403c', fontWeight:600}}>A+ Power Draw</span>
+          </div>
+          <div style={{display:'flex', alignItems:'center', gap:'5px'}}>
+            <span style={{width:'8px', height:'8px', borderRadius:'50%', background:'#44403c'}}></span>
+            <span style={{fontSize:'11px', color:'#44403c', fontWeight:600}}>A Solid</span>
+          </div>
+        </div>
+      </div>
+
       <div style={{maxWidth:'700px', margin:'0 auto', padding:'32px 24px'}}>
         
         {/* Header artist */}
