@@ -268,8 +268,15 @@ export default function ClientDashboard() {
               <div style={{background:'#1c1917', borderRadius:'12px', padding:'12px 16px', marginBottom:'20px', display:'flex', alignItems:'center', justifyContent:'space-between', flexWrap:'wrap', gap:'8px'}}>
                 <div style={{display:'flex', alignItems:'center', gap:'10px', flexWrap:'wrap'}}>
                   {selectedArtists.map((a, i) => {
-                    const tier = a.tier === 'Premium' ? 'A++ · Icon' : a.tier === 'A+' ? 'A+ · Premium' : 'A · Select'
-                    const tierBg = a.tier === 'Premium' ? '#44403c' : a.tier === 'A+' ? '#7c3aed' : '#44403c'
+                    const tierMap: Record<string, {label: string, color: string}> = {
+                      'A++': {label: 'A++ · Headliner', color: '#7c3aed'},
+                      'Premium': {label: 'A++ · Headliner', color: '#7c3aed'},
+                      'A+': {label: 'A+ · Power Draw', color: '#3b82f6'},
+                      'A': {label: 'A · Solid', color: '#06b6d4'},
+                    }
+                    const tierData = tierMap[a.tier] || {label: 'Booking Activ', color: '#059669'}
+                    const tier = tierData.label
+                    const tierBg = tierData.color
                     return (
                       <div key={a.id} style={{display:'flex', alignItems:'center', gap:'8px'}}>
                         {i > 0 && <span style={{color:'#44403c', fontSize:'12px'}}>·</span>}
