@@ -213,49 +213,67 @@ export default async function ArtistPage({ params }: { params: Promise<{ slug: s
           </div>
         </div>
 
-        {/* Social links */}
+        {/* Social links - monocrom default, colorat la hover */}
         {(artist.instagram || artist.spotify || artist.youtube || artist.tiktok || artist.facebook || artist.soundcloud) && (
-          <div style={{background:'white', border:'1px solid #e7e5e4', borderRadius:'20px', padding:'20px', marginBottom:'16px'}}>
-            <div style={{fontSize:'10px', fontWeight:700, color:'#a8a29e', textTransform:'uppercase', letterSpacing:'0.08em', marginBottom:'12px'}}>Urmărește</div>
-            <div style={{display:'flex', flexWrap:'wrap', gap:'10px'}}>
-              {artist.instagram && (
-                <a href={'https://instagram.com/' + artist.instagram.replace('@','')} target="_blank" rel="noopener noreferrer"
-                  style={{display:'flex', alignItems:'center', gap:'6px', padding:'8px 16px', borderRadius:'12px', background:'#fafaf9', border:'1px solid #e7e5e4', fontSize:'12px', fontWeight:600, color:'#1c1917', textDecoration:'none'}}>
-                  Instagram
-                </a>
-              )}
-              {artist.spotify && (
-                <a href={artist.spotify} target="_blank" rel="noopener noreferrer"
-                  style={{display:'flex', alignItems:'center', gap:'6px', padding:'8px 16px', borderRadius:'12px', background:'#f0fdf4', border:'1px solid #bbf7d0', fontSize:'12px', fontWeight:600, color:'#059669', textDecoration:'none'}}>
-                  Spotify
-                </a>
-              )}
-              {artist.youtube && (
-                <a href={artist.youtube} target="_blank" rel="noopener noreferrer"
-                  style={{display:'flex', alignItems:'center', gap:'6px', padding:'8px 16px', borderRadius:'12px', background:'#fef2f2', border:'1px solid #fecaca', fontSize:'12px', fontWeight:600, color:'#dc2626', textDecoration:'none'}}>
-                  YouTube
-                </a>
-              )}
-              {artist.tiktok && (
-                <a href={'https://tiktok.com/@' + artist.tiktok.replace('@','')} target="_blank" rel="noopener noreferrer"
-                  style={{display:'flex', alignItems:'center', gap:'6px', padding:'8px 16px', borderRadius:'12px', background:'#fafaf9', border:'1px solid #e7e5e4', fontSize:'12px', fontWeight:600, color:'#1c1917', textDecoration:'none'}}>
-                  TikTok
-                </a>
-              )}
-              {artist.facebook && (
-                <a href={artist.facebook} target="_blank" rel="noopener noreferrer"
-                  style={{display:'flex', alignItems:'center', gap:'6px', padding:'8px 16px', borderRadius:'12px', background:'#eff6ff', border:'1px solid #bfdbfe', fontSize:'12px', fontWeight:600, color:'#1877f2', textDecoration:'none'}}>
-                  Facebook
-                </a>
-              )}
-              {artist.soundcloud && (
-                <a href={artist.soundcloud} target="_blank" rel="noopener noreferrer"
-                  style={{display:'flex', alignItems:'center', gap:'6px', padding:'8px 16px', borderRadius:'12px', background:'#fff7ed', border:'1px solid #fed7aa', fontSize:'12px', fontWeight:600, color:'#ea580c', textDecoration:'none'}}>
-                  SoundCloud
-                </a>
-              )}
+          <>
+            <style>{`
+              .social-btn { transition: all 0.2s ease; color: #1c1917; background: white; border: 1px solid #e7e5e4; text-decoration: none; }
+              .social-btn svg { transition: all 0.2s ease; color: #1c1917; }
+              .social-btn-ig:hover { background: linear-gradient(135deg, #833ab4, #fd1d1d, #fcb045); color: white; border-color: transparent; }
+              .social-btn-ig:hover svg { color: white; }
+              .social-btn-sp:hover { background: #1db954; color: white; border-color: #1db954; }
+              .social-btn-sp:hover svg { color: white; }
+              .social-btn-yt:hover { background: #ff0000; color: white; border-color: #ff0000; }
+              .social-btn-yt:hover svg { color: white; }
+              .social-btn-tt:hover { background: #000000; color: white; border-color: #000000; }
+              .social-btn-tt:hover svg { color: white; }
+              .social-btn-fb:hover { background: #1877f2; color: white; border-color: #1877f2; }
+              .social-btn-fb:hover svg { color: white; }
+              .social-btn-sc:hover { background: #ff5500; color: white; border-color: #ff5500; }
+              .social-btn-sc:hover svg { color: white; }
+            `}</style>
+            <div style={{background:'white', border:'1px solid #e7e5e4', borderRadius:'20px', padding:'20px', marginBottom:'16px', boxShadow:'0 2px 8px rgba(0,0,0,0.04)'}}>
+              <div style={{fontSize:'10px', fontWeight:700, color:'#a8a29e', textTransform:'uppercase', letterSpacing:'0.08em', marginBottom:'12px'}}>Urmărește</div>
+              <div style={{display:'flex', flexWrap:'wrap', gap:'8px'}}>
+                {artist.instagram && (
+                  <a href={'https://instagram.com/' + artist.instagram.replace('@','')} target="_blank" rel="noopener noreferrer" className="social-btn social-btn-ig"
+                    style={{display:'flex', alignItems:'center', gap:'6px', padding:'9px 14px', borderRadius:'12px', fontSize:'12px', fontWeight:600}}>
+                    <InstagramLogo size={14} weight="fill" /> Instagram
+                  </a>
+                )}
+                {artist.spotify && (
+                  <a href={artist.spotify} target="_blank" rel="noopener noreferrer" className="social-btn social-btn-sp"
+                    style={{display:'flex', alignItems:'center', gap:'6px', padding:'9px 14px', borderRadius:'12px', fontSize:'12px', fontWeight:600}}>
+                    <SpotifyLogo size={14} weight="fill" /> Spotify
+                  </a>
+                )}
+                {artist.youtube && (
+                  <a href={artist.youtube} target="_blank" rel="noopener noreferrer" className="social-btn social-btn-yt"
+                    style={{display:'flex', alignItems:'center', gap:'6px', padding:'9px 14px', borderRadius:'12px', fontSize:'12px', fontWeight:600}}>
+                    <YoutubeLogo size={14} weight="fill" /> YouTube
+                  </a>
+                )}
+                {artist.tiktok && (
+                  <a href={'https://tiktok.com/@' + artist.tiktok.replace('@','')} target="_blank" rel="noopener noreferrer" className="social-btn social-btn-tt"
+                    style={{display:'flex', alignItems:'center', gap:'6px', padding:'9px 14px', borderRadius:'12px', fontSize:'12px', fontWeight:600}}>
+                    <TiktokLogo size={14} weight="fill" /> TikTok
+                  </a>
+                )}
+                {artist.facebook && (
+                  <a href={artist.facebook} target="_blank" rel="noopener noreferrer" className="social-btn social-btn-fb"
+                    style={{display:'flex', alignItems:'center', gap:'6px', padding:'9px 14px', borderRadius:'12px', fontSize:'12px', fontWeight:600}}>
+                    <FacebookLogo size={14} weight="fill" /> Facebook
+                  </a>
+                )}
+                {artist.soundcloud && (
+                  <a href={artist.soundcloud} target="_blank" rel="noopener noreferrer" className="social-btn social-btn-sc"
+                    style={{display:'flex', alignItems:'center', gap:'6px', padding:'9px 14px', borderRadius:'12px', fontSize:'12px', fontWeight:600}}>
+                    <SoundcloudLogo size={14} weight="fill" /> SoundCloud
+                  </a>
+                )}
+              </div>
             </div>
-          </div>
+          </>
         )}
 
         {/* Rider Tehnic */}
