@@ -114,20 +114,40 @@ export async function GET(request: NextRequest) {
         }
       }
 
-      // 5. Hype Status - prioritate descrescatoare
-      if (result.bestTrendingPosition > 0 && result.bestTrendingPosition <= 10) {
-        result.hypeStatus = 'hot'
-      } else if (result.bestTrendingPosition > 0 && result.bestTrendingPosition <= 50) {
-        result.hypeStatus = 'trending'
-      } else if (result.total7DaysVideos > 100) {
-        result.hypeStatus = 'viral_launch'
-      } else if (result.totalTiktokViews > 1000000 || result.spotifyStreams > 1000000) {
-        result.hypeStatus = 'established'
-      } else if (result.totalTiktokViews > 100000 || result.spotifyStreams > 100000 || result.tiktokFollowers > 10000) {
-        result.hypeStatus = 'active'
-      } else {
-        result.hypeStatus = 'verified'
-      }
+      // 5. Heat Score 0-100
+      let heatScore = 65 // default - niciodata sub 60
+      
+      // TikTok views (30%)
+      if (result.totalTiktokViews > 50000000) heatScore += 30
+      else if (result.totalTiktokViews > 10000000) heatScore += 20
+      else if (result.totalTiktokViews > 1000000) heatScore += 10
+      else if (result.totalTiktokViews > 100000) heatScore += 5
+      
+      // TikTok video count viral (25%)
+      if (result.total7DaysVideos > 1000) heatScore += 25
+      else if (result.total7DaysVideos > 500) heatScore += 18
+      else if (result.total7DaysVideos > 100) heatScore += 10
+      else if (result.total7DaysVideos > 50) heatScore += 5
+      
+      // Trending position RO (25%)
+      if (result.bestTrendingPosition > 0 && result.bestTrendingPosition <= 5) heatScore += 25
+      else if (result.bestTrendingPosition > 0 && result.bestTrendingPosition <= 20) heatScore += 18
+      else if (result.bestTrendingPosition > 0 && result.bestTrendingPosition <= 50) heatScore += 10
+      else if (result.bestTrendingPosition > 0) heatScore += 5
+      
+      // Sounds count viral (20%)
+      if (result.soundsCount >= 5) heatScore += 20
+      else if (result.soundsCount >= 3) heatScore += 12
+      else if (result.soundsCount >= 1) heatScore += 6
+      
+      // Cap la 100
+      result.heatScore = Math.min(100, heatScore)
+      
+      // Hype Status pentru badges
+      if (result.heatScore >= 90) result.hypeStatus = 'hot'
+      else if (result.heatScore >= 75) result.hypeStatus = 'trending'
+      else if (result.heatScore >= 65) result.hypeStatus = 'active'
+      else result.hypeStatus = 'verified'
 
       return NextResponse.json(result)
     }

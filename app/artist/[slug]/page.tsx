@@ -63,14 +63,14 @@ export default async function ArtistPage({ params }: { params: Promise<{ slug: s
       { next: { revalidate: 3600 } }
     )
     const data = await chartexRes.json()
-    if (data.soundsCount > 0) {
-      chartexStats = {
-        totalViews: data.totalTiktokViews,
-        total7DaysVideos: data.total7DaysVideos,
-        soundsCount: data.soundsCount,
-        bestPosition: data.bestTrendingPosition,
-        topSongs: data.topSongs,
-      }
+    chartexStats = {
+      totalViews: data.totalTiktokViews || 0,
+      total7DaysVideos: data.total7DaysVideos || 0,
+      soundsCount: data.soundsCount || 0,
+      bestPosition: data.bestTrendingPosition || 0,
+      topSongs: data.topSongs || [],
+      heatScore: data.heatScore || 65,
+      hypeStatus: data.hypeStatus || 'verified',
     }
   } catch {}
   let vibes: string[] = []
