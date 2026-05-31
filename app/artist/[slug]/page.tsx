@@ -186,9 +186,10 @@ export default async function ArtistPage({ params }: { params: Promise<{ slug: s
             {(() => {
               const tier = artist.tier || ''
               const tierMap: Record<string, {label: string, color: string, public: boolean, sub: string}> = {
-                'A++': {label: 'HEADLINER', color: '#7c3aed', public: true, sub: 'Top tier'},
-                'A+': {label: 'POWER DRAW', color: '#3b82f6', public: true, sub: 'Tracțiune puternică'},
-                'A': {label: 'SOLID', color: '#06b6d4', public: true, sub: 'Atracție solidă'},
+                'A++': {label: 'HEADLINER', color: '#f59e0b', public: true, sub: 'Top tier'},
+                'Premium': {label: 'HEADLINER', color: '#f59e0b', public: true, sub: 'Top tier'},
+                'A+': {label: 'POWER DRAW', color: '#7c3aed', public: true, sub: 'Tracțiune puternică'},
+                'A': {label: 'SOLID', color: '#44403c', public: true, sub: 'Atracție solidă'},
               }
               const data = tierMap[tier] || {label: 'BOOKING ACTIV', color: '#059669', public: false, sub: 'Activ acum'}
               return (
