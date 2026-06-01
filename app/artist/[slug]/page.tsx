@@ -312,28 +312,7 @@ export default async function ArtistPage({ params }: { params: Promise<{ slug: s
           </>
         )}
 
-        {/* Spotify Music Showcase */}
-        {artist.spotify && (() => {
-          const match = artist.spotify.match(/artist\/([a-zA-Z0-9]+)/)
-          const spotifyId = match ? match[1] : null
-          if (!spotifyId) return null
-          return (
-            <div style={{background:'white', border:'1px solid #e7e5e4', borderRadius:'20px', padding:'20px', marginBottom:'16px', boxShadow:'0 2px 8px rgba(0,0,0,0.04)'}}>
-              <div style={{fontSize:'10px', fontWeight:700, color:'#a8a29e', textTransform:'uppercase', letterSpacing:'0.08em', marginBottom:'14px'}}>Ascultă</div>
-              <iframe
-                src={'https://open.spotify.com/embed/artist/' + spotifyId + '?utm_source=generator&theme=0'}
-                width="100%"
-                height="380"
-                frameBorder="0"
-                allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
-                loading="lazy"
-                style={{borderRadius:'12px'}}
-              />
-            </div>
-          )
-        })()}
-
-        {/* Spotify Music Showcase */}
+{/* Spotify Music Showcase */}
         {artist.spotify && (() => {
           const match = artist.spotify.match(/artist\/([a-zA-Z0-9]+)/)
           const spotifyId = match ? match[1] : null
