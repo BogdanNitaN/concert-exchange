@@ -15,6 +15,10 @@ export default function BookArtistPage() {
   const [success, setSuccess] = useState(false)
   const [step, setStep] = useState(1)
   const [calendarMonth, setCalendarMonth] = useState(new Date())
+  const [citySuggestions, setCitySuggestions] = useState<any[]>([])
+  const [venueSuggestions, setVenueSuggestions] = useState<any[]>([])
+  const [showCityDropdown, setShowCityDropdown] = useState(false)
+  const [showVenueDropdown, setShowVenueDropdown] = useState(false)
   const [form, setForm] = useState({
     eventDate: '', eventType: '', eventTypeCustom: '', city: '', venueName: '',
     duration: '', durationCustom: '',
@@ -29,6 +33,30 @@ export default function BookArtistPage() {
     }
     fetchArtist()
   }, [slug])
+
+  // Autocomplete oras
+  useEffect(() => {
+    if (form.city.length < 2) { setCitySuggestions([]); return }
+    const timer = setTimeout(() => {
+      fetch('/api/places?input=' + encodeURIComponent(form.city + ' Romania'))
+        .then(r => r.json())
+        .then(d => setCitySuggestions(d.predictions || []))
+        .catch(() => setCitySuggestions([]))
+    }, 300)
+    return () => clearTimeout(timer)
+  }, [form.city])
+
+  // Autocomplete locatie
+  useEffect(() => {
+    if (form.venueName.length < 2) { setVenueSuggestions([]); return }
+    const timer = setTimeout(() => {
+      fetch('/api/places?input=' + encodeURIComponent(form.venueName + ' ' + form.city))
+        .then(r => r.json())
+        .then(d => setVenueSuggestions(d.predictions || []))
+        .catch(() => setVenueSuggestions([]))
+    }, 300)
+    return () => clearTimeout(timer)
+  }, [form.venueName, form.city])
 
   // Optiuni durata in functie de setType
   const getDurationOptions = () => {
@@ -197,13 +225,35 @@ export default function BookArtistPage() {
                 <input type="text" value={form.eventTypeCustom} onChange={e => setForm({...form, eventTypeCustom: e.target.value})} placeholder="Descrie tipul evenimentului" style={{...inputStyle, marginTop:'8px'}} />
               )}
             </div>
-            <div style={{marginBottom:'14px'}}>
+            <div style={{marginBottom:'14px', position:'relative'}}>
               <label style={labelStyle}>Oras *</label>
-              <input type="text" value={form.city} onChange={e => setForm({...form, city: e.target.value})} placeholder="Bucuresti" style={inputStyle} />
+              <input type="text" value={form.city} onChange={e => { setForm({...form, city: e.target.value}); setShowCityDropdown(true) }} onFocus={() => setShowCityDropdown(true)} onBlur={() => setTimeout(() => setShowCityDropdown(false), 200)} placeholder="Bucuresti" style={inputStyle} autoComplete="off" />
+              {showCityDropdown && citySuggestions.length > 0 && (
+                <div style={{position:'absolute', top:'100%', left:0, right:0, background:'white', border:'1px solid #e7e5e4', borderRadius:'12px', marginTop:'4px', boxShadow:'0 4px 12px rgba(0,0,0,0.08)', zIndex:50, maxHeight:'200px', overflowY:'auto'}}>
+                  {citySuggestions.slice(0, 5).map((s: any) => (
+                    <div key={s.place_id} onClick={() => { setForm({...form, city: s.structured_formatting?.main_text || s.description}); setShowCityDropdown(false) }}
+                      style={{padding:'10px 14px', cursor:'pointer', fontSize:'13px', color:'#1c1917', borderBottom:'1px solid #f5f5f4'}}>
+                      <div style={{fontWeight:600}}>{s.structured_formatting?.main_text || s.description}</div>
+                      {s.structured_formatting?.secondary_text && <div style={{fontSize:'11px', color:'#78716c', marginTop:'2px'}}>{s.structured_formatting.secondary_text}</div>}
+                    </div>
+                  ))}
+                </div>
+              )}
             </div>
-            <div style={{marginBottom:'14px'}}>
+            <div style={{marginBottom:'14px', position:'relative'}}>
               <label style={labelStyle}>Locatia evenimentului</label>
-              <input type="text" value={form.venueName} onChange={e => setForm({...form, venueName: e.target.value})} placeholder="Crown Plaza, Beraria H..." style={inputStyle} />
+              <input type="text" value={form.venueName} onChange={e => { setForm({...form, venueName: e.target.value}); setShowVenueDropdown(true) }} onFocus={() => setShowVenueDropdown(true)} onBlur={() => setTimeout(() => setShowVenueDropdown(false), 200)} placeholder="Crown Plaza, Beraria H..." style={inputStyle} autoComplete="off" />
+              {showVenueDropdown && venueSuggestions.length > 0 && (
+                <div style={{position:'absolute', top:'100%', left:0, right:0, background:'white', border:'1px solid #e7e5e4', borderRadius:'12px', marginTop:'4px', boxShadow:'0 4px 12px rgba(0,0,0,0.08)', zIndex:50, maxHeight:'200px', overflowY:'auto'}}>
+                  {venueSuggestions.slice(0, 5).map((s: any) => (
+                    <div key={s.place_id} onClick={() => { setForm({...form, venueName: s.structured_formatting?.main_text || s.description}); setShowVenueDropdown(false) }}
+                      style={{padding:'10px 14px', cursor:'pointer', fontSize:'13px', color:'#1c1917', borderBottom:'1px solid #f5f5f4'}}>
+                      <div style={{fontWeight:600}}>{s.structured_formatting?.main_text || s.description}</div>
+                      {s.structured_formatting?.secondary_text && <div style={{fontSize:'11px', color:'#78716c', marginTop:'2px'}}>{s.structured_formatting.secondary_text}</div>}
+                    </div>
+                  ))}
+                </div>
+              )}
             </div>
             <div style={{marginBottom:'14px'}}>
               <label style={labelStyle}>Durata *</label>
