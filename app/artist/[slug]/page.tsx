@@ -342,7 +342,39 @@ export default async function ArtistPage({ params }: { params: Promise<{ slug: s
           </>
         )}
 
-{/* Spotify Music Showcase */}
+        {/* Performance Stats Chartex */}
+        {chartexStats && (chartexStats.spotifyStreams > 0 || chartexStats.youtubeViews > 0 || chartexStats.shazamCount > 0 || chartexStats.totalTiktokVideos > 0) && (
+          <div style={{background:'white', border:'1px solid #e7e5e4', borderRadius:'18px', padding:'14px', marginBottom:'12px', boxShadow:'0 2px 8px rgba(0,0,0,0.04)'}}>
+            <div style={{display:'grid', gridTemplateColumns:'repeat(4, 1fr)', gap:'8px'}}>
+              {chartexStats.totalTiktokVideos > 100 && (
+                <div style={{textAlign:'center', padding:'6px 4px', borderRight:'1px solid #f5f5f4'}}>
+                  <div style={{fontWeight:700, fontSize:'16px', color:'#1c1917', letterSpacing:'-0.5px', lineHeight:1}}>{formatNum(chartexStats.totalTiktokVideos)}</div>
+                  <div style={{fontSize:'9px', color:'#78716c', fontWeight:600, marginTop:'4px', textTransform:'uppercase', letterSpacing:'0.04em'}}>Creates</div>
+                </div>
+              )}
+              {chartexStats.spotifyStreams > 1000 && (
+                <div style={{textAlign:'center', padding:'6px 4px', borderRight:'1px solid #f5f5f4'}}>
+                  <div style={{fontWeight:700, fontSize:'16px', color:'#1c1917', letterSpacing:'-0.5px', lineHeight:1}}>{formatNum(chartexStats.spotifyStreams)}</div>
+                  <div style={{fontSize:'9px', color:'#78716c', fontWeight:600, marginTop:'4px', textTransform:'uppercase', letterSpacing:'0.04em'}}>Streams</div>
+                </div>
+              )}
+              {chartexStats.youtubeViews > 1000 && (
+                <div style={{textAlign:'center', padding:'6px 4px', borderRight:'1px solid #f5f5f4'}}>
+                  <div style={{fontWeight:700, fontSize:'16px', color:'#1c1917', letterSpacing:'-0.5px', lineHeight:1}}>{formatNum(chartexStats.youtubeViews)}</div>
+                  <div style={{fontSize:'9px', color:'#78716c', fontWeight:600, marginTop:'4px', textTransform:'uppercase', letterSpacing:'0.04em'}}>Views</div>
+                </div>
+              )}
+              {chartexStats.shazamCount > 100 && (
+                <div style={{textAlign:'center', padding:'6px 4px'}}>
+                  <div style={{fontWeight:700, fontSize:'16px', color:'#1c1917', letterSpacing:'-0.5px', lineHeight:1}}>{formatNum(chartexStats.shazamCount)}</div>
+                  <div style={{fontSize:'9px', color:'#78716c', fontWeight:600, marginTop:'4px', textTransform:'uppercase', letterSpacing:'0.04em'}}>Shazams</div>
+                </div>
+              )}
+            </div>
+          </div>
+        )}
+
+        {/* Spotify Music Showcase */}
         {artist.spotify && (() => {
           const match = artist.spotify.match(/artist\/([a-zA-Z0-9]+)/)
           const spotifyId = match ? match[1] : null
