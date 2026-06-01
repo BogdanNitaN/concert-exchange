@@ -213,7 +213,7 @@ export default async function ArtistPage({ params }: { params: Promise<{ slug: s
           </div>
 
           {/* Card 2 - Box Office Power */}
-          <div className="tier-item" style={{padding:'14px 12px', background:'white', border:'1px solid #e7e5e4', borderRadius:'18px', boxShadow:'0 2px 8px rgba(0,0,0,0.04)', position:'relative', display:'block'}}>
+          <div className="tier-item" style={{padding:'14px 12px', background:'white', border:'1px solid #e7e5e4', borderRadius:'18px', boxShadow:'0 2px 8px rgba(0,0,0,0.04)', position:'relative', display:'block', overflow:'hidden'}}>
             {(() => {
               const tier = artist.tier || ''
               const tierMap: Record<string, {label: string, color: string, public: boolean, sub: string}> = {
