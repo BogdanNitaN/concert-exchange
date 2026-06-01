@@ -220,9 +220,14 @@ export default async function ArtistPage({ params }: { params: Promise<{ slug: s
                 'A': {label: 'SOLID', color: '#44403c', public: true, sub: 'Atracție solidă'},
               }
               const data = tierMap[tier] || {label: 'BOOKING ACTIV', color: '#059669', public: false, sub: 'Activ acum'}
+              const tooltipText = data.label === 'HEADLINER' ? 'Top tier - vinde singur orice eveniment' 
+                : data.label === 'POWER DRAW' ? 'Tractiune puternica - vanzari consistente' 
+                : data.label === 'SOLID' ? 'Atractie solida - fan base loial' 
+                : 'Artist activ pe platforma'
               return (
                 <>
                   <div style={{position:'absolute', top:0, right:0, width:'4px', height:'100%', background:data.color}}></div>
+                  <span className="tier-tooltip">{tooltipText}</span>
                   {data.public && (
                     <div style={{fontWeight:700, fontSize:'28px', color:data.color, letterSpacing:'-1px', lineHeight:1}}>{tier}</div>
                   )}
