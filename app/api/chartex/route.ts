@@ -54,22 +54,35 @@ export async function GET(request: NextRequest) {
       }
 
       const ourArtist = artistName.toLowerCase().trim()
+      const spotifyId = request.nextUrl.searchParams.get('spotify_id') || ''
 
-      // SONGS CROSS-PLATFORM - agregam totalele din toate piesele artistului
-      const songsAll = await chartexFetch(
-        `/external/v1/songs/?search=${encodeURIComponent(artistName)}&sort_platform=spotify&sort_column=all_time&limit=100`
-      )
-      if (songsAll?.data?.items) {
-        songsAll.data.items.forEach((s: any) => {
-          const itemArtist = (s.artists || '').toLowerCase().trim()
-          if (itemArtist && (itemArtist.includes(ourArtist) || ourArtist.includes(itemArtist))) {
-            result.spotifyStreams += s.spotify_total_streams || 0
-            result.youtubeViews += s.youtube_total_views || 0
-            result.shazamCount += s.shazam_total_count || 0
-            result.totalTiktokVideos += s.tiktok_total_video_count || 0
-            result.songsCount++
+      // NEW ENDPOINT: Direct artist stats by Spotify ID (mult mai precis)
+      if (spotifyId) {
+        const artistStats = await chartexFetch(
+          `/external/v1/artists/${spotifyId}/stats/all/?mode=total&limit_by_latest_days=999`
+        )
+        if (artistStats?.data?.items && artistStats.data.items.length > 0) {
+          // Luam ultima zi cu date complete (pe data ascendenta)
+          const items = artistStats.data.items
+          const latest = items[items.length - 1]
+          // Daca ultima zi are date null, mergem inapoi pana gasim
+          let lastValid = latest
+          for (let i = items.length - 1; i >= 0; i--) {
+            if (items[i]['spotify-streams'] !== null || items[i]['youtube-views'] !== null) {
+              lastValid = items[i]
+              break
+            }
           }
-        })
+          result.totalTiktokVideos = lastValid['tiktok-creates'] || 0
+          result.spotifyStreams = lastValid['spotify-streams'] || 0
+          result.youtubeViews = lastValid['youtube-views'] || 0
+          result.shazamCount = lastValid['shazam-counts'] || 0
+          result.instagramFollowers = lastValid['instagram-followers'] || 0
+          result.spotifyFollowers = lastValid['spotify-followers'] || 0
+          result.spotifyMonthlyListeners = lastValid['spotify-monthly-listeners'] || 0
+          result.tiktokFollowers = lastValid['tiktok-followers'] || 0
+          result.songsCount = 1
+        }
       }
 
       // 1. TikTok trending RO

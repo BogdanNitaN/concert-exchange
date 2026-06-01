@@ -58,9 +58,16 @@ export default async function ArtistPage({ params }: { params: Promise<{ slug: s
     } catch {}
   }
 
+  // Extragem Spotify ID din URL artist
+  let spotifyArtistId = ''
+  if (artist.spotify) {
+    const match = artist.spotify.match(/artist\/([a-zA-Z0-9]+)/)
+    if (match) spotifyArtistId = match[1]
+  }
+
   try {
     const chartexRes = await fetch(
-      baseUrl + '/api/chartex?action=artist_full&artist=' + encodeURIComponent(artist.artistName || '') + '&country=RO',
+      baseUrl + '/api/chartex?action=artist_full&artist=' + encodeURIComponent(artist.artistName || '') + '&spotify_id=' + spotifyArtistId + '&country=RO',
       { next: { revalidate: 3600 } }
     )
     const data = await chartexRes.json()
@@ -78,6 +85,10 @@ export default async function ArtistPage({ params }: { params: Promise<{ slug: s
       youtubeViews: data.youtubeViews || 0,
       shazamCount: data.shazamCount || 0,
       totalReach: data.totalReach || 0,
+      instagramFollowers: data.instagramFollowers || 0,
+      spotifyFollowers: data.spotifyFollowers || 0,
+      spotifyMonthlyListeners: data.spotifyMonthlyListeners || 0,
+      tiktokFollowers: data.tiktokFollowers || 0,
     }
   } catch {}
   const formatNum = (n: number) => {
