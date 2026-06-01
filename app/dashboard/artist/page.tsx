@@ -57,6 +57,7 @@ export default function ArtistDashboard() {
   const [genreDropdownOpen, setGenreDropdownOpen] = useState(false)
   const [pressKitUrl, setPressKitUrl] = useState('')
   const [riderUrl, setRiderUrl] = useState('')
+  const [venuesPlayed, setVenuesPlayed] = useState('')
   const [cazareTip, setCazareTip] = useState('')
   const [durata, setDurata] = useState<string[]>([])
   const [availability, setAvailability] = useState<Record<string, string>>({})
@@ -95,6 +96,7 @@ export default function ArtistDashboard() {
           if (profile.soundcloud) setSoundcloud(profile.soundcloud)
           if (profile.press_kit_url) setPressKitUrl(profile.press_kit_url)
           if (profile.rider_url) setRiderUrl(profile.rider_url)
+          if (profile.venues_played) setVenuesPlayed(profile.venues_played)
           if (profile.cazare_tip) setCazareTip(profile.cazare_tip)
           if (profile.durata) setDurata(Array.isArray(profile.durata) ? profile.durata : [])
           if (profile.id) setArtistId(profile.id)
@@ -124,7 +126,7 @@ export default function ArtistDashboard() {
       const slug = artistName.toLowerCase().replace(/[^a-z0-9]/g, '-').replace(/-+/g, '-').replace(/^-|-$/g, '')
       const { data: upsertData, error: upsertError } = await (supabase as any).from('artists').upsert({
         user_id: user?.id,
-        artistName, slug, bio, genres, vibes, setType, cityFrom, costPerKm, press_kit_url: pressKitUrl, rider_url: riderUrl, cazare_tip: cazareTip, durata,
+        artistName, slug, bio, genres, vibes, setType, cityFrom, costPerKm, press_kit_url: pressKitUrl, rider_url: riderUrl, cazare_tip: cazareTip, durata, venues_played: venuesPlayed,
         nrBileteAvion, cazare, instagram, spotify, youtube, tiktok, facebook, soundcloud,
         // updated_at: new Date().toISOString()
       }, { onConflict: 'user_id' })
@@ -576,6 +578,15 @@ export default function ArtistDashboard() {
 
           </div>
         </Section>
+
+        <div style={{background:'white', border:'1px solid #e7e5e4', borderRadius:'20px', padding:'24px', marginBottom:'14px'}}>
+          <div style={{display:'flex', alignItems:'center', gap:'8px', marginBottom:'16px'}}>
+            <span style={{fontWeight:700, fontSize:'14px', color:'#1c1917'}}>Au cantat la (venue-uri prestigioase)</span>
+          </div>
+          <div style={{fontSize:'12px', color:'#78716c', marginBottom:'12px'}}>Adaugă 3-5 venue-uri/festivaluri mari unde ai cantat. Separate prin virgulă. Ex: Untold, Electric Castle, Sala Polivalentă București</div>
+          <input type="text" value={venuesPlayed} onChange={e => setVenuesPlayed(e.target.value)} placeholder="Untold, Electric Castle, Sala Polivalentă..."
+            style={{width:'100%', padding:'11px 14px', borderRadius:'12px', border:'1px solid #e7e5e4', fontSize:'13px', fontFamily:'Montserrat,sans-serif', color:'#1c1917', outline:'none', boxSizing:'border-box', background:'#fafaf9'}} />
+        </div>
 
         <div style={{background:'white', border:'1px solid #e7e5e4', borderRadius:'20px', padding:'24px', marginBottom:'14px'}}>
           <div style={{display:'flex', alignItems:'center', gap:'8px', marginBottom:'16px'}}>

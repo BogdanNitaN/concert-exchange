@@ -139,7 +139,10 @@ export default async function ArtistPage({ params }: { params: Promise<{ slug: s
             </div>
             <div style={{flex:1}}>
               <div style={{display:'flex', alignItems:'center', gap:'8px', marginBottom:'4px'}}>
+                <div style={{display:'flex', alignItems:'center', gap:'6px'}}>
                 <h1 style={{fontSize:'20px', fontWeight:800, color:'#1c1917', margin:0, letterSpacing:'-0.5px'}}>{displayName}</h1>
+                <CheckCircle2 size={18} color='#059669' strokeWidth={2.5} fill='#dcfce7' />
+              </div>
                 {artist.is_verified && (
                   <CheckCircle2 size={18} color='#059669' strokeWidth={2} />
                 )}
@@ -240,12 +243,21 @@ export default async function ArtistPage({ params }: { params: Promise<{ slug: s
             })()}
           </div>
 
-          {/* Card 3 - Verified */}
+          {/* Card 3 - Au cantat la */}
           <div style={{padding:'14px 12px', background:'white', border:'1px solid #e7e5e4', borderRadius:'18px', boxShadow:'0 2px 8px rgba(0,0,0,0.04)', position:'relative', overflow:'hidden'}}>
             <div style={{position:'absolute', top:0, right:0, width:'4px', height:'100%', background:'#1c1917'}}></div>
-            <CheckCircle2 size={22} color='#059669' strokeWidth={2.5} fill='#dcfce7' />
-            <div style={{fontWeight:600, fontSize:'12px', color:'#1c1917', letterSpacing:'-0.2px', lineHeight:1.3, marginTop:'6px'}}>GIGx Verified</div>
-            <div style={{fontSize:'10px', color:'#78716c', fontWeight:500, marginTop:'5px', letterSpacing:'0.02em'}}>Artist confirmat</div>
+            {artist.venues_played ? (
+              <>
+                <div style={{fontWeight:700, fontSize:'12px', color:'#1c1917', letterSpacing:'-0.2px', lineHeight:1.3}}>{artist.venues_played.split(',')[0]?.trim() || ''}</div>
+                <div style={{fontWeight:600, fontSize:'11px', color:'#44403c', letterSpacing:'-0.1px', lineHeight:1.3, marginTop:'4px'}}>{artist.venues_played.split(',').slice(1, 3).map((v: string) => v.trim()).join(' · ')}</div>
+                <div style={{fontSize:'10px', color:'#78716c', fontWeight:500, marginTop:'5px', letterSpacing:'0.02em'}}>● Au cantat la</div>
+              </>
+            ) : (
+              <>
+                <div style={{fontWeight:700, fontSize:'12px', color:'#1c1917', letterSpacing:'-0.2px', lineHeight:1.3, marginTop:'12px'}}>Booking activ</div>
+                <div style={{fontSize:'10px', color:'#78716c', fontWeight:500, marginTop:'5px', letterSpacing:'0.02em'}}>● Pe scena Romaniei</div>
+              </>
+            )}
           </div>
         </div>
 
