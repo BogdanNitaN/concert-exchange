@@ -221,7 +221,7 @@ export default async function ArtistPage({ params }: { params: Promise<{ slug: s
         <div style={{display:'grid', gridTemplateColumns:'repeat(3, 1fr)', gap:'10px', marginBottom:'10px'}}>
           {/* Card 1 - Raspuns */}
           <div style={{padding:'14px 12px', background:'white', border:'1px solid #e7e5e4', borderRadius:'18px', boxShadow:'0 2px 8px rgba(0,0,0,0.04)', position:'relative', overflow:'hidden'}}>
-            <div style={{position:'absolute', top:'12px', right:'0', width:'3px', height:'calc(100% - 24px)', background:'#059669', borderTopLeftRadius:'2px', borderBottomLeftRadius:'2px'}}></div>
+            <div style={{position:'absolute', top:'12px', right:'0', width:'3px', height:'calc(100% - 24px)', background:'#0ea5e9', borderTopLeftRadius:'2px', borderBottomLeftRadius:'2px'}}></div>
             <div style={{fontWeight:700, fontSize:'22px', color:'#1c1917', letterSpacing:'-1px', lineHeight:1}}>30<span style={{fontSize:'14px', fontWeight:500, color:'#78716c', marginLeft:'2px'}}>min</span></div>
             <div style={{fontWeight:600, fontSize:'12px', color:'#1c1917', letterSpacing:'-0.2px', lineHeight:1.3, marginTop:'6px'}}>Răspuns garantat</div>
             <div style={{fontSize:'10px', color:'#059669', fontWeight:500, marginTop:'5px', letterSpacing:'0.02em'}}>● Activ acum</div>
@@ -267,7 +267,7 @@ export default async function ArtistPage({ params }: { params: Promise<{ slug: s
                   {chartexStats.totalReach > 1000000000 ? (chartexStats.totalReach/1000000000).toFixed(1)+'B' : chartexStats.totalReach > 1000000 ? (chartexStats.totalReach/1000000).toFixed(1)+'M' : (chartexStats.totalReach/1000).toFixed(0)+'K'}
                 </div>
                 <div style={{fontWeight:600, fontSize:'12px', color:'#1c1917', letterSpacing:'-0.2px', lineHeight:1.3, marginTop:'6px'}}>Total Reach</div>
-                <div style={{fontSize:'10px', color:'#059669', fontWeight:500, marginTop:'5px', letterSpacing:'0.02em'}}>● Pe 4 platforme</div>
+                <div style={{fontSize:'10px', color:'#0ea5e9', fontWeight:500, marginTop:'5px', letterSpacing:'0.02em'}}>● Pe 4 platforme</div>
               </>
             ) : (
               <>
@@ -349,28 +349,33 @@ export default async function ArtistPage({ params }: { params: Promise<{ slug: s
               {chartexStats.totalTiktokVideos > 100 && (
                 <div style={{textAlign:'center', padding:'6px 4px', borderRight:'1px solid #f5f5f4'}}>
                   <div style={{fontWeight:700, fontSize:'16px', color:'#1c1917', letterSpacing:'-0.5px', lineHeight:1}}>{formatNum(chartexStats.totalTiktokVideos)}</div>
-                  <div style={{fontSize:'9px', color:'#78716c', fontWeight:600, marginTop:'4px', textTransform:'uppercase', letterSpacing:'0.04em'}}>Creates</div>
+                  <div style={{fontSize:'9px', color:'#78716c', fontWeight:600, marginTop:'4px', textTransform:'uppercase', letterSpacing:'0.04em'}}>TikTok</div>
+                  <div style={{fontSize:'9px', color:'#a8a29e', fontWeight:500, marginTop:'2px'}}>Creates</div>
                 </div>
               )}
               {chartexStats.spotifyStreams > 1000 && (
                 <div style={{textAlign:'center', padding:'6px 4px', borderRight:'1px solid #f5f5f4'}}>
                   <div style={{fontWeight:700, fontSize:'16px', color:'#1c1917', letterSpacing:'-0.5px', lineHeight:1}}>{formatNum(chartexStats.spotifyStreams)}</div>
-                  <div style={{fontSize:'9px', color:'#78716c', fontWeight:600, marginTop:'4px', textTransform:'uppercase', letterSpacing:'0.04em'}}>Streams</div>
+                  <div style={{fontSize:'9px', color:'#78716c', fontWeight:600, marginTop:'4px', textTransform:'uppercase', letterSpacing:'0.04em'}}>Spotify</div>
+                  <div style={{fontSize:'9px', color:'#a8a29e', fontWeight:500, marginTop:'2px'}}>Streams</div>
                 </div>
               )}
               {chartexStats.youtubeViews > 1000 && (
                 <div style={{textAlign:'center', padding:'6px 4px', borderRight:'1px solid #f5f5f4'}}>
                   <div style={{fontWeight:700, fontSize:'16px', color:'#1c1917', letterSpacing:'-0.5px', lineHeight:1}}>{formatNum(chartexStats.youtubeViews)}</div>
-                  <div style={{fontSize:'9px', color:'#78716c', fontWeight:600, marginTop:'4px', textTransform:'uppercase', letterSpacing:'0.04em'}}>Views</div>
+                  <div style={{fontSize:'9px', color:'#78716c', fontWeight:600, marginTop:'4px', textTransform:'uppercase', letterSpacing:'0.04em'}}>YouTube</div>
+                  <div style={{fontSize:'9px', color:'#a8a29e', fontWeight:500, marginTop:'2px'}}>Views</div>
                 </div>
               )}
               {chartexStats.shazamCount > 100 && (
                 <div style={{textAlign:'center', padding:'6px 4px'}}>
                   <div style={{fontWeight:700, fontSize:'16px', color:'#1c1917', letterSpacing:'-0.5px', lineHeight:1}}>{formatNum(chartexStats.shazamCount)}</div>
-                  <div style={{fontSize:'9px', color:'#78716c', fontWeight:600, marginTop:'4px', textTransform:'uppercase', letterSpacing:'0.04em'}}>Shazams</div>
+                  <div style={{fontSize:'9px', color:'#78716c', fontWeight:600, marginTop:'4px', textTransform:'uppercase', letterSpacing:'0.04em'}}>Shazam</div>
+                  <div style={{fontSize:'9px', color:'#a8a29e', fontWeight:500, marginTop:'2px'}}>Identifications</div>
                 </div>
               )}
             </div>
+            <div style={{textAlign:'center', marginTop:'10px', fontSize:'9px', color:'#a8a29e', fontWeight:500}}>Analytics provided by chartex.com</div>
           </div>
         )}
 
