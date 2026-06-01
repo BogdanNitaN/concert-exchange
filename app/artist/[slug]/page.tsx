@@ -206,7 +206,7 @@ export default async function ArtistPage({ params }: { params: Promise<{ slug: s
         <div style={{display:'grid', gridTemplateColumns:'repeat(3, 1fr)', gap:'10px', marginBottom:'10px'}}>
           {/* Card 1 - Raspuns */}
           <div style={{padding:'14px 12px', background:'white', border:'1px solid #e7e5e4', borderRadius:'18px', boxShadow:'0 2px 8px rgba(0,0,0,0.04)', position:'relative', overflow:'hidden'}}>
-            <div style={{position:'absolute', top:8, right:0, width:'4px', height:'calc(100% - 16px)', background:'#059669', borderRadius:'2px'}}></div>
+            <div style={{position:'absolute', top:'10px', right:'10px', width:'4px', height:'calc(100% - 20px)', background:'#059669', borderRadius:'4px'}}></div>
             <div style={{fontWeight:700, fontSize:'22px', color:'#1c1917', letterSpacing:'-1px', lineHeight:1}}>30<span style={{fontSize:'14px', fontWeight:500, color:'#78716c', marginLeft:'2px'}}>min</span></div>
             <div style={{fontWeight:600, fontSize:'12px', color:'#1c1917', letterSpacing:'-0.2px', lineHeight:1.3, marginTop:'6px'}}>Răspuns garantat</div>
             <div style={{fontSize:'10px', color:'#059669', fontWeight:500, marginTop:'5px', letterSpacing:'0.02em'}}>● Activ acum</div>
@@ -229,7 +229,7 @@ export default async function ArtistPage({ params }: { params: Promise<{ slug: s
                 : 'Artist activ pe platforma'
               return (
                 <>
-                  <div style={{position:'absolute', top:8, right:0, width:'4px', height:'calc(100% - 16px)', background:data.color, borderRadius:'2px'}}></div>
+                  <div style={{position:'absolute', top:'10px', right:'10px', width:'4px', height:'calc(100% - 20px)', background:data.color, borderRadius:'4px'}}></div>
                   <span className="tier-tooltip">{tooltipText}</span>
                   {data.public && (
                     <div style={{fontWeight:700, fontSize:'22px', color:data.color, letterSpacing:'-1px', lineHeight:1}}>{tier}</div>
@@ -245,7 +245,7 @@ export default async function ArtistPage({ params }: { params: Promise<{ slug: s
 
           {/* Card 3 - Au cantat la */}
           <div style={{padding:'14px 12px', background:'white', border:'1px solid #e7e5e4', borderRadius:'18px', boxShadow:'0 2px 8px rgba(0,0,0,0.04)', position:'relative', overflow:'hidden'}}>
-            <div style={{position:'absolute', top:8, right:0, width:'4px', height:'calc(100% - 16px)', background:'#1c1917', borderRadius:'2px'}}></div>
+            <div style={{position:'absolute', top:'10px', right:'10px', width:'4px', height:'calc(100% - 20px)', background:'#1c1917', borderRadius:'4px'}}></div>
             {artist.venues_played ? (
               <>
                 <div style={{fontWeight:700, fontSize:'12px', color:'#1c1917', letterSpacing:'-0.2px', lineHeight:1.3}}>{artist.venues_played.split(',')[0]?.trim() || ''}</div>
