@@ -296,7 +296,7 @@ export default async function ArtistPage({ params }: { params: Promise<{ slug: s
           <>
             <style>{`
               .social-btn { transition: all 0.2s ease; color: #78716c; background: #fafaf9; border: 1px solid #f5f5f4; text-decoration: none; }
-              .social-btn svg { transition: all 0.2s ease; color: #1c1917; }
+              .social-btn svg { transition: all 0.2s ease; color: #78716c; }
               .social-btn-ig:hover { background: linear-gradient(135deg, #833ab4, #fd1d1d, #fcb045); color: white; border-color: transparent; }
               .social-btn-ig:hover svg { color: white; }
               .social-btn-sp:hover { background: #1db954; color: white; border-color: #1db954; }
