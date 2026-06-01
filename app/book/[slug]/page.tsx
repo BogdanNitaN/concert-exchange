@@ -210,15 +210,14 @@ export default function BookArtistPage() {
               <label style={labelStyle}>Tip eveniment *</label>
               <select value={form.eventType} onChange={e => setForm({...form, eventType: e.target.value})} style={inputStyle}>
                 <option value="">Selecteaza...</option>
-                <option value="pop-up">Pop-up</option>
-                <option value="aniversare">Aniversare</option>
-                <option value="corporate">Corporate</option>
-                <option value="club">Club</option>
-                <option value="festival">Festival</option>
-                <option value="city-days">City Days</option>
-                <option value="restaurant">Restaurant / Terasa</option>
                 <option value="nunta">Nunta</option>
-                <option value="privat">Privat</option>
+                <option value="botez">Botez</option>
+                <option value="corporate">Corporate</option>
+                <option value="private">Petrecere privata</option>
+                <option value="gala">Gala / Revelion</option>
+                <option value="festival">Festival</option>
+                <option value="citydays">City Days</option>
+                <option value="lansare">Lansare / Team Building</option>
                 <option value="altul">Altul</option>
               </select>
               {isCustomEventType && (
