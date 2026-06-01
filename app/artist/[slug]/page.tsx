@@ -269,7 +269,7 @@ export default async function ArtistPage({ params }: { params: Promise<{ slug: s
               .social-btn-sc:hover svg { color: white; }
             `}</style>
             <div style={{background:'white', border:'1px solid #e7e5e4', borderRadius:'14px', padding:'14px', marginBottom:'10px', boxShadow:'0 2px 8px rgba(0,0,0,0.04)'}}>
-              <div style={{fontSize:'10px', fontWeight:700, color:'#a8a29e', textTransform:'uppercase', letterSpacing:'0.08em', marginBottom:'10px'}}>Urmărește</div>
+
               <div style={{display:'flex', flexWrap:'wrap', gap:'8px'}}>
                 {artist.instagram && (
                   <a href={'https://instagram.com/' + artist.instagram.replace('@','')} target="_blank" rel="noopener noreferrer" className="social-btn social-btn-ig"
@@ -319,7 +319,7 @@ export default async function ArtistPage({ params }: { params: Promise<{ slug: s
           if (!spotifyId) return null
           return (
             <div style={{background:'white', border:'1px solid #e7e5e4', borderRadius:'14px', padding:'14px', marginBottom:'10px', boxShadow:'0 2px 8px rgba(0,0,0,0.04)'}}>
-              <div style={{fontSize:'10px', fontWeight:700, color:'#a8a29e', textTransform:'uppercase', letterSpacing:'0.08em', marginBottom:'10px'}}>Ascultă</div>
+
               <iframe
                 src={'https://open.spotify.com/embed/artist/' + spotifyId + '?utm_source=generator&theme=0'}
                 width="100%"
