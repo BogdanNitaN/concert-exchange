@@ -316,7 +316,7 @@ export default async function ArtistPage({ params }: { params: Promise<{ slug: s
                 {artist.instagram && (
                   <a href={'https://instagram.com/' + artist.instagram.replace('@','')} target="_blank" rel="noopener noreferrer" className="social-btn social-btn-ig"
                     style={{display:'flex', alignItems:'center', gap:'5px', padding:'5px 10px', borderRadius:'8px', fontSize:'10px', fontWeight:500}}>
-                    <InstagramLogo size={11} /> Instagram
+                    <InstagramLogo size={11} weight="bold" /> Instagram
                   </a>
                 )}
                 {artist.spotify && (
