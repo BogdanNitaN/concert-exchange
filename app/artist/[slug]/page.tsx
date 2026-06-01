@@ -128,9 +128,9 @@ export default async function ArtistPage({ params }: { params: Promise<{ slug: s
       <div style={{maxWidth:'700px', margin:'0 auto', padding:'32px 24px'}}>
         
         {/* Header artist */}
-        <div style={{background:'white', border:'1px solid #e7e5e4', borderRadius:'24px', padding:'32px', marginBottom:'16px', boxShadow:'0 1px 4px rgba(0,0,0,0.04)'}}>
+        <div style={{background:'white', border:'1px solid #e7e5e4', borderRadius:'18px', padding:'20px', marginBottom:'10px', boxShadow:'0 2px 8px rgba(0,0,0,0.04)'}}>
           <div style={{display:'flex', alignItems:'flex-start', gap:'20px', marginBottom:'20px'}}>
-            <div style={{width:'72px', height:'72px', borderRadius:'18px', background:'#1c1917', display:'flex', alignItems:'center', justifyContent:'center', flexShrink:0, overflow:'hidden'}}>
+            <div style={{width:'56px', height:'56px', borderRadius:'14px', background:'#1c1917', display:'flex', alignItems:'center', justifyContent:'center', flexShrink:0, overflow:'hidden'}}>
               {spotifyImage ? (
                 <img src={spotifyImage} alt={displayName} style={{width:'100%', height:'100%', objectFit:'cover'}} />
               ) : (
@@ -139,7 +139,7 @@ export default async function ArtistPage({ params }: { params: Promise<{ slug: s
             </div>
             <div style={{flex:1}}>
               <div style={{display:'flex', alignItems:'center', gap:'8px', marginBottom:'4px'}}>
-                <h1 style={{fontSize:'24px', fontWeight:800, color:'#1c1917', margin:0, letterSpacing:'-0.5px'}}>{displayName}</h1>
+                <h1 style={{fontSize:'20px', fontWeight:800, color:'#1c1917', margin:0, letterSpacing:'-0.5px'}}>{displayName}</h1>
                 {artist.is_verified && (
                   <CheckCircle2 size={18} color='#059669' strokeWidth={2} />
                 )}
@@ -172,8 +172,8 @@ export default async function ArtistPage({ params }: { params: Promise<{ slug: s
 
         {/* Spotify Stats (fallback cand nu avem Chartex) */}
         {!chartexStats && spotifyData && (spotifyData.followers > 1000 || spotifyData.popularity > 30) && (
-          <div style={{background:'#f0fdf4', border:'1px solid #bbf7d0', borderRadius:'20px', padding:'20px', marginBottom:'16px'}}>
-            <div style={{display:'flex', alignItems:'center', gap:'6px', marginBottom:'12px'}}>
+          <div style={{background:'#f0fdf4', border:'1px solid #bbf7d0', borderRadius:'20px', padding:'20px', marginBottom:'10px'}}>
+            <div style={{display:'flex', alignItems:'center', gap:'6px', marginBottom:'10px'}}>
               <span style={{fontSize:'10px', fontWeight:700, color:'#059669', textTransform:'uppercase', letterSpacing:'0.08em'}}>● Spotify Stats</span>
             </div>
             <div style={{display:'grid', gridTemplateColumns:'repeat(auto-fit, minmax(140px, 1fr))', gap:'12px'}}>
@@ -200,7 +200,7 @@ export default async function ArtistPage({ params }: { params: Promise<{ slug: s
         )}
 
         {/* Stats Cards 2026 */}
-        <div style={{display:'grid', gridTemplateColumns:'repeat(3, 1fr)', gap:'10px', marginBottom:'16px'}}>
+        <div style={{display:'grid', gridTemplateColumns:'repeat(3, 1fr)', gap:'10px', marginBottom:'10px'}}>
           {/* Card 1 - Raspuns */}
           <div style={{padding:'14px 12px', background:'white', border:'1px solid #e7e5e4', borderRadius:'18px', boxShadow:'0 2px 8px rgba(0,0,0,0.04)', position:'relative', overflow:'hidden'}}>
             <div style={{position:'absolute', top:0, right:0, width:'4px', height:'100%', background:'#059669'}}></div>
@@ -268,8 +268,8 @@ export default async function ArtistPage({ params }: { params: Promise<{ slug: s
               .social-btn-sc:hover { background: #ff5500; color: white; border-color: #ff5500; }
               .social-btn-sc:hover svg { color: white; }
             `}</style>
-            <div style={{background:'white', border:'1px solid #e7e5e4', borderRadius:'20px', padding:'20px', marginBottom:'16px', boxShadow:'0 2px 8px rgba(0,0,0,0.04)'}}>
-              <div style={{fontSize:'10px', fontWeight:700, color:'#a8a29e', textTransform:'uppercase', letterSpacing:'0.08em', marginBottom:'12px'}}>Urmărește</div>
+            <div style={{background:'white', border:'1px solid #e7e5e4', borderRadius:'14px', padding:'14px', marginBottom:'10px', boxShadow:'0 2px 8px rgba(0,0,0,0.04)'}}>
+              <div style={{fontSize:'10px', fontWeight:700, color:'#a8a29e', textTransform:'uppercase', letterSpacing:'0.08em', marginBottom:'10px'}}>Urmărește</div>
               <div style={{display:'flex', flexWrap:'wrap', gap:'8px'}}>
                 {artist.instagram && (
                   <a href={'https://instagram.com/' + artist.instagram.replace('@','')} target="_blank" rel="noopener noreferrer" className="social-btn social-btn-ig"
@@ -318,12 +318,12 @@ export default async function ArtistPage({ params }: { params: Promise<{ slug: s
           const spotifyId = match ? match[1] : null
           if (!spotifyId) return null
           return (
-            <div style={{background:'white', border:'1px solid #e7e5e4', borderRadius:'20px', padding:'20px', marginBottom:'16px', boxShadow:'0 2px 8px rgba(0,0,0,0.04)'}}>
-              <div style={{fontSize:'10px', fontWeight:700, color:'#a8a29e', textTransform:'uppercase', letterSpacing:'0.08em', marginBottom:'14px'}}>Ascultă</div>
+            <div style={{background:'white', border:'1px solid #e7e5e4', borderRadius:'14px', padding:'14px', marginBottom:'10px', boxShadow:'0 2px 8px rgba(0,0,0,0.04)'}}>
+              <div style={{fontSize:'10px', fontWeight:700, color:'#a8a29e', textTransform:'uppercase', letterSpacing:'0.08em', marginBottom:'10px'}}>Ascultă</div>
               <iframe
                 src={'https://open.spotify.com/embed/artist/' + spotifyId + '?utm_source=generator&theme=0'}
                 width="100%"
-                height="380"
+                height="152"
                 frameBorder="0"
                 allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
                 loading="lazy"
@@ -335,7 +335,7 @@ export default async function ArtistPage({ params }: { params: Promise<{ slug: s
 
         {/* Rider Tehnic */}
         {artist.rider_url && (
-          <div style={{background:'white', border:'1px solid #e7e5e4', borderRadius:'20px', padding:'20px', marginBottom:'16px', display:'flex', alignItems:'center', justifyContent:'space-between'}}>
+          <div style={{background:'white', border:'1px solid #e7e5e4', borderRadius:'20px', padding:'20px', marginBottom:'10px', display:'flex', alignItems:'center', justifyContent:'space-between'}}>
             <div>
               <div style={{fontWeight:700, fontSize:'14px', color:'#1c1917', marginBottom:'4px'}}>Rider Tehnic</div>
               <div style={{fontSize:'12px', color:'#78716c'}}>Cerințe scenă, sunet și lumini</div>
@@ -349,7 +349,7 @@ export default async function ArtistPage({ params }: { params: Promise<{ slug: s
 
         
         {artist.rider_url && (
-          <div style={{background:'white', border:'1px solid #e7e5e4', borderRadius:'20px', padding:'20px', marginBottom:'16px', display:'flex', alignItems:'center', justifyContent:'space-between'}}>
+          <div style={{background:'white', border:'1px solid #e7e5e4', borderRadius:'20px', padding:'20px', marginBottom:'10px', display:'flex', alignItems:'center', justifyContent:'space-between'}}>
             <div>
               <div style={{fontWeight:700, fontSize:'14px', color:'#1c1917', marginBottom:'4px'}}>Rider Tehnic</div>
               <div style={{fontSize:'12px', color:'#78716c'}}>Cerințe scenă, sunet și lumini</div>
