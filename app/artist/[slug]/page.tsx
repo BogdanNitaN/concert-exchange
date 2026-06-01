@@ -101,7 +101,7 @@ export default async function ArtistPage({ params }: { params: Promise<{ slug: s
       <style>{`
         .tier-item { position: relative; cursor: pointer; display: flex; align-items: center; gap: 5px; padding: 4px 8px; border-radius: 8px; transition: background 0.2s; }
         .tier-item:hover { background: #fafaf9; }
-        .tier-tooltip { position: absolute; top: 100%; left: 50%; transform: translateX(-50%) translateY(8px); background: #1c1917; color: white; padding: 8px 12px; border-radius: 8px; font-size: 11px; font-weight: 500; white-space: nowrap; opacity: 0; pointer-events: none; transition: opacity 0.2s; z-index: 50; box-shadow: 0 4px 12px rgba(0,0,0,0.15); }
+        .tier-tooltip { position: absolute; bottom: calc(100% + 8px); left: 50%; transform: translateX(-50%); background: #1c1917; color: white; padding: 8px 12px; border-radius: 8px; font-size: 11px; font-weight: 500; white-space: nowrap; opacity: 0; pointer-events: none; transition: opacity 0.2s; z-index: 50; box-shadow: 0 4px 12px rgba(0,0,0,0.15); }
         .tier-item:hover .tier-tooltip { opacity: 1; }
       `}</style>
       <div style={{background:'white', borderBottom:'1px solid #f5f5f4'}}>
@@ -210,7 +210,7 @@ export default async function ArtistPage({ params }: { params: Promise<{ slug: s
           </div>
 
           {/* Card 2 - Box Office Power */}
-          <div className="tier-item" style={{padding:'20px 14px', background:'white', border:'1px solid #e7e5e4', borderRadius:'18px', boxShadow:'0 2px 8px rgba(0,0,0,0.04)', position:'relative', overflow:'hidden', cursor:'help'}}>
+          <div className="tier-item" style={{padding:'20px 14px', background:'white', border:'1px solid #e7e5e4', borderRadius:'18px', boxShadow:'0 2px 8px rgba(0,0,0,0.04)', position:'relative'}}>
             {(() => {
               const tier = artist.tier || ''
               const tierMap: Record<string, {label: string, color: string, public: boolean, sub: string}> = {
