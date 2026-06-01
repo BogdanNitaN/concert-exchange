@@ -35,27 +35,42 @@ export async function GET(request: NextRequest) {
 
     if (action === 'artist_full') {
       const result: any = {
-        // TikTok sounds
         topSongs: [],
         totalTiktokViews: 0,
+        totalTiktokVideos: 0,
         total7DaysVideos: 0,
         soundsCount: 0,
+        songsCount: 0,
         bestTrendingPosition: 0,
-        // TikTok account
         tiktokFollowers: 0,
         tiktokFollowers7DaysGrowth: 0,
-        // Songs cross-platform
         spotifyStreams: 0,
         youtubeViews: 0,
         shazamCount: 0,
-        // Instagram
         instagramFollowers: 0,
         instagramReels: 0,
-        // Status
         hypeStatus: null,
+        totalReach: 0,
       }
 
       const ourArtist = artistName.toLowerCase().trim()
+
+      // SONGS CROSS-PLATFORM - agregam totalele din toate piesele artistului
+      const songsAll = await chartexFetch(
+        `/external/v1/songs/?search=${encodeURIComponent(artistName)}&sort_platform=spotify&sort_column=all_time&limit=100`
+      )
+      if (songsAll?.data?.items) {
+        songsAll.data.items.forEach((s: any) => {
+          const itemArtist = (s.artists || '').toLowerCase().trim()
+          if (itemArtist && (itemArtist.includes(ourArtist) || ourArtist.includes(itemArtist))) {
+            result.spotifyStreams += s.spotify_total_streams || 0
+            result.youtubeViews += s.youtube_total_views || 0
+            result.shazamCount += s.shazam_total_count || 0
+            result.totalTiktokVideos += s.tiktok_total_video_count || 0
+            result.songsCount++
+          }
+        })
+      }
 
       // 1. TikTok trending RO
       const trending = await chartexFetch(
@@ -113,6 +128,9 @@ export async function GET(request: NextRequest) {
           result.instagramFollowers = igAcc.total_followers || 0
         }
       }
+
+      // Total reach (suma cifre vizibile)
+      result.totalReach = result.totalTiktokViews + result.youtubeViews + result.spotifyStreams + result.shazamCount
 
       // 5. Heat Score 0-100
       let heatScore = 65 // default - niciodata sub 60
