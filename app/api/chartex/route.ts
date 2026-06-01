@@ -61,26 +61,25 @@ export async function GET(request: NextRequest) {
         const artistStats = await chartexFetch(
           `/external/v1/artists/${spotifyId}/stats/all/?mode=total&limit_by_latest_days=999`
         )
-        if (artistStats?.data?.items && artistStats.data.items.length > 0) {
-          // Luam ultima zi cu date complete (pe data ascendenta)
-          const items = artistStats.data.items
-          const latest = items[items.length - 1]
-          // Daca ultima zi are date null, mergem inapoi pana gasim
-          let lastValid = latest
-          for (let i = items.length - 1; i >= 0; i--) {
-            if (items[i]['spotify-streams'] !== null || items[i]['youtube-views'] !== null) {
-              lastValid = items[i]
-              break
+        if (artistStats?.data?.statistics && artistStats.data.statistics.length > 0) {
+          const items = artistStats.data.statistics
+          // Pentru fiecare metric, luam ultima valoare NON-NULL (parcurgem invers)
+          const getLatest = (key: string): number => {
+            for (let i = items.length - 1; i >= 0; i--) {
+              if (items[i][key] !== null && items[i][key] !== undefined) {
+                return items[i][key]
+              }
             }
+            return 0
           }
-          result.totalTiktokVideos = lastValid['tiktok-creates'] || 0
-          result.spotifyStreams = lastValid['spotify-streams'] || 0
-          result.youtubeViews = lastValid['youtube-views'] || 0
-          result.shazamCount = lastValid['shazam-counts'] || 0
-          result.instagramFollowers = lastValid['instagram-followers'] || 0
-          result.spotifyFollowers = lastValid['spotify-followers'] || 0
-          result.spotifyMonthlyListeners = lastValid['spotify-monthly-listeners'] || 0
-          result.tiktokFollowers = lastValid['tiktok-followers'] || 0
+          result.totalTiktokVideos = getLatest('tiktok-creates')
+          result.spotifyStreams = getLatest('spotify-streams')
+          result.youtubeViews = getLatest('youtube-views')
+          result.shazamCount = getLatest('shazam-counts')
+          result.instagramFollowers = getLatest('instagram-followers')
+          result.spotifyFollowers = getLatest('spotify-followers')
+          result.spotifyMonthlyListeners = getLatest('spotify-monthly-listeners')
+          result.tiktokFollowers = getLatest('tiktok-followers')
           result.songsCount = 1
         }
       }
@@ -185,6 +184,7 @@ export async function GET(request: NextRequest) {
 
     return NextResponse.json({ error: 'Invalid action' }, { status: 400 })
   } catch (e: any) {
+    console.error('Chartex error:', e.message, e.stack)
     return NextResponse.json({ error: e.message }, { status: 500 })
   }
 }
