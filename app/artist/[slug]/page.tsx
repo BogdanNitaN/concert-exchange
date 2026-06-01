@@ -65,14 +65,12 @@ export default async function ArtistPage({ params }: { params: Promise<{ slug: s
     if (match) spotifyArtistId = match[1]
   }
 
-  console.log('Spotify ID:', spotifyArtistId, 'Artist:', artist.artistName)
   try {
     const chartexRes = await fetch(
       baseUrl + '/api/chartex?action=artist_full&artist=' + encodeURIComponent(artist.artistName || '') + '&spotify_id=' + spotifyArtistId + '&country=RO',
       { next: { revalidate: 3600 } }
     )
     const data = await chartexRes.json()
-    console.log('Chartex data:', data)
     chartexStats = {
       totalViews: data.totalTiktokViews || 0,
       totalTiktokVideos: data.totalTiktokVideos || 0,
