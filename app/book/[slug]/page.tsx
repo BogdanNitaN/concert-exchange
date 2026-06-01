@@ -38,7 +38,7 @@ export default function BookArtistPage() {
   useEffect(() => {
     if (form.city.length < 2) { setCitySuggestions([]); return }
     const timer = setTimeout(() => {
-      fetch('/api/places?input=' + encodeURIComponent(form.city + ' Romania'))
+      fetch('/api/places?input=' + encodeURIComponent(form.city) + '&type=cities')
         .then(r => r.json())
         .then(d => setCitySuggestions(d.predictions || []))
         .catch(() => setCitySuggestions([]))
