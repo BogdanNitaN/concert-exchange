@@ -126,7 +126,7 @@ export default function ArtistDashboard() {
       const slug = artistName.toLowerCase().replace(/[^a-z0-9]/g, '-').replace(/-+/g, '-').replace(/^-|-$/g, '')
       const { data: upsertData, error: upsertError } = await (supabase as any).from('artists').upsert({
         user_id: user?.id,
-        artistName, slug, bio, genres, vibes, setType, cityFrom, costPerKm, press_kit_url: pressKitUrl, rider_url: riderUrl, cazare_tip: cazareTip, durata, venues_played: venuesPlayed,
+        artistName, slug, bio, genres, vibes, setType, cityFrom, costPerKm, press_kit_url: pressKitUrl, rider_url: riderUrl, cazare_tip: cazareTip, durata, venues_played: venuesPlayed, is_verified: true,
         nrBileteAvion, cazare, instagram, spotify, youtube, tiktok, facebook, soundcloud,
         // updated_at: new Date().toISOString()
       }, { onConflict: 'user_id' })

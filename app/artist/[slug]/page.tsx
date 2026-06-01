@@ -165,11 +165,13 @@ export default async function ArtistPage({ params }: { params: Promise<{ slug: s
               <div style={{display:'flex', alignItems:'center', gap:'8px', marginBottom:'4px'}}>
                 <div style={{display:'flex', alignItems:'center', gap:'6px'}}>
                 <h1 style={{fontSize:'20px', fontWeight:800, color:'#1c1917', margin:0, letterSpacing:'-0.5px'}}>{displayName}</h1>
-                <span title="Artist verificat GIGx" style={{display:'inline-flex', alignItems:'center', justifyContent:'center', width:'12px', height:'12px', borderRadius:'50%', background:'#06b6d4', flexShrink:0, boxShadow:'0 1px 2px rgba(6,182,212,0.3)'}}>
-                  <svg width="7" height="7" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M3 8L6.5 11.5L13 5" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/>
-                  </svg>
-                </span>
+                {artist.is_verified && (
+                  <span title="Artist verificat GIGx" style={{display:'inline-flex', alignItems:'center', justifyContent:'center', width:'12px', height:'12px', borderRadius:'50%', background:'#06b6d4', flexShrink:0, boxShadow:'0 1px 2px rgba(6,182,212,0.3)'}}>
+                    <svg width="7" height="7" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                      <path d="M3 8L6.5 11.5L13 5" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/>
+                    </svg>
+                  </span>
+                )}
               </div>
                 {artist.is_verified && (
                   <CheckCircle2 size={18} color='#059669' strokeWidth={2} />
