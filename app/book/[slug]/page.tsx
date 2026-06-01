@@ -2,7 +2,7 @@
 import { useState, useEffect } from 'react'
 import { useParams } from 'next/navigation'
 import Link from 'next/link'
-import { ArrowLeft, ArrowRight, CheckCircle2 } from 'lucide-react'
+import { ArrowLeft, ArrowRight, CheckCircle2, ChevronLeft, ChevronRight } from 'lucide-react'
 import { supabase } from '@/lib/supabase'
 
 export default function BookArtistPage() {
@@ -14,6 +14,7 @@ export default function BookArtistPage() {
   const [submitting, setSubmitting] = useState(false)
   const [success, setSuccess] = useState(false)
   const [step, setStep] = useState(1)
+  const [calendarMonth, setCalendarMonth] = useState(new Date())
   const [form, setForm] = useState({
     eventDate: '', eventType: '', eventTypeCustom: '', city: '', venueName: '',
     duration: '', durationCustom: '',
@@ -122,7 +123,58 @@ export default function BookArtistPage() {
             <div style={{fontSize:'10px',fontWeight:700,color:'#a8a29e',textTransform:'uppercase',letterSpacing:'0.08em',marginBottom:'14px'}}>Pasul 1 / 3 · Detalii eveniment</div>
             <div style={{marginBottom:'14px'}}>
               <label style={labelStyle}>Data evenimentului *</label>
-              <input type="date" value={form.eventDate} onChange={e => setForm({...form, eventDate: e.target.value})} style={inputStyle} />
+              <div style={{background:'#fafaf9', border:'1px solid #e7e5e4', borderRadius:'12px', padding:'12px'}}>
+                <div style={{display:'flex', alignItems:'center', justifyContent:'space-between', marginBottom:'10px'}}>
+                  <button type="button" onClick={() => setCalendarMonth(new Date(calendarMonth.getFullYear(), calendarMonth.getMonth() - 1))}
+                    style={{background:'white', border:'1px solid #e7e5e4', borderRadius:'8px', padding:'4px 6px', cursor:'pointer', display:'flex', alignItems:'center'}}>
+                    <ChevronLeft size={14} color='#44403c' />
+                  </button>
+                  <div style={{fontSize:'13px', fontWeight:700, color:'#1c1917'}}>
+                    {calendarMonth.toLocaleString('ro-RO', {month: 'long', year: 'numeric'}).toUpperCase()}
+                  </div>
+                  <button type="button" onClick={() => setCalendarMonth(new Date(calendarMonth.getFullYear(), calendarMonth.getMonth() + 1))}
+                    style={{background:'white', border:'1px solid #e7e5e4', borderRadius:'8px', padding:'4px 6px', cursor:'pointer', display:'flex', alignItems:'center'}}>
+                    <ChevronRight size={14} color='#44403c' />
+                  </button>
+                </div>
+                <div style={{display:'grid', gridTemplateColumns:'repeat(7, 1fr)', gap:'2px', marginBottom:'4px'}}>
+                  {['L','M','M','J','V','S','D'].map((d, i) => (
+                    <div key={i} style={{textAlign:'center', fontSize:'10px', fontWeight:700, color:'#a8a29e', padding:'4px'}}>{d}</div>
+                  ))}
+                </div>
+                <div style={{display:'grid', gridTemplateColumns:'repeat(7, 1fr)', gap:'2px'}}>
+                  {(() => {
+                    const year = calendarMonth.getFullYear()
+                    const month = calendarMonth.getMonth()
+                    const firstDay = new Date(year, month, 1)
+                    const lastDay = new Date(year, month + 1, 0)
+                    const startWeekday = (firstDay.getDay() + 6) % 7 // luni = 0
+                    const days = []
+                    for (let i = 0; i < startWeekday; i++) days.push(null)
+                    for (let i = 1; i <= lastDay.getDate(); i++) days.push(i)
+                    const today = new Date()
+                    today.setHours(0,0,0,0)
+                    return days.map((day, i) => {
+                      if (!day) return <div key={'e'+i}></div>
+                      const dateObj = new Date(year, month, day)
+                      const dateStr = year + '-' + String(month+1).padStart(2,'0') + '-' + String(day).padStart(2,'0')
+                      const isPast = dateObj < today
+                      const isSelected = form.eventDate === dateStr
+                      const isToday = dateObj.getTime() === today.getTime()
+                      return (
+                        <button key={day} type="button" disabled={isPast} onClick={() => setForm({...form, eventDate: dateStr})}
+                          style={{
+                            padding:'8px 0', borderRadius:'8px', border:'none', cursor: isPast ? 'not-allowed' : 'pointer',
+                            background: isSelected ? '#059669' : (isToday ? '#fafaf9' : 'white'),
+                            color: isSelected ? 'white' : (isPast ? '#d6d3d1' : '#1c1917'),
+                            fontSize:'12px', fontWeight: isSelected ? 700 : 500, fontFamily:'Montserrat,sans-serif',
+                            border: isToday && !isSelected ? '1px solid #059669' : '1px solid transparent'
+                          }}>{day}</button>
+                      )
+                    })
+                  })()}
+                </div>
+              </div>
             </div>
             <div style={{marginBottom:'14px'}}>
               <label style={labelStyle}>Tip eveniment *</label>
