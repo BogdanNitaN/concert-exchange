@@ -141,7 +141,9 @@ export default async function ArtistPage({ params }: { params: Promise<{ slug: s
               <div style={{display:'flex', alignItems:'center', gap:'8px', marginBottom:'4px'}}>
                 <div style={{display:'flex', alignItems:'center', gap:'6px'}}>
                 <h1 style={{fontSize:'20px', fontWeight:800, color:'#1c1917', margin:0, letterSpacing:'-0.5px'}}>{displayName}</h1>
-                <CheckCircle2 size={18} color='#059669' strokeWidth={2.5} fill='#dcfce7' />
+                <span title="Artist verificat GIGx" style={{display:'inline-flex', alignItems:'center', justifyContent:'center', width:'18px', height:'18px', borderRadius:'50%', background:'#1c1917', flexShrink:0}}>
+                  <CheckCircle2 size={11} color='#eacda3' strokeWidth={3.5} />
+                </span>
               </div>
                 {artist.is_verified && (
                   <CheckCircle2 size={18} color='#059669' strokeWidth={2} />
@@ -265,7 +267,7 @@ export default async function ArtistPage({ params }: { params: Promise<{ slug: s
         {(artist.instagram || artist.spotify || artist.youtube || artist.tiktok || artist.facebook || artist.soundcloud) && (
           <>
             <style>{`
-              .social-btn { transition: all 0.2s ease; color: #1c1917; background: #f5f5f7; border: none; text-decoration: none; }
+              .social-btn { transition: all 0.2s ease; color: #78716c; background: transparent; border: 1px solid #e7e5e4; text-decoration: none; }
               .social-btn svg { transition: all 0.2s ease; color: #1c1917; }
               .social-btn-ig:hover { background: linear-gradient(135deg, #833ab4, #fd1d1d, #fcb045); color: white; border-color: transparent; }
               .social-btn-ig:hover svg { color: white; }
@@ -285,38 +287,38 @@ export default async function ArtistPage({ params }: { params: Promise<{ slug: s
               <div style={{display:'flex', flexWrap:'wrap', gap:'8px'}}>
                 {artist.instagram && (
                   <a href={'https://instagram.com/' + artist.instagram.replace('@','')} target="_blank" rel="noopener noreferrer" className="social-btn social-btn-ig"
-                    style={{display:'flex', alignItems:'center', gap:'5px', padding:'6px 12px', borderRadius:'10px', fontSize:'11px', fontWeight:500}}>
-                    <InstagramLogo size={12} /> Instagram
+                    style={{display:'flex', alignItems:'center', gap:'5px', padding:'5px 10px', borderRadius:'8px', fontSize:'10px', fontWeight:500}}>
+                    <InstagramLogo size={11} /> Instagram
                   </a>
                 )}
                 {artist.spotify && (
                   <a href={artist.spotify} target="_blank" rel="noopener noreferrer" className="social-btn social-btn-sp"
-                    style={{display:'flex', alignItems:'center', gap:'5px', padding:'6px 12px', borderRadius:'10px', fontSize:'11px', fontWeight:500}}>
-                    <SpotifyLogo size={12} /> Spotify
+                    style={{display:'flex', alignItems:'center', gap:'5px', padding:'5px 10px', borderRadius:'8px', fontSize:'10px', fontWeight:500}}>
+                    <SpotifyLogo size={11} /> Spotify
                   </a>
                 )}
                 {artist.youtube && (
                   <a href={artist.youtube} target="_blank" rel="noopener noreferrer" className="social-btn social-btn-yt"
-                    style={{display:'flex', alignItems:'center', gap:'5px', padding:'6px 12px', borderRadius:'10px', fontSize:'11px', fontWeight:500}}>
-                    <YoutubeLogo size={12} /> YouTube
+                    style={{display:'flex', alignItems:'center', gap:'5px', padding:'5px 10px', borderRadius:'8px', fontSize:'10px', fontWeight:500}}>
+                    <YoutubeLogo size={11} /> YouTube
                   </a>
                 )}
                 {artist.tiktok && (
                   <a href={'https://tiktok.com/@' + artist.tiktok.replace('@','')} target="_blank" rel="noopener noreferrer" className="social-btn social-btn-tt"
-                    style={{display:'flex', alignItems:'center', gap:'5px', padding:'6px 12px', borderRadius:'10px', fontSize:'11px', fontWeight:500}}>
-                    <TiktokLogo size={12} /> TikTok
+                    style={{display:'flex', alignItems:'center', gap:'5px', padding:'5px 10px', borderRadius:'8px', fontSize:'10px', fontWeight:500}}>
+                    <TiktokLogo size={11} /> TikTok
                   </a>
                 )}
                 {artist.facebook && (
                   <a href={artist.facebook} target="_blank" rel="noopener noreferrer" className="social-btn social-btn-fb"
-                    style={{display:'flex', alignItems:'center', gap:'5px', padding:'6px 12px', borderRadius:'10px', fontSize:'11px', fontWeight:500}}>
-                    <FacebookLogo size={12} /> Facebook
+                    style={{display:'flex', alignItems:'center', gap:'5px', padding:'5px 10px', borderRadius:'8px', fontSize:'10px', fontWeight:500}}>
+                    <FacebookLogo size={11} /> Facebook
                   </a>
                 )}
                 {artist.soundcloud && (
                   <a href={artist.soundcloud} target="_blank" rel="noopener noreferrer" className="social-btn social-btn-sc"
-                    style={{display:'flex', alignItems:'center', gap:'5px', padding:'6px 12px', borderRadius:'10px', fontSize:'11px', fontWeight:500}}>
-                    <SoundcloudLogo size={12} /> SoundCloud
+                    style={{display:'flex', alignItems:'center', gap:'5px', padding:'5px 10px', borderRadius:'8px', fontSize:'10px', fontWeight:500}}>
+                    <SoundcloudLogo size={11} /> SoundCloud
                   </a>
                 )}
               </div>
