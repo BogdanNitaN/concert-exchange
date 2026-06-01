@@ -139,7 +139,7 @@ export default function BookArtistPage() {
                 </div>
                 <div style={{display:'grid', gridTemplateColumns:'repeat(7, 1fr)', gap:'2px', marginBottom:'4px'}}>
                   {['L','M','M','J','V','S','D'].map((d, i) => (
-                    <div key={i} style={{textAlign:'center', fontSize:'10px', fontWeight:700, color: i >= 4 ? '#44403c' : '#a8a29e', padding:'4px'}}>{d}</div>
+                    <div key={i} style={{textAlign:'center', fontSize:'10px', fontWeight:700, color:'#a8a29e', padding:'4px'}}>{d}</div>
                   ))}
                 </div>
                 <div style={{display:'grid', gridTemplateColumns:'repeat(7, 1fr)', gap:'2px'}}>
@@ -168,8 +168,8 @@ export default function BookArtistPage() {
                           style={{
                             padding:'8px 0', borderRadius:'8px', border:'none', cursor: isPast ? 'not-allowed' : 'pointer',
                             background: isSelected ? '#059669' : (isToday ? '#fafaf9' : 'white'),
-                            color: isSelected ? 'white' : (isPast ? '#d6d3d1' : (isWeekend ? '#1c1917' : '#a8a29e')),
-                            fontSize:'12px', fontWeight: isSelected ? 700 : (isWeekend ? 700 : 500), fontFamily:'Montserrat,sans-serif',
+                            color: isSelected ? 'white' : (isPast ? '#d6d3d1' : (isWeekend ? '#1c1917' : '#78716c')),
+                            fontSize:'12px', fontWeight: isSelected ? 700 : 500, fontFamily:'Montserrat,sans-serif',
                             border: isToday && !isSelected ? '1px solid #059669' : '1px solid transparent'
                           }}>{day}</button>
                       )
