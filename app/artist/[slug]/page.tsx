@@ -234,9 +234,6 @@ export default async function ArtistPage({ params }: { params: Promise<{ slug: s
                   <div style={{fontWeight:600, fontSize:'13px', color:'#1c1917', letterSpacing:'-0.2px', lineHeight:1.3, marginTop: data.public ? '10px' : '30px'}}>
                     {data.label}
                   </div>
-                  <div style={{fontSize:'10px', color:'#78716c', fontWeight:500, marginTop:'8px', letterSpacing:'0.02em'}}>
-                    Box Office Tier
-                  </div>
                   <div style={{fontSize:'10px', color:data.color, fontWeight:500, marginTop:'8px', letterSpacing:'0.02em'}}>● {data.sub}</div>
                 </>
               )
