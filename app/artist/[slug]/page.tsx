@@ -173,9 +173,6 @@ export default async function ArtistPage({ params }: { params: Promise<{ slug: s
                   </span>
                 )}
               </div>
-                {artist.is_verified && (
-                  <CheckCircle2 size={18} color='#059669' strokeWidth={2} />
-                )}
               </div>
               <div style={{display:'flex', alignItems:'center', gap:'12px', flexWrap:'wrap'}}>
                 {artist.setType && (

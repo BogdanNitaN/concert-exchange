@@ -581,15 +581,6 @@ export default function ArtistDashboard() {
 
         <div style={{background:'white', border:'1px solid #e7e5e4', borderRadius:'20px', padding:'24px', marginBottom:'14px'}}>
           <div style={{display:'flex', alignItems:'center', gap:'8px', marginBottom:'16px'}}>
-            <span style={{fontWeight:700, fontSize:'14px', color:'#1c1917'}}>Au cantat la (venue-uri prestigioase)</span>
-          </div>
-          <div style={{fontSize:'12px', color:'#78716c', marginBottom:'12px'}}>Adaugă 3-5 venue-uri/festivaluri mari unde ai cantat. Separate prin virgulă. Ex: Untold, Electric Castle, Sala Polivalentă București</div>
-          <input type="text" value={venuesPlayed} onChange={e => setVenuesPlayed(e.target.value)} placeholder="Untold, Electric Castle, Sala Polivalentă..."
-            style={{width:'100%', padding:'11px 14px', borderRadius:'12px', border:'1px solid #e7e5e4', fontSize:'13px', fontFamily:'Montserrat,sans-serif', color:'#1c1917', outline:'none', boxSizing:'border-box', background:'#fafaf9'}} />
-        </div>
-
-        <div style={{background:'white', border:'1px solid #e7e5e4', borderRadius:'20px', padding:'24px', marginBottom:'14px'}}>
-          <div style={{display:'flex', alignItems:'center', gap:'8px', marginBottom:'16px'}}>
             <span style={{fontWeight:700, fontSize:'14px', color:'#1c1917'}}>Press Kit</span>
           </div>
           <div style={{fontSize:'12px', color:'#78716c', marginBottom:'12px'}}>Link Google Drive sau Dropbox cu materiale de presă (foto, bio, logo).</div>
