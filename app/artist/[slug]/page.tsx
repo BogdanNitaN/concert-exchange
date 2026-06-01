@@ -245,19 +245,22 @@ export default async function ArtistPage({ params }: { params: Promise<{ slug: s
             })()}
           </div>
 
-          {/* Card 3 - Au cantat la */}
+          {/* Card 3 - Total Reach */}
           <div style={{padding:'14px 12px', background:'white', border:'1px solid #e7e5e4', borderRadius:'18px', boxShadow:'0 2px 8px rgba(0,0,0,0.04)', position:'relative', overflow:'hidden'}}>
-            <div style={{position:'absolute', top:'12px', right:'0', width:'3px', height:'calc(100% - 24px)', background:'#1c1917', borderTopLeftRadius:'2px', borderBottomLeftRadius:'2px'}}></div>
-            {artist.venues_played ? (
+            <div style={{position:'absolute', top:'12px', right:'0', width:'3px', height:'calc(100% - 24px)', background:'#059669', borderTopLeftRadius:'2px', borderBottomLeftRadius:'2px'}}></div>
+            {chartexStats && chartexStats.totalReach > 1000000 ? (
               <>
-                <div style={{fontWeight:700, fontSize:'12px', color:'#1c1917', letterSpacing:'-0.2px', lineHeight:1.3}}>{artist.venues_played.split(',')[0]?.trim() || ''}</div>
-                <div style={{fontWeight:600, fontSize:'11px', color:'#44403c', letterSpacing:'-0.1px', lineHeight:1.3, marginTop:'4px'}}>{artist.venues_played.split(',').slice(1, 3).map((v: string) => v.trim()).join(' · ')}</div>
-                <div style={{fontSize:'10px', color:'#78716c', fontWeight:500, marginTop:'5px', letterSpacing:'0.02em'}}>● Au cantat la</div>
+                <div style={{fontWeight:700, fontSize:'22px', color:'#1c1917', letterSpacing:'-1px', lineHeight:1}}>
+                  {chartexStats.totalReach > 1000000000 ? (chartexStats.totalReach/1000000000).toFixed(1)+'B' : chartexStats.totalReach > 1000000 ? (chartexStats.totalReach/1000000).toFixed(1)+'M' : (chartexStats.totalReach/1000).toFixed(0)+'K'}
+                </div>
+                <div style={{fontWeight:600, fontSize:'12px', color:'#1c1917', letterSpacing:'-0.2px', lineHeight:1.3, marginTop:'6px'}}>Total Reach</div>
+                <div style={{fontSize:'10px', color:'#059669', fontWeight:500, marginTop:'5px', letterSpacing:'0.02em'}}>● Pe 4 platforme</div>
               </>
             ) : (
               <>
-                <div style={{fontWeight:700, fontSize:'12px', color:'#1c1917', letterSpacing:'-0.2px', lineHeight:1.3, marginTop:'12px'}}>Booking activ</div>
-                <div style={{fontSize:'10px', color:'#78716c', fontWeight:500, marginTop:'5px', letterSpacing:'0.02em'}}>● Pe scena Romaniei</div>
+                <CheckCircle2 size={22} color='#059669' strokeWidth={2.5} fill='#dcfce7' />
+                <div style={{fontWeight:600, fontSize:'12px', color:'#1c1917', letterSpacing:'-0.2px', lineHeight:1.3, marginTop:'6px'}}>GIGx Verified</div>
+                <div style={{fontSize:'10px', color:'#78716c', fontWeight:500, marginTop:'5px', letterSpacing:'0.02em'}}>Artist confirmat</div>
               </>
             )}
           </div>
