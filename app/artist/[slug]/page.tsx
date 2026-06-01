@@ -46,7 +46,7 @@ export default async function ArtistPage({ params }: { params: Promise<{ slug: s
   // Fetch imagine din Spotify daca exista link
   let spotifyImage = null
   let chartexStats: any = null
-  const baseUrl = process.env.VERCEL_URL ? 'https://' + process.env.VERCEL_URL : 'http://localhost:3000'
+  const baseUrl = process.env.VERCEL_PROJECT_PRODUCTION_URL ? 'https://' + process.env.VERCEL_PROJECT_PRODUCTION_URL : (process.env.VERCEL_URL ? 'https://' + process.env.VERCEL_URL : 'http://localhost:3000')
   
   let spotifyData: any = null
   if (artist.spotify) {
