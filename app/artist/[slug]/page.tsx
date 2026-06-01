@@ -66,14 +66,27 @@ export default async function ArtistPage({ params }: { params: Promise<{ slug: s
     const data = await chartexRes.json()
     chartexStats = {
       totalViews: data.totalTiktokViews || 0,
+      totalTiktokVideos: data.totalTiktokVideos || 0,
       total7DaysVideos: data.total7DaysVideos || 0,
       soundsCount: data.soundsCount || 0,
+      songsCount: data.songsCount || 0,
       bestPosition: data.bestTrendingPosition || 0,
       topSongs: data.topSongs || [],
       heatScore: data.heatScore || 65,
       hypeStatus: data.hypeStatus || 'verified',
+      spotifyStreams: data.spotifyStreams || 0,
+      youtubeViews: data.youtubeViews || 0,
+      shazamCount: data.shazamCount || 0,
+      totalReach: data.totalReach || 0,
     }
   } catch {}
+  const formatNum = (n: number) => {
+    if (n >= 1000000000) return (n/1000000000).toFixed(1) + 'B'
+    if (n >= 1000000) return (n/1000000).toFixed(1) + 'M'
+    if (n >= 1000) return (n/1000).toFixed(1) + 'K'
+    return n.toString()
+  }
+
   let vibes: string[] = []
   if (Array.isArray(artist.vibes)) {
     vibes = artist.vibes
