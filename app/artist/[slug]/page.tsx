@@ -108,7 +108,7 @@ export default async function ArtistPage({ params }: { params: Promise<{ slug: s
         <div style={{maxWidth:'900px', margin:'0 auto', padding:'10px 24px', display:'flex', alignItems:'center', justifyContent:'center', gap:'12px', flexWrap:'wrap'}}>
           <span style={{fontSize:'10px', color:'#a8a29e', fontWeight:600, letterSpacing:'0.05em'}}>BOX OFFICE TIERS</span>
           <div className="tier-item">
-            <span style={{width:'8px', height:'8px', borderRadius:'50%', background:'#f59e0b'}}></span>
+            <span style={{width:'8px', height:'8px', borderRadius:'50%', background:'#eacda3'}}></span>
             <span style={{fontSize:'11px', color:'#44403c', fontWeight:600}}>A++ Headliner</span>
             <span className="tier-tooltip">Top tier - vinde singur orice eveniment</span>
           </div>
@@ -209,13 +209,13 @@ export default async function ArtistPage({ params }: { params: Promise<{ slug: s
             <div style={{fontSize:'10px', color:'#059669', fontWeight:500, marginTop:'8px', letterSpacing:'0.02em'}}>● Activ acum</div>
           </div>
 
-          {/* Card 2 - Heat Score */}
-          <div style={{padding:'20px 14px', background:'white', border:'1px solid #e7e5e4', borderRadius:'18px', boxShadow:'0 2px 8px rgba(0,0,0,0.04)', position:'relative', overflow:'hidden'}}>
+          {/* Card 2 - Box Office Power */}
+          <div className="tier-item" style={{padding:'20px 14px', background:'white', border:'1px solid #e7e5e4', borderRadius:'18px', boxShadow:'0 2px 8px rgba(0,0,0,0.04)', position:'relative', overflow:'hidden', cursor:'help'}}>
             {(() => {
               const tier = artist.tier || ''
               const tierMap: Record<string, {label: string, color: string, public: boolean, sub: string}> = {
-                'A++': {label: 'HEADLINER', color: '#f59e0b', public: true, sub: 'Top tier'},
-                'Premium': {label: 'HEADLINER', color: '#f59e0b', public: true, sub: 'Top tier'},
+                'A++': {label: 'HEADLINER', color: '#eacda3', public: true, sub: 'Top tier'},
+                'Premium': {label: 'HEADLINER', color: '#eacda3', public: true, sub: 'Top tier'},
                 'A+': {label: 'POWER DRAW', color: '#7c3aed', public: true, sub: 'Tracțiune puternică'},
                 'A': {label: 'SOLID', color: '#44403c', public: true, sub: 'Atracție solidă'},
               }
