@@ -134,7 +134,7 @@ export default async function ArtistPage({ params }: { params: Promise<{ slug: s
               {spotifyImage ? (
                 <img src={spotifyImage} alt={displayName} style={{width:'100%', height:'100%', objectFit:'cover'}} />
               ) : (
-                <span style={{fontSize:'28px', color:'white', fontWeight:800}}>{displayName.charAt(0).toUpperCase()}</span>
+                <span style={{fontSize:'22px', color:'white', fontWeight:800}}>{displayName.charAt(0).toUpperCase()}</span>
               )}
             </div>
             <div style={{flex:1}}>
@@ -202,15 +202,15 @@ export default async function ArtistPage({ params }: { params: Promise<{ slug: s
         {/* Stats Cards 2026 */}
         <div style={{display:'grid', gridTemplateColumns:'repeat(3, 1fr)', gap:'10px', marginBottom:'16px'}}>
           {/* Card 1 - Raspuns */}
-          <div style={{padding:'20px 14px', background:'white', border:'1px solid #e7e5e4', borderRadius:'18px', boxShadow:'0 2px 8px rgba(0,0,0,0.04)', position:'relative', overflow:'hidden'}}>
+          <div style={{padding:'14px 12px', background:'white', border:'1px solid #e7e5e4', borderRadius:'18px', boxShadow:'0 2px 8px rgba(0,0,0,0.04)', position:'relative', overflow:'hidden'}}>
             <div style={{position:'absolute', top:0, right:0, width:'4px', height:'100%', background:'#059669'}}></div>
-            <div style={{fontWeight:700, fontSize:'28px', color:'#1c1917', letterSpacing:'-1px', lineHeight:1}}>30<span style={{fontSize:'14px', fontWeight:500, color:'#78716c', marginLeft:'2px'}}>min</span></div>
-            <div style={{fontWeight:600, fontSize:'13px', color:'#1c1917', letterSpacing:'-0.2px', lineHeight:1.3, marginTop:'10px'}}>Răspuns garantat</div>
-            <div style={{fontSize:'10px', color:'#059669', fontWeight:500, marginTop:'8px', letterSpacing:'0.02em'}}>● Activ acum</div>
+            <div style={{fontWeight:700, fontSize:'22px', color:'#1c1917', letterSpacing:'-1px', lineHeight:1}}>30<span style={{fontSize:'14px', fontWeight:500, color:'#78716c', marginLeft:'2px'}}>min</span></div>
+            <div style={{fontWeight:600, fontSize:'12px', color:'#1c1917', letterSpacing:'-0.2px', lineHeight:1.3, marginTop:'6px'}}>Răspuns garantat</div>
+            <div style={{fontSize:'10px', color:'#059669', fontWeight:500, marginTop:'5px', letterSpacing:'0.02em'}}>● Activ acum</div>
           </div>
 
           {/* Card 2 - Box Office Power */}
-          <div className="tier-item" style={{padding:'20px 14px', background:'white', border:'1px solid #e7e5e4', borderRadius:'18px', boxShadow:'0 2px 8px rgba(0,0,0,0.04)', position:'relative', display:'block'}}>
+          <div className="tier-item" style={{padding:'14px 12px', background:'white', border:'1px solid #e7e5e4', borderRadius:'18px', boxShadow:'0 2px 8px rgba(0,0,0,0.04)', position:'relative', display:'block'}}>
             {(() => {
               const tier = artist.tier || ''
               const tierMap: Record<string, {label: string, color: string, public: boolean, sub: string}> = {
@@ -229,23 +229,23 @@ export default async function ArtistPage({ params }: { params: Promise<{ slug: s
                   <div style={{position:'absolute', top:0, right:0, width:'4px', height:'100%', background:data.color}}></div>
                   <span className="tier-tooltip">{tooltipText}</span>
                   {data.public && (
-                    <div style={{fontWeight:700, fontSize:'28px', color:data.color, letterSpacing:'-1px', lineHeight:1}}>{tier}</div>
+                    <div style={{fontWeight:700, fontSize:'22px', color:data.color, letterSpacing:'-1px', lineHeight:1}}>{tier}</div>
                   )}
-                  <div style={{fontWeight:600, fontSize:'13px', color:'#1c1917', letterSpacing:'-0.2px', lineHeight:1.3, marginTop: data.public ? '10px' : '30px'}}>
+                  <div style={{fontWeight:600, fontSize:'12px', color:'#1c1917', letterSpacing:'-0.2px', lineHeight:1.3, marginTop: data.public ? '10px' : '30px'}}>
                     {data.label}
                   </div>
-                  <div style={{fontSize:'10px', color:data.color, fontWeight:500, marginTop:'8px', letterSpacing:'0.02em'}}>● {data.sub}</div>
+                  <div style={{fontSize:'10px', color:data.color, fontWeight:500, marginTop:'5px', letterSpacing:'0.02em'}}>● {data.sub}</div>
                 </>
               )
             })()}
           </div>
 
           {/* Card 3 - Verified */}
-          <div style={{padding:'20px 14px', background:'white', border:'1px solid #e7e5e4', borderRadius:'18px', boxShadow:'0 2px 8px rgba(0,0,0,0.04)', position:'relative', overflow:'hidden'}}>
+          <div style={{padding:'14px 12px', background:'white', border:'1px solid #e7e5e4', borderRadius:'18px', boxShadow:'0 2px 8px rgba(0,0,0,0.04)', position:'relative', overflow:'hidden'}}>
             <div style={{position:'absolute', top:0, right:0, width:'4px', height:'100%', background:'#1c1917'}}></div>
-            <CheckCircle2 size={28} color='#059669' strokeWidth={2.5} fill='#dcfce7' />
-            <div style={{fontWeight:600, fontSize:'13px', color:'#1c1917', letterSpacing:'-0.2px', lineHeight:1.3, marginTop:'10px'}}>GIGx Verified</div>
-            <div style={{fontSize:'10px', color:'#78716c', fontWeight:500, marginTop:'8px', letterSpacing:'0.02em'}}>Artist confirmat</div>
+            <CheckCircle2 size={22} color='#059669' strokeWidth={2.5} fill='#dcfce7' />
+            <div style={{fontWeight:600, fontSize:'12px', color:'#1c1917', letterSpacing:'-0.2px', lineHeight:1.3, marginTop:'6px'}}>GIGx Verified</div>
+            <div style={{fontSize:'10px', color:'#78716c', fontWeight:500, marginTop:'5px', letterSpacing:'0.02em'}}>Artist confirmat</div>
           </div>
         </div>
 
@@ -366,7 +366,7 @@ export default async function ArtistPage({ params }: { params: Promise<{ slug: s
           <div style={{fontWeight:800, fontSize:'18px', color:'white', marginBottom:'8px', letterSpacing:'-0.5px'}}>
             Vrei să bookezi {displayName}?
           </div>
-          <div style={{fontSize:'13px', color:'rgba(255,255,255,0.6)', marginBottom:'20px'}}>
+          <div style={{fontSize:'12px', color:'rgba(255,255,255,0.6)', marginBottom:'20px'}}>
             Trimite o cerere și primești răspuns în 30 de minute.
           </div>
           <Link href={'/dashboard/client?artist=' + (artist.slug || '')}
