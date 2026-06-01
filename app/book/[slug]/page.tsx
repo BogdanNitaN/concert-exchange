@@ -15,29 +15,44 @@ export default function BookArtistPage() {
   const [success, setSuccess] = useState(false)
   const [step, setStep] = useState(1)
   const [form, setForm] = useState({
-    eventDate: '', eventType: '', city: '', venueName: '', duration: '',
+    eventDate: '', eventType: '', eventTypeCustom: '', city: '', venueName: '',
+    duration: '', durationCustom: '',
     budget: '', clientName: '', clientEmail: '', clientPhone: '', message: '',
   })
 
   useEffect(() => {
     const fetchArtist = async () => {
-      const { data } = await supabase.from('artists').select('*').eq('slug', slug).single()
+      const { data } = await (supabase as any).from('artists').select('*').eq('slug', slug).single()
       setArtist(data)
       setLoading(false)
     }
     fetchArtist()
   }, [slug])
 
+  // Optiuni durata in functie de setType
+  const getDurationOptions = () => {
+    if (!artist) return []
+    if (artist.setType === 'dj') return ['60 min', '90 min', '120 min', '180 min']
+    if (artist.setType === 'vocal' || artist.setType === 'band' || artist.setType === 'trupa') return ['45 min', '60 min', '90 min']
+    return [] // pentru show artistic - input manual
+  }
+
+  const durationOptions = getDurationOptions()
+  const showCustomDuration = !durationOptions.length || form.duration === 'manual'
+  const isCustomEventType = form.eventType === 'altul'
+
   const handleSubmit = async () => {
     if (!artist) return
     setSubmitting(true)
-    const { error } = await supabase.from('requests').insert({
+    const finalEventType = isCustomEventType ? form.eventTypeCustom : form.eventType
+    const finalDuration = (form.duration === 'manual' || !durationOptions.length) ? form.durationCustom : form.duration
+    const { error } = await (supabase as any).from('requests').insert({
       artist_id: artist.id,
       event_date: form.eventDate || null,
-      event_type: form.eventType,
+      event_type: finalEventType,
       city: form.city,
       venue_name: form.venueName,
-      duration: form.duration,
+      duration: finalDuration,
       budget: form.budget ? parseInt(form.budget) : null,
       client_name: form.clientName,
       client_email: form.clientEmail,
@@ -77,8 +92,11 @@ export default function BookArtistPage() {
     )
   }
 
-  const canProceedStep1 = form.eventDate && form.eventType && form.city
+  const canProceedStep1 = form.eventDate && form.eventType && (!isCustomEventType || form.eventTypeCustom) && form.city && (durationOptions.length === 0 ? form.durationCustom : (form.duration && (form.duration !== 'manual' || form.durationCustom)))
   const canProceedStep2 = form.clientName && form.clientEmail
+
+  const inputStyle = {width:'100%',padding:'11px 14px',borderRadius:'12px',border:'1px solid #e7e5e4',fontSize:'13px',fontFamily:'Montserrat,sans-serif',color:'#1c1917',outline:'none',boxSizing:'border-box' as const,background:'#fafaf9'}
+  const labelStyle = {display:'block',fontSize:'12px',fontWeight:600,color:'#44403c',marginBottom:'6px'}
 
   return (
     <div style={{minHeight:'100vh',background:'#f5f5f7',fontFamily:'Montserrat,sans-serif'}}>
@@ -98,64 +116,83 @@ export default function BookArtistPage() {
         <div style={{display:'flex',gap:'6px',marginBottom:'14px'}}>
           {[1,2,3].map(s => (<div key={s} style={{flex:1,height:'3px',background: step >= s ? '#059669' : '#e7e5e4',borderRadius:'2px'}}></div>))}
         </div>
+
         {step === 1 && (
           <div style={{background:'white',border:'1px solid #e7e5e4',borderRadius:'18px',padding:'24px',boxShadow:'0 2px 8px rgba(0,0,0,0.04)'}}>
             <div style={{fontSize:'10px',fontWeight:700,color:'#a8a29e',textTransform:'uppercase',letterSpacing:'0.08em',marginBottom:'14px'}}>Pasul 1 / 3 · Detalii eveniment</div>
             <div style={{marginBottom:'14px'}}>
-              <label style={{display:'block',fontSize:'12px',fontWeight:600,color:'#44403c',marginBottom:'6px'}}>Data evenimentului *</label>
-              <input type="date" value={form.eventDate} onChange={e => setForm({...form, eventDate: e.target.value})} style={{width:'100%',padding:'11px 14px',borderRadius:'12px',border:'1px solid #e7e5e4',fontSize:'13px',fontFamily:'Montserrat,sans-serif',color:'#1c1917',outline:'none',boxSizing:'border-box',background:'#fafaf9'}} />
+              <label style={labelStyle}>Data evenimentului *</label>
+              <input type="date" value={form.eventDate} onChange={e => setForm({...form, eventDate: e.target.value})} style={inputStyle} />
             </div>
             <div style={{marginBottom:'14px'}}>
-              <label style={{display:'block',fontSize:'12px',fontWeight:600,color:'#44403c',marginBottom:'6px'}}>Tip eveniment *</label>
-              <select value={form.eventType} onChange={e => setForm({...form, eventType: e.target.value})} style={{width:'100%',padding:'11px 14px',borderRadius:'12px',border:'1px solid #e7e5e4',fontSize:'13px',fontFamily:'Montserrat,sans-serif',color:'#1c1917',outline:'none',boxSizing:'border-box',background:'#fafaf9'}}>
+              <label style={labelStyle}>Tip eveniment *</label>
+              <select value={form.eventType} onChange={e => setForm({...form, eventType: e.target.value})} style={inputStyle}>
                 <option value="">Selecteaza...</option>
-                <option value="club">Club / Bar</option>
+                <option value="pop-up">Pop-up</option>
+                <option value="aniversare">Aniversare</option>
+                <option value="corporate">Corporate</option>
+                <option value="club">Club</option>
                 <option value="festival">Festival</option>
-                <option value="corporate">Corporate event</option>
-                <option value="privat">Petrecere privata</option>
-                <option value="nunta">Nunta</option>
+                <option value="city-days">City Days</option>
                 <option value="restaurant">Restaurant / Terasa</option>
-                <option value="rooftop">Rooftop / Day party</option>
+                <option value="nunta">Nunta</option>
+                <option value="privat">Privat</option>
                 <option value="altul">Altul</option>
               </select>
+              {isCustomEventType && (
+                <input type="text" value={form.eventTypeCustom} onChange={e => setForm({...form, eventTypeCustom: e.target.value})} placeholder="Descrie tipul evenimentului" style={{...inputStyle, marginTop:'8px'}} />
+              )}
             </div>
             <div style={{marginBottom:'14px'}}>
-              <label style={{display:'block',fontSize:'12px',fontWeight:600,color:'#44403c',marginBottom:'6px'}}>Oras *</label>
-              <input type="text" value={form.city} onChange={e => setForm({...form, city: e.target.value})} placeholder="Bucuresti" style={{width:'100%',padding:'11px 14px',borderRadius:'12px',border:'1px solid #e7e5e4',fontSize:'13px',fontFamily:'Montserrat,sans-serif',color:'#1c1917',outline:'none',boxSizing:'border-box',background:'#fafaf9'}} />
+              <label style={labelStyle}>Oras *</label>
+              <input type="text" value={form.city} onChange={e => setForm({...form, city: e.target.value})} placeholder="Bucuresti" style={inputStyle} />
             </div>
             <div style={{marginBottom:'14px'}}>
-              <label style={{display:'block',fontSize:'12px',fontWeight:600,color:'#44403c',marginBottom:'6px'}}>Locatia evenimentului</label>
-              <input type="text" value={form.venueName} onChange={e => setForm({...form, venueName: e.target.value})} placeholder="Crown Plaza, Beraria H..." style={{width:'100%',padding:'11px 14px',borderRadius:'12px',border:'1px solid #e7e5e4',fontSize:'13px',fontFamily:'Montserrat,sans-serif',color:'#1c1917',outline:'none',boxSizing:'border-box',background:'#fafaf9'}} />
+              <label style={labelStyle}>Locatia evenimentului</label>
+              <input type="text" value={form.venueName} onChange={e => setForm({...form, venueName: e.target.value})} placeholder="Crown Plaza, Beraria H..." style={inputStyle} />
             </div>
             <div style={{marginBottom:'14px'}}>
-              <label style={{display:'block',fontSize:'12px',fontWeight:600,color:'#44403c',marginBottom:'6px'}}>Durata</label>
-              <select value={form.duration} onChange={e => setForm({...form, duration: e.target.value})} style={{width:'100%',padding:'11px 14px',borderRadius:'12px',border:'1px solid #e7e5e4',fontSize:'13px',fontFamily:'Montserrat,sans-serif',color:'#1c1917',outline:'none',boxSizing:'border-box',background:'#fafaf9'}}>
-                <option value="">Selecteaza...</option>
-                <option value="45 min">45 minute</option>
-                <option value="60 min">60 minute</option>
-                <option value="90 min">90 minute</option>
-                <option value="120 min">2 ore</option>
-                <option value="180 min">3 ore</option>
-                <option value="all night">All night</option>
-              </select>
+              <label style={labelStyle}>Durata *</label>
+              {durationOptions.length > 0 ? (
+                <>
+                  <div style={{display:'flex',flexWrap:'wrap',gap:'6px'}}>
+                    {durationOptions.map(opt => (
+                      <button key={opt} type="button" onClick={() => setForm({...form, duration: opt})}
+                        style={{padding:'8px 14px',borderRadius:'10px',border:form.duration === opt ? '1.5px solid #059669' : '1px solid #e7e5e4',background: form.duration === opt ? '#dcfce7' : 'white',fontSize:'12px',fontWeight:600,color: form.duration === opt ? '#059669' : '#44403c',cursor:'pointer',fontFamily:'Montserrat,sans-serif'}}>
+                        {opt}
+                      </button>
+                    ))}
+                    <button type="button" onClick={() => setForm({...form, duration: 'manual'})}
+                      style={{padding:'8px 14px',borderRadius:'10px',border:form.duration === 'manual' ? '1.5px solid #059669' : '1px solid #e7e5e4',background: form.duration === 'manual' ? '#dcfce7' : 'white',fontSize:'12px',fontWeight:600,color: form.duration === 'manual' ? '#059669' : '#44403c',cursor:'pointer',fontFamily:'Montserrat,sans-serif'}}>
+                      Manual
+                    </button>
+                  </div>
+                  {form.duration === 'manual' && (
+                    <input type="text" value={form.durationCustom} onChange={e => setForm({...form, durationCustom: e.target.value})} placeholder="Ex: 30 min, 2x60 min..." style={{...inputStyle, marginTop:'8px'}} />
+                  )}
+                </>
+              ) : (
+                <input type="text" value={form.durationCustom} onChange={e => setForm({...form, durationCustom: e.target.value})} placeholder="Ex: 30 min, 45 min, 2 show-uri..." style={inputStyle} />
+              )}
             </div>
             <button onClick={() => setStep(2)} disabled={!canProceedStep1} style={{width:'100%',padding:'14px',borderRadius:'12px',border:'none',background: canProceedStep1 ? '#1c1917' : '#d6d3d1',color:'white',fontSize:'14px',fontWeight:700,fontFamily:'Montserrat,sans-serif',cursor: canProceedStep1 ? 'pointer' : 'not-allowed',display:'flex',alignItems:'center',justifyContent:'center',gap:'6px'}}>Continua <ArrowRight size={14} /></button>
           </div>
         )}
+
         {step === 2 && (
           <div style={{background:'white',border:'1px solid #e7e5e4',borderRadius:'18px',padding:'24px',boxShadow:'0 2px 8px rgba(0,0,0,0.04)'}}>
             <div style={{fontSize:'10px',fontWeight:700,color:'#a8a29e',textTransform:'uppercase',letterSpacing:'0.08em',marginBottom:'14px'}}>Pasul 2 / 3 · Datele tale</div>
             <div style={{marginBottom:'14px'}}>
-              <label style={{display:'block',fontSize:'12px',fontWeight:600,color:'#44403c',marginBottom:'6px'}}>Nume *</label>
-              <input type="text" value={form.clientName} onChange={e => setForm({...form, clientName: e.target.value})} placeholder="Nume si prenume" style={{width:'100%',padding:'11px 14px',borderRadius:'12px',border:'1px solid #e7e5e4',fontSize:'13px',fontFamily:'Montserrat,sans-serif',color:'#1c1917',outline:'none',boxSizing:'border-box',background:'#fafaf9'}} />
+              <label style={labelStyle}>Nume *</label>
+              <input type="text" value={form.clientName} onChange={e => setForm({...form, clientName: e.target.value})} placeholder="Nume si prenume" style={inputStyle} />
             </div>
             <div style={{marginBottom:'14px'}}>
-              <label style={{display:'block',fontSize:'12px',fontWeight:600,color:'#44403c',marginBottom:'6px'}}>Email *</label>
-              <input type="email" value={form.clientEmail} onChange={e => setForm({...form, clientEmail: e.target.value})} placeholder="email@exemplu.ro" style={{width:'100%',padding:'11px 14px',borderRadius:'12px',border:'1px solid #e7e5e4',fontSize:'13px',fontFamily:'Montserrat,sans-serif',color:'#1c1917',outline:'none',boxSizing:'border-box',background:'#fafaf9'}} />
+              <label style={labelStyle}>Email *</label>
+              <input type="email" value={form.clientEmail} onChange={e => setForm({...form, clientEmail: e.target.value})} placeholder="email@exemplu.ro" style={inputStyle} />
             </div>
             <div style={{marginBottom:'14px'}}>
-              <label style={{display:'block',fontSize:'12px',fontWeight:600,color:'#44403c',marginBottom:'6px'}}>Telefon</label>
-              <input type="tel" value={form.clientPhone} onChange={e => setForm({...form, clientPhone: e.target.value})} placeholder="07XX XXX XXX" style={{width:'100%',padding:'11px 14px',borderRadius:'12px',border:'1px solid #e7e5e4',fontSize:'13px',fontFamily:'Montserrat,sans-serif',color:'#1c1917',outline:'none',boxSizing:'border-box',background:'#fafaf9'}} />
+              <label style={labelStyle}>Telefon</label>
+              <input type="tel" value={form.clientPhone} onChange={e => setForm({...form, clientPhone: e.target.value})} placeholder="07XX XXX XXX" style={inputStyle} />
             </div>
             <div style={{display:'flex',gap:'8px'}}>
               <button onClick={() => setStep(1)} style={{flex:'0 0 80px',padding:'14px',borderRadius:'12px',border:'1px solid #e7e5e4',background:'white',color:'#44403c',fontSize:'13px',fontWeight:600,fontFamily:'Montserrat,sans-serif',cursor:'pointer'}}>Inapoi</button>
@@ -163,16 +200,17 @@ export default function BookArtistPage() {
             </div>
           </div>
         )}
+
         {step === 3 && (
           <div style={{background:'white',border:'1px solid #e7e5e4',borderRadius:'18px',padding:'24px',boxShadow:'0 2px 8px rgba(0,0,0,0.04)'}}>
             <div style={{fontSize:'10px',fontWeight:700,color:'#a8a29e',textTransform:'uppercase',letterSpacing:'0.08em',marginBottom:'14px'}}>Pasul 3 / 3 · Detalii finale</div>
             <div style={{marginBottom:'14px'}}>
-              <label style={{display:'block',fontSize:'12px',fontWeight:600,color:'#44403c',marginBottom:'6px'}}>Buget estimativ (EUR)</label>
-              <input type="number" value={form.budget} onChange={e => setForm({...form, budget: e.target.value})} placeholder="Ex: 5000" style={{width:'100%',padding:'11px 14px',borderRadius:'12px',border:'1px solid #e7e5e4',fontSize:'13px',fontFamily:'Montserrat,sans-serif',color:'#1c1917',outline:'none',boxSizing:'border-box',background:'#fafaf9'}} />
+              <label style={labelStyle}>Buget estimativ (EUR)</label>
+              <input type="number" value={form.budget} onChange={e => setForm({...form, budget: e.target.value})} placeholder="Ex: 5000" style={inputStyle} />
             </div>
             <div style={{marginBottom:'14px'}}>
-              <label style={{display:'block',fontSize:'12px',fontWeight:600,color:'#44403c',marginBottom:'6px'}}>Mesaj (optional)</label>
-              <textarea value={form.message} onChange={e => setForm({...form, message: e.target.value})} placeholder="Detalii suplimentare..." rows={5} style={{width:'100%',padding:'11px 14px',borderRadius:'12px',border:'1px solid #e7e5e4',fontSize:'13px',fontFamily:'Montserrat,sans-serif',color:'#1c1917',outline:'none',boxSizing:'border-box',background:'#fafaf9',resize:'vertical'}} />
+              <label style={labelStyle}>Mesaj (optional)</label>
+              <textarea value={form.message} onChange={e => setForm({...form, message: e.target.value})} placeholder="Detalii suplimentare..." rows={5} style={{...inputStyle, resize:'vertical'}} />
             </div>
             <div style={{display:'flex',gap:'8px'}}>
               <button onClick={() => setStep(2)} style={{flex:'0 0 80px',padding:'14px',borderRadius:'12px',border:'1px solid #e7e5e4',background:'white',color:'#44403c',fontSize:'13px',fontWeight:600,fontFamily:'Montserrat,sans-serif',cursor:'pointer'}}>Inapoi</button>
