@@ -210,15 +210,20 @@ export default function BookArtistPage() {
               <label style={labelStyle}>Tip eveniment *</label>
               <select value={form.eventType} onChange={e => setForm({...form, eventType: e.target.value})} style={inputStyle}>
                 <option value="">Selecteaza...</option>
+                <option value="festival">Festival</option>
+                <option value="popup">Pop-Up Event</option>
+                <option value="citydays">City Days / Open Air</option>
+                <option value="club">Club Night</option>
+                <option value="corporate">Corporate</option>
+                <option value="teambuilding">Team Building</option>
+                <option value="poolparty">Pool Party</option>
+                <option value="dayparty">Day Party</option>
+                <option value="dinnershow">Dinner & Show</option>
                 <option value="nunta">Nunta</option>
                 <option value="botez">Botez</option>
-                <option value="corporate">Corporate</option>
                 <option value="private">Petrecere privata</option>
-                <option value="gala">Gala / Revelion</option>
-                <option value="festival">Festival</option>
-                <option value="citydays">City Days</option>
-                <option value="lansare">Lansare / Team Building</option>
-                <option value="altul">Altul</option>
+                <option value="revelion">Revelion / Craciun</option>
+                <option value="altul">Nu stiu / Altele</option>
               </select>
               {isCustomEventType && (
                 <input type="text" value={form.eventTypeCustom} onChange={e => setForm({...form, eventTypeCustom: e.target.value})} placeholder="Descrie tipul evenimentului" style={{...inputStyle, marginTop:'8px'}} />
