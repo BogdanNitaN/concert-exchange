@@ -65,12 +65,14 @@ export default async function ArtistPage({ params }: { params: Promise<{ slug: s
     if (match) spotifyArtistId = match[1]
   }
 
+  console.log('Spotify ID:', spotifyArtistId, 'Artist:', artist.artistName)
   try {
     const chartexRes = await fetch(
       baseUrl + '/api/chartex?action=artist_full&artist=' + encodeURIComponent(artist.artistName || '') + '&spotify_id=' + spotifyArtistId + '&country=RO',
       { next: { revalidate: 3600 } }
     )
     const data = await chartexRes.json()
+    console.log('Chartex data:', data)
     chartexStats = {
       totalViews: data.totalTiktokViews || 0,
       totalTiktokVideos: data.totalTiktokVideos || 0,
@@ -356,7 +358,7 @@ export default async function ArtistPage({ params }: { params: Promise<{ slug: s
         {/* Performance Stats Chartex */}
         {chartexStats && (chartexStats.spotifyStreams > 0 || chartexStats.youtubeViews > 0 || chartexStats.shazamCount > 0 || chartexStats.totalTiktokVideos > 0) && (
           <div style={{background:'white', border:'1px solid #e7e5e4', borderRadius:'18px', padding:'14px', marginBottom:'12px', boxShadow:'0 2px 8px rgba(0,0,0,0.04)'}}>
-            <div style={{display:'grid', gridTemplateColumns:'repeat(4, 1fr)', gap:'8px'}}>
+            <div style={{display:'grid', gridTemplateColumns:'repeat(6, 1fr)', gap:'6px'}}>
               {chartexStats.totalTiktokVideos > 100 && (
                 <div style={{textAlign:'center', padding:'6px 4px', borderRight:'1px solid #f5f5f4'}}>
                   <div style={{fontWeight:700, fontSize:'16px', color:'#1c1917', letterSpacing:'-0.5px', lineHeight:1}}>{formatNum(chartexStats.totalTiktokVideos)}</div>
@@ -379,10 +381,24 @@ export default async function ArtistPage({ params }: { params: Promise<{ slug: s
                 </div>
               )}
               {chartexStats.shazamCount > 100 && (
-                <div style={{textAlign:'center', padding:'6px 4px'}}>
+                <div style={{textAlign:'center', padding:'6px 4px', borderRight:'1px solid #f5f5f4'}}>
                   <div style={{fontWeight:700, fontSize:'16px', color:'#1c1917', letterSpacing:'-0.5px', lineHeight:1}}>{formatNum(chartexStats.shazamCount)}</div>
                   <div style={{fontSize:'9px', color:'#78716c', fontWeight:600, marginTop:'4px', textTransform:'uppercase', letterSpacing:'0.04em'}}>Shazam</div>
                   <div style={{fontSize:'9px', color:'#a8a29e', fontWeight:500, marginTop:'2px'}}>Identifications</div>
+                </div>
+              )}
+              {chartexStats.instagramFollowers > 1000 && (
+                <div style={{textAlign:'center', padding:'6px 4px', borderRight:'1px solid #f5f5f4'}}>
+                  <div style={{fontWeight:700, fontSize:'16px', color:'#1c1917', letterSpacing:'-0.5px', lineHeight:1}}>{formatNum(chartexStats.instagramFollowers)}</div>
+                  <div style={{fontSize:'9px', color:'#78716c', fontWeight:600, marginTop:'4px', textTransform:'uppercase', letterSpacing:'0.04em'}}>Instagram</div>
+                  <div style={{fontSize:'9px', color:'#a8a29e', fontWeight:500, marginTop:'2px'}}>Followers</div>
+                </div>
+              )}
+              {chartexStats.spotifyMonthlyListeners > 1000 && (
+                <div style={{textAlign:'center', padding:'6px 4px'}}>
+                  <div style={{fontWeight:700, fontSize:'16px', color:'#1c1917', letterSpacing:'-0.5px', lineHeight:1}}>{formatNum(chartexStats.spotifyMonthlyListeners)}</div>
+                  <div style={{fontSize:'9px', color:'#78716c', fontWeight:600, marginTop:'4px', textTransform:'uppercase', letterSpacing:'0.04em'}}>Spotify</div>
+                  <div style={{fontSize:'9px', color:'#a8a29e', fontWeight:500, marginTop:'2px'}}>Monthly Listeners</div>
                 </div>
               )}
             </div>
