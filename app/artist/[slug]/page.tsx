@@ -165,8 +165,8 @@ export default async function ArtistPage({ params }: { params: Promise<{ slug: s
               <div style={{display:'flex', alignItems:'center', gap:'8px', marginBottom:'4px'}}>
                 <div style={{display:'flex', alignItems:'center', gap:'6px'}}>
                 <h1 style={{fontSize:'20px', fontWeight:800, color:'#1c1917', margin:0, letterSpacing:'-0.5px'}}>{displayName}</h1>
-                <span title="Artist verificat GIGx" style={{display:'inline-flex', alignItems:'center', justifyContent:'center', width:'18px', height:'18px', borderRadius:'50%', background:'#6d28d9', flexShrink:0, boxShadow:'0 1px 3px rgba(109,40,217,0.3)'}}>
-                  <svg width="10" height="10" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <span title="Artist verificat GIGx" style={{display:'inline-flex', alignItems:'center', justifyContent:'center', width:'14px', height:'14px', borderRadius:'50%', background:'#6d28d9', flexShrink:0, boxShadow:'0 1px 2px rgba(109,40,217,0.3)'}}>
+                  <svg width="8" height="8" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
                     <path d="M3 8L6.5 11.5L13 5" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/>
                   </svg>
                 </span>
