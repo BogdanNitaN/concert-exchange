@@ -165,8 +165,10 @@ export default async function ArtistPage({ params }: { params: Promise<{ slug: s
               <div style={{display:'flex', alignItems:'center', gap:'8px', marginBottom:'4px'}}>
                 <div style={{display:'flex', alignItems:'center', gap:'6px'}}>
                 <h1 style={{fontSize:'20px', fontWeight:800, color:'#1c1917', margin:0, letterSpacing:'-0.5px'}}>{displayName}</h1>
-                <span title="Artist verificat GIGx" style={{display:'inline-flex', alignItems:'center', justifyContent:'center', width:'18px', height:'18px', borderRadius:'50%', background:'#1c1917', flexShrink:0}}>
-                  <CheckCircle2 size={11} color='#eacda3' strokeWidth={3.5} />
+                <span title="Artist verificat GIGx" style={{display:'inline-flex', alignItems:'center', justifyContent:'center', width:'18px', height:'18px', borderRadius:'50%', background:'#6d28d9', flexShrink:0, boxShadow:'0 1px 3px rgba(109,40,217,0.3)'}}>
+                  <svg width="10" height="10" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M3 8L6.5 11.5L13 5" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/>
+                  </svg>
                 </span>
               </div>
                 {artist.is_verified && (
@@ -294,7 +296,7 @@ export default async function ArtistPage({ params }: { params: Promise<{ slug: s
         {(artist.instagram || artist.spotify || artist.youtube || artist.tiktok || artist.facebook || artist.soundcloud) && (
           <>
             <style>{`
-              .social-btn { transition: all 0.2s ease; color: #78716c; background: transparent; border: 1px solid #e7e5e4; text-decoration: none; }
+              .social-btn { transition: all 0.2s ease; color: #78716c; background: #fafaf9; border: 1px solid #f5f5f4; text-decoration: none; }
               .social-btn svg { transition: all 0.2s ease; color: #1c1917; }
               .social-btn-ig:hover { background: linear-gradient(135deg, #833ab4, #fd1d1d, #fcb045); color: white; border-color: transparent; }
               .social-btn-ig:hover svg { color: white; }
@@ -311,7 +313,7 @@ export default async function ArtistPage({ params }: { params: Promise<{ slug: s
             `}</style>
             <div style={{background:'white', border:'1px solid #e7e5e4', borderRadius:'14px', padding:'14px', marginBottom:'10px', boxShadow:'0 2px 8px rgba(0,0,0,0.04)'}}>
 
-              <div style={{display:'flex', flexWrap:'wrap', gap:'8px'}}>
+              <div style={{display:'flex', flexWrap:'wrap', gap:'6px', justifyContent:'center'}}>
                 {artist.instagram && (
                   <a href={'https://instagram.com/' + artist.instagram.replace('@','')} target="_blank" rel="noopener noreferrer" className="social-btn social-btn-ig"
                     style={{display:'flex', alignItems:'center', gap:'5px', padding:'5px 10px', borderRadius:'8px', fontSize:'10px', fontWeight:500}}>
