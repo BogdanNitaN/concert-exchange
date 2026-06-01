@@ -101,7 +101,7 @@ export default async function ArtistPage({ params }: { params: Promise<{ slug: s
       <style>{`
         .tier-item { position: relative; cursor: pointer; display: flex; align-items: center; gap: 5px; padding: 4px 8px; border-radius: 8px; transition: background 0.2s; }
         .tier-item:hover { background: #fafaf9; }
-        .tier-tooltip { position: absolute; bottom: calc(100% + 8px); left: 50%; transform: translateX(-50%); background: #1c1917; color: white; padding: 8px 12px; border-radius: 8px; font-size: 11px; font-weight: 500; white-space: nowrap; opacity: 0; pointer-events: none; transition: opacity 0.2s; z-index: 50; box-shadow: 0 4px 12px rgba(0,0,0,0.15); }
+        .tier-tooltip { position: absolute; bottom: calc(100% + 8px); left: 50%; transform: translateX(-50%); background: #1c1917; color: white; padding: 8px 12px; border-radius: 8px; font-size: 11px; font-weight: 500; white-space: nowrap; opacity: 0; pointer-events: none; transition: opacity 0.2s; z-index: 9999; box-shadow: 0 4px 12px rgba(0,0,0,0.15); }
         .tier-item:hover .tier-tooltip { opacity: 1; }
       `}</style>
       <div style={{background:'white', borderBottom:'1px solid #f5f5f4'}}>
@@ -235,8 +235,9 @@ export default async function ArtistPage({ params }: { params: Promise<{ slug: s
                     {data.label}
                   </div>
                   <div style={{fontSize:'10px', color:'#78716c', fontWeight:500, marginTop:'8px', letterSpacing:'0.02em'}}>
-                    {data.public ? 'Box Office Tier' : 'Activ acum'}
+                    Box Office Tier
                   </div>
+                  <div style={{fontSize:'10px', color:data.color, fontWeight:500, marginTop:'8px', letterSpacing:'0.02em'}}>● {data.sub}</div>
                 </>
               )
             })()}
