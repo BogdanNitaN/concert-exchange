@@ -462,7 +462,7 @@ export default async function ArtistPage({ params }: { params: Promise<{ slug: s
           <div style={{fontSize:'12px', color:'rgba(255,255,255,0.6)', marginBottom:'20px'}}>
             Trimite o cerere și primești răspuns în 30 de minute.
           </div>
-          <Link href={'/dashboard/client?artist=' + (artist.slug || '')}
+          <Link href={'/book/' + (artist.slug || '')}
             style={{background:'#059669', color:'white', padding:'13px 28px', borderRadius:'14px', fontSize:'14px', fontWeight:700, textDecoration:'none', display:'inline-flex', alignItems:'center', gap:'8px'}}>
             Solicită booking <ArrowRight size={16} strokeWidth={2} />
           </Link>
