@@ -21,10 +21,11 @@ const GENRES = ['Pop', 'Open Format', 'Dance', 'Hip-Hop', 'Rap', 'Trap', 'Rock',
 
 const SET_TYPES = [
   { id: 'dj', icon: Disc3, label: 'DJ' },
-  { id: 'vocal', icon: Mic2, label: 'Vocal solist' },
+  { id: 'vocal', icon: Mic2, label: 'Artist solist' },
   { id: 'band', icon: Guitar, label: 'Trupa' },
   { id: 'show', icon: Sparkles, label: 'Show artistic' },
   { id: 'instrument', icon: Music2, label: 'Instrumentist' },
+  { id: 'mc', icon: Mic2, label: 'MC / Host' },
 ]
 
 const CITIES = ['București', 'Cluj-Napoca', 'Timișoara', 'Iași', 'Constanța', 'Brașov', 'Oradea', 'Bacău', 'Galați', 'Craiova', 'Sibiu', 'Pitești', 'Târgu Mureș', 'Arad', 'Chișinău']
@@ -514,6 +515,7 @@ export default function ArtistDashboard() {
                 setType === 'band' ? ['45 min', '60 min', '90 min', '2x45 min', '2x60 min'] :
                 setType === 'show' ? ['15 min', '20 min', '30 min', '45 min'] :
                 setType === 'instrument' ? ['30 min', '45 min', '60 min', '90 min', '120 min'] :
+                setType === 'mc' ? ['1 ora', '2 ore', '3 ore', '4 ore', '5+ ore'] :
                 []).map(d => {
                 const isSelected = durata.includes(d)
                 return (

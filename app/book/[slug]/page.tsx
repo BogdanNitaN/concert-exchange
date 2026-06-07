@@ -66,6 +66,7 @@ export default function BookArtistPage() {
     if (artist.setType === 'band' || artist.setType === 'cover') return ['45 min', '60 min', '90 min', '2x45 min', '2x60 min']
     if (artist.setType === 'show') return ['15 min', '20 min', '30 min', '45 min']
     if (artist.setType === 'instrument') return ['30 min', '45 min', '60 min', '90 min', '120 min']
+    if (artist.setType === 'mc') return ['1 ora', '2 ore', '3 ore', '4 ore', '5+ ore']
     return []
   }
 
@@ -276,14 +277,9 @@ export default function BookArtistPage() {
                         {opt}
                       </button>
                     ))}
-                    <button type="button" onClick={() => setForm({...form, duration: 'manual'})}
-                      style={{padding:'8px 14px',borderRadius:'10px',border:form.duration === 'manual' ? '1.5px solid #059669' : '1px solid #e7e5e4',background: form.duration === 'manual' ? '#dcfce7' : 'white',fontSize:'12px',fontWeight:600,color: form.duration === 'manual' ? '#059669' : '#44403c',cursor:'pointer',fontFamily:'Montserrat,sans-serif'}}>
-                      Manual
-                    </button>
+
                   </div>
-                  {form.duration === 'manual' && (
-                    <input type="text" value={form.durationCustom} onChange={e => setForm({...form, durationCustom: e.target.value})} placeholder="Ex: 30 min, 2x60 min..." style={{...inputStyle, marginTop:'8px'}} />
-                  )}
+
                 </>
               ) : (
                 <input type="text" value={form.durationCustom} onChange={e => setForm({...form, durationCustom: e.target.value})} placeholder="Ex: 30 min, 45 min, 2 show-uri..." style={inputStyle} />
