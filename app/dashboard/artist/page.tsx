@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { supabase } from '@/lib/supabase'
-import { User, Music, MapPin, Car, Hotel, Plane, Save, CheckCircle2, Mic2, Disc3, Guitar, Globe, Calendar } from 'lucide-react'
+import { User, Music, Music2, MapPin, Car, Hotel, Plane, Save, CheckCircle2, Mic2, Disc3, Guitar, Globe, Calendar, Sparkles } from 'lucide-react'
 import { InstagramLogo, YoutubeLogo, SpotifyLogo } from '@phosphor-icons/react'
 
 const VIBES = [
@@ -23,7 +23,7 @@ const SET_TYPES = [
   { id: 'dj', icon: Disc3, label: 'DJ' },
   { id: 'vocal', icon: Mic2, label: 'Vocal solist' },
   { id: 'band', icon: Guitar, label: 'Trupa' },
-  { id: 'show', icon: Music2, label: 'Show artistic' },
+  { id: 'show', icon: Sparkles, label: 'Show artistic' },
   { id: 'instrument', icon: Music2, label: 'Instrumentist' },
 ]
 
