@@ -16,10 +16,11 @@ const ATMOSFERA = [
 
 const TIP_ENTERTAINMENT = [
   { id: 'dj', icon: Disc3, label: 'DJ' },
-  { id: 'formatie', icon: Guitar, label: 'Formație / Trupă' },
-  { id: 'vocal', icon: Mic2, label: 'Artist vocal / Solist' },
-  { id: 'instrumental', icon: Piano, label: 'Instrumente live' },
-  { id: 'dansatori', icon: Users2, label: 'Dansatori / Show' },
+  { id: 'vocal', icon: Mic2, label: 'Artist solist' },
+  { id: 'band', icon: Guitar, label: 'Trupă' },
+  { id: 'show', icon: Users2, label: 'Show artistic' },
+  { id: 'instrument', icon: Piano, label: 'Instrumentist' },
+  { id: 'mc', icon: Mic2, label: 'MC / Host' },
 ]
 
 interface Props {
