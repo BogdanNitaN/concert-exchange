@@ -236,6 +236,7 @@ export default function ClientDashboard() {
             citySearch={citySearch} setCitySearch={setCitySearch}
             setCenter={setCenter}
             onCitySelect={(lat: number, lng: number) => { setSelectedCityLat(lat); setSelectedCityLng(lng) }}
+            onExpert={() => setShowExpertModal(true)}
             onNext={() => setStep('atmosfera')}
           />
         )}
