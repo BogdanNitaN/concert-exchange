@@ -602,6 +602,7 @@ export default function ArtistDashboard() {
               {id:'poolparty', label:'Pool Party'},
               {id:'dayparty', label:'Day Party'},
               {id:'dinnershow', label:'Dinner & Show'},
+              {id:'mall', label:'Mall / Brand activation'},
               {id:'nunta', label:'Nunta'},
               {id:'botez', label:'Botez'},
               {id:'private', label:'Petrecere privata'},
