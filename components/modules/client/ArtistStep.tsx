@@ -18,7 +18,7 @@ interface Props {
 const tierInfo = (tier: string) => {
   if (tier === 'Premium') return { bg: '#eacda3', color: '#1c1917', label: 'A++ · Icon' }
   if (tier === 'A+') return { bg: '#7c3aed', color: 'white', label: 'A+ · Premium' }
-  return { bg: '#f5f5f4', color: '#44403c', label: 'A · Select' }
+  return { bg: 'white', color: '#1c1917', label: 'A · Select' }
 }
 
 const ENTERTAINMENT_GENRE_MAP: Record<string, string[]> = {
@@ -75,7 +75,7 @@ const Legenda = () => (
       <span style={{background:'#7c3aed', fontSize:'10px', fontWeight:700, padding:'2px 8px', borderRadius:'6px', color:'white'}}>A+ · Premium</span> 5.000–10.000€
     </span>
     <span style={{fontSize:'11px', display:'flex', alignItems:'center', gap:'6px'}}>
-      <span style={{background:'#f5f5f4', fontSize:'10px', fontWeight:700, padding:'2px 8px', borderRadius:'6px', color:'#44403c'}}>A · Select</span> până la 5.000€
+      <span style={{background:'white', fontSize:'10px', fontWeight:700, padding:'2px 8px', borderRadius:'6px', color:'#1c1917', border:'1px solid #e7e5e4'}}>A · Select</span> până la 5.000€
     </span>
     
   </div>
