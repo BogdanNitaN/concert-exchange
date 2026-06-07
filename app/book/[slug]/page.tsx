@@ -222,7 +222,9 @@ export default function BookArtistPage() {
                 <option value="poolparty">Pool Party</option>
                 <option value="dayparty">Day Party</option>
                 <option value="dinnershow">Dinner & Show</option>
-                <option value="mall">Mall / Brand activation</option>
+                <option value="mall">Mall</option>
+                <option value="brandactivation">Brand Activation</option>
+                <option value="sport">Eveniment sportiv</option>
                 <option value="nunta">Nunta</option>
                 <option value="botez">Botez</option>
                 <option value="private">Petrecere privata</option>

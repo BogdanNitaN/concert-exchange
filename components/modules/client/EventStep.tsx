@@ -1,7 +1,7 @@
 'use client'
 
 import { useRef, useEffect, useState } from 'react'
-import { Heart, Baby, Building2, PartyPopper, Wine, Music, Flame, Rocket, MapPin, Users, Wallet, Disc3, Star, Sunset, Sun, Globe, HelpCircle } from 'lucide-react'
+import { Heart, Baby, Building2, PartyPopper, Wine, Music, Flame, Rocket, MapPin, Users, Wallet, Disc3, Star, Sunset, Sun, Globe, HelpCircle , Trophy } from 'lucide-react'
 import DatePicker from '@/components/modules/shared/DatePicker'
 
 interface GeoSuggestion { name: string; fullName: string; lat: number; lng: number }
