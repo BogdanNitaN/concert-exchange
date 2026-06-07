@@ -592,30 +592,36 @@ export default function ArtistDashboard() {
           <div style={{display:'flex', alignItems:'center', gap:'8px', marginBottom:'8px'}}>
             <span style={{fontWeight:700, fontSize:'14px', color:'#1c1917'}}>Tipuri evenimente pe care le accepti</span>
           </div>
-          <div style={{fontSize:'12px', color:'#78716c', marginBottom:'14px'}}>Selecteaza tipurile de evenimente pentru care vrei sa primesti cereri. Ajuta la matching-ul corect cu promoterii.</div>
-          <div style={{display:'grid', gridTemplateColumns:'repeat(2, 1fr)', gap:'8px'}}>
+          <div style={{fontSize:'12px', color:'#78716c', marginBottom:'10px'}}>Selecteaza tipurile de evenimente pentru care vrei sa primesti cereri.</div>
+          <div style={{marginBottom:'12px'}}>
+            <button type="button" onClick={() => {
+              const allIds = ['festival','popup','citydays','club','corporate','poolparty','dinnershow','mall','brandactivation','sport','private','revelion']
+              if (eventTypes.length === allIds.length) setEventTypes([])
+              else setEventTypes(allIds)
+            }}
+              style={{padding:'6px 12px', borderRadius:'8px', border:'1.5px solid #1c1917', background:'#1c1917', color:'white', cursor:'pointer', fontSize:'11px', fontWeight:600}}>
+              Selecteaza toate
+            </button>
+          </div>
+          <div style={{display:'flex', flexWrap:'wrap', gap:'6px'}}>
             {[
               {id:'festival', label:'Festival'},
-              {id:'popup', label:'Pop-Up Event'},
-              {id:'citydays', label:'City Days / Open Air'},
+              {id:'popup', label:'Pop-Up'},
+              {id:'citydays', label:'City Days'},
               {id:'club', label:'Club Night'},
               {id:'corporate', label:'Corporate'},
-              {id:'teambuilding', label:'Team Building'},
-              {id:'poolparty', label:'Pool Party'},
-              {id:'dayparty', label:'Day Party'},
+              {id:'poolparty', label:'Pool / Day Party'},
               {id:'dinnershow', label:'Dinner & Show'},
               {id:'mall', label:'Mall'},
               {id:'brandactivation', label:'Brand Activation'},
               {id:'sport', label:'Eveniment sportiv'},
-              {id:'nunta', label:'Nunta'},
-              {id:'botez', label:'Botez'},
-              {id:'private', label:'Petrecere privata'},
+              {id:'private', label:'Privat'},
               {id:'revelion', label:'Revelion / Craciun'},
             ].map(et => {
               const isSelected = eventTypes.includes(et.id)
               return (
                 <div key={et.id} onClick={() => { if(isSelected) setEventTypes(eventTypes.filter(x => x !== et.id)); else setEventTypes([...eventTypes, et.id]) }}
-                  style={{padding:'10px 14px', borderRadius:'10px', border:'1.5px solid ' + (isSelected ? '#059669' : '#e7e5e4'), background: isSelected ? '#dcfce7' : 'white', cursor:'pointer', fontSize:'12px', fontWeight:600, color: isSelected ? '#059669' : '#44403c', textAlign:'center', transition:'all 0.15s'}}>
+                  style={{padding:'6px 12px', borderRadius:'8px', border:'1px solid ' + (isSelected ? '#059669' : '#e7e5e4'), background: isSelected ? '#dcfce7' : 'white', cursor:'pointer', fontSize:'11px', fontWeight:600, color: isSelected ? '#059669' : '#78716c', transition:'all 0.15s'}}>
                   {et.label}
                 </div>
               )
