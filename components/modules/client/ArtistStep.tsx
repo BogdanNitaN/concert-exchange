@@ -16,7 +16,7 @@ interface Props {
 }
 
 const tierInfo = (tier: string) => {
-  if (tier === 'Premium') return { bg: '#1c1917', color: 'white', label: 'A++ · Icon' }
+  if (tier === 'Premium') return { bg: '#eacda3', color: '#1c1917', label: 'A++ · Icon' }
   if (tier === 'A+') return { bg: '#7c3aed', color: 'white', label: 'A+ · Premium' }
   return { bg: '#f5f5f4', color: '#44403c', label: 'A · Select' }
 }
@@ -69,7 +69,7 @@ const Legenda = () => (
   <div style={{display:'flex', alignItems:'center', gap:'16px', padding:'10px 18px', background:'white', borderBottom:'1px solid #f0f0ef', flexWrap:'wrap', position:'sticky', top:'56px', zIndex:50}}>
     <span style={{fontSize:'10px', color:'#a8a29e', fontWeight:700, textTransform:'uppercase', letterSpacing:'0.08em'}}>Tier</span>
     <span style={{fontSize:'11px', display:'flex', alignItems:'center', gap:'6px'}}>
-      <span style={{background:'#1c1917', fontSize:'10px', fontWeight:700, padding:'2px 8px', borderRadius:'6px', color:'white'}}>A++ · Icon</span> 10.000€+
+      <span style={{background:'#eacda3', fontSize:'10px', fontWeight:700, padding:'2px 8px', borderRadius:'6px', color:'#1c1917'}}>A++ · Icon</span> 10.000€+
     </span>
     <span style={{fontSize:'11px', display:'flex', alignItems:'center', gap:'6px'}}>
       <span style={{background:'#7c3aed', fontSize:'10px', fontWeight:700, padding:'2px 8px', borderRadius:'6px', color:'white'}}>A+ · Premium</span> 5.000–10.000€
