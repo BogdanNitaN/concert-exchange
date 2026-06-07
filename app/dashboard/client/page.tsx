@@ -26,6 +26,27 @@ const EVENT_TYPES = [
 
 const VENUE_TYPES_CLIENT = ["Toate", "Sală Evenimente", "Ballroom", "Restaurant", "Club", "Venue / Concert Hall", "Terasă", "Rooftop", "Hotel Conference", "Resort / Hotel", "Spațiu alternativ", "Beach Club", "Parc / Open Air", "Amfiteatru / Arene", "Stadion", "Arenă / Sală Polivalentă", "Filarmonică / Operă / Teatru", "Castel / Conac", "Cramă", "Casă de cultură", "Shopping Mall", "Muzeu / Galerie", "Centru expozițional", "Altele"]
 
+const EVENT_VENUE_MAP: Record<string, string[]> = {
+  'festival': ['Parc / Open Air', 'Stadion', 'Arenă / Sală Polivalentă', 'Amfiteatru / Arene'],
+  'popup': ['Spațiu alternativ', 'Shopping Mall', 'Rooftop', 'Restaurant'],
+  'citydays': ['Parc / Open Air', 'Amfiteatru / Arene', 'Casă de cultură', 'Stadion'],
+  'club': ['Club', 'Beach Club', 'Rooftop', 'Venue / Concert Hall'],
+  'corporate': ['Hotel Conference', 'Sală Evenimente', 'Ballroom', 'Centru expozițional'],
+  'teambuilding': ['Resort / Hotel', 'Spațiu alternativ', 'Parc / Open Air', 'Cramă'],
+  'poolparty': ['Beach Club', 'Resort / Hotel', 'Rooftop', 'Spațiu alternativ'],
+  'dayparty': ['Beach Club', 'Rooftop', 'Restaurant', 'Spațiu alternativ'],
+  'dinnershow': ['Restaurant', 'Cramă', 'Castel / Conac', 'Hotel Conference'],
+  'mall': ['Shopping Mall', 'Centru expozițional', 'Spațiu alternativ', 'Restaurant'],
+  'brandactivation': ['Spațiu alternativ', 'Shopping Mall', 'Parc / Open Air', 'Centru expozițional'],
+  'sport': ['Stadion', 'Arenă / Sală Polivalentă', 'Parc / Open Air', 'Amfiteatru / Arene'],
+  'nunta': ['Ballroom', 'Restaurant', 'Castel / Conac', 'Sală Evenimente'],
+  'botez': ['Restaurant', 'Sală Evenimente', 'Ballroom', 'Resort / Hotel'],
+  'private': ['Ballroom', 'Restaurant', 'Castel / Conac', 'Sală Evenimente'],
+  'revelion': ['Ballroom', 'Hotel Conference', 'Sală Evenimente', 'Restaurant'],
+  'gala': ['Ballroom', 'Castel / Conac', 'Hotel Conference', 'Filarmonică / Operă / Teatru'],
+  'altele': ['Sală Evenimente', 'Restaurant', 'Ballroom', 'Club'],
+}
+
 const VENUES = [
   { id:1, name:"Ballroom Grand", lat:44.43, lng:26.10, type:"Ballroom", city:"Bucure\u0219ti", capacity:500, priceEstimate:"3.000-5.000\u20ac" },
   { id:2, name:"Restaurant Silva", lat:46.77, lng:23.59, type:"Restaurant cu scen\u0103", city:"Cluj-Napoca", capacity:200, priceEstimate:"1.500-2.500\u20ac" },
@@ -314,13 +335,8 @@ export default function ClientDashboard() {
                   </div>
 
                 </div>
-                <div style={{display:'flex', flexWrap:'wrap', gap:'6px', marginBottom:'14px'}}>
-                  {VENUE_TYPES_CLIENT.map(t => (
-                    <button key={t} onClick={() => {
-                      setVenueType(t)
-                    }}
-                      style={{padding:'5px 12px', borderRadius:'20px', border:'1px solid', cursor:'pointer', fontSize:'11px', fontWeight:600, fontFamily:'Montserrat,sans-serif', background: venueType === t ? '#1c1917' : 'white', color: venueType === t ? 'white' : '#78716c', borderColor: venueType === t ? '#1c1917' : '#e7e5e4'}}>{t}</button>
-                  ))}
+                <div style={{fontSize:'11px', color:'#78716c', marginBottom:'14px', fontWeight:500}}>
+                  Locatii potrivite pentru {EVENT_TYPES.find(e => e.id === eventType)?.label || 'evenimentul tau'}: {(EVENT_VENUE_MAP[eventType] || []).join(' · ')}
                 </div>
                 <div style={{height:'240px', borderRadius:'16px', overflow:'hidden', marginBottom:'14px', border:'1px solid #e7e5e4'}}>
                   <MapVenues venues={filteredVenues} center={center} radius={200} onSelectVenue={(v: any) => toggleVenueSelect(v)} />
@@ -335,7 +351,7 @@ export default function ClientDashboard() {
                   {(venueType !== 'Toate' 
                     ? (venuesByType[venueType] && venuesByType[venueType].length > 0 ? venuesByType[venueType] : googleVenues.length > 0 ? googleVenues : filteredVenues)
                     : (googleVenues.length > 0 ? googleVenues : filteredVenues)
-                  ).slice(0,8).map(v => {
+                  ).slice(0,4).map(v => {
                     const isSelected = selectedVenues.find(sv => sv.id === v.id)
                     return (
                       <div key={v.id} onClick={() => toggleVenueSelect(v)}
