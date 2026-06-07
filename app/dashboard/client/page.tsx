@@ -270,8 +270,8 @@ export default function ClientDashboard() {
                 <div style={{display:'flex', alignItems:'center', gap:'10px', flexWrap:'wrap'}}>
                   {selectedArtists.map((a, i) => {
                     const tierMap: Record<string, {label: string, color: string}> = {
-                      'A++': {label: 'A++ · Icon', color: '#f59e0b'},
-                      'Premium': {label: 'A++ · Icon', color: '#f59e0b'},
+                      'A++': {label: 'A++ · Icon', color: '#eacda3'},
+                      'Premium': {label: 'A++ · Icon', color: '#eacda3'},
                       'A+': {label: 'A+ · Premium', color: '#7c3aed'},
                       'A': {label: 'A · Select', color: '#44403c'},
                     }
