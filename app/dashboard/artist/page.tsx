@@ -58,6 +58,7 @@ export default function ArtistDashboard() {
   const [pressKitUrl, setPressKitUrl] = useState('')
   const [riderUrl, setRiderUrl] = useState('')
   const [venuesPlayed, setVenuesPlayed] = useState('')
+  const [eventTypes, setEventTypes] = useState<string[]>([])
   const [cazareTip, setCazareTip] = useState('')
   const [durata, setDurata] = useState<string[]>([])
   const [availability, setAvailability] = useState<Record<string, string>>({})
@@ -97,6 +98,7 @@ export default function ArtistDashboard() {
           if (profile.press_kit_url) setPressKitUrl(profile.press_kit_url)
           if (profile.rider_url) setRiderUrl(profile.rider_url)
           if (profile.venues_played) setVenuesPlayed(profile.venues_played)
+          if (profile.event_types && Array.isArray(profile.event_types)) setEventTypes(profile.event_types)
           if (profile.cazare_tip) setCazareTip(profile.cazare_tip)
           if (profile.durata) setDurata(Array.isArray(profile.durata) ? profile.durata : [])
           if (profile.id) setArtistId(profile.id)
@@ -126,7 +128,7 @@ export default function ArtistDashboard() {
       const slug = artistName.toLowerCase().replace(/[^a-z0-9]/g, '-').replace(/-+/g, '-').replace(/^-|-$/g, '')
       const { data: upsertData, error: upsertError } = await (supabase as any).from('artists').upsert({
         user_id: user?.id,
-        artistName, slug, bio, genres, vibes, setType, cityFrom, costPerKm, press_kit_url: pressKitUrl, rider_url: riderUrl, cazare_tip: cazareTip, durata, venues_played: venuesPlayed, is_verified: true,
+        artistName, slug, bio, genres, vibes, setType, cityFrom, costPerKm, press_kit_url: pressKitUrl, rider_url: riderUrl, cazare_tip: cazareTip, durata, venues_played: venuesPlayed, event_types: eventTypes, is_verified: true,
         nrBileteAvion, cazare, instagram, spotify, youtube, tiktok, facebook, soundcloud,
         // updated_at: new Date().toISOString()
       }, { onConflict: 'user_id' })
@@ -578,6 +580,38 @@ export default function ArtistDashboard() {
 
           </div>
         </Section>
+
+        <div style={{background:'white', border:'1px solid #e7e5e4', borderRadius:'20px', padding:'24px', marginBottom:'14px'}}>
+          <div style={{display:'flex', alignItems:'center', gap:'8px', marginBottom:'8px'}}>
+            <span style={{fontWeight:700, fontSize:'14px', color:'#1c1917'}}>Tipuri evenimente pe care le accepti</span>
+          </div>
+          <div style={{fontSize:'12px', color:'#78716c', marginBottom:'14px'}}>Selecteaza tipurile de evenimente pentru care vrei sa primesti cereri. Ajuta la matching-ul corect cu promoterii.</div>
+          <div style={{display:'grid', gridTemplateColumns:'repeat(2, 1fr)', gap:'8px'}}>
+            {[
+              {id:'festival', label:'Festival'},
+              {id:'popup', label:'Pop-Up Event'},
+              {id:'citydays', label:'City Days / Open Air'},
+              {id:'club', label:'Club Night'},
+              {id:'corporate', label:'Corporate'},
+              {id:'teambuilding', label:'Team Building'},
+              {id:'poolparty', label:'Pool Party'},
+              {id:'dayparty', label:'Day Party'},
+              {id:'dinnershow', label:'Dinner & Show'},
+              {id:'nunta', label:'Nunta'},
+              {id:'botez', label:'Botez'},
+              {id:'private', label:'Petrecere privata'},
+              {id:'revelion', label:'Revelion / Craciun'},
+            ].map(et => {
+              const isSelected = eventTypes.includes(et.id)
+              return (
+                <div key={et.id} onClick={() => { if(isSelected) setEventTypes(eventTypes.filter(x => x !== et.id)); else setEventTypes([...eventTypes, et.id]) }}
+                  style={{padding:'10px 14px', borderRadius:'10px', border:'1.5px solid ' + (isSelected ? '#059669' : '#e7e5e4'), background: isSelected ? '#dcfce7' : 'white', cursor:'pointer', fontSize:'12px', fontWeight:600, color: isSelected ? '#059669' : '#44403c', textAlign:'center', transition:'all 0.15s'}}>
+                  {et.label}
+                </div>
+              )
+            })}
+          </div>
+        </div>
 
         <div style={{background:'white', border:'1px solid #e7e5e4', borderRadius:'20px', padding:'24px', marginBottom:'14px'}}>
           <div style={{display:'flex', alignItems:'center', gap:'8px', marginBottom:'16px'}}>
