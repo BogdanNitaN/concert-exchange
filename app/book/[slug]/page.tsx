@@ -62,8 +62,11 @@ export default function BookArtistPage() {
   const getDurationOptions = () => {
     if (!artist) return []
     if (artist.setType === 'dj') return ['60 min', '90 min', '120 min', '180 min']
-    if (artist.setType === 'vocal' || artist.setType === 'band' || artist.setType === 'trupa') return ['45 min', '60 min', '90 min']
-    return [] // pentru show artistic - input manual
+    if (artist.setType === 'vocal') return ['45 min', '60 min', '90 min']
+    if (artist.setType === 'band' || artist.setType === 'cover') return ['45 min', '60 min', '90 min', '2x45 min', '2x60 min']
+    if (artist.setType === 'show') return ['15 min', '20 min', '30 min', '45 min']
+    if (artist.setType === 'instrument') return ['30 min', '45 min', '60 min', '90 min', '120 min']
+    return []
   }
 
   const durationOptions = getDurationOptions()

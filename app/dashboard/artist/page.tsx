@@ -20,9 +20,11 @@ const VIBES = [
 const GENRES = ['Pop', 'Open Format', 'Dance', 'Hip-Hop', 'Rap', 'Trap', 'Rock', 'Jazz', 'Folk', 'Manele', 'Lăutărească', 'Balcanic', 'Populară', 'Cover Band', 'EDM', 'R&B', 'Latino', 'Clasică', 'Altele']
 
 const SET_TYPES = [
-  { id: 'vocal', icon: Mic2, label: 'Artist vocal' },
-  { id: 'dj', icon: Disc3, label: 'DJ Set' },
-  { id: 'cover', icon: Guitar, label: 'Trupă / Cover Band' },
+  { id: 'dj', icon: Disc3, label: 'DJ' },
+  { id: 'vocal', icon: Mic2, label: 'Vocal solist' },
+  { id: 'band', icon: Guitar, label: 'Trupa' },
+  { id: 'show', icon: Music2, label: 'Show artistic' },
+  { id: 'instrument', icon: Music2, label: 'Instrumentist' },
 ]
 
 const CITIES = ['București', 'Cluj-Napoca', 'Timișoara', 'Iași', 'Constanța', 'Brașov', 'Oradea', 'Bacău', 'Galați', 'Craiova', 'Sibiu', 'Pitești', 'Târgu Mureș', 'Arad', 'Chișinău']
@@ -509,6 +511,9 @@ export default function ArtistDashboard() {
             <div style={{display:'flex', flexWrap:'wrap', gap:'8px', marginBottom:'8px'}}>
               {(setType === 'dj' ? ['60 min', '90 min', '120 min', '180 min'] :
                 setType === 'vocal' ? ['45 min', '60 min', '90 min'] :
+                setType === 'band' ? ['45 min', '60 min', '90 min', '2x45 min', '2x60 min'] :
+                setType === 'show' ? ['15 min', '20 min', '30 min', '45 min'] :
+                setType === 'instrument' ? ['30 min', '45 min', '60 min', '90 min', '120 min'] :
                 []).map(d => {
                 const isSelected = durata.includes(d)
                 return (
