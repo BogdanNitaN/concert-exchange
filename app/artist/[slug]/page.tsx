@@ -2,6 +2,7 @@ import { createClient } from '@supabase/supabase-js'
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import { Music2, MapPin, CheckCircle2, ArrowRight, Mic2, Disc3, Guitar } from 'lucide-react'
+import TierLegend from '@/components/modules/shared/TierLegend'
 import { InstagramLogo, SpotifyLogo, YoutubeLogo, TiktokLogo, FacebookLogo, SoundcloudLogo } from '@phosphor-icons/react/dist/ssr'
 
 
@@ -121,32 +122,7 @@ export default async function ArtistPage({ params }: { params: Promise<{ slug: s
         </div>
       </nav>
 
-      {/* Legenda tier-uri */}
-      <style>{`
-        .tier-item { position: relative; cursor: pointer; display: flex; align-items: center; gap: 5px; padding: 4px 8px; border-radius: 8px; transition: background 0.2s; }
-        .tier-item:hover { background: #fafaf9; }
-        .tier-tooltip { position: absolute; bottom: calc(100% + 8px); left: 50%; transform: translateX(-50%); background: #1c1917; color: white; padding: 8px 12px; border-radius: 8px; font-size: 11px; font-weight: 500; white-space: nowrap; opacity: 0; pointer-events: none; transition: opacity 0.2s; z-index: 9999; box-shadow: 0 4px 12px rgba(0,0,0,0.15); }
-        .tier-item:hover .tier-tooltip { opacity: 1; }
-      `}</style>
-      <div style={{background:'white', borderBottom:'1px solid #f5f5f4'}}>
-        <div style={{maxWidth:'900px', margin:'0 auto', padding:'10px 24px', display:'flex', alignItems:'center', justifyContent:'center', gap:'12px', flexWrap:'wrap'}}>
-          <span style={{fontSize:'10px', color:'#a8a29e', fontWeight:600, letterSpacing:'0.05em'}}>BOX OFFICE TIERS</span>
-          <div className="tier-item">
-            <span style={{width:'8px', height:'8px', borderRadius:'50%', background:'#eacda3'}}></span>
-            <span style={{fontSize:'11px', color:'#44403c', fontWeight:600}}>A++ Headliner</span>
-            <span className="tier-tooltip">Top tier - vinde singur orice eveniment</span>
-          </div>
-          <div className="tier-item">
-            <span style={{width:'8px', height:'8px', borderRadius:'50%', background:'#7c3aed'}}></span>
-            <span style={{fontSize:'11px', color:'#44403c', fontWeight:600}}>A+ Power Draw</span>
-            <span className="tier-tooltip">Tractiune puternica - vanzari consistente</span>
-          </div>
-          <div className="tier-item">
-            <span style={{width:'8px', height:'8px', borderRadius:'50%', background:'#44403c'}}></span>
-            <span style={{fontSize:'11px', color:'#44403c', fontWeight:600}}>A Solid</span>
-            <span className="tier-tooltip">Atractie solida - fan base loial</span>
-          </div>
-        </div>
+      <TierLegend />
       </div>
 
       <div style={{maxWidth:'700px', margin:'0 auto', padding:'32px 24px'}}>

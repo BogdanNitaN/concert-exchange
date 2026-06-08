@@ -9,6 +9,7 @@ import ArtistStep from '@/components/modules/client/ArtistStep'
 import SummaryStep from '@/components/modules/client/SummaryStep'
 import PriceExactModal from '@/components/modules/shared/PriceExactModal'
 import ExpertModal from '@/components/modules/shared/ExpertModal'
+import TierLegend from '@/components/modules/shared/TierLegend'
 import VenueSearch from '@/components/widgets/VenueSearch'
 
 const MapVenues = dynamic(() => import('@/components/map/MapVenues'), { ssr: false })
@@ -244,20 +245,8 @@ export default function ClientDashboard() {
         </div>
         <Link href="/" style={{fontSize:'12px', color:'#78716c', textDecoration:'none'}}> Inapoi</Link>
       </nav>
-      <div style={{background:'white', borderBottom:'1px solid #f5f5f4', position:'sticky', top:'56px', zIndex:99}}>
-        <div style={{maxWidth:'900px', margin:'0 auto', padding:'8px 24px', display:'flex', alignItems:'center', justifyContent:'center', gap:'14px', flexWrap:'wrap'}}>
-          <span style={{fontSize:'9px', color:'#a8a29e', fontWeight:600, letterSpacing:'0.05em', textTransform:'uppercase'}}>Tier artisti</span>
-          <span style={{display:'inline-flex', alignItems:'center', gap:'5px', fontSize:'10px', color:'#44403c', fontWeight:600}}>
-            <span style={{width:'7px', height:'7px', borderRadius:'50%', background:'#eacda3'}}></span>A++ Icon
-          </span>
-          <span style={{display:'inline-flex', alignItems:'center', gap:'5px', fontSize:'10px', color:'#44403c', fontWeight:600}}>
-            <span style={{width:'7px', height:'7px', borderRadius:'50%', background:'#7c3aed'}}></span>A+ Premium
-          </span>
-          <span style={{display:'inline-flex', alignItems:'center', gap:'5px', fontSize:'10px', color:'#44403c', fontWeight:600}}>
-            <span style={{width:'7px', height:'7px', borderRadius:'50%', background:'white', border:'1px solid #1c1917'}}></span>A Select
-          </span>
-        </div>
-      </div>
+      <TierLegend />
+
 
       <div style={{maxWidth:'900px', margin:'0 auto', padding:'40px 24px'}}>
 

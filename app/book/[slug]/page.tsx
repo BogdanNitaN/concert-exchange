@@ -3,6 +3,7 @@ import { useState, useEffect } from 'react'
 import { useParams } from 'next/navigation'
 import Link from 'next/link'
 import { ArrowLeft, ArrowRight, CheckCircle2, ChevronLeft, ChevronRight } from 'lucide-react'
+import TierLegend from '@/components/modules/shared/TierLegend'
 import { supabase } from '@/lib/supabase'
 
 export default function BookArtistPage() {
@@ -109,6 +110,7 @@ export default function BookArtistPage() {
             <Link href="/" style={{fontWeight:800,fontSize:'16px',color:'#1c1917',textDecoration:'none',letterSpacing:'-0.5px'}}>GIG<span style={{color:'#059669'}}>x</span></Link>
           </div>
         </nav>
+      <TierLegend />
         <div style={{maxWidth:'600px',margin:'0 auto',padding:'48px 24px'}}>
           <div style={{background:'white',border:'1px solid #e7e5e4',borderRadius:'18px',padding:'40px 24px',textAlign:'center',boxShadow:'0 2px 8px rgba(0,0,0,0.04)'}}>
             <div style={{display:'inline-flex',alignItems:'center',justifyContent:'center',width:'64px',height:'64px',borderRadius:'50%',background:'#dcfce7',marginBottom:'20px'}}>
