@@ -151,7 +151,7 @@ export default function ArtistStep({ budget, setBudget, eventTypeLabel, atmosfer
             <div style={{fontSize:'11px', fontWeight:700, color:'#059669', textTransform:'uppercase', letterSpacing:'0.08em', marginBottom:'10px'}}>
               Artiști selectați ({selectedArtists.length}/3)
             </div>
-            <div style={{display:'flex', gap:'8px', flexWrap:'wrap'}}>
+            <div style={{display:'flex', gap:'8px', flexWrap:'wrap', justifyContent:'center'}}>
               {selectedArtists.map((a, i) => (
                 <div key={a.id} style={{display:'flex', alignItems:'center', gap:'8px', background:'white', border:'1px solid #bbf7d0', borderRadius:'20px', padding:'6px 12px'}}>
                   <span style={{width:'18px', height:'18px', borderRadius:'50%', background:'#059669', color:'white', fontSize:'10px', fontWeight:800, display:'flex', alignItems:'center', justifyContent:'center'}}>{i+1}</span>
