@@ -1,5 +1,5 @@
 import Link from 'next/link'
-import { ArrowRight, Search, MessageCircle, Award, BarChart3, ShieldCheck, Clock, Sparkles, Heart, Building2, PartyPopper, Disc3, Rocket, Star } from 'lucide-react'
+import { ArrowRight, Search, MessageCircle, Award, BarChart3, ShieldCheck, Clock, Sparkles, Heart, Building2, PartyPopper, Disc3, Rocket, Star, Sun, Sunset, Wine, Flame } from 'lucide-react'
 
 export default function HomePage() {
   return (
@@ -121,6 +121,11 @@ export default function HomePage() {
               {label:'Club Night', Icon: Disc3},
               {label:'Brand Activation', Icon: Rocket},
               {label:'Privat', Icon: PartyPopper},
+              {label:'Pop-Up', Icon: Sparkles},
+              {label:'City Days / Open Air', Icon: Flame},
+              {label:'Day Party', Icon: Sun},
+              {label:'Dinner & Show', Icon: Wine},
+              {label:'Beach Party', Icon: Sunset},
             ].map((cat, i) => {
               const Icon = cat.Icon
               return (
@@ -170,6 +175,7 @@ export default function HomePage() {
           {[
             {n:'70+', l:'Artiști verificați'},
             {n:'1.617', l:'Evenimente în 2025'},
+            {n:'18M€+', l:'Contractați în 3 ani'},
             {n:'30 min', l:'Răspuns mediu'},
             {n:'20 ani', l:'În industrie'},
           ].map((s, i) => (
