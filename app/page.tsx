@@ -1,5 +1,5 @@
 import Link from 'next/link'
-import { ArrowRight, Search, MessageCircle, Award, BarChart3, ShieldCheck, Clock, Sparkles } from 'lucide-react'
+import { ArrowRight, Search, MessageCircle, Award, BarChart3, ShieldCheck, Clock, Sparkles, Heart, Building2, PartyPopper, Disc3, Rocket, Star } from 'lucide-react'
 
 export default function HomePage() {
   return (
@@ -87,7 +87,7 @@ export default function HomePage() {
           {[
             {n:'01', icon: Search, title:'Cere', desc:'Ne spui data, orașul, bugetul. Filtrăm artiștii potriviți.'},
             {n:'02', icon: MessageCircle, title:'Primește', desc:'Răspundem în 30 de minute. Prețul real. Disponibilitatea reală.'},
-            {n:'03', icon: Award, title:'Confirmă', desc:'Semnezi digital. Plătești în siguranță. Evenimentul tău e blocat în calendar.'},
+            {n:'03', icon: Award, title:'Confirmă', desc:'Artistul tău, blocat în calendar. Garantat de noi, livrat de o echipă cu 20 de ani în industrie.'},
           ].map((s, i) => {
             const Icon = s.icon
             return (
@@ -115,18 +115,23 @@ export default function HomePage() {
           </div>
           <div style={{display:'grid', gridTemplateColumns:'repeat(auto-fit, minmax(160px, 1fr))', gap:'14px'}}>
             {[
-              {label:'Nuntă', icon:'💍'},
-              {label:'Corporate', icon:'🏢'},
-              {label:'Festival', icon:'🎪'},
-              {label:'Club Night', icon:'🎶'},
-              {label:'Brand Activation', icon:'🚀'},
-              {label:'Privat', icon:'🎉'},
-            ].map((c, i) => (
-              <Link key={i} href="/dashboard/client" style={{background:'rgba(255,255,255,0.05)', border:'1px solid rgba(255,255,255,0.1)', borderRadius:'16px', padding:'24px', textAlign:'center', textDecoration:'none', transition:'all 0.2s'}}>
-                <div style={{fontSize:'32px', marginBottom:'10px'}}>{c.icon}</div>
-                <div style={{fontSize:'13px', fontWeight:700, color:'white'}}>{c.label}</div>
-              </Link>
-            ))}
+              {label:'Nuntă', Icon: Heart},
+              {label:'Corporate', Icon: Building2},
+              {label:'Festival', Icon: Star},
+              {label:'Club Night', Icon: Disc3},
+              {label:'Brand Activation', Icon: Rocket},
+              {label:'Privat', Icon: PartyPopper},
+            ].map((cat, i) => {
+              const Icon = cat.Icon
+              return (
+                <Link key={i} href="/dashboard/client" style={{background:'rgba(255,255,255,0.05)', border:'1px solid rgba(255,255,255,0.1)', borderRadius:'16px', padding:'28px 24px', textAlign:'center', textDecoration:'none', transition:'all 0.2s'}}>
+                  <div style={{display:'flex', justifyContent:'center', marginBottom:'14px'}}>
+                    <Icon size={28} color='#eacda3' strokeWidth={1.5} />
+                  </div>
+                  <div style={{fontSize:'13px', fontWeight:700, color:'white', letterSpacing:'-0.2px'}}>{cat.label}</div>
+                </Link>
+              )
+            })}
           </div>
         </div>
       </section>
