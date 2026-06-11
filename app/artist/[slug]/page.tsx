@@ -123,7 +123,6 @@ export default async function ArtistPage({ params }: { params: Promise<{ slug: s
       </nav>
 
       <TierLegend />
-      </div>
 
       <div style={{maxWidth:'700px', margin:'0 auto', padding:'32px 24px'}}>
         
