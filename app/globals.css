@@ -53,3 +53,36 @@
 .tier-item:hover .tier-tooltip {
   opacity: 1;
 }
+
+/* Tier legend tooltip - hover only */
+.tier-legend-tooltip {
+  position: absolute;
+  top: 32px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: #1c1917;
+  color: white;
+  font-size: 11px;
+  font-weight: 600;
+  padding: 6px 12px;
+  border-radius: 8px;
+  white-space: nowrap;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s ease;
+  z-index: 100;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+}
+.tier-legend-tooltip::before {
+  content: '';
+  position: absolute;
+  bottom: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  border-width: 5px;
+  border-style: solid;
+  border-color: transparent transparent #1c1917 transparent;
+}
+.tier-legend-item:hover .tier-legend-tooltip {
+  opacity: 1;
+}
