@@ -23,7 +23,7 @@ export default function HomePage() {
       {/* Hero */}
       <section style={{maxWidth:'1000px', margin:'0 auto', padding:'120px 24px 80px', textAlign:'center'}}>
         <div style={{fontSize:'11px', fontWeight:700, color:'#a8a29e', letterSpacing:'0.15em', marginBottom:'32px', textTransform:'uppercase'}}>
-          Rezervări artistice · din 2005
+          Cei mai cautati artisti. Un singur loc.
         </div>
         <h1 style={{fontSize:'64px', fontWeight:800, color:'#1c1917', lineHeight:1.05, letterSpacing:'-2px', marginBottom:'28px'}}>
           Un singur apel.<br/>
@@ -115,17 +115,17 @@ export default function HomePage() {
           </div>
           <div style={{display:'grid', gridTemplateColumns:'repeat(auto-fit, minmax(160px, 1fr))', gap:'14px'}}>
             {[
-              {label:'Nuntă', Icon: Heart},
-              {label:'Corporate', Icon: Building2},
               {label:'Festival', Icon: Star},
               {label:'Club Night', Icon: Disc3},
-              {label:'Brand Activation', Icon: Rocket},
-              {label:'Privat', Icon: PartyPopper},
-              {label:'Pop-Up', Icon: Sparkles},
-              {label:'City Days / Open Air', Icon: Flame},
-              {label:'Day Party', Icon: Sun},
-              {label:'Dinner & Show', Icon: Wine},
+              {label:'Nuntă', Icon: Heart},
+              {label:'Corporate', Icon: Building2},
               {label:'Beach Party', Icon: Sunset},
+              {label:'Pop-Up', Icon: Sparkles},
+              {label:'Day Party', Icon: Sun},
+              {label:'Brand Activation', Icon: Rocket},
+              {label:'City Days / Open Air', Icon: Flame},
+              {label:'Dinner & Show', Icon: Wine},
+              {label:'Privat', Icon: PartyPopper},
             ].map((cat, i) => {
               const Icon = cat.Icon
               return (
@@ -173,7 +173,6 @@ export default function HomePage() {
       <section style={{background:'#f5f5f4', padding:'72px 24px', borderTop:'1px solid #e7e5e4', borderBottom:'1px solid #e7e5e4'}}>
         <div style={{maxWidth:'1000px', margin:'0 auto', display:'grid', gridTemplateColumns:'repeat(auto-fit, minmax(180px, 1fr))', gap:'32px', textAlign:'center'}}>
           {[
-            {n:'70+', l:'Artiști verificați'},
             {n:'1.617', l:'Evenimente în 2025'},
             {n:'18M€+', l:'Contractați în 3 ani'},
             {n:'30 min', l:'Răspuns mediu'},
@@ -197,8 +196,8 @@ export default function HomePage() {
             {q:'Costă să trimit o cerere?', a:'Nu. Cererea este gratuită. Plătești doar artistul confirmat.'},
             {q:'Ce înseamnă tier-ul A++ / A+ / A?', a:'Box Office Power. Indicator de impact al artistului la public. A++ Icon — Headliner (10.000€+). A+ Premium — Power Draw (5.000€–10.000€). A Select — Solid (până la 5.000€).'},
             {q:'Cum sunt verificați artiștii?', a:'Manual. De echipă cu 20 de ani de experiență. Datele de performanță sunt agregate live de la platformele oficiale (Spotify, YouTube, TikTok, Instagram).'},
-            {q:'Pot anula o cerere?', a:'Da, oricând înainte de confirmarea finală. După semnătura digitală se aplică termenii agreati.'},
-            {q:'De ce să nu sun direct artistul?', a:'Pentru că viața ta e ocupată. Noi avem agenda lui, calendarul lui, prețul lui. Tu pierzi 30 de minute, nu 3 zile.'},
+            {q:'Pot anula o cerere?', a:'Da, oricând înainte de confirmarea finală. Până atunci, totul este flexibil.'},
+            {q:'De ce să nu sun direct artistul?', a:'Pentru că rapiditatea contează. Artiștii ne știu, lucrăm cu ei zilnic. Tu primești răspuns la preț, calendar și condiții când ai nevoie — 24/7, în 30 de minute.'},
           ].map((f, i) => (
             <div key={i} style={{background:'white', border:'1px solid #e7e5e4', borderRadius:'16px', padding:'22px 26px', boxShadow:'0 1px 4px rgba(0,0,0,0.03)'}}>
               <div style={{fontSize:'15px', fontWeight:700, color:'#1c1917', marginBottom:'8px'}}>{f.q}</div>
