@@ -1,4 +1,6 @@
+'use client'
 import Link from 'next/link'
+import { motion } from 'framer-motion'
 import { ArrowRight, Search, MessageCircle, Award, BarChart3, ShieldCheck, Clock, Sparkles, Heart, Building2, PartyPopper, Disc3, Rocket, Star, Sun, Sunset, Wine, Flame } from 'lucide-react'
 
 export default function HomePage() {
@@ -20,16 +22,24 @@ export default function HomePage() {
         </div>
       </nav>
 
-      {/* Hero */}
-      <section style={{maxWidth:'1000px', margin:'0 auto', padding:'120px 24px 80px', textAlign:'center'}}>
+      {/* Hero cu mesh gradient */}
+      <section style={{position:'relative', overflow:'hidden'}}>
+        {/* Mesh gradient background */}
+        <div style={{position:'absolute', inset:0, background:'radial-gradient(circle at 20% 20%, rgba(5,150,105,0.08) 0%, transparent 50%), radial-gradient(circle at 80% 30%, rgba(124,58,237,0.06) 0%, transparent 50%), radial-gradient(circle at 50% 80%, rgba(234,205,163,0.08) 0%, transparent 50%)', pointerEvents:'none'}}></div>
+        <div style={{maxWidth:'1000px', margin:'0 auto', padding:'120px 24px 80px', textAlign:'center', position:'relative', zIndex:1}}>
         <div style={{fontSize:'11px', fontWeight:700, color:'#a8a29e', letterSpacing:'0.15em', marginBottom:'32px', textTransform:'uppercase'}}>
           Cei mai cautati artisti. Un singur loc.
         </div>
-        <h1 style={{fontSize:'64px', fontWeight:800, color:'#1c1917', lineHeight:1.05, letterSpacing:'-2px', marginBottom:'28px'}}>
-          Un singur apel.<br/>
-          Un singur răspuns.<br/>
-          <span style={{color:'#059669'}}>Artistul tău.</span>
-        </h1>
+        <motion.h1 
+          initial={{opacity:0, y:20}} 
+          animate={{opacity:1, y:0}} 
+          transition={{duration:0.8, ease:'easeOut'}}
+          style={{fontSize:'64px', fontWeight:800, color:'#1c1917', lineHeight:1.05, letterSpacing:'-2px', marginBottom:'28px'}}
+        >
+          <motion.span initial={{opacity:0, y:20}} animate={{opacity:1, y:0}} transition={{duration:0.6, delay:0.1}} style={{display:'inline-block'}}>Un singur apel.</motion.span><br/>
+          <motion.span initial={{opacity:0, y:20}} animate={{opacity:1, y:0}} transition={{duration:0.6, delay:0.3}} style={{display:'inline-block'}}>Un singur răspuns.</motion.span><br/>
+          <motion.span initial={{opacity:0, y:20}} animate={{opacity:1, y:0}} transition={{duration:0.6, delay:0.5}} style={{display:'inline-block', color:'#059669'}}>Artistul tău.</motion.span>
+        </motion.h1>
         <p style={{fontSize:'19px', color:'#57534e', maxWidth:'620px', margin:'0 auto 40px', lineHeight:1.6, fontWeight:400}}>
           Booking artistic, făcut cu rigoare.<br/>
           30 de minute până la prețul real.<br/>
@@ -104,16 +114,16 @@ export default function HomePage() {
         </div>
         <div style={{display:'grid', gridTemplateColumns:'repeat(auto-fit, minmax(280px, 1fr))', gap:'18px'}}>
           {[
-            {n:'01', icon: Search, title:'Cere', desc:'Ne spui data, orașul, bugetul. Filtrăm artiștii potriviți.'},
-            {n:'02', icon: MessageCircle, title:'Primește', desc:'Răspundem în 30 de minute. Prețul real. Disponibilitatea reală.'},
-            {n:'03', icon: Award, title:'Confirmă', desc:'Artistul tău, blocat în calendar. Garantat de noi, livrat de o echipă cu 20 de ani în industrie.'},
+            {n:'01', icon: Search, title:'Cere', desc:'Ne spui data, orașul, bugetul. Filtrăm artiștii potriviți.', color:'#059669'},
+            {n:'02', icon: MessageCircle, title:'Primește', desc:'Răspundem în 30 de minute. Prețul real. Disponibilitatea reală.', color:'#7c3aed'},
+            {n:'03', icon: Award, title:'Confirmă', desc:'Artistul tău, blocat în calendar. Garantat de noi, livrat de o echipă cu 20 de ani în industrie.', color:'#eacda3'},
           ].map((s, i) => {
             const Icon = s.icon
             return (
-              <div key={i} style={{background:'white', border:'1px solid #e7e5e4', borderRadius:'20px', padding:'32px 26px', boxShadow:'0 2px 10px rgba(0,0,0,0.04)'}}>
-                <div style={{fontSize:'11px', fontWeight:800, color:'#059669', letterSpacing:'0.12em', marginBottom:'18px'}}>{s.n}</div>
-                <div style={{width:'48px', height:'48px', borderRadius:'14px', background:'#f0fdf4', display:'flex', alignItems:'center', justifyContent:'center', marginBottom:'20px'}}>
-                  <Icon size={22} color='#059669' strokeWidth={2} />
+              <div key={i} style={{background:'white', border:'1px solid #e7e5e4', borderLeft:'4px solid ' + s.color, borderRadius:'20px', padding:'32px 26px', boxShadow:'0 2px 10px rgba(0,0,0,0.04)', transition:'transform 0.2s, box-shadow 0.2s'}}>
+                <div style={{fontSize:'11px', fontWeight:800, color: s.color, letterSpacing:'0.12em', marginBottom:'18px'}}>{s.n}</div>
+                <div style={{width:'48px', height:'48px', borderRadius:'14px', background: s.color + '15', display:'flex', alignItems:'center', justifyContent:'center', marginBottom:'20px'}}>
+                  <Icon size={22} color={s.color} strokeWidth={2} />
                 </div>
                 <h3 style={{fontSize:'22px', fontWeight:800, color:'#1c1917', margin:'0 0 10px', letterSpacing:'-0.5px'}}>{s.title}</h3>
                 <p style={{fontSize:'14px', color:'#78716c', lineHeight:1.6, margin:0}}>{s.desc}</p>
@@ -170,15 +180,15 @@ export default function HomePage() {
         </div>
         <div style={{display:'grid', gridTemplateColumns:'repeat(auto-fit, minmax(290px, 1fr))', gap:'18px'}}>
           {[
-            {icon: BarChart3, title:'Date reale, nu impresii', desc:'Vezi streams, views și followeri în timp real, direct din surse oficiale. Decizia ta, sprijinită pe cifre, nu pe păreri.'},
-            {icon: Award, title:'Un sistem de ordine', desc:'Box Office Power: A++ Icon. A+ Premium. A Select. Limbajul după care funcționează industria, acum vizibil pentru tine.'},
-            {icon: Sparkles, title:'Două decenii de relații', desc:'Booking-ul nu se face pe Google. Se face cu telefoane, semnături și încredere construită în ani. Noi avem 20.'},
+            {icon: BarChart3, title:'Date reale, nu impresii', desc:'Vezi streams, views și followeri în timp real, direct din surse oficiale. Decizia ta, sprijinită pe cifre, nu pe păreri.', color:'#059669'},
+            {icon: Award, title:'Un sistem de ordine', desc:'Box Office Power: A++ Icon. A+ Premium. A Select. Limbajul după care funcționează industria, acum vizibil pentru tine.', color:'#7c3aed'},
+            {icon: Sparkles, title:'Două decenii de relații', desc:'Booking-ul nu se face pe Google. Se face cu telefoane, semnături și încredere construită în ani. Noi avem 20.', color:'#eacda3'},
           ].map((f, i) => {
             const Icon = f.icon
             return (
-              <div key={i} style={{background:'white', border:'1px solid #e7e5e4', borderRadius:'20px', padding:'32px 26px', boxShadow:'0 2px 10px rgba(0,0,0,0.04)'}}>
-                <div style={{width:'48px', height:'48px', borderRadius:'14px', background:'#f0fdf4', display:'flex', alignItems:'center', justifyContent:'center', marginBottom:'20px'}}>
-                  <Icon size={22} color='#059669' strokeWidth={2} />
+              <div key={i} style={{background:'white', border:'1px solid #e7e5e4', borderLeft:'4px solid ' + f.color, borderRadius:'20px', padding:'32px 26px', boxShadow:'0 2px 10px rgba(0,0,0,0.04)', transition:'transform 0.2s, box-shadow 0.2s'}}>
+                <div style={{width:'48px', height:'48px', borderRadius:'14px', background: f.color + '15', display:'flex', alignItems:'center', justifyContent:'center', marginBottom:'20px'}}>
+                  <Icon size={22} color={f.color} strokeWidth={2} />
                 </div>
                 <h3 style={{fontSize:'18px', fontWeight:800, color:'#1c1917', margin:'0 0 12px', letterSpacing:'-0.3px'}}>{f.title}</h3>
                 <p style={{fontSize:'14px', color:'#78716c', lineHeight:1.65, margin:0}}>{f.desc}</p>
