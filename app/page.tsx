@@ -94,7 +94,6 @@ export default function HomePage() {
           </h2>
           <p style={{fontSize:'15px', color:'#78716c', maxWidth:'520px', margin:'0 auto 48px', lineHeight:1.6}}>
             +70 de artiști. 1.617 evenimente într-un an.<br/>
-            Doi ani de când ținem ritmul.<br/>
             Un standard pe care îl setăm din 2005.
           </p>
           <div style={{display:'flex', alignItems:'center', justifyContent:'center', gap:'36px', flexWrap:'wrap', paddingTop:'24px', borderTop:'1px solid #f5f5f4'}}>
@@ -138,9 +137,10 @@ export default function HomePage() {
       <section style={{background:'#1c1917', padding:'100px 24px'}}>
         <div style={{maxWidth:'1000px', margin:'0 auto'}}>
           <div style={{textAlign:'center', marginBottom:'48px'}}>
-            <div style={{fontSize:'11px', fontWeight:700, color:'#eacda3', textTransform:'uppercase', letterSpacing:'0.15em', marginBottom:'14px'}}>Pentru orice ocazie</div>
+            <div style={{fontSize:'11px', fontWeight:700, color:'#eacda3', textTransform:'uppercase', letterSpacing:'0.15em', marginBottom:'14px'}}>Evenimente</div>
             <h2 style={{fontSize:'42px', fontWeight:800, color:'white', letterSpacing:'-1.5px', margin:0, lineHeight:1.1}}>
-              Un eveniment, oricare ar fi el,<br/>merită artistul potrivit.
+              Tu spui ce ai nevoie. Noi îți spunem cine.<br/>
+              <span style={{color:'rgba(255,255,255,0.7)', fontSize:'24px', fontWeight:500, letterSpacing:'-0.5px'}}>Îți răspundem în 30 de minute. Cu prețul real.</span>
             </h2>
           </div>
           <div style={{display:'grid', gridTemplateColumns:'repeat(auto-fit, minmax(160px, 1fr))', gap:'14px'}}>
