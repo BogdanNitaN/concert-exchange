@@ -82,8 +82,9 @@ export default function HomePage() {
             Cei care contează,<br/>trec pe aici.
           </h2>
           <p style={{fontSize:'15px', color:'#78716c', maxWidth:'520px', margin:'0 auto 48px', lineHeight:1.6}}>
-            70+ artiști. 1.617 evenimente în 2025.<br/>
-            Un standard pe care îl menținem din 2005.
+            +70 de artiști. 1.617 evenimente într-un an.<br/>
+            Doi ani de când ținem ritmul.<br/>
+            Un standard pe care îl setăm din 2005.
           </p>
           <div style={{display:'flex', alignItems:'center', justifyContent:'center', gap:'36px', flexWrap:'wrap', paddingTop:'24px', borderTop:'1px solid #f5f5f4'}}>
             {['HEADLINERS', 'POWER DRAWS', 'TOP DJs', 'LIVE BANDS', 'ICONIC VOICES', 'NEW WAVE'].map((label, i) => (
