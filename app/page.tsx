@@ -80,7 +80,7 @@ export default function HomePage() {
         <div style={{textAlign:'center', marginBottom:'56px'}}>
           <div style={{fontSize:'11px', fontWeight:700, color:'#059669', textTransform:'uppercase', letterSpacing:'0.15em', marginBottom:'14px'}}>Trei pași</div>
           <h2 style={{fontSize:'42px', fontWeight:800, color:'#1c1917', letterSpacing:'-1.5px', margin:'0 0 14px', lineHeight:1.1}}>
-            Simplu. Pentru că<br/>complicat ai destul în viață.
+            Trei pași. 30 de minute.<br/>Artistul tău.
           </h2>
         </div>
         <div style={{display:'grid', gridTemplateColumns:'repeat(auto-fit, minmax(280px, 1fr))', gap:'18px'}}>
