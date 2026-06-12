@@ -61,7 +61,7 @@ export default function HomePage() {
       <section style={{background:'#f5f5f4', padding:'72px 24px', borderTop:'1px solid #e7e5e4', borderBottom:'1px solid #e7e5e4'}}>
         <div style={{maxWidth:'1000px', margin:'0 auto', display:'grid', gridTemplateColumns:'repeat(auto-fit, minmax(180px, 1fr))', gap:'32px', textAlign:'center'}}>
           {[
-            {n:'1.617', l:'Evenimente în 2025'},
+            {n:'1.617', l:'Evenimente anual'},
             {n:'18M€+', l:'Contractați în 3 ani'},
             {n:'30 min', l:'Răspuns mediu'},
             {n:'20 ani', l:'În industrie'},
