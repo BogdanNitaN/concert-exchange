@@ -56,6 +56,24 @@ export default function HomePage() {
         </div>
       </section>
 
+
+      {/* Stats */}
+      <section style={{background:'#f5f5f4', padding:'72px 24px', borderTop:'1px solid #e7e5e4', borderBottom:'1px solid #e7e5e4'}}>
+        <div style={{maxWidth:'1000px', margin:'0 auto', display:'grid', gridTemplateColumns:'repeat(auto-fit, minmax(180px, 1fr))', gap:'32px', textAlign:'center'}}>
+          {[
+            {n:'1.617', l:'Evenimente în 2025'},
+            {n:'18M€+', l:'Contractați în 3 ani'},
+            {n:'30 min', l:'Răspuns mediu'},
+            {n:'20 ani', l:'În industrie'},
+          ].map((s, i) => (
+            <div key={i}>
+              <div style={{fontWeight:800, fontSize:'44px', color:'#1c1917', marginBottom:'6px', letterSpacing:'-1.5px'}}>{s.n}</div>
+              <div style={{fontSize:'12px', color:'#78716c', fontWeight:600, letterSpacing:'0.05em'}}>{s.l}</div>
+            </div>
+          ))}
+        </div>
+      </section>
+
       {/* Showcase */}
       <section style={{background:'white', padding:'80px 24px', borderTop:'1px solid #e7e5e4', borderBottom:'1px solid #e7e5e4'}}>
         <div style={{maxWidth:'1000px', margin:'0 auto', textAlign:'center'}}>
@@ -169,23 +187,6 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* Stats */}
-      <section style={{background:'#f5f5f4', padding:'72px 24px', borderTop:'1px solid #e7e5e4', borderBottom:'1px solid #e7e5e4'}}>
-        <div style={{maxWidth:'1000px', margin:'0 auto', display:'grid', gridTemplateColumns:'repeat(auto-fit, minmax(180px, 1fr))', gap:'32px', textAlign:'center'}}>
-          {[
-            {n:'1.617', l:'Evenimente în 2025'},
-            {n:'18M€+', l:'Contractați în 3 ani'},
-            {n:'30 min', l:'Răspuns mediu'},
-            {n:'20 ani', l:'În industrie'},
-          ].map((s, i) => (
-            <div key={i}>
-              <div style={{fontWeight:800, fontSize:'44px', color:'#1c1917', marginBottom:'6px', letterSpacing:'-1.5px'}}>{s.n}</div>
-              <div style={{fontSize:'12px', color:'#78716c', fontWeight:600, letterSpacing:'0.05em'}}>{s.l}</div>
-            </div>
-          ))}
-        </div>
-      </section>
-
       {/* FAQ */}
       <section style={{maxWidth:'820px', margin:'0 auto', padding:'100px 24px'}}>
         <div style={{textAlign:'center', marginBottom:'48px'}}>
@@ -195,7 +196,7 @@ export default function HomePage() {
           {[
             {q:'Costă să trimit o cerere?', a:'Nu. Cererea este gratuită. Plătești doar artistul confirmat.'},
             {q:'Ce înseamnă tier-ul A++ / A+ / A?', a:'Box Office Power. Indicator de impact al artistului la public. A++ Icon — Headliner (10.000€+). A+ Premium — Power Draw (5.000€–10.000€). A Select — Solid (până la 5.000€).'},
-            {q:'Cum sunt verificați artiștii?', a:'Manual. De echipă cu 20 de ani de experiență. Datele de performanță sunt agregate live de la platformele oficiale (Spotify, YouTube, TikTok, Instagram).'},
+            {q:'Cum sunt verificați artiștii?', a:'Manual. De echipă cu 20 de ani de experiență. Datele de performanță sunt agregate live de la platformele oficiale (Spotify, YouTube, TikTok, Instagram) prin parteneriat cu Chartex.'},
             {q:'Pot anula o cerere?', a:'Da, oricând înainte de confirmarea finală. Până atunci, totul este flexibil.'},
             {q:'De ce să nu sun direct artistul?', a:'Pentru că rapiditatea contează. Artiștii ne știu, lucrăm cu ei zilnic. Tu primești răspuns la preț, calendar și condiții când ai nevoie — 24/7, în 30 de minute.'},
           ].map((f, i) => (
