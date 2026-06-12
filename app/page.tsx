@@ -64,6 +64,7 @@ export default function HomePage() {
             <BarChart3 size={14} color='#059669' strokeWidth={2.5} /> Date de performanță reale
           </div>
         </div>
+        </div>
       </section>
 
 
