@@ -200,7 +200,7 @@ export default function BookArtistPage() {
                       return (
                         <button key={day} type="button" disabled={isPast} onClick={() => setForm({...form, eventDate: dateStr})}
                           style={{
-                            padding:'8px 0', borderRadius:'8px', border:'none', cursor: isPast ? 'not-allowed' : 'pointer',
+                            padding:'8px 0', borderRadius:'8px', cursor: isPast ? 'not-allowed' : 'pointer',
                             background: isSelected ? '#059669' : (isToday ? '#fafaf9' : 'white'),
                             color: isSelected ? 'white' : (isPast ? '#d6d3d1' : (isWeekend ? '#1c1917' : '#78716c')),
                             fontSize:'12px', fontWeight: isSelected ? 700 : 500, fontFamily:'Montserrat,sans-serif',
