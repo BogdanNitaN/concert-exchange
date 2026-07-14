@@ -9,9 +9,11 @@ interface Props {
   eventDate?: string
   guestCount?: number
   selectedCity?: string
+  artists?: string[]
+  eventLabel?: string
 }
 
-export default function ExpertModal({ isOpen, onClose, eventDate, guestCount, selectedCity }: Props) {
+export default function ExpertModal({ isOpen, onClose, eventDate, guestCount, selectedCity, artists, eventLabel }: Props) {
   const [name, setName] = useState('')
   const [phone, setPhone] = useState('')
   const [email, setEmail] = useState('')
@@ -29,9 +31,11 @@ export default function ExpertModal({ isOpen, onClose, eventDate, guestCount, se
     if (!canSubmit) return
 
     const lines = [
-      'Vorbește cu un expert — Concert Exchange',
+      'Vorbește cu un expert — GIGx',
       '',
       'DETALII EVENIMENT:',
+      eventLabel ? `Tip: ${eventLabel}` : '',
+      artists && artists.length ? `Artiști: ${artists.join(', ')}` : '',
       eventDate ? `Data: ${eventDate}` : '',
       `Oras: ${city || selectedCity || 'nespecificat'}`,
       guestCount ? `Participanti: ${guestCount}` : '',
@@ -48,9 +52,9 @@ export default function ExpertModal({ isOpen, onClose, eventDate, guestCount, se
 
     if (sendEmail && email) {
       setTimeout(() => {
-        const subject = encodeURIComponent('Vorbește cu un expert — Concert Exchange')
+        const subject = encodeURIComponent('Vorbește cu un expert — GIGx')
         const body = encodeURIComponent(lines.join('\n'))
-        window.open(`mailto:me@bogdannita.ro?subject=${subject}&body=${body}`, '_blank')
+        window.open(`mailto:bogdan@gigx.ro?subject=${subject}&body=${body}`, '_blank')
       }, 500)
     }
 

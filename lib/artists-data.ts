@@ -1056,6 +1056,261 @@ export const ARTISTS_DATA = [
     "cazare": "1 dubla + 2 single",
     "nrBileteAvion": 0,
     "costPerKm": 1
+  , "setType": "vocal"},
+  {
+    "id": 82,
+    "name": "Albert NBN",
+    "genres": [
+      "Trap",
+      "Hip-Hop"
+    ],
+    "feeMin": 6000,
+    "feeMax": 6000,
+    "tier": "A+",
+    "cazare": "la cerere",
+    "nrBileteAvion": 0,
+    "costPerKm": 0
+  , "setType": "vocal"},
+  {
+    "id": 83,
+    "name": "Noua Unspe",
+    "genres": [
+      "Trap"
+    ],
+    "feeMin": 3500,
+    "feeMax": 3500,
+    "tier": "A",
+    "cazare": "la cerere",
+    "nrBileteAvion": 0,
+    "costPerKm": 0
+  , "setType": "vocal"},
+  {
+    "id": 84,
+    "name": "Tussin",
+    "genres": [
+      "Trap"
+    ],
+    "feeMin": 2500,
+    "feeMax": 2500,
+    "tier": "A",
+    "cazare": "la cerere",
+    "nrBileteAvion": 0,
+    "costPerKm": 0
+  , "setType": "vocal"},
+  {
+    "id": 85,
+    "name": "Madatorricelli",
+    "genres": [
+      "Balcanic",
+      "Manele"
+    ],
+    "feeMin": 3500,
+    "feeMax": 3700,
+    "tier": "A",
+    "cazare": "2 camere duble",
+    "nrBileteAvion": 0,
+    "costPerKm": 3
+  , "setType": "vocal"},
+  {
+    "id": 86,
+    "name": "Ursaru",
+    "genres": [
+      "Balcanic",
+      "Manele"
+    ],
+    "feeMin": 4500,
+    "feeMax": 5000,
+    "tier": "A",
+    "cazare": "2 camere duble",
+    "nrBileteAvion": 0,
+    "costPerKm": 4
+  , "setType": "vocal"},
+  {
+    "id": 87,
+    "name": "Bogdan DLP",
+    "genres": [
+      "Balcanic",
+      "Trap"
+    ],
+    "feeMin": 11000,
+    "feeMax": 13000,
+    "tier": "Premium",
+    "cazare": "8 camere duble",
+    "nrBileteAvion": 4,
+    "costPerKm": 6
+  , "setType": "vocal"},
+  {
+    "id": 88,
+    "name": "Oscar",
+    "genres": [
+      "Trap"
+    ],
+    "feeMin": 0,
+    "feeMax": 0,
+    "tier": "A+",
+    "cazare": "la cerere",
+    "nrBileteAvion": 0,
+    "costPerKm": 0
+  , "setType": "vocal"},
+  {
+    "id": 89,
+    "name": "Rava",
+    "genres": [
+      "Trap"
+    ],
+    "feeMin": 0,
+    "feeMax": 0,
+    "tier": "A+",
+    "cazare": "la cerere",
+    "nrBileteAvion": 0,
+    "costPerKm": 0
+  , "setType": "vocal"},
+  {
+    "id": 90,
+    "name": "Azteca",
+    "genres": [
+      "Trap"
+    ],
+    "feeMin": 0,
+    "feeMax": 0,
+    "tier": "A+",
+    "cazare": "la cerere",
+    "nrBileteAvion": 0,
+    "costPerKm": 0
+  , "setType": "vocal"},
+  {
+    "id": 91,
+    "name": "IAN",
+    "genres": [
+      "Trap"
+    ],
+    "feeMin": 0,
+    "feeMax": 0,
+    "tier": "A+",
+    "cazare": "la cerere",
+    "nrBileteAvion": 0,
+    "costPerKm": 0
+  , "setType": "vocal"},
+  {
+    "id": 92,
+    "name": "MGL",
+    "genres": [
+      "Trap"
+    ],
+    "feeMin": 0,
+    "feeMax": 0,
+    "tier": "A+",
+    "cazare": "la cerere",
+    "nrBileteAvion": 0,
+    "costPerKm": 0
+  , "setType": "vocal"},
+  {
+    "id": 93,
+    "name": "Amuly",
+    "genres": [
+      "Trap"
+    ],
+    "feeMin": 0,
+    "feeMax": 0,
+    "tier": "A",
+    "cazare": "la cerere",
+    "nrBileteAvion": 0,
+    "costPerKm": 0
+  , "setType": "vocal"},
+  {
+    "id": 94,
+    "name": "Vanilla",
+    "genres": [
+      "Trap"
+    ],
+    "feeMin": 0,
+    "feeMax": 0,
+    "tier": "A",
+    "cazare": "la cerere",
+    "nrBileteAvion": 0,
+    "costPerKm": 0
+  , "setType": "vocal"},
+  {
+    "id": 95,
+    "name": "El Nino",
+    "genres": [
+      "Trap"
+    ],
+    "feeMin": 0,
+    "feeMax": 0,
+    "tier": "A",
+    "cazare": "la cerere",
+    "nrBileteAvion": 0,
+    "costPerKm": 0
+  , "setType": "vocal"},
+  {
+    "id": 96,
+    "name": "Calinacho",
+    "genres": [
+      "Trap"
+    ],
+    "feeMin": 0,
+    "feeMax": 0,
+    "tier": "A",
+    "cazare": "la cerere",
+    "nrBileteAvion": 0,
+    "costPerKm": 0
+  , "setType": "vocal"},
+  {
+    "id": 97,
+    "name": "Deliric",
+    "genres": [
+      "Urban",
+      "Hip-Hop"
+    ],
+    "feeMin": 0,
+    "feeMax": 0,
+    "tier": "A+",
+    "cazare": "la cerere",
+    "nrBileteAvion": 0,
+    "costPerKm": 0
+  , "setType": "vocal"},
+  {
+    "id": 98,
+    "name": "Mario Fresh",
+    "genres": [
+      "Pop",
+      "Dance"
+    ],
+    "feeMin": 7000,
+    "feeMax": 7000,
+    "tier": "A+",
+    "cazare": "la cerere",
+    "nrBileteAvion": 0,
+    "costPerKm": 0
+  , "setType": "vocal"},
+  {
+    "id": 99,
+    "name": "Luis Gabriel",
+    "genres": [
+      "Balcanic",
+      "Manele"
+    ],
+    "feeMin": 0,
+    "feeMax": 0,
+    "tier": "A",
+    "cazare": "la cerere",
+    "nrBileteAvion": 0,
+    "costPerKm": 0
+  , "setType": "vocal"},
+  {
+    "id": 100,
+    "name": "Iuly Neamtu",
+    "genres": [
+      "Balcanic",
+      "Manele"
+    ],
+    "feeMin": 7000,
+    "feeMax": 7000,
+    "tier": "A+",
+    "cazare": "la cerere",
+    "nrBileteAvion": 0,
+    "costPerKm": 0
   , "setType": "vocal"}
 ] as const;
 
