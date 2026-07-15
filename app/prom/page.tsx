@@ -844,7 +844,7 @@ export default function PromPage() {
             <div
               onClick={() => { if (isMobile) setOpenGenres(prev => ({ ...prev, [g]: !prev[g] })) }}
               style={{fontSize:'15px', fontWeight:700, color:'#1c1917', marginBottom:'14px', display:'flex', alignItems:'center', justifyContent:'space-between', cursor: isMobile ? 'pointer' : 'default', padding: isMobile ? '14px 16px' : '0', background: isMobile ? 'white' : 'transparent', border: isMobile ? '2px solid #e7e5e4' : 'none', borderRadius: isMobile ? '12px' : '0'}}>
-              <span>{GENRES[g]} <span style={{fontSize:'12px', color:'#a8a29e', fontWeight:600}}>({byGenre[g].length})</span></span>
+              <span>{GENRES[g]}</span>
               {isMobile && (genreOpen ? <ChevronUp size={18} color='#78716c' strokeWidth={2} /> : <ChevronDown size={18} color='#78716c' strokeWidth={2} />)}
             </div>
             {genreOpen && (
