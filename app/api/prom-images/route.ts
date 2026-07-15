@@ -51,8 +51,17 @@ const SPOTIFY_IDS: Record<string, string> = {
 
 export const revalidate = 86400
 
+// cache in memorie: o data prinse, pozele tin 24h fara sa mai cheme Spotify
+let imageCache: Record<string, string> | null = null
+let cacheTime = 0
+
 export async function GET() {
   try {
+    // daca avem cache proaspat (< 24h), il returnam direct
+    if (imageCache && Object.keys(imageCache).length > 5 && Date.now() - cacheTime < 86400000) {
+      return NextResponse.json(imageCache)
+    }
+
     const names = Object.keys(SPOTIFY_IDS)
 
     const tokenRes = await fetch('https://accounts.spotify.com/api/token', {
@@ -88,8 +97,19 @@ export async function GET() {
       if (i + CHUNK < names.length) await new Promise(r => setTimeout(r, 250))
     }
 
+    // salveaza in cache doar daca am prins poze reale
+    if (Object.keys(out).length > 5) {
+      imageCache = out
+      cacheTime = Date.now()
+    } else if (imageCache) {
+      // Spotify a dat rate limit dar avem cache vechi: il folosim
+      return NextResponse.json(imageCache)
+    }
+
     return NextResponse.json(out)
   } catch {
+    // eroare totala: daca avem cache vechi, il returnam
+    if (imageCache) return NextResponse.json(imageCache)
     return NextResponse.json({ error: 'failed' }, { status: 500 })
   }
 }
