@@ -144,7 +144,19 @@ function initials(name: string) {
   return name.split(' ').map(w => w[0]).slice(0, 2).join('').toUpperCase()
 }
 
+function useIsMobile() {
+  const [isMobile, setIsMobile] = useState(false)
+  useEffect(() => {
+    const check = () => setIsMobile(window.innerWidth < 640)
+    check()
+    window.addEventListener('resize', check)
+    return () => window.removeEventListener('resize', check)
+  }, [])
+  return isMobile
+}
+
 export default function PromPage() {
+  const isMobile = useIsMobile()
   const formRef = useRef<HTMLDivElement>(null)
   const catalogRef = useRef<HTMLDivElement>(null)
   const [step, setStep] = useState<'form' | 'summary'>('form')
@@ -168,6 +180,7 @@ export default function PromPage() {
   const [rateDate, setRateDate] = useState<string>('')
   const [distances, setDistances] = useState<Record<string, number>>({})
   const [expertArtists, setExpertArtists] = useState<string[]>([])
+  const [openGenres, setOpenGenres] = useState<Record<string, boolean>>({ trap: true })
 
   const [form, setForm] = useState({
     organizer_type: '', institution_name: '', city: '',
@@ -433,7 +446,7 @@ export default function PromPage() {
           <SelectedBar />
 
           <div style={{background:'white', border:'1px solid #e7e5e4', borderRadius:'20px', padding:'24px', marginBottom:'14px', boxShadow:'0 1px 4px rgba(0,0,0,0.04)'}}>
-            <div style={{display:'grid', gridTemplateColumns:'1fr 1fr 1fr', gap:'16px', marginBottom:'20px'}}>
+            <div style={{display:'grid', gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr 1fr', gap:'16px', marginBottom:'20px'}}>
               <div>
                 <div style={{...labelStyle, display:'flex', alignItems:'center', gap:'4px'}}>
                   <Calendar size={10} strokeWidth={2} /> Eveniment
@@ -454,7 +467,7 @@ export default function PromPage() {
               </div>
             </div>
 
-            <div style={{borderTop:'1px solid #f5f5f4', paddingTop:'20px', display:'grid', gridTemplateColumns:'1fr 1fr', gap:'14px'}}>
+            <div style={{borderTop:'1px solid #f5f5f4', paddingTop:'20px', display:'grid', gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr', gap:'14px'}}>
               <div>
                 <div style={{...labelStyle, display:'flex', alignItems:'center', gap:'4px'}}>
                   <MapPin size={10} strokeWidth={2} /> Locație
@@ -824,10 +837,18 @@ export default function PromPage() {
           </span>
         </div>
 
-        {(Object.keys(GENRES) as GenreKey[]).map(g => (
-          <div key={g} style={{marginBottom:'36px'}}>
-            <div style={{fontSize:'15px', fontWeight:700, color:'#1c1917', marginBottom:'14px'}}>{GENRES[g]}</div>
-            <div style={{display:'grid', gridTemplateColumns:'repeat(auto-fill, minmax(170px, 1fr))', gap:'14px'}}>
+        {(Object.keys(GENRES) as GenreKey[]).map(g => {
+          const genreOpen = !isMobile || openGenres[g]
+          return (
+          <div key={g} style={{marginBottom: isMobile ? '16px' : '36px'}}>
+            <div
+              onClick={() => { if (isMobile) setOpenGenres(prev => ({ ...prev, [g]: !prev[g] })) }}
+              style={{fontSize:'15px', fontWeight:700, color:'#1c1917', marginBottom:'14px', display:'flex', alignItems:'center', justifyContent:'space-between', cursor: isMobile ? 'pointer' : 'default', padding: isMobile ? '14px 16px' : '0', background: isMobile ? 'white' : 'transparent', border: isMobile ? '2px solid #e7e5e4' : 'none', borderRadius: isMobile ? '12px' : '0'}}>
+              <span>{GENRES[g]} <span style={{fontSize:'12px', color:'#a8a29e', fontWeight:600}}>({byGenre[g].length})</span></span>
+              {isMobile && (genreOpen ? <ChevronUp size={18} color='#78716c' strokeWidth={2} /> : <ChevronDown size={18} color='#78716c' strokeWidth={2} />)}
+            </div>
+            {genreOpen && (
+            <div style={{display:'grid', gridTemplateColumns: isMobile ? 'repeat(2, 1fr)' : 'repeat(auto-fill, minmax(170px, 1fr))', gap:'14px', marginTop: isMobile ? '14px' : '0'}}>
               {byGenre[g].map(a => {
                 const isSelected = !!selection.find(x => x.id === a.id)
                 const img = images[a.name]
@@ -853,8 +874,10 @@ export default function PromPage() {
                 )
               })}
             </div>
+            )}
           </div>
-        ))}
+          )
+        })}
 
         <Disclaimer />
       </div>

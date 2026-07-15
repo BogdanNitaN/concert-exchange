@@ -61,7 +61,18 @@ function nearestAirport(city: string): { name: string; dist: number } | null {
   return best
 }
 
+function useIsMobile() {
+  const [m, setM] = useState(false)
+  useEffect(() => {
+    const c = () => setM(window.innerWidth < 640)
+    c(); window.addEventListener('resize', c)
+    return () => window.removeEventListener('resize', c)
+  }, [])
+  return m
+}
+
 export default function TransportPage() {
+  const isMobile = useIsMobile()
   const [fromCity, setFromCity] = useState('Bucuresti')
   const [city, setCity] = useState('')
   const [pricePerKm, setPricePerKm] = useState('')
@@ -127,9 +138,13 @@ export default function TransportPage() {
             GIG<span style={{color:'#059669'}}>x</span>
           </Link>
 
+          <button onClick={() => setExpertOpen(true)}
+            style={{background:'none', border:'none', fontSize:'13px', fontWeight:600, color:'#78716c', cursor:'pointer', fontFamily:F}}>
+            Cere oferta
+          </button>
         </nav>
 
-        <div style={{maxWidth:'560px', margin:'0 auto', padding:'56px 24px'}}>
+        <div style={{maxWidth:'560px', margin:'0 auto', padding: isMobile ? '32px 18px' : '56px 24px'}}>
           <div style={{display:'flex', alignItems:'center', gap:'10px', marginBottom:'14px'}}>
             <div style={{width:'42px', height:'42px', borderRadius:'12px', background:'#1c1917', display:'flex', alignItems:'center', justifyContent:'center'}}>
               <Calculator size={22} color='white' strokeWidth={2} />
@@ -259,10 +274,7 @@ export default function TransportPage() {
                 )
               })()}
 
-              <button onClick={() => setExpertOpen(true)}
-                style={{width:'100%', display:'flex', alignItems:'center', justifyContent:'center', gap:'8px', marginTop:'24px', background:'#059669', color:'white', padding:'14px', borderRadius:'12px', fontSize:'14px', fontWeight:700, border:'none', cursor:'pointer', fontFamily:F}}>
-                Cere oferta completa <ArrowRight size={16} strokeWidth={2} />
-              </button>
+
             </div>
           )}
 
@@ -295,7 +307,7 @@ export default function TransportPage() {
                   onChange={e => setTvaSuma(e.target.value)} />
               </div>
 
-              <div style={{display:'grid', gridTemplateColumns:'1fr 1fr', gap:'12px', marginBottom:'24px'}}>
+              <div style={{display:'grid', gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr', gap:'12px', marginBottom:'24px'}}>
                 <div>
                   <div style={labelStyle}>Moneda</div>
                   <div style={{display:'flex', gap:'6px'}}>
