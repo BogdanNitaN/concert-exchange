@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect, useMemo } from 'react'
+import { useState, useEffect, useMemo, useRef } from 'react'
 import Link from 'next/link'
 import { createClient } from '@supabase/supabase-js'
 import { MessageCircle, Car, Hotel, Plane, ArrowRight, ChevronDown, ChevronUp, Calendar, MapPin, Users } from 'lucide-react'
@@ -148,7 +148,16 @@ function initials(name: string) {
 }
 
 export default function PromPage() {
+  const formRef = useRef<HTMLDivElement>(null)
+  const catalogRef = useRef<HTMLDivElement>(null)
   const [step, setStep] = useState<'form' | 'summary'>('form')
+
+  // buton back din browser: din deviz -> form
+  useEffect(() => {
+    const onPop = () => setStep('form')
+    window.addEventListener('popstate', onPop)
+    return () => window.removeEventListener('popstate', onPop)
+  }, [])
   const [images, setImages] = useState<Record<string, string>>({})
   const [selection, setSelection] = useState<PromArtist[]>([])
   const [submitting, setSubmitting] = useState(false)
@@ -273,9 +282,9 @@ export default function PromPage() {
         <Link href="/" style={{fontSize:'20px', fontWeight:800, color:'#1c1917', textDecoration:'none', letterSpacing:'-0.5px'}}>
           GIG<span style={{color:'#059669'}}>x</span>
         </Link>
-        <button onClick={() => openExpert()}
-          style={{background:'#059669', border:'none', fontSize:'13px', fontWeight:700, color:'white', cursor:'pointer', fontFamily:F, padding:'9px 18px', borderRadius:'10px'}}>
-          Vorbește cu un expert
+        <button onClick={() => { formRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' }) }}
+          style={{background:'none', border:'none', fontSize:'13px', fontWeight:600, color:'#78716c', cursor:'pointer', fontFamily:F}}>
+          Completează cererea
         </button>
       </nav>
       <TierLegendProm />
@@ -314,9 +323,10 @@ export default function PromPage() {
             <div style={{fontWeight:800, fontSize:'20px', color:'white', marginBottom:'12px', letterSpacing:'-0.5px'}}>
               GIG<span style={{color:'#059669'}}>x</span>
             </div>
-            <div style={{fontSize:'13px', color:'#a8a29e', lineHeight:1.6}}>
+            <div style={{fontSize:'13px', color:'#a8a29e', lineHeight:1.6, marginBottom:'16px'}}>
               Booking artistic, făcut cu rigoare.<br />Din 2005.
             </div>
+
           </div>
           <div>
             <div style={{fontSize:'10px', fontWeight:700, color:'#78716c', textTransform:'uppercase', letterSpacing:'0.08em', marginBottom:'12px'}}>Legal</div>
@@ -328,7 +338,13 @@ export default function PromPage() {
           </div>
           <div>
             <div style={{fontSize:'10px', fontWeight:700, color:'#78716c', textTransform:'uppercase', letterSpacing:'0.08em', marginBottom:'12px'}}>Contact</div>
-            <a href="mailto:contact@gigx.ro" style={{fontSize:'13px', color:'#a8a29e', textDecoration:'none'}}>contact@gigx.ro</a>
+            <div style={{fontSize:'14px', fontWeight:700, color:'white', marginBottom:'2px'}}>Bogdan Niță</div>
+            <div style={{fontSize:'12px', color:'#78716c', marginBottom:'10px'}}>Talent Manager</div>
+            <div style={{fontSize:'13px', color:'#a8a29e'}}>
+              <a href="mailto:bogdan@gigx.ro" style={{color:'#a8a29e', textDecoration:'none'}}>bogdan@gigx.ro</a>
+              <span style={{margin:'0 6px', color:'#57534e'}}>|</span>
+              <a href="mailto:bogdan@forward.ro" style={{color:'#a8a29e', textDecoration:'none'}}>bogdan@forward.ro</a>
+            </div>
           </div>
         </div>
         <div style={{borderTop:'1px solid #292524', paddingTop:'24px', textAlign:'center', fontSize:'12px', color:'#78716c'}}>
@@ -347,11 +363,7 @@ export default function PromPage() {
           <div style={{background:'white', border:'2px solid #e7e5e4', borderRadius:'14px', padding:'40px', textAlign:'center'}}>
             <div style={{width:'52px', height:'52px', borderRadius:'50%', background:'#059669', display:'flex', alignItems:'center', justifyContent:'center', margin:'0 auto 20px', color:'white', fontSize:'24px', fontWeight:800}}>✓</div>
             <div style={{fontWeight:800, fontSize:'22px', color:'#1c1917', marginBottom:'8px'}}>Cerere trimisă!</div>
-            <div style={{fontWeight:600, fontSize:'14px', color:'#059669', marginBottom:'24px'}}>Un agent te contactează în mai puțin de 30 min.</div>
-            <a href={'https://wa.me/' + WHATSAPP} target="_blank" rel="noreferrer"
-              style={{display:'inline-block', background:'#1c1917', color:'white', padding:'13px 32px', borderRadius:'14px', fontSize:'14px', fontWeight:700, textDecoration:'none', fontFamily:F}}>
-              Deschide WhatsApp
-            </a>
+            <div style={{fontWeight:600, fontSize:'14px', color:'#059669'}}>Un agent te contactează în mai puțin de 30 min.</div>
           </div>
         </div>
         <Footer />
@@ -364,6 +376,8 @@ export default function PromPage() {
   if (step === 'summary') {
     const km = getKm(form.city)
     const isBucuresti = km === 0
+    const cityLow = form.city.trim().toLowerCase()
+    const noFlightCity = ['bacau','bacău','sibiu'].includes(cityLow)
     return (
       <div style={{minHeight:'100vh', background:'#f5f5f7', fontFamily:F}}>
         <Nav />
@@ -423,7 +437,7 @@ export default function PromPage() {
               const isOpen = openArtistId === a.id
               const ts = tierInfo(a.tier)
               const costRutier = a.costPerKm > 0 ? Math.round(km * a.costPerKm / 10) * 10 : 0
-              const necesitaZbor = !isBucuresti && km > 300 && a.nrBileteAvion > 0
+              const necesitaZbor = !isBucuresti && !noFlightCity && km > 300 && a.nrBileteAvion > 0
               const seturiArtist = getSeturi(a)
               const img = images[a.name]
 
@@ -439,7 +453,11 @@ export default function PromPage() {
                       </div>
                       <div>
                         <div style={{fontWeight:700, fontSize:'14px', color: isOpen ? 'white' : '#1c1917', marginBottom:'4px'}}>{a.name}</div>
-                        <span style={{fontSize:'10px', fontWeight:700, padding:'2px 7px', borderRadius:'6px', background: isOpen ? 'rgba(255,255,255,0.15)' : ts.bg, color:'white'}}>{ts.label}</span>
+                        <span style={{
+                          fontSize:'10px', fontWeight:700, padding:'3px 9px', borderRadius:'6px',
+                          background: ts.bg,
+                          color: a.tier === 'Premium' ? '#3f3520' : 'white',
+                        }}>{ts.label}</span>
                       </div>
                     </div>
                     {isOpen ? <ChevronUp size={18} color='white' strokeWidth={2} /> : <ChevronDown size={18} color='#78716c' strokeWidth={2} />}
@@ -584,7 +602,9 @@ export default function PromPage() {
 
   // ---------- FORMULAR + CATALOG ----------
   return (
-    <div style={{minHeight:'100vh', background:'#f5f5f7', fontFamily:F}}>
+    <div style={{minHeight:'100vh', background:'#f5f5f7', fontFamily:F, position:'relative'}}>
+      <div style={{position:'fixed', inset:0, background:'radial-gradient(circle at 20% 20%, rgba(5,150,105,0.08) 0%, transparent 50%),radial-gradient(circle at 80% 30%, rgba(124,58,237,0.06) 0%, transparent 50%), radial-gradient(circle at 50% 80%, rgba(234,205,163,0.08) 0%, transparent 50%)', pointerEvents:'none', zIndex:0}}></div>
+      <div style={{position:'relative', zIndex:1}}>
       <Nav />
 
       <div style={{maxWidth:'860px', margin:'0 auto', padding:'48px 24px 28px'}}>
@@ -592,10 +612,10 @@ export default function PromPage() {
           GIGx pentru baluri
         </div>
         <h1 style={{fontSize:'clamp(30px, 5vw, 44px)', fontWeight:800, letterSpacing:'-0.03em', lineHeight:1.1, margin:'0 0 14px', color:'#1c1917'}}>
-          Nu mai sunați în gol.
+          Găsește artistul potrivit, fără zeci de telefoane.
         </h1>
         <p style={{fontSize:'16px', color:'#57534e', lineHeight:1.65, maxWidth:'540px', margin:'0 0 18px', fontWeight:500}}>
-          Știm cine e liber și cât costă. Aceiași oameni care au făcut booking-ul și pentru Beach Please. Răspuns în 30 de minute.
+          Știm cine e disponibil, la ce buget și ce se potrivește pentru evenimentul tău. Răspuns în 30 de minute.
         </p>
       </div>
 
@@ -654,8 +674,8 @@ export default function PromPage() {
                 </select>
               </div>
               <div>
-                <div style={labelStyle}>Alți artiști doriți</div>
-                <input style={inputStyle} placeholder="orice nume, separate prin virgulă" value={form.other_artists} onChange={e => set('other_artists', e.target.value)} />
+                <div style={labelStyle}>Ai un artist în minte?</div>
+                <input style={inputStyle} placeholder="scrie numele, separate prin virgulă" value={form.other_artists} onChange={e => set('other_artists', e.target.value)} />
               </div>
             </div>
 
@@ -701,13 +721,20 @@ export default function PromPage() {
                 placeholder="ex: bal 300 persoane, sala X, vrem trap + DJ..." value={form.message} onChange={e => set('message', e.target.value)} />
             </div>
 
-            <button onClick={() => { setStep('summary'); window.scrollTo({top:0}) }} disabled={!canContinue}
-              style={{width:'100%', background: canContinue ? '#1c1917' : '#e7e5e4', color: canContinue ? 'white' : '#a8a29e', padding:'14px', borderRadius:'14px', border:'none', cursor: canContinue ? 'pointer' : 'not-allowed', fontSize:'14px', fontWeight:700, fontFamily:F}}>
-              Vezi rezumatul
-            </button>
+            {selection.length === 0 && !form.other_artists.trim() ? (
+              <button onClick={() => { catalogRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' }) }}
+                style={{width:'100%', background:'#1c1917', color:'white', padding:'14px', borderRadius:'14px', border:'none', cursor:'pointer', fontSize:'14px', fontWeight:700, fontFamily:F, display:'flex', alignItems:'center', justifyContent:'center', gap:'8px'}}>
+                Alege artiștii ↓
+              </button>
+            ) : (
+              <button onClick={() => { window.history.pushState({step:'summary'}, ''); setStep('summary'); window.scrollTo({top:0}) }} disabled={!canContinue}
+                style={{width:'100%', background: canContinue ? '#1c1917' : '#e7e5e4', color: canContinue ? 'white' : '#a8a29e', padding:'14px', borderRadius:'14px', border:'none', cursor: canContinue ? 'pointer' : 'not-allowed', fontSize:'14px', fontWeight:700, fontFamily:F}}>
+                Vezi rezumatul
+              </button>
+            )}
 
             <div style={{textAlign:'center', fontSize:'11px', color:'#a8a29e'}}>
-              Răspuns garantat în 30 min · Gratuit
+              Completează formularul și alege până la {MAX_ARTISTS} artiști din listă.
             </div>
           </div>
         </div>
@@ -726,15 +753,15 @@ export default function PromPage() {
         </div>
       </div>
 
-      <div style={{maxWidth:'1100px', margin:'0 auto', padding:'0 24px 100px'}}>
+      <div ref={catalogRef} style={{maxWidth:'1100px', margin:'0 auto', padding:'0 24px 100px', scrollMarginTop:'80px'}}>
         <div style={{fontWeight:800, fontSize:'22px', color:'#1c1917', marginBottom:'4px', letterSpacing:'-0.02em'}}>Artiști pentru baluri</div>
         <div style={{fontSize:'13px', color:'#78716c', marginBottom:'16px', fontWeight:500}}>
-          Apasă pe orice artist ca să îl adaugi în cerere. <strong style={{color:'#1c1917'}}>Poți verifica maxim {MAX_ARTISTS} simultan.</strong>
+          Apasă pe orice artist ca să îl adaugi în cerere. <strong style={{color:'#1c1917'}}>Poți selecta maxim {MAX_ARTISTS} artiști.</strong>
         </div>
 
         {maxWarning && (
           <div style={{background:'#fffbeb', border:'1px solid #fde68a', borderRadius:'12px', padding:'12px 16px', marginBottom:'16px', fontSize:'13px', fontWeight:600, color:'#92400e'}}>
-            Poți verifica maxim {MAX_ARTISTS} artiști simultan. Scoate unul din selecție ca să adaugi altul, sau scrie-i numele în câmpul „Alți artiști doriți".
+            Poți selecta maxim {MAX_ARTISTS} artiști. Scoate unul din selecție ca să adaugi altul, sau scrie-i numele în câmpul „Ai un artist în minte?".
           </div>
         )}
 
@@ -763,8 +790,8 @@ export default function PromPage() {
                     <div style={{padding:'12px 14px'}}>
                       <div style={{fontSize:'14px', fontWeight:700, color:'#1c1917', marginBottom:'8px'}}>{a.name}</div>
                       <div style={{display:'flex', alignItems:'center', justifyContent:'space-between', gap:'8px'}}>
-                        <span style={{fontSize:'10px', fontWeight:700, padding:'2px 8px', borderRadius:'6px', background:t.bg, color:'white'}}>{t.label}</span>
-                        <span style={{fontSize:'11px', fontWeight:700, color: isSelected ? '#059669' : '#a8a29e'}}>
+                        <span style={{fontSize:'11px', fontWeight:700, padding:'4px 10px', borderRadius:'7px', background:t.bg, color: a.tier === 'Premium' ? '#3f3520' : 'white'}}>{t.label}</span>
+                        <span style={{fontSize:'12px', fontWeight:700, color: isSelected ? '#059669' : '#a8a29e'}}>
                           {isSelected ? '✓ Adăugat' : '+ Adaugă'}
                         </span>
                       </div>
@@ -777,6 +804,21 @@ export default function PromPage() {
         ))}
 
         <Disclaimer />
+      </div>
+
+      </div>
+      <div style={{background:'white', borderTop:'1px solid #e7e5e4', padding:'40px 24px', position:'relative', zIndex:1}}>
+        <div style={{maxWidth:'860px', margin:'0 auto', textAlign:'center'}}>
+          <div style={{fontSize:'11px', fontWeight:700, color:'#059669', textTransform:'uppercase', letterSpacing:'0.15em', marginBottom:'12px'}}>
+            De ce noi
+          </div>
+          <div style={{fontSize:'18px', fontWeight:700, color:'#1c1917', lineHeight:1.5, maxWidth:'620px', margin:'0 auto 8px'}}>
+            Aceiași echipă care a făcut booking-ul pentru Beach Please și pentru peste 1.600 de evenimente pe an.
+          </div>
+          <div style={{fontSize:'14px', color:'#78716c', fontWeight:500}}>
+            20 de ani în industrie. Lucrăm cu artiștii zilnic, îi știm personal.
+          </div>
+        </div>
       </div>
 
       <Footer />
@@ -799,9 +841,9 @@ export default function PromPage() {
               {selection.length}/{MAX_ARTISTS}
             </span>
           </div>
-          <button onClick={() => { setStep('summary'); window.scrollTo({top:0}) }} disabled={!canContinue}
+          <button onClick={() => { window.history.pushState({step:'summary'}, ''); setStep('summary'); window.scrollTo({top:0}) }} disabled={!canContinue}
             style={{background: canContinue ? '#059669' : '#44403c', color: canContinue ? 'white' : '#78716c', padding:'11px 24px', borderRadius:'12px', border:'none', cursor: canContinue ? 'pointer' : 'not-allowed', fontSize:'14px', fontWeight:700, fontFamily:F, whiteSpace:'nowrap'}}>
-            {canContinue ? 'Vezi rezumatul' : 'Completează formularul'}
+            {canContinue ? 'Vezi rezumatul' : 'Completează datele'}
           </button>
         </div>
       )}
