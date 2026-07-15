@@ -11,9 +11,11 @@ interface Props {
   selectedCity?: string
   artists?: string[]
   eventLabel?: string
+  descPlaceholder?: string
+  title?: string
 }
 
-export default function ExpertModal({ isOpen, onClose, eventDate, guestCount, selectedCity, artists, eventLabel }: Props) {
+export default function ExpertModal({ isOpen, onClose, eventDate, guestCount, selectedCity, artists, eventLabel, descPlaceholder, title }: Props) {
   const [name, setName] = useState('')
   const [phone, setPhone] = useState('')
   const [email, setEmail] = useState('')
@@ -83,7 +85,7 @@ export default function ExpertModal({ isOpen, onClose, eventDate, guestCount, se
           <>
             <div style={{display:'flex', justifyContent:'space-between', alignItems:'flex-start', marginBottom:'24px'}}>
               <div>
-                <div style={{fontWeight:800, fontSize:'22px', color:'#1c1917', marginBottom:'6px'}}>Vorbește cu un expert</div>
+                <div style={{fontWeight:800, fontSize:'22px', color:'#1c1917', marginBottom:'6px'}}>{title || 'Vorbește cu un expert'}</div>
                 <div style={{fontSize:'13px', color:'#059669', fontWeight:700}}>Răspuns garantat în mai puțin de 30 min.</div>
               </div>
               <button onClick={onClose} style={{background:'none', border:'none', cursor:'pointer', color:'#a8a29e', padding:'4px'}}>
@@ -117,7 +119,7 @@ export default function ExpertModal({ isOpen, onClose, eventDate, guestCount, se
               )}
               <div>
                 <div style={{fontSize:'10px', fontWeight:700, color:'#a8a29e', textTransform:'uppercase', letterSpacing:'0.08em', marginBottom:'6px'}}>Ce îți dorești?</div>
-                <textarea rows={3} placeholder="ex: nuntă 200 persoane, buget 5.000€, vreau DJ + formație..." value={desc} onChange={e => setDesc(e.target.value)}
+                <textarea rows={3} placeholder={descPlaceholder || "ex: nuntă 200 persoane, buget 5.000€, vreau DJ + formație..."} value={desc} onChange={e => setDesc(e.target.value)}
                   style={{width:'100%', padding:'11px 14px', borderRadius:'12px', border:'1px solid #e7e5e4', fontSize:'13px', fontFamily:'Montserrat,sans-serif', color:'#1c1917', outline:'none', resize:'none', boxSizing:'border-box'}} />
               </div>
 

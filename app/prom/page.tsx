@@ -196,10 +196,18 @@ export default function PromPage() {
     return map
   }, [])
 
+  // contactul adultului trebuie sa aiba nume (min 3 litere) SI telefon (min 9 cifre)
+  const parentValid = (() => {
+    const v = form.parent_contact
+    const letters = (v.match(/[a-zA-ZăâîșțĂÂÎȘȚ]/g) || []).length
+    const digits = (v.match(/[0-9]/g) || []).length
+    return letters >= 3 && digits >= 9
+  })()
+
   const canContinue = Boolean(
     form.organizer_type && form.institution_name.trim() && form.city.trim() &&
     form.event_date && form.organizer_name.trim() && form.organizer_phone.trim() &&
-    (!form.is_minor || form.parent_contact.trim()) &&
+    (!form.is_minor || parentValid) &&
     (selection.length > 0 || form.other_artists.trim())
   )
 
@@ -347,7 +355,7 @@ export default function PromPage() {
           </div>
         </div>
         <Footer />
-        <ExpertModal isOpen={expertOpen} onClose={() => setExpertOpen(false)} artists={expertArtists} eventLabel={EVENT_LABEL[form.organizer_type]} />
+        <ExpertModal isOpen={expertOpen} onClose={() => setExpertOpen(false)} artists={expertArtists} eventLabel={EVENT_LABEL[form.organizer_type]} title="Vorbește cu un expert" descPlaceholder="ex: bal de liceu, 300 de elevi, vrem trap si DJ, sala e deja rezervata" />
       </div>
     )
   }
@@ -495,7 +503,12 @@ export default function PromPage() {
                         <div style={{display:'flex', alignItems:'center', justifyContent:'space-between', padding:'12px 14px', borderTop:'1px solid #f0f0ef'}}>
                           <div>
                             <div style={{fontSize:'13px', fontWeight:600, color:'#1c1917'}}>Fee artist</div>
-                            <div style={{fontSize:'11px', color:'#a8a29e'}}>Tier {ts.label} · {ts.range}</div>
+                            <div style={{fontSize:'11px', color:'#a8a29e'}}>
+                              {/* trap si urban: tier = cool factor la baluri, nu prag de pret */}
+                              {a.genre === 'trap' || a.genre === 'urban'
+                                ? 'Tier ' + ts.label + ' · impact la baluri'
+                                : 'Tier ' + ts.label + ' · ' + ts.range}
+                            </div>
                           </div>
                           <div style={{fontSize:'13px', fontWeight:700, color:'#78716c'}}>La cerere</div>
                         </div>
@@ -564,7 +577,7 @@ export default function PromPage() {
           <Disclaimer />
         </div>
         <Footer />
-        <ExpertModal isOpen={expertOpen} onClose={() => setExpertOpen(false)} eventDate={form.event_date} selectedCity={form.city} artists={expertArtists} eventLabel={EVENT_LABEL[form.organizer_type]} />
+        <ExpertModal isOpen={expertOpen} onClose={() => setExpertOpen(false)} eventDate={form.event_date} selectedCity={form.city} artists={expertArtists} eventLabel={EVENT_LABEL[form.organizer_type]} title="Vorbește cu un expert" descPlaceholder="ex: bal de liceu, 300 de elevi, vrem trap si DJ, sala e deja rezervata" />
       </div>
     )
   }
@@ -625,7 +638,7 @@ export default function PromPage() {
                   onClick={e => { try { (e.target as any).showPicker?.() } catch {} }} />
               </div>
               <div>
-                <div style={labelStyle}>Dată alternativă</div>
+                <div style={labelStyle}>Dată alternativă (dacă există)</div>
                 <input type="date" style={{...inputStyle, cursor:'pointer'}} value={form.event_date_alternative}
                   onChange={e => set('event_date_alternative', e.target.value)}
                   onClick={e => { try { (e.target as any).showPicker?.() } catch {} }} />
@@ -672,10 +685,12 @@ export default function PromPage() {
             {form.is_minor && (
               <div>
                 <div style={labelStyle}>Contact părinte sau profesor coordonator *</div>
-                <input style={{...inputStyle, border:'1.5px solid ' + (form.parent_contact ? '#059669' : '#e7e5e4')}}
-                  placeholder="Nume și telefon" value={form.parent_contact} onChange={e => set('parent_contact', e.target.value)} />
-                <div style={{fontSize:'11px', color:'#a8a29e', marginTop:'6px'}}>
-                  Contractul și discuțiile comerciale se fac cu un adult responsabil.
+                <input style={{...inputStyle, border:'1.5px solid ' + (parentValid ? '#059669' : form.parent_contact ? '#f59e0b' : '#e7e5e4')}}
+                  placeholder="ex: Maria Popescu, 0722 123 456" value={form.parent_contact} onChange={e => set('parent_contact', e.target.value)} />
+                <div style={{fontSize:'11px', color: form.parent_contact && !parentValid ? '#92400e' : '#a8a29e', marginTop:'6px'}}>
+                  {form.parent_contact && !parentValid
+                    ? 'Scrie numele complet și numărul de telefon.'
+                    : 'Contractul și discuțiile comerciale se fac cu un adult responsabil.'}
                 </div>
               </div>
             )}
@@ -688,7 +703,7 @@ export default function PromPage() {
 
             <button onClick={() => { setStep('summary'); window.scrollTo({top:0}) }} disabled={!canContinue}
               style={{width:'100%', background: canContinue ? '#1c1917' : '#e7e5e4', color: canContinue ? 'white' : '#a8a29e', padding:'14px', borderRadius:'14px', border:'none', cursor: canContinue ? 'pointer' : 'not-allowed', fontSize:'14px', fontWeight:700, fontFamily:F}}>
-              Continuă — Vezi devizul
+              Vezi rezumatul
             </button>
 
             <div style={{textAlign:'center', fontSize:'11px', color:'#a8a29e'}}>
@@ -711,7 +726,7 @@ export default function PromPage() {
         </div>
       </div>
 
-      <div style={{maxWidth:'1100px', margin:'0 auto', padding:'0 24px 60px'}}>
+      <div style={{maxWidth:'1100px', margin:'0 auto', padding:'0 24px 100px'}}>
         <div style={{fontWeight:800, fontSize:'22px', color:'#1c1917', marginBottom:'4px', letterSpacing:'-0.02em'}}>Artiști pentru baluri</div>
         <div style={{fontSize:'13px', color:'#78716c', marginBottom:'16px', fontWeight:500}}>
           Apasă pe orice artist ca să îl adaugi în cerere. <strong style={{color:'#1c1917'}}>Poți verifica maxim {MAX_ARTISTS} simultan.</strong>
@@ -765,7 +780,33 @@ export default function PromPage() {
       </div>
 
       <Footer />
-      <ExpertModal isOpen={expertOpen} onClose={() => setExpertOpen(false)} eventDate={form.event_date} selectedCity={form.city} artists={expertArtists} eventLabel={EVENT_LABEL[form.organizer_type]} />
+
+      {/* bara fixa jos - apare cand exista selectie */}
+      {selection.length > 0 && (
+        <div style={{position:'fixed', bottom:0, left:0, right:0, background:'#1c1917', padding:'14px 24px', display:'flex', alignItems:'center', justifyContent:'space-between', gap:'16px', flexWrap:'wrap', zIndex:200, boxShadow:'0 -4px 20px rgba(0,0,0,0.15)'}}>
+          <div style={{display:'flex', alignItems:'center', gap:'10px', flexWrap:'wrap'}}>
+            {selection.map((a, i) => {
+              const t = tierInfo(a.tier)
+              return (
+                <div key={a.id} style={{display:'flex', alignItems:'center', gap:'8px'}}>
+                  {i > 0 && <span style={{color:'#44403c', fontSize:'12px'}}>·</span>}
+                  <span style={{fontSize:'13px', fontWeight:700, color:'white'}}>{a.name}</span>
+                  <span style={{fontSize:'10px', fontWeight:700, padding:'2px 8px', borderRadius:'6px', background:t.bg, color:'white'}}>{t.label}</span>
+                </div>
+              )
+            })}
+            <span style={{fontSize:'11px', color:'#78716c', marginLeft:'4px'}}>
+              {selection.length}/{MAX_ARTISTS}
+            </span>
+          </div>
+          <button onClick={() => { setStep('summary'); window.scrollTo({top:0}) }} disabled={!canContinue}
+            style={{background: canContinue ? '#059669' : '#44403c', color: canContinue ? 'white' : '#78716c', padding:'11px 24px', borderRadius:'12px', border:'none', cursor: canContinue ? 'pointer' : 'not-allowed', fontSize:'14px', fontWeight:700, fontFamily:F, whiteSpace:'nowrap'}}>
+            {canContinue ? 'Vezi rezumatul' : 'Completează formularul'}
+          </button>
+        </div>
+      )}
+
+      <ExpertModal isOpen={expertOpen} onClose={() => setExpertOpen(false)} eventDate={form.event_date} selectedCity={form.city} artists={expertArtists} eventLabel={EVENT_LABEL[form.organizer_type]} title="Vorbește cu un expert" descPlaceholder="ex: bal de liceu, 300 de elevi, vrem trap si DJ, sala e deja rezervata" />
     </div>
   )
 }
