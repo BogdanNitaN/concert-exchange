@@ -6,10 +6,23 @@ const supabase = createClient(
   process.env.SUPABASE_SECRET_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
 )
 
+const rateLimit = new Map<string, { count: number; reset: number }>()
+function checkRate(ip: string): boolean {
+  const now = Date.now()
+  const e = rateLimit.get(ip)
+  if (!e || now > e.reset) { rateLimit.set(ip, { count: 1, reset: now + 10 * 60 * 1000 }); return true }
+  if (e.count >= 35) return false
+  e.count++
+  return true
+}
+
 export async function GET(req: Request) {
+  const ip = req.headers.get('x-forwarded-for')?.split(',')[0] || 'unknown'
+  if (!checkRate(ip)) return NextResponse.json({ error: 'too many requests' }, { status: 429 })
+
   const { searchParams } = new URL(req.url)
-  const to = (searchParams.get('to') || '').trim()
-  const from = (searchParams.get('from') || 'Bucuresti').trim()
+  const to = (searchParams.get('to') || '').trim().slice(0, 80)
+  const from = (searchParams.get('from') || 'Bucuresti').trim().slice(0, 80)
 
   if (!to) return NextResponse.json({ error: 'no city' }, { status: 400 })
 

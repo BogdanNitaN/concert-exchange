@@ -3,13 +3,45 @@ import { Resend } from 'resend'
 
 const resend = new Resend(process.env.RESEND_API_KEY)
 
+// rate limiting simplu: max 5 cereri per IP la 10 minute
+const rateLimit = new Map<string, { count: number; reset: number }>()
+function checkRate(ip: string): boolean {
+  const now = Date.now()
+  const entry = rateLimit.get(ip)
+  if (!entry || now > entry.reset) {
+    rateLimit.set(ip, { count: 1, reset: now + 10 * 60 * 1000 })
+    return true
+  }
+  if (entry.count >= 15) return false
+  entry.count++
+  return true
+}
+
 // destinatarul cererilor. Cu cont Resend neverificat, trebuie sa fie
 // adresa ta de inregistrare. Dupa ce verifici domeniul gigx.ro, schimba in bogdan@gigx.ro
 const TO = 'bogdanitan@gmail.com'
 
 export async function POST(req: Request) {
   try {
+    // rate limiting
+    const ip = req.headers.get('x-forwarded-for')?.split(',')[0] || 'unknown'
+    if (!checkRate(ip)) {
+      return NextResponse.json({ ok: false, error: 'too many requests' }, { status: 429 })
+    }
+
     const d = await req.json()
+
+    // validare pe server (nu doar in browser)
+    if (!d.institution_name || !d.city || !d.organizer_name || !d.organizer_phone) {
+      return NextResponse.json({ ok: false, error: 'missing fields' }, { status: 400 })
+    }
+    // limite de lungime (previn abuz)
+    const clip = (v: any, n: number) => String(v || '').slice(0, n)
+    d.institution_name = clip(d.institution_name, 200)
+    d.city = clip(d.city, 100)
+    d.organizer_name = clip(d.organizer_name, 100)
+    d.organizer_phone = clip(d.organizer_phone, 30)
+    d.message = clip(d.message, 1000)
     const artists = Array.isArray(d.artists_wanted) ? d.artists_wanted.join(', ') : (d.artists_wanted || 'nespecificat')
 
     const html = `
