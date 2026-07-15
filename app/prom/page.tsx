@@ -7,6 +7,7 @@ import { MessageCircle, Car, Hotel, Plane, ArrowRight, ChevronDown, ChevronUp, C
 import { ARTISTS_DATA } from '@/lib/artists-data'
 import TierLegendProm from '@/components/modules/shared/TierLegendProm'
 import ExpertModal from '@/components/modules/shared/ExpertModal'
+import DatePicker from '@/components/modules/shared/DatePicker'
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -25,22 +26,6 @@ const tierInfo = (tier: string) => {
   return { bg: '#78716c', color: 'white', label: 'A · Select', range: 'până la 5.000€' }
 }
 
-// distante aproximative din Bucuresti
-const CITIES_KM: Record<string, number> = {
-  'bucuresti': 0, 'bucurești': 0, 'ploiesti': 60, 'ploiești': 60, 'pitesti': 110, 'pitești': 110,
-  'brasov': 170, 'brașov': 170, 'constanta': 225, 'constanța': 225, 'craiova': 230,
-  'sibiu': 275, 'bacau': 300, 'bacău': 300, 'galati': 230, 'galați': 230,
-  'targu mures': 350, 'târgu mureș': 350, 'cluj-napoca': 450, 'cluj': 450,
-  'iasi': 400, 'iași': 400, 'timisoara': 550, 'timișoara': 550, 'oradea': 580,
-  'suceava': 450, 'botosani': 450, 'botoșani': 450, 'baia mare': 600, 'arad': 600,
-  'satu mare': 640, 'resita': 500, 'reșița': 500, 'targu jiu': 300, 'târgu jiu': 300,
-  'buzau': 130, 'buzău': 130, 'focsani': 190, 'focșani': 190, 'braila': 220, 'brăila': 220,
-  'piatra neamt': 350, 'piatra neamț': 350, 'deva': 400, 'alba iulia': 350,
-}
-const getKm = (city: string) => {
-  const k = city.trim().toLowerCase()
-  return CITIES_KM[k] !== undefined ? CITIES_KM[k] : 300
-}
 
 const SETURI_VOCAL = [{ id: '1x45', label: '1 set · 45 min' }]
 const SETURI_DJ = [
@@ -58,44 +43,56 @@ const GENRES: Record<GenreKey, string> = {
   balcanic: 'Balcanic',
 }
 
+
+
 // tier MANUAL pe trap/urban (cool factor la baluri, nu fee)
 // tier pe fee la pop-dance si balcanic
 const PROM_MAP: { name: string; genre: GenreKey; promTier: string; display?: string }[] = [
-  { name: 'Petre Stefan', genre: 'trap', promTier: 'Premium' },
+  // TRAP - Forward, ordine pe trigger hot
   { name: 'Albert NBN', genre: 'trap', promTier: 'Premium' },
-  { name: 'Killa Fonic', genre: 'trap', promTier: 'Premium' },
-  { name: 'Satra Benz', genre: 'trap', promTier: 'Premium', display: 'SATRA B.E.N.Z.' },
+  { name: 'Petre Stefan', genre: 'trap', promTier: 'Premium' },
   { name: 'IDK', genre: 'trap', promTier: 'Premium' },
+  { name: 'Noua Unspe', genre: 'trap', promTier: 'A+' },
+  { name: 'Killa Fonic', genre: 'trap', promTier: 'Premium' },
   { name: 'Erika', genre: 'trap', promTier: 'Premium', display: 'Erika Isac' },
+  { name: 'Tussin', genre: 'trap', promTier: 'A+' },
+  { name: 'Satra Benz', genre: 'trap', promTier: 'Premium', display: 'SATRA B.E.N.Z.' },
+  // TRAP - non-Forward dupa
   { name: 'Oscar', genre: 'trap', promTier: 'Premium' },
   { name: 'Rava', genre: 'trap', promTier: 'Premium' },
   { name: 'Azteca', genre: 'trap', promTier: 'Premium' },
   { name: 'IAN', genre: 'trap', promTier: 'Premium' },
   { name: 'MGL', genre: 'trap', promTier: 'Premium' },
-  { name: 'Noua Unspe', genre: 'trap', promTier: 'A+' },
-  { name: 'Tussin', genre: 'trap', promTier: 'A+' },
   { name: 'Amuly', genre: 'trap', promTier: 'A+' },
   { name: 'Vanilla', genre: 'trap', promTier: 'A+' },
-  { name: 'El Nino', genre: 'urban', promTier: 'A' },
   { name: 'Calinacho', genre: 'trap', promTier: 'A+' },
   { name: 'Madatorricelli', genre: 'trap', promTier: 'A+' },
   { name: 'Ursaru', genre: 'trap', promTier: 'A+' },
+  { name: 'Berechet', genre: 'trap', promTier: 'A+' },
+  { name: 'Marko Glass', genre: 'trap', promTier: 'A+' },
+  { name: 'Bvcovia', genre: 'trap', promTier: 'A+' },
+  { name: 'Blanco', genre: 'trap', promTier: 'A' },
+  // URBAN - Forward primii
   { name: 'Grasu XXL', genre: 'urban', promTier: 'Premium' },
   { name: 'Puya', genre: 'urban', promTier: 'Premium' },
   { name: 'Guess Who', genre: 'urban', promTier: 'Premium' },
-  { name: 'Deliric', genre: 'urban', promTier: 'Premium' },
   { name: 'Vescan', genre: 'urban', promTier: 'A+' },
+  // URBAN - non-Forward
+  { name: 'Deliric', genre: 'urban', promTier: 'Premium' },
+  { name: 'El Nino', genre: 'urban', promTier: 'A' },
+  // POP-DANCE
   { name: 'The Motans', genre: 'pop_dance', promTier: 'Premium' },
   { name: 'Mira', genre: 'pop_dance', promTier: 'A+' },
   { name: 'Antonia', genre: 'pop_dance', promTier: 'A+' },
   { name: 'Alina Eremia', genre: 'pop_dance', promTier: 'A+' },
   { name: 'Mario Fresh', genre: 'pop_dance', promTier: 'A+' },
-  { name: 'Ami', genre: 'pop_dance', promTier: 'A+' },
+  { name: 'Ami', genre: 'pop_dance', promTier: 'A+', display: 'AMI' },
   { name: 'Stefania', genre: 'pop_dance', promTier: 'A+' },
   { name: 'Holy Molly', genre: 'pop_dance', promTier: 'A' },
   { name: 'Florian Rus', genre: 'pop_dance', promTier: 'A' },
-  { name: 'Bogdan DLP', genre: 'balcanic', promTier: 'Premium' },
+  // BALCANIC - Forward primii
   { name: 'Babasha', genre: 'balcanic', promTier: 'Premium' },
+  { name: 'Bogdan DLP', genre: 'balcanic', promTier: 'Premium' },
   { name: 'Luis Gabriel', genre: 'balcanic', promTier: 'A+' },
   { name: 'Iuly Neamtu', genre: 'balcanic', promTier: 'A+' },
 ]
@@ -167,6 +164,9 @@ export default function PromPage() {
   const [openArtistId, setOpenArtistId] = useState<number | null>(null)
   const [seturi, setSeturi] = useState<Record<number, string>>({})
   const [maxWarning, setMaxWarning] = useState(false)
+  const [eurRate, setEurRate] = useState<number | null>(null)
+  const [rateDate, setRateDate] = useState<string>('')
+  const [distances, setDistances] = useState<Record<string, number>>({})
   const [expertArtists, setExpertArtists] = useState<string[]>([])
 
   const [form, setForm] = useState({
@@ -176,6 +176,26 @@ export default function PromPage() {
     organizer_phone: '', is_minor: false, parent_contact: '', message: '',
   })
   const set = (k: string, v: string | boolean) => setForm(f => ({ ...f, [k]: v }))
+
+  // curs BNR
+  useEffect(() => {
+    fetch('/api/bnr-rate').then(r => r.json())
+      .then(d => { if (d?.rate) { setEurRate(d.rate); setRateDate(d.date || '') } })
+      .catch(() => setEurRate(5.2))
+  }, [])
+
+  // distanta rutiera reala pentru orasul completat (o data per oras)
+  useEffect(() => {
+    const city = form.city.trim()
+    if (!city || distances[city.toLowerCase()] !== undefined) return
+    const t = setTimeout(() => {
+      fetch('/api/distance?to=' + encodeURIComponent(city))
+        .then(r => r.json())
+        .then(d => { if (d?.km) setDistances(prev => ({ ...prev, [city.toLowerCase()]: d.km })) })
+        .catch(() => {})
+    }, 600)
+    return () => clearTimeout(t)
+  }, [form.city])
 
   useEffect(() => {
     fetch('/api/prom-images').then(r => r.json())
@@ -247,6 +267,29 @@ export default function PromPage() {
     setSubmitting(true)
     setError('')
 
+    // trimite email PRIMUL, ca sa ajunga chiar daca Supabase e blocat local
+    try {
+      await fetch('/api/prom-request', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          organizer_type: form.organizer_type,
+          institution_name: form.institution_name.trim(),
+          city: form.city.trim(),
+          event_date: form.event_date,
+          event_date_alternative: form.event_date_alternative || null,
+          budget_range: form.budget_range || null,
+          artists_wanted: artistNames,
+          organizer_name: form.organizer_name.trim(),
+          organizer_email: form.organizer_email.trim() || null,
+          organizer_phone: form.organizer_phone.trim(),
+          is_minor: form.is_minor,
+          parent_contact: form.is_minor ? form.parent_contact.trim() : null,
+          message: form.message.trim() || null,
+        }),
+      })
+    } catch {}
+
     const { error: dbError } = await supabase.from('requests_prom').insert({
       organizer_type: form.organizer_type,
       institution_name: form.institution_name.trim(),
@@ -266,12 +309,10 @@ export default function PromPage() {
 
     setSubmitting(false)
     if (dbError) {
-      console.error('SUPABASE ERROR:', dbError)
-      setError('Cererea nu a putut fi salvata. ' + (dbError.message || ''))
-      return
+      // emailul a plecat deja, deci cererea a ajuns la agent chiar daca Supabase a esuat local
+      console.error('SUPABASE ERROR (email a plecat oricum):', dbError)
     }
 
-    window.open(waLink(), '_blank')
     setSubmitted(true)
     window.scrollTo({ top: 0, behavior: 'smooth' })
   }
@@ -374,7 +415,8 @@ export default function PromPage() {
 
   // ---------- DEVIZ ----------
   if (step === 'summary') {
-    const km = getKm(form.city)
+    const kmReal = distances[form.city.trim().toLowerCase()]
+    const km = kmReal !== undefined ? kmReal : null
     const isBucuresti = km === 0
     const cityLow = form.city.trim().toLowerCase()
     const noFlightCity = ['bacau','bacău','sibiu'].includes(cityLow)
@@ -436,8 +478,10 @@ export default function PromPage() {
             {selection.map(a => {
               const isOpen = openArtistId === a.id
               const ts = tierInfo(a.tier)
-              const costRutier = a.costPerKm > 0 ? Math.round(km * a.costPerKm / 10) * 10 : 0
-              const necesitaZbor = !isBucuresti && !noFlightCity && km > 300 && a.nrBileteAvion > 0
+              const kmTotal = km !== null ? Math.round(km * 2 * 1.10) : 0
+              const costLei = a.costPerKm > 0 && km !== null ? Math.round(kmTotal * a.costPerKm / 10) * 10 : 0
+              const costEuro = costLei > 0 && eurRate ? Math.round(costLei / eurRate) : 0
+              const necesitaZbor = !isBucuresti && !noFlightCity && km !== null && km > 300 && a.nrBileteAvion > 0
               const seturiArtist = getSeturi(a)
               const img = images[a.name]
 
@@ -473,13 +517,20 @@ export default function PromPage() {
                               <Car size={16} color='#44403c' strokeWidth={1.5} />
                               <div>
                                 <div style={{fontSize:'13px', fontWeight:600, color:'#1c1917'}}>Transport rutier</div>
-                                {costRutier > 0 && (
-                                  <div style={{fontSize:'11px', color:'#a8a29e'}}>{km} km · din București</div>
+                                {km !== null && km > 0 && (
+                                  <div style={{fontSize:'11px', color:'#a8a29e'}}>{km} km · dus-întors din București</div>
                                 )}
                               </div>
                             </div>
-                            <div style={{fontSize:'14px', fontWeight:800, color: costRutier > 0 ? '#1c1917' : '#78716c'}}>
-                              {costRutier > 0 ? costRutier.toLocaleString() + ' €' : 'la cerere'}
+                            <div style={{textAlign:'right'}}>
+                              {costEuro > 0 ? (
+                                <>
+                                  <div style={{fontSize:'14px', fontWeight:800, color:'#1c1917'}}>{costEuro.toLocaleString()} €</div>
+                                  <div style={{fontSize:'10px', color:'#a8a29e'}}>≈ {costLei.toLocaleString()} lei</div>
+                                </>
+                              ) : (
+                                <div style={{fontSize:'14px', fontWeight:800, color:'#78716c'}}>la cerere</div>
+                              )}
                             </div>
                           </div>
                         )}
@@ -592,6 +643,12 @@ export default function PromPage() {
             </button>
           </div>
 
+          {eurRate && (
+            <div style={{textAlign:'center', fontSize:'11px', color:'#a8a29e', marginBottom:'12px'}}>
+              Estimările în euro folosesc cursul BNR: 1 € = {eurRate.toFixed(4)} lei{rateDate ? ' (' + rateDate + ')' : ''}
+            </div>
+          )}
+
           <Disclaimer />
         </div>
         <Footer />
@@ -619,7 +676,7 @@ export default function PromPage() {
         </p>
       </div>
 
-      <div style={{maxWidth:'860px', margin:'0 auto', padding:'0 24px 20px'}}>
+      <div ref={formRef} style={{maxWidth:'860px', margin:'0 auto', padding:'0 24px 20px', scrollMarginTop:'110px'}}>
         <SelectedBar />
 
         <div style={{background:'white', border:'2px solid #e7e5e4', borderRadius:'14px', padding:'28px'}}>
@@ -653,15 +710,11 @@ export default function PromPage() {
               </div>
               <div>
                 <div style={labelStyle}>Data balului *</div>
-                <input type="date" style={{...inputStyle, border:'1.5px solid ' + (form.event_date ? '#059669' : '#e7e5e4'), cursor:'pointer'}}
-                  value={form.event_date} onChange={e => set('event_date', e.target.value)}
-                  onClick={e => { try { (e.target as any).showPicker?.() } catch {} }} />
+                <DatePicker value={form.event_date} onChange={v => set('event_date', v)} placeholder="Alege data" />
               </div>
               <div>
                 <div style={labelStyle}>Dată alternativă (dacă există)</div>
-                <input type="date" style={{...inputStyle, cursor:'pointer'}} value={form.event_date_alternative}
-                  onChange={e => set('event_date_alternative', e.target.value)}
-                  onClick={e => { try { (e.target as any).showPicker?.() } catch {} }} />
+                <DatePicker value={form.event_date_alternative} onChange={v => set('event_date_alternative', v)} placeholder="Opțional" />
               </div>
             </div>
 

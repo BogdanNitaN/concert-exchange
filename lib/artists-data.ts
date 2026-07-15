@@ -156,7 +156,7 @@ export const ARTISTS_DATA = [
     "tier": "Premium",
     "cazare": "4 single",
     "nrBileteAvion": 3,
-    "costPerKm": 5.5
+    "costPerKm": 5
   , "setType": "vocal"},
   {
     "id": 13,
@@ -314,7 +314,7 @@ export const ARTISTS_DATA = [
     "tier": "A+",
     "cazare": "4 duble + 2 single",
     "nrBileteAvion": 1,
-    "costPerKm": 6.5
+    "costPerKm": 6
   , "setType": "vocal"},
   {
     "id": 25,
@@ -364,9 +364,9 @@ export const ARTISTS_DATA = [
     "feeMin": 8000,
     "feeMax": 8000,
     "tier": "A+",
-    "cazare": "2 single matrimonial + 5 twin",
+    "cazare": "2 camere single matrimonial + 5 twin",
     "nrBileteAvion": 2,
-    "costPerKm": 7.5
+    "costPerKm": 7
   , "setType": "vocal"},
   {
     "id": 29,
@@ -393,7 +393,7 @@ export const ARTISTS_DATA = [
     "tier": "A+",
     "cazare": "1 suita + 1 single + 4 duble",
     "nrBileteAvion": 2,
-    "costPerKm": 7.5
+    "costPerKm": 7
   , "setType": "vocal"},
   {
     "id": 31,
@@ -406,7 +406,7 @@ export const ARTISTS_DATA = [
     "tier": "A+",
     "cazare": "1 single + 4 duble",
     "nrBileteAvion": 1,
-    "costPerKm": 6.5
+    "costPerKm": 6
   , "setType": "vocal"},
   {
     "id": 32,
@@ -486,7 +486,7 @@ export const ARTISTS_DATA = [
     "tier": "A+",
     "cazare": "4 single",
     "nrBileteAvion": 3,
-    "costPerKm": 3
+    "costPerKm": 2.5
   , "setType": "vocal"},
   {
     "id": 38,
@@ -593,7 +593,7 @@ export const ARTISTS_DATA = [
     "tier": "A+",
     "cazare": "3 single + 2 duble",
     "nrBileteAvion": 2,
-    "costPerKm": 5.5
+    "costPerKm": 5
   , "setType": "vocal"},
   {
     "id": 46,
@@ -632,7 +632,7 @@ export const ARTISTS_DATA = [
     "tier": "A+",
     "cazare": "1 single + 5 duble",
     "nrBileteAvion": 2,
-    "costPerKm": 6.5
+    "costPerKm": 6
   , "setType": "vocal"},
   {
     "id": 49,
@@ -842,7 +842,7 @@ export const ARTISTS_DATA = [
     "tier": "A",
     "cazare": "3 duble + 1 single",
     "nrBileteAvion": 1,
-    "costPerKm": 4
+    "costPerKm": 5
   , "setType": "vocal"},
   {
     "id": 65,
@@ -908,9 +908,9 @@ export const ARTISTS_DATA = [
     "feeMin": 4000,
     "feeMax": 4000,
     "tier": "A",
-    "cazare": "4 duble twin + 1 matrimoniala",
+    "cazare": "4 duble twin + 1 dubla matrimoniala",
     "nrBileteAvion": 1,
-    "costPerKm": 6.5
+    "costPerKm": 6
   , "setType": "vocal"},
   {
     "id": 70,
@@ -1280,9 +1280,9 @@ export const ARTISTS_DATA = [
     "feeMin": 7000,
     "feeMax": 7000,
     "tier": "A+",
-    "cazare": "4 duble twin + 1 matrimoniala",
+    "cazare": "4 camere duble twin + 1 matrimoniala",
     "nrBileteAvion": 1,
-    "costPerKm": 6
+    "costPerKm": 5.5
   , "setType": "vocal"},
   {
     "id": 99,
@@ -1308,6 +1308,97 @@ export const ARTISTS_DATA = [
     "feeMin": 7000,
     "feeMax": 7000,
     "tier": "A+",
+    "cazare": "la cerere",
+    "nrBileteAvion": 0,
+    "costPerKm": 0
+  , "setType": "vocal"},
+  {
+    "id": 101,
+    "name": "Berechet",
+    "genres": [
+      "Trap"
+    ],
+    "feeMin": 0,
+    "feeMax": 0,
+    "tier": "A+",
+    "cazare": "la cerere",
+    "nrBileteAvion": 0,
+    "costPerKm": 0
+  , "setType": "vocal"},
+  {
+    "id": 102,
+    "name": "Marko Glass",
+    "genres": [
+      "Trap"
+    ],
+    "feeMin": 0,
+    "feeMax": 0,
+    "tier": "A+",
+    "cazare": "la cerere",
+    "nrBileteAvion": 0,
+    "costPerKm": 0
+  , "setType": "vocal"},
+  {
+    "id": 103,
+    "name": "Bvcovia",
+    "genres": [
+      "Trap"
+    ],
+    "feeMin": 0,
+    "feeMax": 0,
+    "tier": "A+",
+    "cazare": "la cerere",
+    "nrBileteAvion": 0,
+    "costPerKm": 0
+  , "setType": "vocal"},
+  {
+    "id": 104,
+    "name": "Blanco",
+    "genres": [
+      "Trap"
+    ],
+    "feeMin": 0,
+    "feeMax": 0,
+    "tier": "A",
+    "cazare": "la cerere",
+    "nrBileteAvion": 0,
+    "costPerKm": 0
+  , "setType": "vocal"},
+  {
+    "id": 105,
+    "name": "Marko Glass",
+    "genres": [
+      "Trap"
+    ],
+    "feeMin": 0,
+    "feeMax": 0,
+    "tier": "A+",
+    "cazare": "la cerere",
+    "nrBileteAvion": 0,
+    "costPerKm": 0
+  , "setType": "vocal"},
+  {
+    "id": 106,
+    "name": "Bvcovia",
+    "genres": [
+      "Trap"
+    ],
+    "feeMin": 0,
+    "feeMax": 0,
+    "tier": "A+",
+    "cazare": "la cerere",
+    "nrBileteAvion": 0,
+    "costPerKm": 0
+  , "setType": "vocal"},
+  {
+    "id": 107,
+    "name": "Blanco",
+    "genres": [
+      "Trap"
+    ],
+    "feeMin": 0,
+    "feeMax": 0,
+    "tier": "A",
     "cazare": "la cerere",
     "nrBileteAvion": 0,
     "costPerKm": 0

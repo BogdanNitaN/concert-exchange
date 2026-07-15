@@ -2,6 +2,10 @@ import { NextResponse } from 'next/server'
 
 // ID-uri Spotify directe. Un singur request batch, fara search, deci fara rate limit.
 const SPOTIFY_IDS: Record<string, string> = {
+  'Blanco': '3aiNFfqqHURbyhzN5tOdp9',
+  'Bvcovia': '5CqmNRrmp3UP3NGccmlKHR',
+  'Marko Glass': '07nCYoPlXkWlhC2FHm1INS',
+  'Berechet': '50vNYJ9Cj5MfsFqGqI7JXQ',
   // TRAP
   'Petre Stefan': '0yjc2FN5zju7xyuJsTfGkh',
   'Albert NBN': '33CSqdyro89aOFiZb5fU5U',
