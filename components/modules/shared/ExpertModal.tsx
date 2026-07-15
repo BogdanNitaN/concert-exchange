@@ -18,10 +18,8 @@ interface Props {
 export default function ExpertModal({ isOpen, onClose, eventDate, guestCount, selectedCity, artists, eventLabel, descPlaceholder, title }: Props) {
   const [name, setName] = useState('')
   const [phone, setPhone] = useState('')
-  const [email, setEmail] = useState('')
   const [city, setCity] = useState(selectedCity || '')
   const [desc, setDesc] = useState('')
-  const [sendEmail, setSendEmail] = useState(false)
   const [sent, setSent] = useState(false)
   const [honeypot, setHoneypot] = useState('')
 
@@ -46,19 +44,10 @@ export default function ExpertModal({ isOpen, onClose, eventDate, guestCount, se
       'DATE CONTACT:',
       `Nume: ${name}`,
       `Telefon: ${phone}`,
-      email ? `Email: ${email}` : '',
     ].filter(Boolean)
 
     const msg = encodeURIComponent(lines.join('\n'))
     window.open(`https://wa.me/40751144109?text=${msg}`, '_blank')
-
-    if (sendEmail && email) {
-      setTimeout(() => {
-        const subject = encodeURIComponent('Vorbește cu un expert — GIGx')
-        const body = encodeURIComponent(lines.join('\n'))
-        window.open(`mailto:bogdan@gigx.ro?subject=${subject}&body=${body}`, '_blank')
-      }, 500)
-    }
 
     setSent(true)
   }
@@ -76,7 +65,7 @@ export default function ExpertModal({ isOpen, onClose, eventDate, guestCount, se
             </div>
             <div style={{fontWeight:800, fontSize:'22px', color:'#1c1917', marginBottom:'8px'}}>Mesaj trimis!</div>
             <div style={{fontWeight:600, fontSize:'14px', color:'#059669', marginBottom:'24px'}}>Expertul te contactează în mai puțin de 30 min.</div>
-            <button onClick={() => { onClose(); setSent(false); setName(''); setPhone(''); setEmail(''); setDesc('') }}
+            <button onClick={() => { onClose(); setSent(false); setName(''); setPhone(''); setDesc('') }}
               style={{background:'#1c1917', color:'white', padding:'13px 32px', borderRadius:'14px', border:'none', cursor:'pointer', fontSize:'14px', fontWeight:700, fontFamily:'Montserrat,sans-serif'}}>
               Închide
             </button>
@@ -123,21 +112,6 @@ export default function ExpertModal({ isOpen, onClose, eventDate, guestCount, se
                   style={{width:'100%', padding:'11px 14px', borderRadius:'12px', border:'1px solid #e7e5e4', fontSize:'13px', fontFamily:'Montserrat,sans-serif', color:'#1c1917', outline:'none', resize:'none', boxSizing:'border-box'}} />
               </div>
 
-              <div style={{display:'flex', alignItems:'center', gap:'10px'}}>
-                <input type="checkbox" id="sendEmail" checked={sendEmail} onChange={e => setSendEmail(e.target.checked)}
-                  style={{width:'16px', height:'16px', cursor:'pointer', accentColor:'#059669'}} />
-                <label htmlFor="sendEmail" style={{fontSize:'13px', color:'#78716c', cursor:'pointer'}}>
-                  Trimite și pe email
-                </label>
-              </div>
-
-              {sendEmail && (
-                <div>
-                  <div style={{fontSize:'10px', fontWeight:700, color:'#a8a29e', textTransform:'uppercase', letterSpacing:'0.08em', marginBottom:'6px'}}>Email</div>
-                  <input type="email" placeholder="email@tau.ro" value={email} onChange={e => setEmail(e.target.value)}
-                    style={{width:'100%', padding:'11px 14px', borderRadius:'12px', border:'1px solid #e7e5e4', fontSize:'13px', fontFamily:'Montserrat,sans-serif', color:'#1c1917', outline:'none', boxSizing:'border-box'}} />
-                </div>
-              )}
             </div>
 
             <button onClick={handleSubmit} disabled={!canSubmit}

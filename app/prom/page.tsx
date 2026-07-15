@@ -780,7 +780,7 @@ export default function PromPage() {
                 Alege artiștii ↓
               </button>
             ) : (
-              <button onClick={() => { window.history.pushState({step:'summary'}, ''); setStep('summary'); window.scrollTo({top:0}) }} disabled={!canContinue}
+              <button onClick={() => { window.history.pushState({step:'summary'}, ''); setStep('summary'); setOpenArtistId(selection[0]?.id ?? null); window.scrollTo({top:0}) }} disabled={!canContinue}
                 style={{width:'100%', background: canContinue ? '#1c1917' : '#e7e5e4', color: canContinue ? 'white' : '#a8a29e', padding:'14px', borderRadius:'14px', border:'none', cursor: canContinue ? 'pointer' : 'not-allowed', fontSize:'14px', fontWeight:700, fontFamily:F}}>
                 Vezi rezumatul
               </button>
@@ -894,7 +894,7 @@ export default function PromPage() {
               {selection.length}/{MAX_ARTISTS}
             </span>
           </div>
-          <button onClick={() => { window.history.pushState({step:'summary'}, ''); setStep('summary'); window.scrollTo({top:0}) }} disabled={!canContinue}
+          <button onClick={() => { window.history.pushState({step:'summary'}, ''); setStep('summary'); setOpenArtistId(selection[0]?.id ?? null); window.scrollTo({top:0}) }} disabled={!canContinue}
             style={{background: canContinue ? '#059669' : '#44403c', color: canContinue ? 'white' : '#78716c', padding:'11px 24px', borderRadius:'12px', border:'none', cursor: canContinue ? 'pointer' : 'not-allowed', fontSize:'14px', fontWeight:700, fontFamily:F, whiteSpace:'nowrap'}}>
             {canContinue ? 'Vezi rezumatul' : 'Completează datele'}
           </button>
