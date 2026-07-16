@@ -491,7 +491,8 @@ export default function PromPage() {
             {selection.map(a => {
               const isOpen = openArtistId === a.id
               const ts = tierInfo(a.tier)
-              const kmTotal = km !== null ? Math.round(km * 2 * 1.10) : 0
+              const marjaProcent = km !== null && km > 300 ? 0.05 : 0.10
+              const kmTotal = km !== null ? (km + Math.round(km * marjaProcent)) * 2 : 0
               const costLei = a.costPerKm > 0 && km !== null ? Math.round(kmTotal * a.costPerKm / 10) * 10 : 0
               const costEuro = costLei > 0 && eurRate ? Math.round(costLei / eurRate) : 0
               const necesitaZbor = !isBucuresti && !noFlightCity && km !== null && km > 300 && a.nrBileteAvion > 0
