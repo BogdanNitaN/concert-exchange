@@ -282,6 +282,12 @@ export default function TransportPage() {
             Estimare orientativa. Costul final depinde de ruta, opriri si conditii specifice.
           </div>
 
+          <div style={{marginTop:'40px', paddingTop:'24px', borderTop:'1px solid #e7e5e4', display:'flex', gap:'20px', flexWrap:'wrap', justifyContent:'center'}}>
+            <Link href="/termeni" style={{fontSize:'12px', color:'#a8a29e', textDecoration:'none'}}>Termeni</Link>
+            <Link href="/confidentialitate" style={{fontSize:'12px', color:'#a8a29e', textDecoration:'none'}}>Confidentialitate</Link>
+            <Link href="/cookies" style={{fontSize:'12px', color:'#a8a29e', textDecoration:'none'}}>Cookies</Link>
+          </div>
+
           <ExpertModal isOpen={expertOpen} onClose={() => setExpertOpen(false)} selectedCity={city} title="Vorbeste cu un expert" descPlaceholder="ex: artist dorit, data evenimentului, oras, buget..." />
 
           {/* ===== CONVERTOR CURS BNR + TVA ===== */}
