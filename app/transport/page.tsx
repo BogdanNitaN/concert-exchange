@@ -113,7 +113,7 @@ export default function TransportPage() {
   }
 
   const price = parseFloat(pricePerKm.replace(',', '.')) || 0
-  const marjaProcent = km !== null && km > 300 ? 0.05 : 0.10
+  const marjaProcent = km !== null && km > 300 ? 0.065 : 0.115
   const kmCuMarja = km !== null ? km + Math.round(km * marjaProcent) : 0
   const kmTotal = kmCuMarja * 2
   const priceLei = priceCurrency === 'eur' && eurRate ? price * eurRate : price
