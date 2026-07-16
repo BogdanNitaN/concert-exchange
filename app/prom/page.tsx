@@ -554,8 +554,8 @@ export default function PromPage() {
                             <div style={{display:'flex', alignItems:'center', gap:'8px'}}>
                               <Plane size={16} color='#1e40af' strokeWidth={1.5} />
                               <div>
-                                <div style={{fontSize:'13px', fontWeight:600, color:'#1e40af'}}>Zbor artist</div>
-                                <div style={{fontSize:'11px', color:'#3b82f6'}}>{a.nrBileteAvion} {a.nrBileteAvion === 1 ? 'bilet' : 'bilete'} · {km} km</div>
+                                <div style={{fontSize:'13px', fontWeight:600, color:'#1e40af'}}>Zbor artist + transfer</div>
+                                <div style={{fontSize:'11px', color:'#3b82f6'}}>{a.nrBileteAvion} {a.nrBileteAvion === 1 ? 'bilet' : 'bilete'} · {km} km · transfer auto</div>
                               </div>
                             </div>
                             <div style={{fontSize:'12px', fontWeight:700, color:'#1e40af'}}>necesar</div>

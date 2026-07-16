@@ -50,15 +50,13 @@ function haversine(lat1: number, lng1: number, lat2: number, lng2: number) {
   return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a))
 }
 
-function nearestAirport(city: string): { name: string; dist: number } | null {
+function nearestAirports(city: string, count = 3): { name: string; dist: number }[] {
   const c = CITY_COORDS[city.trim().toLowerCase()]
-  if (!c) return null
-  let best = null as { name: string; dist: number } | null
-  for (const ap of AIRPORTS) {
-    const d = Math.round(haversine(c.lat, c.lng, ap.lat, ap.lng))
-    if (!best || d < best.dist) best = { name: ap.name, dist: d }
-  }
-  return best
+  if (!c) return []
+  return AIRPORTS
+    .map(ap => ({ name: ap.name, dist: Math.round(haversine(c.lat, c.lng, ap.lat, ap.lng)) }))
+    .sort((a, b) => a.dist - b.dist)
+    .slice(0, count)
 }
 
 function useIsMobile() {
@@ -257,19 +255,24 @@ export default function TransportPage() {
               )}
 
               {km !== null && km > 300 && (() => {
-                const ap = nearestAirport(city)
+                const aps = nearestAirports(city, 3)
                 return (
                   <div style={{marginTop:'20px', padding:'18px', background:'rgba(59,130,246,0.18)', borderRadius:'12px', border:'1px solid rgba(147,197,253,0.45)'}}>
                     <div style={{display:'flex', alignItems:'center', gap:'10px', marginBottom:'10px'}}>
                       <Plane size={20} color='#ffffff' strokeWidth={2} />
                       <span style={{fontSize:'15px', fontWeight:700, color:'#ffffff', lineHeight:1.35}}>Distanță peste 300 km — necesită bilet de avion</span>
                     </div>
-                    <div style={{fontSize:'14px', color:'#e0edff', marginBottom: ap ? '8px' : 0, lineHeight:1.5}}>
-                      Costul biletului se stabilește la cerere.
+                    <div style={{fontSize:'14px', color:'#e0edff', marginBottom:'10px', lineHeight:1.5}}>
+                      De la aeroport este necesar transfer auto până la locație.
                     </div>
-                    {ap && (
-                      <div style={{fontSize:'14px', color:'#ffffff', fontWeight:600, lineHeight:1.5}}>
-                        Aeroport recomandat: {ap.name} <span style={{color:'#bfdbfe', fontWeight:500}}>(~{ap.dist} km de destinație)</span>
+                    {aps.length > 0 && (
+                      <div>
+                        <div style={{fontSize:'12px', color:'#bfdbfe', fontWeight:700, textTransform:'uppercase', letterSpacing:'0.06em', marginBottom:'6px'}}>Aeroporturi apropiate</div>
+                        {aps.map((ap, i) => (
+                          <div key={ap.name} style={{fontSize:'14px', color:'#ffffff', fontWeight: i === 0 ? 700 : 500, lineHeight:1.6}}>
+                            {ap.name} <span style={{color:'#bfdbfe', fontWeight:500}}>(~{ap.dist} km)</span>{i === 0 ? <span style={{color:'#93c5fd', fontSize:'12px'}}> · recomandat</span> : ''}
+                          </div>
+                        ))}
                       </div>
                     )}
                   </div>
