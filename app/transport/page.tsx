@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { Car, ArrowRight, Calculator, Plane } from 'lucide-react'
+import RouteMap from '@/components/modules/transport/RouteMap'
 import ExpertModal from '@/components/modules/shared/ExpertModal'
 
 const F = 'Montserrat,sans-serif'
@@ -23,6 +24,8 @@ const AIRPORTS: { name: string; lat: number; lng: number }[] = [
 ]
 
 // coordonate orase (pt gasit aeroportul apropiat)
+const BUCURESTI_COORD = { lat: 44.4268, lng: 26.1025 }
+const MAPBOX_TOKEN = process.env.NEXT_PUBLIC_MAPBOX_TOKEN || ''
 const CITY_COORDS: Record<string, { lat: number; lng: number }> = {
   'cluj-napoca': { lat: 46.7712, lng: 23.6236 }, 'cluj': { lat: 46.7712, lng: 23.6236 },
   'timisoara': { lat: 45.7489, lng: 21.2087 }, 'iasi': { lat: 47.1585, lng: 27.6014 },
@@ -255,17 +258,18 @@ export default function TransportPage() {
               )}
 
               {km !== null && km > 300 && (() => {
-                const aps = nearestAirports(city, 3)
+                const esteRomania = !!CITY_COORDS[city.trim().toLowerCase()] || !!CITY_COORDS[city.trim().toLowerCase().replace(/\s+/g, '-')]
+                const aps = esteRomania ? nearestAirports(city, 3) : []
                 return (
                   <div style={{marginTop:'20px', padding:'18px', background:'rgba(59,130,246,0.18)', borderRadius:'12px', border:'1px solid rgba(147,197,253,0.45)'}}>
                     <div style={{display:'flex', alignItems:'center', gap:'10px', marginBottom:'10px'}}>
                       <Plane size={20} color='#ffffff' strokeWidth={2} />
                       <span style={{fontSize:'15px', fontWeight:700, color:'#ffffff', lineHeight:1.35}}>Distanță peste 300 km — necesită bilet de avion</span>
                     </div>
-                    <div style={{fontSize:'14px', color:'#e0edff', marginBottom:'10px', lineHeight:1.5}}>
+                    <div style={{fontSize:'14px', color:'#e0edff', marginBottom: aps.length > 0 ? '10px' : 0, lineHeight:1.5}}>
                       De la aeroport este necesar transfer auto până la locație.
                     </div>
-                    {aps.length > 0 && (
+                    {esteRomania && aps.length > 0 ? (
                       <div>
                         <div style={{fontSize:'12px', color:'#bfdbfe', fontWeight:700, textTransform:'uppercase', letterSpacing:'0.06em', marginBottom:'6px'}}>Aeroporturi apropiate</div>
                         {aps.map((ap, i) => (
@@ -274,6 +278,10 @@ export default function TransportPage() {
                           </div>
                         ))}
                       </div>
+                    ) : (
+                      <div style={{fontSize:'14px', color:'#ffffff', fontWeight:600, lineHeight:1.5}}>
+                        Zbor internațional — aeroportul de la destinație.
+                      </div>
                     )}
                   </div>
                 )
@@ -281,6 +289,10 @@ export default function TransportPage() {
 
 
             </div>
+          )}
+
+          {km !== null && city.trim() && (
+            <RouteMap fromCity={fromCity || 'Bucuresti'} toCity={city} />
           )}
 
           <div style={{textAlign:'center', fontSize:'12px', color:'#a8a29e', marginTop:'24px', lineHeight:1.6}}>

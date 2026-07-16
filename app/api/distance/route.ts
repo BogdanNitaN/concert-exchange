@@ -16,6 +16,22 @@ function checkRate(ip: string): boolean {
   return true
 }
 
+// orase romanesti principale: adaug ", Romania" ca sa evit ambiguitatea
+// (ex: exista Cluj si in alta parte). Pentru orase din alta tara, userul poate
+// scrie "Oras, Tara" si respectam. Chisinau -> Moldova automat.
+const RO_CITIES = ['bucuresti','bucurești','cluj','cluj-napoca','timisoara','timișoara','iasi','iași','constanta','constanța','craiova','brasov','brașov','galati','galați','ploiesti','ploiești','oradea','braila','brăila','arad','pitesti','pitești','sibiu','bacau','bacău','targu mures','târgu mureș','baia mare','buzau','buzău','satu mare','botosani','botoșani','suceava','piatra neamt','piatra neamț','focsani','focșani','targu jiu','târgu jiu','deva','alba iulia','resita','reșița','tulcea','slatina','ramnicu valcea','râmnicu vâlcea','targoviste','târgoviște','giurgiu','alexandria','calarasi','călărași','slobozia','zalau','zalău','bistrita','bistrița','vaslui','sfantu gheorghe','sfântu gheorghe','miercurea ciuc','onesti','onești','roman','dej','turda','sighisoara','sighișoara','medias','mediaș']
+const MD_CITIES = ['chisinau','chișinău','balti','bălți','tiraspol','cahul','orhei','ungheni','soroca','comrat']
+
+function withCountry(city: string): string {
+  const c = city.trim().toLowerCase()
+  // daca userul a scris deja tara (are virgula), respectam
+  if (city.includes(',')) return city
+  if (MD_CITIES.some(m => c === m || c.includes(m))) return city + ', Moldova'
+  if (RO_CITIES.some(m => c === m)) return city + ', Romania'
+  // orice alt oras (Europa): il lasam asa, Google il gaseste
+  return city
+}
+
 export async function GET(req: Request) {
   const ip = req.headers.get('x-forwarded-for')?.split(',')[0] || 'unknown'
   if (!checkRate(ip)) return NextResponse.json({ error: 'too many requests' }, { status: 429 })
@@ -46,8 +62,8 @@ export async function GET(req: Request) {
   try {
     const key = process.env.GOOGLE_PLACES_SERVER_KEY
     const url = 'https://maps.googleapis.com/maps/api/distancematrix/json'
-      + '?origins=' + encodeURIComponent(from + ', Romania')
-      + '&destinations=' + encodeURIComponent(to + ', Romania')
+      + '?origins=' + encodeURIComponent(withCountry(from))
+      + '&destinations=' + encodeURIComponent(withCountry(to))
       + '&mode=driving&units=metric&key=' + key
 
     const res = await fetch(url)
