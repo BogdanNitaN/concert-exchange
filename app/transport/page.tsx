@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
-import { Car, ArrowRight, Calculator } from 'lucide-react'
+import { Car, ArrowRight, Calculator, Plane } from 'lucide-react'
 import ExpertModal from '@/components/modules/shared/ExpertModal'
 
 const F = 'Montserrat,sans-serif'
@@ -113,7 +113,8 @@ export default function TransportPage() {
   }
 
   const price = parseFloat(pricePerKm.replace(',', '.')) || 0
-  const kmTotal = km !== null ? Math.round(km * 2 * 1.10) : 0
+  const marja = km !== null && km > 300 ? 1.05 : 1.10
+  const kmTotal = km !== null ? Math.round(km * 2 * marja) : 0
   const priceLei = priceCurrency === 'eur' && eurRate ? price * eurRate : price
   const costLei = km !== null && priceLei > 0 ? Math.round(kmTotal * priceLei / 10) * 10 : 0
   const costEuro = costLei > 0 && eurRate ? Math.round(costLei / eurRate) : 0
@@ -257,17 +258,17 @@ export default function TransportPage() {
               {km !== null && km > 300 && (() => {
                 const ap = nearestAirport(city)
                 return (
-                  <div style={{marginTop:'20px', padding:'16px', background:'#eff6ff', borderRadius:'12px', border:'1px solid #bfdbfe'}}>
-                    <div style={{display:'flex', alignItems:'center', gap:'8px', marginBottom:'6px'}}>
-                      <span style={{fontSize:'16px'}}>&#9992;</span>
-                      <span style={{fontSize:'13px', fontWeight:700, color:'#1e40af'}}>Distanta peste 300 km &mdash; necesita bilet de avion</span>
+                  <div style={{marginTop:'20px', padding:'18px', background:'rgba(59,130,246,0.18)', borderRadius:'12px', border:'1px solid rgba(147,197,253,0.45)'}}>
+                    <div style={{display:'flex', alignItems:'center', gap:'10px', marginBottom:'10px'}}>
+                      <Plane size={20} color='#ffffff' strokeWidth={2} />
+                      <span style={{fontSize:'15px', fontWeight:700, color:'#ffffff', lineHeight:1.35}}>Distanță peste 300 km — necesită bilet de avion</span>
                     </div>
-                    <div style={{fontSize:'12px', color:'#3b82f6', marginBottom: ap ? '4px' : 0}}>
-                      Costul biletului se stabileste la cerere.
+                    <div style={{fontSize:'14px', color:'#e0edff', marginBottom: ap ? '8px' : 0, lineHeight:1.5}}>
+                      Costul biletului se stabilește la cerere.
                     </div>
                     {ap && (
-                      <div style={{fontSize:'12px', color:'#1e40af', fontWeight:600}}>
-                        Aeroport recomandat: {ap.name} (~{ap.dist} km de destinatie)
+                      <div style={{fontSize:'14px', color:'#ffffff', fontWeight:600, lineHeight:1.5}}>
+                        Aeroport recomandat: {ap.name} <span style={{color:'#bfdbfe', fontWeight:500}}>(~{ap.dist} km de destinație)</span>
                       </div>
                     )}
                   </div>
@@ -282,11 +283,6 @@ export default function TransportPage() {
             Estimare orientativa. Costul final depinde de ruta, opriri si conditii specifice.
           </div>
 
-          <div style={{marginTop:'40px', paddingTop:'24px', borderTop:'1px solid #e7e5e4', display:'flex', gap:'20px', flexWrap:'wrap', justifyContent:'center'}}>
-            <Link href="/termeni" style={{fontSize:'12px', color:'#a8a29e', textDecoration:'none'}}>Termeni</Link>
-            <Link href="/confidentialitate" style={{fontSize:'12px', color:'#a8a29e', textDecoration:'none'}}>Confidentialitate</Link>
-            <Link href="/cookies" style={{fontSize:'12px', color:'#a8a29e', textDecoration:'none'}}>Cookies</Link>
-          </div>
 
           <ExpertModal isOpen={expertOpen} onClose={() => setExpertOpen(false)} selectedCity={city} title="Vorbeste cu un expert" descPlaceholder="ex: artist dorit, data evenimentului, oras, buget..." />
 
@@ -395,6 +391,12 @@ export default function TransportPage() {
                 )
               })()}
             </div>
+          </div>
+
+          <div style={{marginTop:'48px', paddingTop:'24px', borderTop:'1px solid #e7e5e4', display:'flex', gap:'20px', flexWrap:'wrap', justifyContent:'center'}}>
+            <Link href="/termeni" style={{fontSize:'12px', color:'#a8a29e', textDecoration:'none'}}>Termeni și Condiții</Link>
+            <Link href="/confidentialitate" style={{fontSize:'12px', color:'#a8a29e', textDecoration:'none'}}>Confidențialitate</Link>
+            <Link href="/cookies" style={{fontSize:'12px', color:'#a8a29e', textDecoration:'none'}}>Cookies</Link>
           </div>
         </div>
       </div>

@@ -37,7 +37,8 @@ export default function TermeniPage() {
           <p>Platforma GIGx este administrată de S.C. MEDIA ARTIST BOOKING S.R.L., cu sediul în Orașa, Bacău, cod fiscal 31155633, înregistrată la Registrul Comerțului cu nr. J4/97/2013, cont bancar RO48 INGB 0000 9999 0867 5824, deschis la ING Bank. E-mail: hello@gigx.ro. În cuprinsul acestor Termeni, denumirile „GIGx”, „platforma”, „noi” sau „administratorul” desemnează această societate.</p>
 
           <H>2. Ce este GIGx</H>
-          <p>GIGx este o platformă de booking artistic care conectează organizatorii de evenimente — în special baluri de absolvire, evenimente școlare și private — cu artiști, DJ și formații. Platforma permite consultarea unui catalog de artiști, estimarea orientativă a costurilor și transmiterea unei cereri de ofertă către echipa GIGx.</p>
+          <p>GIGx este locul unde se rezervă artistul pentru evenimentul tău. Diferența față de căutarea pe Google, un mesaj pe Instagram sau un apel către un agent: aici primești răspuns în 30 de minute, cu prețul real și disponibilitatea reală, de la o echipă cu 20 de ani în industria muzicală.</p>
+          <p>Fie că organizezi un bal de absolvire, un festival, o petrecere corporate sau un eveniment privat, procesul este același: tu spui ce ai nevoie, noi îți spunem cine.</p>
 
           <H>3. Rolul de intermediar</H>
           <p>GIGx acționează ca intermediar între organizator și artiști. Estimările afișate (transport, cazare, categorie de onorariu) au caracter strict orientativ și nu constituie o ofertă fermă. Oferta valabilă este exclusiv cea transmisă în scris de un agent GIGx, în urma verificării disponibilității artistului pentru data și locația solicitate.</p>
