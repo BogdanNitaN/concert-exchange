@@ -1,6 +1,8 @@
 'use client'
 
 import { useState, useEffect } from 'react'
+import { jsPDF } from 'jspdf'
+import DatePicker from '@/components/modules/shared/DatePicker'
 
 const F = 'Montserrat,sans-serif'
 const ADMIN_PASS = 'fwd26'
@@ -40,6 +42,17 @@ interface Linie {
   includeExport: boolean
 }
 
+const LUNI = ['ianuarie','februarie','martie','aprilie','mai','iunie','iulie','august','septembrie','octombrie','noiembrie','decembrie']
+function formatData(v: string): string {
+  if (!v) return ''
+  // acccepta YYYY-MM-DD sau DD.MM.YYYY
+  let d: Date | null = null
+  if (/^\d{4}-\d{2}-\d{2}/.test(v)) d = new Date(v)
+  else if (/^\d{2}\.\d{2}\.\d{4}/.test(v)) { const [zi,lu,an] = v.split('.'); d = new Date(+an, +lu-1, +zi) }
+  if (!d || isNaN(d.getTime())) return v
+  return d.getDate() + ' ' + LUNI[d.getMonth()] + ' ' + d.getFullYear()
+}
+
 export default function OfertaPage() {
   const [authed, setAuthed] = useState(false)
   const [passInput, setPassInput] = useState('')
@@ -50,11 +63,14 @@ export default function OfertaPage() {
   const [fromCity, setFromCity] = useState('Bucuresti')
   const [toCity, setToCity] = useState('')
   const [locatie, setLocatie] = useState('')
+  const [dataEveniment, setDataEveniment] = useState('')
+  const [numeClient, setNumeClient] = useState('')
   const [km, setKm] = useState<number | null>(null)
   const [loadingKm, setLoadingKm] = useState(false)
   const [eurRate, setEurRate] = useState<number | null>(null)
   const [useAdaos, setUseAdaos] = useState(false)
   const [destinatar, setDestinatar] = useState<'' | 'client' | 'intermediar'>('')
+  const [institutiePublica, setInstitutiePublica] = useState(false)
   const [adaosProcent, setAdaosProcent] = useState(1)
 
   useEffect(() => {
@@ -118,33 +134,214 @@ export default function OfertaPage() {
     const cursAdaos = eurRate ? eurRate * (1 + (useAdaos ? adaosProcent : 0) / 100) : 0
     const savingLei = discount > 0 && eurRate ? Math.round(discount * eurRate) : 0
     let cag = 0
+    
     if (l.useCag) {
       if (l.cagMod === 'suma') cag = l.cagSuma
       else { cag = Math.round(l.fee * l.cagProcent / 100); if (cag > 1000) cag = 1000 }
     }
     const netGigx = l.fee - cag
-    return { kmTotal, transportLei, diurnaTotal, alcoolTotal, discount, cursAdaos, savingLei, cag, netGigx }
+    const feeLeiConv = eurRate ? Math.round(l.fee * (cursAdaos || eurRate)) : 0
+    return { kmTotal, transportLei, diurnaTotal, alcoolTotal, discount, cursAdaos, savingLei, cag, netGigx, feeLeiConv }
   }
 
   function genText(): string {
     const out: string[] = []
     for (const l of linii.filter(x => x.includeExport)) {
       const c = calcLinie(l)
-      const parts: string[] = []
-      parts.push(l.fee + ' EUR + TVA')
-      if (c.transportLei > 0) parts.push('transport ' + l.leiKm + ' lei/km x ' + c.kmTotal + ' km = ' + c.transportLei.toLocaleString('ro-RO') + ' lei + TVA')
-      if (km !== null && km > 300 && l.bileteAvion > 0) parts.push(l.bileteAvion + (l.bileteAvion === 1 ? ' bilet avion' : ' bilete avion'))
-      parts.push('cazare ' + l.cazare)
-      parts.push('protocol ' + l.persoane + ' persoane')
-      if (l.tipMasa === 'diurna' && c.diurnaTotal > 0) parts.push('diurna ' + c.diurnaTotal.toLocaleString('ro-RO') + ' lei + TVA')
-      if (l.tipMasa === 'alacarte') parts.push('masa a la carte ' + l.persoane + ' pers (pranz, cina) + mic dejun la hotel')
-      if (c.alcoolTotal > 0) parts.push('protocol alcool ' + c.alcoolTotal.toLocaleString('ro-RO') + ' lei + TVA')
-      out.push(l.artist.nume.toUpperCase())
-      out.push(parts.join(' || '))
-      if (destinatar === 'client' && c.discount > 0) out.push('SALVEZI: ' + c.discount + ' EUR' + (c.savingLei > 0 ? ' (aprox ' + c.savingLei.toLocaleString('ro-RO') + ' lei)' : ''))
+      out.push('*' + l.artist.nume.toUpperCase() + '*')
+
+      if (institutiePublica) {
+        // format oficial in lei
+        if (dataEveniment) out.push('Disponibilitate: ' + formatData(dataEveniment))
+        out.push('Onorariu: ' + c.feeLeiConv.toLocaleString('ro-RO') + ' lei + TVA')
+        if (c.transportLei > 0) out.push('Transport: ' + c.transportLei.toLocaleString('ro-RO') + ' lei + TVA')
+        out.push('Cazare: ' + l.cazare)
+        if (l.tipMasa === 'diurna' && c.diurnaTotal > 0) out.push('Masa: ' + c.diurnaTotal.toLocaleString('ro-RO') + ' lei + TVA')
+        if (l.tipMasa === 'alacarte') out.push('Masa: a la carte ' + l.persoane + ' pers (pranz, cina) + mic dejun la hotel')
+        if (c.alcoolTotal > 0) out.push('Protocol alcool: ' + c.alcoolTotal.toLocaleString('ro-RO') + ' lei + TVA')
+        out.push('Protocol ' + l.persoane + ' persoane')
+        // echivalent euro defalcat
+        out.push('(echivalent: ' + l.fee + ' EUR onorariu, curs ' + c.cursAdaos.toFixed(4) + ' lei/EUR)')
+      } else {
+        // format comercial normal
+        const parts: string[] = []
+        parts.push(l.fee + ' EUR + TVA')
+        if (c.transportLei > 0) parts.push('transport ' + l.leiKm + ' lei/km x ' + c.kmTotal + ' km = ' + c.transportLei.toLocaleString('ro-RO') + ' lei + TVA')
+        if (km !== null && km > 300 && l.bileteAvion > 0) parts.push(l.bileteAvion + (l.bileteAvion === 1 ? ' bilet avion' : ' bilete avion'))
+        parts.push('cazare ' + l.cazare)
+        parts.push('protocol ' + l.persoane + ' persoane')
+        if (l.tipMasa === 'diurna' && c.diurnaTotal > 0) parts.push('diurna ' + c.diurnaTotal.toLocaleString('ro-RO') + ' lei + TVA')
+        if (l.tipMasa === 'alacarte') parts.push('masa a la carte ' + l.persoane + ' pers (pranz, cina) + mic dejun la hotel')
+        if (c.alcoolTotal > 0) parts.push('protocol alcool ' + c.alcoolTotal.toLocaleString('ro-RO') + ' lei + TVA')
+        out.push(parts.join(' || '))
+        if (destinatar === 'client' && c.discount > 0) out.push('SALVEZI: ' + c.discount + ' EUR' + (c.savingLei > 0 ? ' (aprox ' + c.savingLei.toLocaleString('ro-RO') + ' lei)' : ''))
+      }
       out.push('')
     }
     return out.join('\n').trim()
+  }
+
+  async function downloadPDF() {
+    const doc = new jsPDF({ unit: 'mm', format: 'a4' })
+    const W = 210, M = 18
+    let y = 0
+    // Helvetica nu suporta diacritice - le scot
+    const noDia = (t: string) => t.normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/ș/g,'s').replace(/Ș/g,'S').replace(/ț/g,'t').replace(/Ț/g,'T').replace(/ă/g,'a').replace(/Ă/g,'A').replace(/â/g,'a').replace(/Â/g,'A').replace(/î/g,'i').replace(/Î/g,'I')
+
+    // helper: incarca imagine ca dataURL
+    async function toDataUrl(url: string): Promise<string | null> {
+      try {
+        const res = await fetch(url)
+        const blob = await res.blob()
+        return await new Promise(resolve => {
+          const r = new FileReader()
+          r.onloadend = () => resolve(r.result as string)
+          r.readAsDataURL(blob)
+        })
+      } catch { return null }
+    }
+
+    // === HEADER degradeu turcoaz cu diagonala ===
+    const steps = 80
+    for (let i = 0; i < steps; i++) {
+      const t = i / steps
+      const r = Math.round(180 + (100 - 180) * t)  // b4->64
+      const g = Math.round(247 + (210 - 247) * t)   // f7->d2
+      const b = Math.round(249 + (244 - 249) * t)    // f9->f4
+      doc.setFillColor(r, g, b)
+      doc.rect((W / steps) * i, 0, W / steps + 0.5, 38, 'F')
+    }
+    // diagonala: triunghi alb decupat jos-dreapta (forma interesanta)
+    doc.setFillColor(255, 255, 255)
+    doc.triangle(W, 30, W, 42, W - 60, 42, 'F')
+    doc.triangle(0, 38, 0, 44, 70, 44, 'F')
+
+    // logo Forward dreapta
+    const logo = await toDataUrl('/forward-logo.png')
+    if (logo) doc.addImage(logo, 'PNG', W - M - 34, 8, 34, 21)
+
+    // text header stanga
+    doc.setTextColor(255, 255, 255)
+    doc.setFont('helvetica', 'bold'); doc.setFontSize(16)
+    doc.text('FORWARD AGENCY', M, 16)
+    doc.setFont('helvetica', 'normal'); doc.setFontSize(9)
+    doc.text('Your #1 Artist Booking & Advising Agency', M, 22)
+
+    y = 52
+
+    // === NR OFERTA + validitate (dreapta sus sub header) ===
+    const nrOferta = 'GIGX-' + new Date().getFullYear() + '-' + String(Math.floor(Math.random()*9000)+1000)
+    doc.setFont('helvetica', 'normal'); doc.setFontSize(8); doc.setTextColor(140,140,140)
+    doc.text('Nr. ' + nrOferta, W - M, 48, { align: 'right' })
+
+    // === DETALII DE COLABORARE ===
+    doc.setFont('helvetica', 'bold'); doc.setFontSize(11); doc.setTextColor(120,120,120)
+    doc.text('DETALII DE COLABORARE', M, y)
+    y += 9
+
+    // client MAJUSCULE
+    if (numeClient) {
+      doc.setFont('helvetica', 'bold'); doc.setFontSize(17); doc.setTextColor(28,25,23)
+      doc.text(noDia(numeClient.toUpperCase()), M, y)
+      y += 8
+    }
+    // oras + locatie + data
+    doc.setFont('helvetica', 'normal'); doc.setFontSize(10); doc.setTextColor(100,100,100)
+    const sub = [toCity, locatie].filter(Boolean).join(' · ')
+    if (sub) { doc.text(noDia(sub), M, y); y += 5 }
+    if (dataEveniment) { doc.text(noDia('Eveniment: ' + formatData(dataEveniment)), M, y); y += 5 }
+    y += 6
+
+    // === ARTISTI ===
+    const activi = linii.filter(l => l.includeExport)
+    for (const l of activi) {
+      const c = calcLinie(l)
+      if (y > 235) { doc.addPage(); y = 20 }
+
+      // foto artist (stanga)
+      const imgUrl = 'https://i.scdn.co/image/' // se ia din DB via prom-images
+      let photo: string | null = null
+      try {
+        const pr = await fetch('/api/prom-images')
+        const imgs = await pr.json()
+        if (imgs[l.artist.nume]) photo = await toDataUrl(imgs[l.artist.nume])
+      } catch {}
+      const textX = photo ? M + 24 : M
+      if (photo) {
+        try { doc.addImage(photo, 'JPEG', M, y, 20, 20) } catch {}
+      }
+
+      doc.setFont('helvetica', 'bold'); doc.setFontSize(13); doc.setTextColor(28,25,23)
+      doc.text(noDia(l.artist.nume.toUpperCase()), textX, y + 5)
+      let ly = y + 11
+
+      doc.setFont('helvetica', 'normal'); doc.setFontSize(9.5); doc.setTextColor(60,60,60)
+      const rows: string[] = []
+      rows.push('Onorariu: ' + l.fee + ' EUR + TVA')
+      if (c.transportLei > 0) rows.push('Transport: ' + l.leiKm + ' lei/km x ' + c.kmTotal + ' km = ' + c.transportLei.toLocaleString('ro-RO') + ' lei + TVA')
+      if (km !== null && km > 300 && l.bileteAvion > 0) rows.push('Avion: ' + l.bileteAvion + (l.bileteAvion === 1 ? ' bilet' : ' bilete') + ' + transfer auto')
+      rows.push('Cazare: ' + l.cazare + ' (' + l.persoane + ' persoane)')
+      if (l.tipMasa === 'diurna' && c.diurnaTotal > 0) rows.push('Diurna: ' + c.diurnaTotal.toLocaleString('ro-RO') + ' lei + TVA')
+      if (l.tipMasa === 'alacarte') rows.push('Masa: a la carte ' + l.persoane + ' pers (pranz, cina) + mic dejun la hotel')
+      if (c.alcoolTotal > 0) rows.push('Protocol alcool: ' + c.alcoolTotal.toLocaleString('ro-RO') + ' lei + TVA')
+      for (const rr of rows) { doc.text(noDia(rr), textX, ly); ly += 5 }
+
+      if (destinatar === 'client' && c.discount > 0) {
+        doc.setFont('helvetica', 'bold'); doc.setTextColor(5,150,105)
+        doc.text('SALVEZI: ' + c.discount + ' EUR' + (c.savingLei > 0 ? ' (aprox ' + c.savingLei.toLocaleString('ro-RO') + ' lei)' : ''), textX, ly)
+        ly += 5
+      }
+      y = Math.max(ly, y + 22) + 12
+    }
+
+    // validitate pe randuri (respecta latimea)
+    doc.setFont('helvetica', 'italic'); doc.setFontSize(8.5); doc.setTextColor(150,150,150)
+    const valid = doc.splitTextToSize('Oferta valabila 48 de ore de la momentul emiterii. Preturile nu includ TVA. Transport estimativ.', W - 2*M - 2)
+    doc.text(valid, M, y)
+
+    // === FOOTER cu ambii contacte ===
+    const fy = 258
+    doc.setDrawColor(129, 212, 242); doc.setLineWidth(0.8)
+    doc.line(M, fy, W - M, fy)
+    doc.setLineWidth(0.2)
+    // Bogdan - stanga
+    doc.setFont('helvetica', 'bold'); doc.setFontSize(9.5); doc.setTextColor(28,25,23)
+    doc.text('Bogdan Nita', M, fy + 6)
+    doc.setFont('helvetica', 'normal'); doc.setFontSize(8); doc.setTextColor(80,80,80)
+    doc.text('Managing Partner, Artist Booking & Advisor', M, fy + 10.5)
+    doc.text('+40 751 144 109  ·  bogdan@forward.ro', M, fy + 14.5)
+    // Alexandra - dreapta
+    doc.setFont('helvetica', 'bold'); doc.setFontSize(9.5); doc.setTextColor(28,25,23)
+    doc.text('Alexandra Stefan', W/2 + 10, fy + 6)
+    doc.setFont('helvetica', 'normal'); doc.setFontSize(8); doc.setTextColor(80,80,80)
+    doc.text('Assistant Contracting, Logistics & Booking Support', W/2 + 10, fy + 10.5)
+    doc.text('alexandra.stefan@forward.ro', W/2 + 10, fy + 14.5)
+    // linia + generat + GIGx jos
+    const now = new Date()
+    doc.setFontSize(7.5); doc.setTextColor(150,150,150)
+    doc.text('Generat: ' + now.toLocaleDateString('ro-RO') + ' ' + now.toLocaleTimeString('ro-RO', {hour:'2-digit',minute:'2-digit'}), M, fy + 24)
+    doc.setFont('helvetica', 'bold'); doc.setFontSize(9)
+    const gx = W - M - 20
+    doc.setTextColor(28,25,23); doc.text('powered by GIG', gx, fy + 24)
+    const gw = doc.getTextWidth('powered by GIG')
+    doc.setTextColor(5,150,105); doc.text('x', gx + gw, fy + 24)
+
+    const filename = 'colaborare-' + (toCity || 'gigx').toLowerCase().replace(/\s+/g,'-') + '.pdf'
+    const isMobile = typeof window !== 'undefined' && window.innerWidth < 768
+
+    if (isMobile && navigator.share) {
+      // mobil: share nativ cu PDF atasat
+      try {
+        const blob = doc.output('blob')
+        const file = new File([blob], filename, { type: 'application/pdf' })
+        if (navigator.canShare && navigator.canShare({ files: [file] })) {
+          await navigator.share({ files: [file], title: 'Ofertă GIGx' })
+          return
+        }
+      } catch { /* daca share esueaza, cad pe descarcare */ }
+    }
+    // desktop sau fallback: descarcare
+    doc.save(filename)
   }
 
   const inputStyle: React.CSSProperties = { width: '100%', padding: '10px 12px', borderRadius: '8px', border: '1.5px solid #e7e5e4', fontSize: '14px', fontFamily: F, boxSizing: 'border-box', color: '#1c1917' }
@@ -176,8 +373,14 @@ export default function OfertaPage() {
       <div style={{maxWidth:'1100px', margin:'0 auto'}}>
         <div style={{fontSize:'24px', fontWeight:800, marginBottom:'24px'}}>GIG<span style={{color:'#059669'}}>x</span> · Generator deviz</div>
 
-        {/* oras comun */}
+        {/* client + eveniment */}
         <div style={{background:'white', padding:'20px', borderRadius:'14px', border:'2px solid #e7e5e4', marginBottom:'20px'}}>
+          <div style={{display:'grid', gridTemplateColumns:'2fr 1fr', gap:'12px', marginBottom:'12px'}}>
+            <div><label style={label}>Denumire client / instituție</label>
+              <input value={numeClient} onChange={e => setNumeClient(e.target.value)} placeholder="ex: Primăria Focșani" style={inputStyle} /></div>
+            <div><label style={label}>Data eveniment</label>
+              <DatePicker value={dataEveniment} onChange={v => setDataEveniment(v)} placeholder="Alege data" /></div>
+          </div>
           <div style={{display:'grid', gridTemplateColumns:'1fr 1fr 1fr auto', gap:'12px', alignItems:'end'}}>
             <div><label style={label}>Oraș plecare</label>
               <input value={fromCity} onChange={e => setFromCity(e.target.value)} style={inputStyle} /></div>
@@ -194,6 +397,10 @@ export default function OfertaPage() {
             <label style={{display:'flex', alignItems:'center', gap:'8px', fontSize:'13px', cursor:'pointer', fontWeight:700}}>
               <input type="checkbox" checked={useAdaos} onChange={e => setUseAdaos(e.target.checked)} style={{width:'16px', height:'16px', accentColor:'#059669'}} />
               Aplică adaos curs BNR
+            </label>
+            <label style={{display:'flex', alignItems:'center', gap:'8px', fontSize:'13px', cursor:'pointer', fontWeight:700, color:'#7c3aed'}}>
+              <input type="checkbox" checked={institutiePublica} onChange={e => setInstitutiePublica(e.target.checked)} style={{width:'16px', height:'16px', accentColor:'#7c3aed'}} />
+              Instituție publică (ofertă în lei)
             </label>
             {useAdaos && <input type="number" step="0.1" value={adaosProcent} onChange={e => setAdaosProcent(Number(e.target.value))} style={{...inputStyle, width:'80px'}} />}
             {eurRate && <span style={{fontSize:'12px', color:'#78716c'}}>Curs BNR: {eurRate.toFixed(4)} lei/€</span>}
@@ -335,7 +542,7 @@ export default function OfertaPage() {
               <button onClick={() => window.open('mailto:?subject=' + encodeURIComponent('Oferta GIGx ' + toCity) + '&body=' + encodeURIComponent(genText()))}
                 style={{flex:1, minWidth:'120px', padding:'12px', background:'#3b82f6', color:'white', border:'none', borderRadius:'8px', fontSize:'14px', fontWeight:700, cursor:'pointer', fontFamily:F}}>Email</button>
               <button onClick={() => downloadPDF()}
-                style={{flex:1, minWidth:'120px', padding:'12px', background:'#7c3aed', color:'white', border:'none', borderRadius:'8px', fontSize:'14px', fontWeight:700, cursor:'pointer', fontFamily:F}}>Descarcă PDF</button>
+                style={{flex:1, minWidth:'120px', padding:'12px', background:'#7c3aed', color:'white', border:'none', borderRadius:'8px', fontSize:'14px', fontWeight:700, cursor:'pointer', fontFamily:F}}>{typeof window !== 'undefined' && window.innerWidth < 768 ? 'Distribuie PDF' : 'Descarcă PDF'}</button>
             </div>
           </div>
         )}
