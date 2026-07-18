@@ -26,6 +26,9 @@ interface Artist {
   alcool_default: number
   categorie: string
   tip?: string
+  set_type?: string
+  diurna_fixa?: number | null
+  transport_moneda?: string
   formate?: Format[] | null
 }
 
@@ -34,6 +37,7 @@ interface Linie {
   key: string
   artist: Artist
   formatSelectat: string
+  durata: string
   tipPret: string
   feeLista: number
   fee: number
@@ -183,7 +187,7 @@ export default function OfertaPage() {
               const art = arts.find((a: Artist) => a.nume === lc.artistNume) || { nume: lc.artistNume, fee_standard: lc.fee, lei_km: lc.leiKm, cazare: lc.cazare, nr_persoane: lc.persoane, bilete_avion: lc.bileteAvion, alcool_default: 0, categorie: '', tip: lc.tip }
               return {
                 key: lc.artistNume + '-' + Date.now() + '-' + i,
-                artist: art, formatSelectat: lc.formatSelectat || '',
+                artist: art, formatSelectat: lc.formatSelectat || '', durata: lc.durata || '',
                 tipPret: lc.tipPret, feeLista: lc.feeLista, fee: lc.fee, leiKm: lc.leiKm,
                 useMarja: lc.useMarja, cazare: lc.cazare, persoane: lc.persoane, bileteAvion: lc.bileteAvion,
                 tipMasa: lc.tipMasa, zile: lc.zile, diurnaPerPers: lc.diurnaPerPers,
@@ -238,12 +242,23 @@ export default function OfertaPage() {
     setShowCitySugg(false)
   }
 
+  function getDurationOptions(setType?: string): string[] {
+    if (setType === 'dj') return ['60 min', '90 min', '120 min', '180 min']
+    if (setType === 'vocal') return ['45 min', '60 min', '90 min']
+    if (setType === 'band' || setType === 'cover') return ['45 min', '60 min', '90 min', '2x45 min', '2x60 min']
+    if (setType === 'show') return ['15 min', '20 min', '30 min', '45 min']
+    if (setType === 'instrument') return ['30 min', '45 min', '60 min', '90 min', '120 min']
+    if (setType === 'mc') return ['1 ora', '2 ore', '3 ore', '4 ore', '5+ ore']
+    return ['45 min', '60 min', '90 min', '2x45 min']
+  }
+
   function addArtist(a: Artist) {
     const fmt = (a.formate && a.formate.length > 0) ? a.formate[0] : null
     setLinii(prev => [...prev, {
       key: a.nume + '-' + Date.now(),
       artist: a,
       formatSelectat: fmt ? fmt.nume : '',
+      durata: getDurationOptions(a.set_type)[0] || '',
       tipPret: 'Standard',
       feeLista: fmt ? fmt.fee : a.fee_standard,
       fee: fmt ? fmt.fee : a.fee_standard,
@@ -337,6 +352,7 @@ export default function OfertaPage() {
       } else {
         // format comercial normal
         const parts: string[] = []
+        if (l.durata) parts.push('durata: ' + l.durata)
         parts.push(l.fee + ' EUR + TVA')
         if (c.transportLei > 0) parts.push('transport ' + l.leiKm + ' lei/km x ' + c.kmTotal + ' km = ' + c.transportLei.toLocaleString('ro-RO') + ' lei + TVA')
         if (km !== null && km > 300 && l.bileteAvion > 0) {
@@ -383,7 +399,7 @@ export default function OfertaPage() {
           use_adaos: useAdaos,
           linii_complete: activi.map(l => ({
             artistNume: l.artist.nume,
-            formatSelectat: l.formatSelectat,
+            formatSelectat: l.formatSelectat, durata: l.durata,
             tipPret: l.tipPret, feeLista: l.feeLista, fee: l.fee, leiKm: l.leiKm,
             useMarja: l.useMarja, cazare: l.cazare, persoane: l.persoane, bileteAvion: l.bileteAvion, restulRutier: l.restulRutier,
             tipMasa: l.tipMasa, zile: l.zile, diurnaPerPers: l.diurnaPerPers,
@@ -473,6 +489,7 @@ export default function OfertaPage() {
     doc.text('FORWARD AGENCY', M, 16)
     doc.setFont('helvetica', 'normal'); doc.setFontSize(9)
     doc.setFontSize(7.5)
+    doc.setFontSize(7.5)
     doc.setTextColor(10, 50, 65)
     doc.text('Your #1 Artist Booking & Advising Agency', M, 22)
     doc.setTextColor(255, 255, 255)
@@ -527,6 +544,7 @@ export default function OfertaPage() {
 
       doc.setFont('helvetica', 'normal'); doc.setFontSize(9.5); doc.setTextColor(60,60,60)
       const rows: string[] = []
+      if (l.durata) rows.push('Durata show: ' + l.durata)
       rows.push('Onorariu: ' + l.fee + ' EUR + TVA')
       if (c.transportLei > 0) rows.push('Transport: ' + l.leiKm + ' lei/km x ' + c.kmTotal + ' km = ' + c.transportLei.toLocaleString('ro-RO') + ' lei + TVA')
       if (km !== null && km > 300 && l.bileteAvion > 0) {
@@ -723,6 +741,10 @@ export default function OfertaPage() {
                   <input type="checkbox" checked={l.includeExport} onChange={e => updateLinie(l.key, { includeExport: e.target.checked })} style={{width:'18px', height:'18px', accentColor:'#059669'}} />
                   <span style={{fontSize:'18px', fontWeight:800}}>{l.artist.nume}</span>
                   <span style={{fontSize:'9px', fontWeight:800, padding:'2px 6px', borderRadius:'4px', background: l.artist.tip === 'intermediere' ? '#faf5ff' : '#f0fdf4', color: l.artist.tip === 'intermediere' ? '#7c3aed' : '#059669'}}>{l.artist.tip === 'intermediere' ? 'EXTERN' : 'FWD'}</span>
+                  <select value={l.durata || getDurationOptions(l.artist.set_type)[0]} onChange={e => updateLinie(l.key, { durata: e.target.value })}
+                    style={{marginLeft:'8px', padding:'4px 10px', borderRadius:'8px', border:'1.5px solid #0891b2', color:'#0891b2', fontSize:'12px', fontWeight:700, fontFamily:F, cursor:'pointer', background:'white'}}>
+                    {getDurationOptions(l.artist.set_type).map(d => <option key={d} value={d}>{d}</option>)}
+                  </select>
                   {l.artist.formate && l.artist.formate.length > 1 && (
                     <select value={l.formatSelectat} onChange={e => schimbaFormat(l.key, e.target.value)}
                       style={{marginLeft:'10px', padding:'4px 10px', borderRadius:'8px', border:'1.5px solid #7c3aed', color:'#7c3aed', fontSize:'12px', fontWeight:700, fontFamily:F, cursor:'pointer', background:'white'}}>
