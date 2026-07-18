@@ -805,18 +805,22 @@ export default function OfertaPage() {
                 </div>
               )}
 
+              {l.cazareFixa > 0 ? (
+                <div style={{fontSize:'12px', color:'#78716c', marginBottom:'12px'}}>Cazare cu sumă fixă (editabilă mai jos){km !== null && km > 300 && l.bileteAvion > 0 ? ' · ' + l.bileteAvion + (l.bileteAvion === 1 ? ' bilet avion' : ' bilete avion') : ''}</div>
+              ) : (
               <div style={{marginBottom:'12px'}}>
                 <label style={label}>Cazare</label>
                 <input value={l.cazare} onChange={e => updateLinie(l.key, { cazare: e.target.value })} style={inputStyle} />
                 <div style={{fontSize:'12px', color:'#78716c', marginTop:'4px'}}>Protocol: {l.persoane} persoane{km !== null && km > 300 && l.bileteAvion > 0 ? ' · ' + l.bileteAvion + (l.bileteAvion === 1 ? ' bilet avion' : ' bilete avion') : ''}</div>
               </div>
+              )}
 
-              {(l.diurnaFixa > 0 || l.cazareFixa > 0) && (
-                <div style={{display:'flex', gap:'8px', marginBottom:'10px', padding:'10px 12px', background:'#f0fdf4', border:'1.5px solid #059669', borderRadius:'8px'}}>
+              {(l.diurnaFixa > 0 || l.cazareFixa > 0) ? (
+                <div style={{display:'flex', gap:'8px', marginBottom:'12px', padding:'10px 12px', background:'#f0fdf4', border:'1.5px solid #059669', borderRadius:'8px'}}>
                   <div style={{flex:1}}><label style={{...label, color:'#059669'}}>Diurnă fixă (lei)</label><input type="number" value={l.diurnaFixa || ''} onFocus={e => e.target.select()} onChange={e => updateLinie(l.key, { diurnaFixa: Number(e.target.value) })} style={inputStyle} /></div>
                   <div style={{flex:1}}><label style={{...label, color:'#059669'}}>Cazare fixă (lei)</label><input type="number" value={l.cazareFixa || ''} onFocus={e => e.target.select()} onChange={e => updateLinie(l.key, { cazareFixa: Number(e.target.value) })} style={inputStyle} /></div>
                 </div>
-              )}
+              ) : (<>
               <div style={{display:'flex', gap:'8px', marginBottom:'8px'}}>
                 <button onClick={() => updateLinie(l.key, { tipMasa: 'diurna' })} style={{flex:1, padding:'8px', borderRadius:'8px', border:'1.5px solid '+(l.tipMasa==='diurna'?'#1c1917':'#e7e5e4'), background:l.tipMasa==='diurna'?'#1c1917':'white', color:l.tipMasa==='diurna'?'white':'#78716c', fontSize:'13px', fontWeight:700, cursor:'pointer', fontFamily:F}}>Diurnă</button>
                 <button onClick={() => updateLinie(l.key, { tipMasa: 'alacarte' })} style={{flex:1, padding:'8px', borderRadius:'8px', border:'1.5px solid '+(l.tipMasa==='alacarte'?'#1c1917':'#e7e5e4'), background:l.tipMasa==='alacarte'?'#1c1917':'white', color:l.tipMasa==='alacarte'?'white':'#78716c', fontSize:'13px', fontWeight:700, cursor:'pointer', fontFamily:F}}>À la carte</button>
@@ -830,6 +834,7 @@ export default function OfertaPage() {
               ) : (
                 <div style={{fontSize:'13px', color:'#78716c', padding:'8px', background:'#f5f5f4', borderRadius:'8px', marginBottom:'12px'}}>Masă à la carte {l.persoane} pers (prânz, cină) + mic dejun la hotel</div>
               )}
+              </>)}
 
               <label style={{display:'flex', alignItems:'center', gap:'8px', fontSize:'13px', cursor:'pointer', fontWeight:700}}>
                 <input type="checkbox" checked={l.useAlcool} onChange={e => updateLinie(l.key, { useAlcool: e.target.checked })} style={{width:'16px', height:'16px', accentColor:'#059669'}} />
