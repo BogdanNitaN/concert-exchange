@@ -5,27 +5,30 @@ import { jsPDF } from 'jspdf'
 import DatePicker from '@/components/modules/shared/DatePicker'
 import { supabase } from '@/lib/supabase'
 import { useRouter } from 'next/navigation'
-import { UserPlus, Users, History, LogOut, Copy, MessageCircle, Mail, FileDown } from 'lucide-react'
+import { UserPlus, Users, History, LogOut, Copy, MessageCircle, Mail, FileDown, Calendar } from 'lucide-react'
 
 const F = 'Montserrat,sans-serif'
 // Design tokens premium
 const UI = {
-  bg: '#fafaf9',
+  bg: '#f5f5f7',
   card: '#ffffff',
   ink: '#1c1917',
-  sub: '#78716c',
+  sub: '#57534e',
   faint: '#a8a29e',
-  line: '#f0efed',
+  line: '#e7e5e4',
   lineStrong: '#e7e5e4',
   green: '#059669',
   greenSoft: '#f0fdf4',
   greenLine: '#d1fae5',
   purple: '#7c3aed',
   purpleSoft: '#faf5ff',
-  radius: '14px',
-  radiusSm: '10px',
-  shadow: '0 1px 2px rgba(28,25,23,0.04), 0 4px 16px rgba(28,25,23,0.04)',
-  shadowHover: '0 2px 8px rgba(28,25,23,0.06), 0 12px 32px rgba(28,25,23,0.08)',
+  dark: '#1c1917',
+  radius: '16px',
+  radiusSm: '12px',
+  shadow: '0 1px 3px rgba(0,0,0,0.04), 0 8px 24px rgba(0,0,0,0.04)',
+  shadowHover: '0 8px 30px rgba(0,0,0,0.12)',
+  shadowBtn: '0 8px 30px rgba(0,0,0,0.18)',
+  mesh: 'radial-gradient(circle at 20% 20%, rgba(5,150,105,0.06) 0%, transparent 50%), radial-gradient(circle at 80% 30%, rgba(124,58,237,0.05) 0%, transparent 50%), radial-gradient(circle at 50% 90%, rgba(234,205,163,0.06) 0%, transparent 50%)',
 }
 
 interface Format {
@@ -684,8 +687,9 @@ export default function OfertaPage() {
   const filtered = search ? artists.filter(a => a.nume.toLowerCase().includes(search.toLowerCase())) : []
 
   return (
-    <div style={{minHeight:'100vh', background:UI.bg, fontFamily:F, padding: isMobile ? '16px 12px' : '40px 20px'}}>
-      <div style={{maxWidth:'1080px', margin:'0 auto'}}>
+    <div style={{minHeight:'100vh', background:UI.bg, fontFamily:F, padding: isMobile ? '16px 12px' : '40px 20px', position:'relative'}}>
+      <div style={{position:'fixed', inset:0, background:UI.mesh, pointerEvents:'none', zIndex:0}} />
+      <div style={{maxWidth:'1080px', margin:'0 auto', position:'relative', zIndex:1}}>
         <div style={{display:'flex', justifyContent:'space-between', alignItems:'center', marginBottom:'24px'}}>
           <div>
             <div style={{fontSize:'26px', fontWeight:800, letterSpacing:'-0.5px', color:'#1c1917'}}>GIG<span style={{color:'#059669'}}>x</span></div>
@@ -704,9 +708,9 @@ export default function OfertaPage() {
           <div style={{display:'grid', gridTemplateColumns: isMobile ? '1fr' : '2fr 1fr', gap:'12px', marginBottom:'12px'}}>
             <div><label style={label}>Denumire client / instituție</label>
               <input value={numeClient} onChange={e => setNumeClient(e.target.value)} placeholder="ex: Primăria Focșani" style={inputStyle} /></div>
-            <div style={{background: dataEveniment ? '#f0fdf4' : '#fffbeb', border: '2px solid ' + (dataEveniment ? '#059669' : '#f59e0b'), borderRadius:'10px', padding:'8px 10px'}}>
-              <label style={{...label, color: dataEveniment ? '#059669' : '#b45309', display:'flex', alignItems:'center', gap:'5px'}}>
-                📅 Data eveniment {!dataEveniment && <span style={{color:'#f59e0b', fontWeight:800}}>← completează</span>}
+            <div style={{background: dataEveniment ? UI.greenSoft : '#fff', border: '1.5px solid ' + (dataEveniment ? UI.green : UI.lineStrong), borderRadius:UI.radiusSm, padding:'10px 12px', transition:'all 0.15s'}}>
+              <label style={{...label, color: dataEveniment ? UI.green : UI.faint, display:'flex', alignItems:'center', gap:'6px', marginBottom:'6px'}}>
+                <Calendar size={13} strokeWidth={2.2} /> Data eveniment {!dataEveniment && <span style={{color:UI.green, fontWeight:700}}>obligatoriu</span>}
               </label>
               <DatePicker value={dataEveniment} onChange={v => setDataEveniment(v)} placeholder="Alege data" /></div>
           </div>
