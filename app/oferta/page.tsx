@@ -262,7 +262,7 @@ export default function OfertaPage() {
       const imgUrl = 'https://i.scdn.co/image/' // se ia din DB via prom-images
       let photo: string | null = null
       try {
-        const pr = await fetch('/api/prom-images')
+        const pr = await fetch('/api/oferta-poze')
         const imgs = await pr.json()
         if (imgs[l.artist.nume]) photo = await toDataUrl(imgs[l.artist.nume])
       } catch {}
