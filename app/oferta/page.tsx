@@ -472,6 +472,7 @@ export default function OfertaPage() {
     doc.setFont('helvetica', 'bold'); doc.setFontSize(16)
     doc.text('FORWARD AGENCY', M, 16)
     doc.setFont('helvetica', 'normal'); doc.setFontSize(9)
+    doc.setFontSize(7.5)
     doc.setTextColor(10, 50, 65)
     doc.text('Your #1 Artist Booking & Advising Agency', M, 22)
     doc.setTextColor(255, 255, 255)
