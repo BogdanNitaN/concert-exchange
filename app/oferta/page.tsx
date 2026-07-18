@@ -296,7 +296,7 @@ export default function OfertaPage() {
 
     // validitate pe randuri (respecta latimea)
     doc.setFont('helvetica', 'italic'); doc.setFontSize(8.5); doc.setTextColor(150,150,150)
-    const valid = doc.splitTextToSize('Oferta valabila 48 de ore de la momentul emiterii. Preturile nu includ TVA. Transport estimativ.', W - 2*M - 2)
+    const valid = doc.splitTextToSize('Oferta valabila 48 de ore de la momentul emiterii. Preturile nu includ TVA.', W - 2*M - 2)
     doc.text(valid, M, y)
 
     // === FOOTER cu ambii contacte ===
@@ -539,7 +539,7 @@ export default function OfertaPage() {
                 style={{flex:1, minWidth:'120px', padding:'12px', background:'#059669', color:'white', border:'none', borderRadius:'8px', fontSize:'14px', fontWeight:700, cursor:'pointer', fontFamily:F}}>Copiază tot</button>
               <button onClick={() => window.open('https://wa.me/?text=' + encodeURIComponent(genText()), '_blank')}
                 style={{flex:1, minWidth:'120px', padding:'12px', background:'#25D366', color:'white', border:'none', borderRadius:'8px', fontSize:'14px', fontWeight:700, cursor:'pointer', fontFamily:F}}>WhatsApp</button>
-              <button onClick={() => window.open('mailto:?subject=' + encodeURIComponent('Oferta GIGx ' + toCity) + '&body=' + encodeURIComponent(genText()))}
+              <button onClick={() => window.open('mailto:?subject=' + encodeURIComponent('Oferta GIGx ' + toCity) + '&body=' + encodeURIComponent(genText().replace(/\*/g, '')))}
                 style={{flex:1, minWidth:'120px', padding:'12px', background:'#3b82f6', color:'white', border:'none', borderRadius:'8px', fontSize:'14px', fontWeight:700, cursor:'pointer', fontFamily:F}}>Email</button>
               <button onClick={() => downloadPDF()}
                 style={{flex:1, minWidth:'120px', padding:'12px', background:'#7c3aed', color:'white', border:'none', borderRadius:'8px', fontSize:'14px', fontWeight:700, cursor:'pointer', fontFamily:F}}>{typeof window !== 'undefined' && window.innerWidth < 768 ? 'Distribuie PDF' : 'Descarcă PDF'}</button>
