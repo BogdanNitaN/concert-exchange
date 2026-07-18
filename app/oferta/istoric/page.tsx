@@ -1,9 +1,9 @@
 'use client'
 
 import { useState, useEffect, useMemo } from 'react'
+import { supabase } from '@/lib/supabase'
 
 const F = 'Montserrat,sans-serif'
-const ADMIN_PASS = 'fwd26'
 
 interface Oferta {
   cod: string
@@ -28,7 +28,25 @@ const STATUS_COLOR: Record<string, string> = { generata: '#a8a29e', trimisa: '#3
 
 export default function IstoricPage() {
   const [authed, setAuthed] = useState(false)
-  const [passInput, setPassInput] = useState('')
+  const [checkingAuth, setCheckingAuth] = useState(true)
+  const [loginUser, setLoginUser] = useState('')
+  const [loginPass, setLoginPass] = useState('')
+  const [loginErr, setLoginErr] = useState('')
+  const [loggingIn, setLoggingIn] = useState(false)
+
+  async function faLogin() {
+    setLoggingIn(true); setLoginErr('')
+    const mapRes = await fetch('/api/oferta-login', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ username: loginUser.trim() }) })
+    const mapData = await mapRes.json()
+    if (!mapData.email) { setLoginErr('Utilizator inexistent'); setLoggingIn(false); return }
+    if (mapData.blocat) { setLoginErr('Cont blocat'); setLoggingIn(false); return }
+    const { data, error } = await supabase.auth.signInWithPassword({ email: mapData.email, password: loginPass })
+    if (error) { setLoginErr('Utilizator sau parola gresita'); setLoggingIn(false); return }
+    const role = data.user?.user_metadata?.role
+    if (role === 'oferta_admin' || role === 'oferta_user') setAuthed(true)
+    else { setLoginErr('Nu ai acces'); await supabase.auth.signOut() }
+    setLoggingIn(false)
+  }
   const [oferte, setOferte] = useState<Oferta[]>([])
   const [loading, setLoading] = useState(false)
   const [expandat, setExpandat] = useState<string | null>(null)
@@ -44,6 +62,14 @@ export default function IstoricPage() {
   const [fValoareMin, setFValoareMin] = useState('')
   const [sortBy, setSortBy] = useState('data-noua')
 
+  useEffect(() => {
+    supabase.auth.getSession().then(({ data }) => {
+      const user = data.session?.user
+      const role = user?.user_metadata?.role
+      if (user && (role === 'oferta_admin' || role === 'oferta_user') && !user?.user_metadata?.blocat) setAuthed(true)
+      setCheckingAuth(false)
+    })
+  }, [])
   useEffect(() => { if (authed) load() }, [authed])
 
   async function load() {
@@ -105,19 +131,26 @@ export default function IstoricPage() {
   const inputStyle: React.CSSProperties = { padding: '9px 11px', borderRadius: '8px', border: '1.5px solid #e7e5e4', fontSize: '13px', fontFamily: F, boxSizing: 'border-box', color: '#1c1917' }
   const label: React.CSSProperties = { fontSize: '10px', fontWeight: 700, color: '#78716c', textTransform: 'uppercase', letterSpacing: '0.04em', marginBottom: '4px', display: 'block' }
 
+  if (checkingAuth) {
+    return <div style={{minHeight:'100vh', background:'#f5f5f7', display:'flex', alignItems:'center', justifyContent:'center', fontFamily:F, color:'#78716c'}}>Verificare...</div>
+  }
   if (!authed) {
     return (
-      <div style={{minHeight:'100vh', background:'#f5f5f7', display:'flex', alignItems:'center', justifyContent:'center', fontFamily:F}}>
-        <div style={{background:'white', padding:'40px', borderRadius:'16px', border:'2px solid #e7e5e4', width:'320px'}}>
+      <div style={{minHeight:'100vh', background:'#f5f5f7', display:'flex', alignItems:'center', justifyContent:'center', fontFamily:F, padding:'20px'}}>
+        <div style={{background:'white', padding:'40px', borderRadius:'16px', border:'2px solid #e7e5e4', width:'340px'}}>
           <div style={{fontSize:'22px', fontWeight:800, marginBottom:'6px'}}>GIG<span style={{color:'#059669'}}>x</span> Istoric</div>
-          <div style={{fontSize:'13px', color:'#78716c', marginBottom:'20px'}}>Rapoarte oferte</div>
-          <input type="password" placeholder="Parola" value={passInput}
-            onChange={e => setPassInput(e.target.value)}
-            onKeyDown={e => { if (e.key === 'Enter' && passInput === ADMIN_PASS) setAuthed(true) }}
+          <div style={{fontSize:'13px', color:'#78716c', marginBottom:'20px'}}>Autentificare</div>
+          <input type="text" placeholder="Utilizator" value={loginUser} autoComplete="username"
+            onChange={e => setLoginUser(e.target.value)}
+            style={{...inputStyle, width:'100%', padding:'10px 12px', fontSize:'14px', marginBottom:'10px'}} />
+          <input type="password" placeholder="Parola" value={loginPass} autoComplete="current-password"
+            onChange={e => setLoginPass(e.target.value)}
+            onKeyDown={e => { if (e.key === 'Enter') faLogin() }}
             style={{...inputStyle, width:'100%', padding:'10px 12px', fontSize:'14px'}} />
-          <button onClick={() => { if (passInput === ADMIN_PASS) setAuthed(true) }}
-            style={{width:'100%', marginTop:'12px', padding:'11px', background:'#1c1917', color:'white', border:'none', borderRadius:'8px', fontSize:'14px', fontWeight:700, cursor:'pointer', fontFamily:F}}>
-            Intra
+          {loginErr && <div style={{fontSize:'12px', color:'#dc2626', marginTop:'8px'}}>{loginErr}</div>}
+          <button onClick={faLogin} disabled={loggingIn}
+            style={{width:'100%', marginTop:'14px', padding:'11px', background:'#1c1917', color:'white', border:'none', borderRadius:'8px', fontSize:'14px', fontWeight:700, cursor: loggingIn ? 'wait' : 'pointer', fontFamily:F, opacity: loggingIn ? 0.6 : 1}}>
+            {loggingIn ? 'Se conecteaza...' : 'Intra in cont'}
           </button>
         </div>
       </div>
