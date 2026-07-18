@@ -28,6 +28,19 @@ export async function PATCH(req: Request) {
   }
 }
 
+export async function DELETE(req: Request) {
+  try {
+    const { searchParams } = new URL(req.url)
+    const cod = searchParams.get('cod')
+    if (!cod) return NextResponse.json({ ok: false }, { status: 400 })
+    const { error } = await supabase.from('oferte_generate').delete().eq('cod', cod)
+    if (error) return NextResponse.json({ ok: false }, { status: 400 })
+    return NextResponse.json({ ok: true })
+  } catch {
+    return NextResponse.json({ ok: false }, { status: 500 })
+  }
+}
+
 export async function GET(req: Request) {
   const { searchParams } = new URL(req.url)
   const cod = searchParams.get('cod')

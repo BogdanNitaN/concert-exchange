@@ -122,6 +122,8 @@ export default function OfertaPage() {
 
   const [fromCity, setFromCity] = useState('Bucuresti')
   const [toCity, setToCity] = useState('')
+  const [citySuggestions, setCitySuggestions] = useState<{description: string}[]>([])
+  const [showCitySugg, setShowCitySugg] = useState(false)
   const [locatie, setLocatie] = useState('')
   const [dataEveniment, setDataEveniment] = useState('')
   const [numeClient, setNumeClient] = useState('')
@@ -213,6 +215,26 @@ export default function OfertaPage() {
       } else alert('Eroare: ' + (d.error || 'necunoscuta'))
     } catch { alert('Eroare la salvare') }
     setSavingArtist(false)
+  }
+
+  async function cautaOras(input: string) {
+    setToCity(input)
+    if (input.trim().length < 2) { setCitySuggestions([]); setShowCitySugg(false); return }
+    try {
+      const r = await fetch('/api/places?input=' + encodeURIComponent(input) + '&type=cities')
+      const d = await r.json()
+      const preds = (d.predictions || []).map((p: any) => ({ description: p.description }))
+      setCitySuggestions(preds)
+      setShowCitySugg(preds.length > 0)
+    } catch { setCitySuggestions([]) }
+  }
+
+  function alegeOras(desc: string) {
+    // iau doar orasul (inainte de prima virgula)
+    const oras = desc.split(',')[0].trim()
+    setToCity(oras)
+    setCitySuggestions([])
+    setShowCitySugg(false)
   }
 
   function addArtist(a: Artist) {
@@ -620,8 +642,21 @@ export default function OfertaPage() {
           <div style={{display:'grid', gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr 1fr auto', gap:'12px', alignItems:'end'}}>
             <div><label style={label}>Oraș plecare</label>
               <input value={fromCity} onChange={e => setFromCity(e.target.value)} style={inputStyle} /></div>
-            <div><label style={label}>Destinație</label>
-              <input value={toCity} onChange={e => setToCity(e.target.value)} onKeyDown={e => { if (e.key==='Enter') calcTransport() }} style={inputStyle} /></div>
+            <div style={{position:'relative'}}><label style={label}>Destinație</label>
+              <input value={toCity} onChange={e => cautaOras(e.target.value)} onKeyDown={e => { if (e.key==='Enter') { setShowCitySugg(false); calcTransport() } }} onBlur={() => setTimeout(() => setShowCitySugg(false), 200)} autoComplete="off" style={inputStyle} />
+              {showCitySugg && citySuggestions.length > 0 && (
+                <div style={{position:'absolute', top:'100%', left:0, right:0, background:'white', border:'1px solid #e7e5e4', borderRadius:'8px', marginTop:'4px', maxHeight:'200px', overflowY:'auto', zIndex:20, boxShadow:'0 4px 12px rgba(0,0,0,0.1)'}}>
+                  {citySuggestions.map((sg, i) => (
+                    <div key={i} onClick={() => alegeOras(sg.description)}
+                      style={{padding:'9px 12px', cursor:'pointer', fontSize:'13px', borderBottom: i < citySuggestions.length-1 ? '1px solid #f5f5f4' : 'none'}}
+                      onMouseEnter={e => (e.currentTarget.style.background = '#f5f5f4')}
+                      onMouseLeave={e => (e.currentTarget.style.background = 'white')}>
+                      {sg.description}
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
             <div><label style={label}>Locație / Client</label>
               <input value={locatie} onChange={e => setLocatie(e.target.value)} placeholder="ex: Club Nish" style={inputStyle} /></div>
             <button onClick={calcTransport} style={{padding:'10px 20px', background:'#059669', color:'white', border:'none', borderRadius:'8px', fontWeight:700, cursor:'pointer', fontFamily:F, whiteSpace:'nowrap'}}>

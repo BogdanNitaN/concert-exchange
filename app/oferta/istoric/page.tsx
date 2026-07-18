@@ -50,6 +50,26 @@ export default function IstoricPage() {
   const [oferte, setOferte] = useState<Oferta[]>([])
   const [loading, setLoading] = useState(false)
   const [expandat, setExpandat] = useState<string | null>(null)
+  const [selectate, setSelectate] = useState<Set<string>>(new Set())
+
+  function toggleSelect(cod: string) {
+    setSelectate(prev => {
+      const n = new Set(prev)
+      if (n.has(cod)) n.delete(cod); else n.add(cod)
+      return n
+    })
+  }
+
+  async function stergeSelectate() {
+    if (selectate.size === 0) return
+    if (!confirm('Sigur ștergi ' + selectate.size + ' oferte selectate? Nu se poate reveni.')) return
+    const coduri = Array.from(selectate)
+    setOferte(prev => prev.filter(o => !selectate.has(o.cod)))
+    setSelectate(new Set())
+    for (const cod of coduri) {
+      try { await fetch('/api/oferta-save?cod=' + encodeURIComponent(cod), { method: 'DELETE' }) } catch {}
+    }
+  }
 
   // filtre
   const [search, setSearch] = useState('')
@@ -87,6 +107,12 @@ export default function IstoricPage() {
     try {
       await fetch('/api/oferta-save', { method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ cod, status }) })
     } catch {}
+  }
+
+  async function stergeOferta(cod: string) {
+    if (!confirm('Sigur ștergi oferta ' + cod + '? Nu se poate reveni.')) return
+    setOferte(prev => prev.filter(o => o.cod !== cod))
+    try { await fetch('/api/oferta-save?cod=' + encodeURIComponent(cod), { method: 'DELETE' }) } catch {}
   }
 
   async function updateNegociere(cod: string, suma_finala: number | null, nota: string | null) {
@@ -230,15 +256,27 @@ export default function IstoricPage() {
           </div>}
         </div>
 
+        {selectate.size > 0 && (
+          <div style={{position:'sticky', top:'10px', zIndex:30, background:'#dc2626', color:'white', padding:'12px 18px', borderRadius:'10px', marginBottom:'16px', display:'flex', justifyContent:'space-between', alignItems:'center'}}>
+            <span style={{fontWeight:700, fontSize:'14px'}}>{selectate.size} selectate</span>
+            <div style={{display:'flex', gap:'8px'}}>
+              <button onClick={() => setSelectate(new Set())} style={{padding:'7px 14px', background:'rgba(255,255,255,0.2)', color:'white', border:'none', borderRadius:'8px', fontSize:'13px', fontWeight:700, cursor:'pointer', fontFamily:F}}>Anulează</button>
+              <button onClick={stergeSelectate} style={{padding:'7px 14px', background:'white', color:'#dc2626', border:'none', borderRadius:'8px', fontSize:'13px', fontWeight:800, cursor:'pointer', fontFamily:F}}>Șterge selectate</button>
+            </div>
+          </div>
+        )}
         {loading ? <div style={{color:'#78716c'}}>Se încarcă...</div> : (
           <div style={{display:'flex', flexDirection:'column', gap:'12px'}}>
             {filtrate.length === 0 && <div style={{color:'#78716c', textAlign:'center', padding:'40px'}}>Nicio ofertă găsită</div>}
             {filtrate.map(o => (
               <div key={o.cod} style={{background:'white', padding:'18px', borderRadius:'12px', border:'2px solid #e7e5e4'}}>
                 <div style={{display:'flex', justifyContent:'space-between', alignItems:'flex-start', marginBottom:'10px'}}>
-                  <div>
+                  <div style={{display:'flex', gap:'10px', alignItems:'flex-start'}}>
+                    <input type="checkbox" checked={selectate.has(o.cod)} onChange={() => toggleSelect(o.cod)} style={{width:'18px', height:'18px', marginTop:'2px', accentColor:'#dc2626', cursor:'pointer'}} />
+                    <div>
                     <div style={{fontSize:'15px', fontWeight:800, color:'#059669'}}>{o.cod}</div>
                     <div style={{fontSize:'14px', fontWeight:700, marginTop:'2px'}}>{o.client || '—'}{o.oras ? ' · ' + o.oras : ''}{o.locatie ? ' · ' + o.locatie : ''}</div>
+                    </div>
                   </div>
                   <div style={{textAlign:'right'}}>
                     <div style={{fontSize:'11px', color:'#78716c'}}>{new Date(o.created_at).toLocaleDateString('ro-RO')} {new Date(o.created_at).toLocaleTimeString('ro-RO', {hour:'2-digit',minute:'2-digit'})}</div>
@@ -264,6 +302,10 @@ export default function IstoricPage() {
                   <button onClick={() => { try { localStorage.setItem('oferta_edit', JSON.stringify(o)) } catch {}; window.location.href = '/oferta' }}
                     style={{padding:'6px 14px', background:'#1c1917', color:'white', border:'none', borderRadius:'8px', fontSize:'12px', fontWeight:700, cursor:'pointer', fontFamily:F}}>
                     Editează
+                  </button>
+                  <button onClick={() => stergeOferta(o.cod)}
+                    style={{padding:'6px 14px', background:'#fef2f2', color:'#dc2626', border:'1.5px solid #fecaca', borderRadius:'8px', fontSize:'12px', fontWeight:700, cursor:'pointer', fontFamily:F}}>
+                    Șterge
                   </button>
                 </div>
 
