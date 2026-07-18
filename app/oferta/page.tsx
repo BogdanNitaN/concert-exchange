@@ -511,8 +511,8 @@ export default function OfertaPage() {
       }
 
       doc.setFont('helvetica', 'bold'); doc.setFontSize(13); doc.setTextColor(28,25,23)
-      doc.text(noDia(l.artist.nume.toUpperCase()), textX, y + 5)
-      let ly = y + 11
+      doc.text(noDia(l.artist.nume.toUpperCase()), textX, y + 4)
+      let ly = y + 10
 
       doc.setFont('helvetica', 'normal'); doc.setFontSize(9.5); doc.setTextColor(60,60,60)
       const rows: string[] = []
