@@ -397,7 +397,7 @@ export default function OfertaPage() {
     const gw = doc.getTextWidth('powered by GIG')
     doc.setTextColor(5,150,105); doc.text('x', gx + gw, fy + 24)
 
-    const filename = 'colaborare-' + (toCity || 'gigx').toLowerCase().replace(/\s+/g,'-') + '.pdf'
+    const filename = ([numeClient, toCity, locatie].filter(Boolean).join('-') || 'oferta').toLowerCase().replace(/\s+/g,'-').replace(/[^a-z0-9-]/g,'') + '.pdf'
     const isMobile = typeof window !== 'undefined' && window.innerWidth < 768
 
     if (isMobile && navigator.share) {
@@ -613,7 +613,7 @@ export default function OfertaPage() {
                 style={{flex:1, minWidth:'120px', padding:'12px', background:'#059669', color:'white', border:'none', borderRadius:'8px', fontSize:'14px', fontWeight:700, cursor:'pointer', fontFamily:F}}>Copiază tot</button>
               <button onClick={() => { salveazaOferta(); window.open('https://wa.me/?text=' + encodeURIComponent(genText()), '_blank') }}
                 style={{flex:1, minWidth:'120px', padding:'12px', background:'#25D366', color:'white', border:'none', borderRadius:'8px', fontSize:'14px', fontWeight:700, cursor:'pointer', fontFamily:F}}>WhatsApp</button>
-              <button onClick={() => { salveazaOferta(); window.open('mailto:?subject=' + encodeURIComponent('Oferta GIGx ' + toCity) + '&body=' + encodeURIComponent(genText().replace(/\*/g, ''))) }}
+              <button onClick={() => { salveazaOferta(); window.open('mailto:?subject=' + encodeURIComponent([numeClient, toCity, locatie].filter(Boolean).join(' - ') || 'Oferta') + '&body=' + encodeURIComponent(genText().replace(/\*/g, ''))) }}
                 style={{flex:1, minWidth:'120px', padding:'12px', background:'#3b82f6', color:'white', border:'none', borderRadius:'8px', fontSize:'14px', fontWeight:700, cursor:'pointer', fontFamily:F}}>Email</button>
               <button onClick={() => { salveazaOferta(); downloadPDF() }}
                 style={{flex:1, minWidth:'120px', padding:'12px', background:'#7c3aed', color:'white', border:'none', borderRadius:'8px', fontSize:'14px', fontWeight:700, cursor:'pointer', fontFamily:F}}>{typeof window !== 'undefined' && window.innerWidth < 768 ? 'Distribuie PDF' : 'Descarcă PDF'}</button>
