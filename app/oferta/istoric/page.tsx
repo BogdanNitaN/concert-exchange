@@ -2,8 +2,17 @@
 
 import { useState, useEffect, useMemo } from 'react'
 import { supabase } from '@/lib/supabase'
+import { FileText, Plus } from 'lucide-react'
 
 const F = 'Montserrat,sans-serif'
+const UI = {
+  bg: '#f5f5f7', card: '#ffffff', ink: '#1c1917', sub: '#57534e', faint: '#a8a29e',
+  line: '#e7e5e4', green: '#059669', greenSoft: '#f0fdf4', purple: '#7c3aed', dark: '#1c1917',
+  radius: '16px', radiusSm: '12px',
+  shadow: '0 1px 3px rgba(0,0,0,0.04), 0 8px 24px rgba(0,0,0,0.04)',
+  shadowBtn: '0 8px 30px rgba(0,0,0,0.18)',
+  mesh: 'radial-gradient(circle at 20% 20%, rgba(5,150,105,0.06) 0%, transparent 50%), radial-gradient(circle at 80% 30%, rgba(124,58,237,0.05) 0%, transparent 50%), radial-gradient(circle at 50% 90%, rgba(234,205,163,0.06) 0%, transparent 50%)',
+}
 
 interface Oferta {
   cod: string
@@ -188,15 +197,21 @@ export default function IstoricPage() {
   const totalCag = filtrate.reduce((s, o) => s + o.total_cag_eur, 0)
 
   return (
-    <div style={{minHeight:'100vh', background:'#f5f5f7', fontFamily:F, padding:'32px 20px'}}>
-      <div style={{maxWidth:'1100px', margin:'0 auto'}}>
+    <div style={{minHeight:'100vh', background:UI.bg, fontFamily:F, padding:'40px 20px', position:'relative'}}>
+      <div style={{position:'fixed', inset:0, background:UI.mesh, pointerEvents:'none', zIndex:0}} />
+      <div style={{maxWidth:'1080px', margin:'0 auto', position:'relative', zIndex:1}}>
         <div style={{display:'flex', justifyContent:'space-between', alignItems:'center', marginBottom:'20px'}}>
-          <div style={{fontSize:'24px', fontWeight:800}}>GIG<span style={{color:'#059669'}}>x</span> · Istoric oferte</div>
-          <a href="/oferta" style={{fontSize:'14px', color:'#059669', fontWeight:700, textDecoration:'none'}}>+ Ofertă nouă</a>
+          <div>
+            <div style={{fontSize:'26px', fontWeight:800, letterSpacing:'-0.5px', color:UI.ink}}>GIG<span style={{color:UI.green}}>x</span></div>
+            <div style={{fontSize:'13px', color:UI.faint, fontWeight:500, marginTop:'2px'}}>Istoric oferte</div>
+          </div>
+          <a href="/oferta" style={{display:'flex', alignItems:'center', gap:'7px', fontSize:'13px', color:'white', fontWeight:700, textDecoration:'none', background:UI.dark, padding:'11px 18px', borderRadius:UI.radiusSm, boxShadow:UI.shadowBtn}}>
+            <FileText size={15} strokeWidth={2.2} /> Deviz nou
+          </a>
         </div>
 
         {/* FILTRE */}
-        <div style={{background:'white', padding:'18px', borderRadius:'14px', border:'2px solid #e7e5e4', marginBottom:'20px'}}>
+        <div style={{background:UI.card, padding:'20px', borderRadius:UI.radius, border:'1px solid '+UI.line, boxShadow:UI.shadow, marginBottom:'20px'}}>
           <input placeholder="Caută în cod, client, oraș, locație, artist..." value={search}
             onChange={e => setSearch(e.target.value)}
             style={{...inputStyle, width:'100%', padding:'11px 13px', fontSize:'14px', marginBottom:'14px'}} />
@@ -246,7 +261,7 @@ export default function IstoricPage() {
             <div style={{fontSize:'11px', color:'#a8a29e', textTransform:'uppercase'}}>{filtrate.length} oferte</div>
             <div style={{fontSize:'20px', fontWeight:800}}>{totalFee.toLocaleString('ro-RO')} €</div>
           </div>
-          {totalDisc > 0 && <div style={{background:'white', border:'2px solid #059669', padding:'12px 18px', borderRadius:'10px', flex:1, minWidth:'140px'}}>
+          {totalDisc > 0 && <div style={{background:UI.card, border:'1px solid '+UI.green, padding:'14px 18px', borderRadius:UI.radiusSm, flex:1, minWidth:'140px', boxShadow:UI.shadow}}>
             <div style={{fontSize:'11px', color:'#059669', textTransform:'uppercase', fontWeight:700}}>Total discount</div>
             <div style={{fontSize:'20px', fontWeight:800, color:'#059669'}}>{totalDisc.toLocaleString('ro-RO')} €</div>
           </div>}
@@ -269,7 +284,7 @@ export default function IstoricPage() {
           <div style={{display:'flex', flexDirection:'column', gap:'12px'}}>
             {filtrate.length === 0 && <div style={{color:'#78716c', textAlign:'center', padding:'40px'}}>Nicio ofertă găsită</div>}
             {filtrate.map(o => (
-              <div key={o.cod} style={{background:'white', padding:'18px', borderRadius:'12px', border:'2px solid #e7e5e4'}}>
+              <div key={o.cod} style={{background:UI.card, padding:'20px', borderRadius:UI.radius, border:'1px solid '+UI.line, boxShadow:UI.shadow}}>
                 <div style={{display:'flex', justifyContent:'space-between', alignItems:'flex-start', marginBottom:'10px'}}>
                   <div style={{display:'flex', gap:'10px', alignItems:'flex-start'}}>
                     <input type="checkbox" checked={selectate.has(o.cod)} onChange={() => toggleSelect(o.cod)} style={{width:'18px', height:'18px', marginTop:'2px', accentColor:'#dc2626', cursor:'pointer'}} />
