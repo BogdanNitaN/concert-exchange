@@ -29,6 +29,7 @@ interface Artist {
   categorie: string
   tip?: string
   set_type?: string
+  durata_default?: string
   diurna_fixa?: number | null
   transport_moneda?: string
   formate?: Format[] | null
@@ -316,7 +317,11 @@ export default function OfertaPage() {
     const marjaProc = km !== null && km > 300 ? 0.065 : 0.115
     const kmTotal = km !== null ? (l.useMarja ? (km + Math.round(km * marjaProc)) * 2 : km * 2) : 0
     const totiZboara = km !== null && km > 300 && !l.restulRutier
-    const transportLei = (kmTotal > 0 && l.leiKm > 0 && !totiZboara) ? Math.round(kmTotal * l.leiKm / 10) * 10 : 0
+    const transportEuro = l.artist.transport_moneda === 'euro'
+    const transportRaw = (kmTotal > 0 && l.leiKm > 0 && !totiZboara) ? kmTotal * l.leiKm : 0
+    const transportLei = transportEuro ? 0 : Math.round(transportRaw / 10) * 10
+    const transportEur = transportEuro ? Math.round(transportRaw) : 0
+    const transportEurInLei = transportEuro && eurRate ? Math.round(transportEur * eurRate) : 0
     const diurnaTotal = l.tipMasa === 'diurna' ? l.persoane * l.diurnaPerPers * l.zile : 0
     const alcoolTotal = l.useAlcool ? l.alcool : 0
     const discount = l.feeLista > l.fee ? l.feeLista - l.fee : 0
@@ -330,7 +335,7 @@ export default function OfertaPage() {
     }
     const netGigx = l.fee - cag
     const feeLeiConv = eurRate ? Math.round(l.fee * (cursAdaos || eurRate)) : 0
-    return { kmTotal, transportLei, diurnaTotal, alcoolTotal, discount, cursAdaos, savingLei, cag, netGigx, feeLeiConv }
+    return { kmTotal, transportLei, transportEur, transportEurInLei, transportEuro, diurnaTotal, alcoolTotal, discount, cursAdaos, savingLei, cag, netGigx, feeLeiConv }
   }
 
   function genText(): string {
@@ -344,6 +349,7 @@ export default function OfertaPage() {
         if (dataEveniment) out.push('Disponibilitate: ' + formatData(dataEveniment))
         out.push('Onorariu: ' + c.feeLeiConv.toLocaleString('ro-RO') + ' lei + TVA')
         if (c.transportLei > 0) out.push('Transport: ' + c.transportLei.toLocaleString('ro-RO') + ' lei + TVA')
+        if (c.transportEur > 0) out.push('Transport: ' + c.transportEur.toLocaleString('ro-RO') + ' EUR + TVA' + (c.transportEurInLei > 0 ? ' (aprox ' + c.transportEurInLei.toLocaleString('ro-RO') + ' lei)' : ''))
         out.push('Cazare: ' + l.cazare)
         if (l.tipMasa === 'diurna' && c.diurnaTotal > 0) out.push('Masa: ' + c.diurnaTotal.toLocaleString('ro-RO') + ' lei + TVA')
         if (l.tipMasa === 'alacarte') out.push('Masa: a la carte ' + l.persoane + ' pers (pranz, cina) + mic dejun la hotel')
@@ -357,6 +363,7 @@ export default function OfertaPage() {
         if (l.durata) parts.push('durata: ' + l.durata)
         parts.push(l.fee + ' EUR + TVA')
         if (c.transportLei > 0) parts.push('transport ' + l.leiKm + ' lei/km x ' + c.kmTotal + ' km = ' + c.transportLei.toLocaleString('ro-RO') + ' lei + TVA')
+        if (c.transportEur > 0) parts.push('transport ' + l.leiKm + ' EUR/km x ' + c.kmTotal + ' km = ' + c.transportEur.toLocaleString('ro-RO') + ' EUR + TVA' + (c.transportEurInLei > 0 ? ' (aprox ' + c.transportEurInLei.toLocaleString('ro-RO') + ' lei)' : ''))
         if (km !== null && km > 300 && l.bileteAvion > 0) {
           let av = l.bileteAvion + (l.bileteAvion === 1 ? ' bilet avion' : ' bilete avion')
           av += ' + transfer de asigurat'
@@ -549,6 +556,7 @@ export default function OfertaPage() {
       if (l.durata) rows.push('Durata show: ' + l.durata)
       rows.push('Onorariu: ' + l.fee + ' EUR + TVA')
       if (c.transportLei > 0) rows.push('Transport: ' + l.leiKm + ' lei/km x ' + c.kmTotal + ' km = ' + c.transportLei.toLocaleString('ro-RO') + ' lei + TVA')
+      if (c.transportEur > 0) rows.push('Transport: ' + l.leiKm + ' EUR/km x ' + c.kmTotal + ' km = ' + c.transportEur.toLocaleString('ro-RO') + ' EUR + TVA' + (c.transportEurInLei > 0 ? ' (aprox ' + c.transportEurInLei.toLocaleString('ro-RO') + ' lei)' : ''))
       if (km !== null && km > 300 && l.bileteAvion > 0) {
         let av = 'Avion: ' + l.bileteAvion + (l.bileteAvion === 1 ? ' bilet' : ' bilete') + ' + transfer de asigurat'
         if (l.restulRutier) av += ' (restul echipei rutier)'
