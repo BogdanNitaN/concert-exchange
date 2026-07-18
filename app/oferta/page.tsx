@@ -406,7 +406,7 @@ export default function OfertaPage() {
         const blob = doc.output('blob')
         const file = new File([blob], filename, { type: 'application/pdf' })
         if (navigator.canShare && navigator.canShare({ files: [file] })) {
-          await navigator.share({ files: [file], title: 'Ofertă GIGx' })
+          await navigator.share({ files: [file], title: ([numeClient, toCity, locatie].filter(Boolean).join(' - ') || 'Oferta') })
           return
         }
       } catch { /* daca share esueaza, cad pe descarcare */ }
