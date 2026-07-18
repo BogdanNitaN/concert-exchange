@@ -32,6 +32,7 @@ export async function PATCH(req: Request) {
     if (b.set_type !== undefined) updates.set_type = b.set_type
     if (b.durata_default !== undefined) updates.durata_default = b.durata_default
     if (b.diurna_fixa !== undefined) updates.diurna_fixa = b.diurna_fixa ? Number(b.diurna_fixa) : null
+    if (b.cazare_fixa !== undefined) updates.cazare_fixa = b.cazare_fixa ? Number(b.cazare_fixa) : null
     if (b.observatii !== undefined) updates.observatii = b.observatii
     if (b.formate !== undefined) updates.formate = b.formate
     if (b.format_show !== undefined) updates.format_show = b.format_show
