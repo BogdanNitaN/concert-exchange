@@ -13,7 +13,7 @@ interface Oferta {
   data_eveniment: string | null
   destinatar: string | null
   institutie_publica: boolean
-  artisti: { nume: string; fee: number; feeLista: number; tipPret: string }[]
+  artisti: { nume: string; fee: number; feeLista: number; tipPret: string; tip?: string; format?: string }[]
   total_fee_eur: number
   total_discount_eur: number
   total_cag_eur: number
@@ -240,7 +240,10 @@ export default function IstoricPage() {
                     <div style={{fontSize:'11px', fontWeight:700, color:'#78716c', textTransform:'uppercase', marginBottom:'8px'}}>Artiști ofertați</div>
                     {(o.artisti || []).map((a, i) => (
                       <div key={i} style={{display:'flex', justifyContent:'space-between', fontSize:'13px', padding:'6px 0', borderBottom:'1px solid #f5f5f4'}}>
-                        <span style={{fontWeight:600}}>{a.nume} <span style={{color:'#a8a29e', fontWeight:400}}>· {a.tipPret}</span></span>
+                        <span style={{fontWeight:600}}>{a.nume}
+                          <span style={{marginLeft:'6px', fontSize:'8px', fontWeight:800, padding:'1px 5px', borderRadius:'4px', background: a.tip === 'intermediere' ? '#faf5ff' : '#f0fdf4', color: a.tip === 'intermediere' ? '#7c3aed' : '#059669'}}>{a.tip === 'intermediere' ? 'EXTERN' : 'FWD'}</span>
+                          {a.format && <span style={{color:'#a8a29e', fontWeight:400, fontSize:'12px'}}> · {a.format}</span>}
+                          <span style={{color:'#a8a29e', fontWeight:400}}> · {a.tipPret}</span></span>
                         <span>{a.feeLista > a.fee ? <span style={{color:'#a8a29e', textDecoration:'line-through', marginRight:'6px'}}>{a.feeLista}€</span> : ''}<strong>{a.fee}€</strong></span>
                       </div>
                     ))}
