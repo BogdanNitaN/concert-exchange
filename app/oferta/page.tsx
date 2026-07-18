@@ -54,6 +54,8 @@ interface Linie {
   tipMasa: 'diurna' | 'alacarte'
   zile: number
   diurnaPerPers: number
+  diurnaFixa: number
+  cazareFixa: number
   useAlcool: boolean
   alcool: number
   useCag: boolean
@@ -194,7 +196,7 @@ export default function OfertaPage() {
                 artist: art, formatSelectat: lc.formatSelectat || '', durata: lc.durata || '',
                 tipPret: lc.tipPret, feeLista: lc.feeLista, fee: lc.fee, leiKm: lc.leiKm,
                 useMarja: lc.useMarja, cazare: lc.cazare, persoane: lc.persoane, bileteAvion: lc.bileteAvion,
-                tipMasa: lc.tipMasa, zile: lc.zile, diurnaPerPers: lc.diurnaPerPers,
+                tipMasa: lc.tipMasa, zile: lc.zile, diurnaPerPers: lc.diurnaPerPers, diurnaFixa: lc.diurnaFixa || 0, cazareFixa: lc.cazareFixa || 0,
                 useAlcool: lc.useAlcool, alcool: lc.alcool,
                 useCag: lc.useCag, cagProcent: lc.cagProcent, cagSuma: lc.cagSuma, cagMod: lc.cagMod,
                 includeExport: true,
@@ -275,6 +277,8 @@ export default function OfertaPage() {
       tipMasa: 'alacarte',
       zile: 1,
       diurnaPerPers: 180,
+      diurnaFixa: a.diurna_fixa || 0,
+      cazareFixa: a.cazare_fixa || 0,
       useAlcool: false,
       alcool: a.alcool_default || 0,
       useCag: false,
@@ -323,7 +327,7 @@ export default function OfertaPage() {
     const transportLei = transportEuro ? 0 : Math.round(transportRaw / 10) * 10
     const transportEur = transportEuro ? Math.round(transportRaw) : 0
     const transportEurInLei = transportEuro && eurRate ? Math.round(transportEur * eurRate) : 0
-    const diurnaTotal = l.tipMasa === 'diurna' ? (l.artist.diurna_fixa && l.artist.diurna_fixa > 0 ? l.artist.diurna_fixa : l.persoane * l.diurnaPerPers * l.zile) : 0
+    const diurnaTotal = l.diurnaFixa > 0 ? l.diurnaFixa : (l.tipMasa === 'diurna' ? l.persoane * l.diurnaPerPers * l.zile : 0)
     const alcoolTotal = l.useAlcool ? l.alcool : 0
     const discount = l.feeLista > l.fee ? l.feeLista - l.fee : 0
     const cursAdaos = eurRate ? eurRate * (1 + (useAdaos ? adaosProcent : 0) / 100) : 0
@@ -351,8 +355,8 @@ export default function OfertaPage() {
         out.push('Onorariu: ' + c.feeLeiConv.toLocaleString('ro-RO') + ' lei + TVA')
         if (c.transportLei > 0) out.push('Transport: ' + c.transportLei.toLocaleString('ro-RO') + ' lei + TVA')
         if (c.transportEur > 0) out.push('Transport: ' + c.transportEur.toLocaleString('ro-RO') + ' EUR + TVA' + (c.transportEurInLei > 0 ? ' (aprox ' + c.transportEurInLei.toLocaleString('ro-RO') + ' lei)' : ''))
-        out.push(l.artist.cazare_fixa && l.artist.cazare_fixa > 0 ? 'Cazare: ' + l.artist.cazare_fixa.toLocaleString('ro-RO') + ' lei' : 'Cazare: ' + l.cazare)
-        if (l.tipMasa === 'diurna' && c.diurnaTotal > 0) out.push('Masa: ' + c.diurnaTotal.toLocaleString('ro-RO') + ' lei + TVA')
+        out.push(l.cazareFixa > 0 ? 'Cazare: ' + l.cazareFixa.toLocaleString('ro-RO') + ' lei' : 'Cazare: ' + l.cazare)
+        if (c.diurnaTotal > 0) out.push('Diurna: ' + c.diurnaTotal.toLocaleString('ro-RO') + ' lei + TVA')
         if (l.tipMasa === 'alacarte') out.push('Masa: a la carte ' + l.persoane + ' pers (pranz, cina) + mic dejun la hotel')
         if (c.alcoolTotal > 0) out.push('Protocol alcool: ' + c.alcoolTotal.toLocaleString('ro-RO') + ' lei + TVA')
         // echivalent euro defalcat
@@ -368,8 +372,8 @@ export default function OfertaPage() {
           av += ' + transfer de asigurat'
           parts.push(av)
         }
-        parts.push(l.artist.cazare_fixa && l.artist.cazare_fixa > 0 ? 'cazare ' + l.artist.cazare_fixa.toLocaleString('ro-RO') + ' lei' : 'cazare ' + l.cazare)
-        if (l.tipMasa === 'diurna' && c.diurnaTotal > 0) parts.push('diurna ' + c.diurnaTotal.toLocaleString('ro-RO') + ' lei + TVA')
+        parts.push(l.cazareFixa > 0 ? 'cazare ' + l.cazareFixa.toLocaleString('ro-RO') + ' lei' : 'cazare ' + l.cazare)
+        if (c.diurnaTotal > 0) parts.push('diurna ' + c.diurnaTotal.toLocaleString('ro-RO') + ' lei + TVA')
         if (l.tipMasa === 'alacarte') parts.push('masa a la carte ' + l.persoane + ' pers (pranz, cina) + mic dejun la hotel')
         if (c.alcoolTotal > 0) parts.push('protocol alcool ' + c.alcoolTotal.toLocaleString('ro-RO') + ' lei + TVA')
         if (l.durata) parts.push('durata: ' + l.durata)
@@ -409,7 +413,7 @@ export default function OfertaPage() {
             formatSelectat: l.formatSelectat, durata: l.durata,
             tipPret: l.tipPret, feeLista: l.feeLista, fee: l.fee, leiKm: l.leiKm,
             useMarja: l.useMarja, cazare: l.cazare, persoane: l.persoane, bileteAvion: l.bileteAvion, restulRutier: l.restulRutier,
-            tipMasa: l.tipMasa, zile: l.zile, diurnaPerPers: l.diurnaPerPers,
+            tipMasa: l.tipMasa, zile: l.zile, diurnaPerPers: l.diurnaPerPers, diurnaFixa: l.diurnaFixa, cazareFixa: l.cazareFixa,
             useAlcool: l.useAlcool, alcool: l.alcool,
             useCag: l.useCag, cagProcent: l.cagProcent, cagSuma: l.cagSuma, cagMod: l.cagMod,
           })),
@@ -558,8 +562,8 @@ export default function OfertaPage() {
         let av = 'Avion: ' + l.bileteAvion + (l.bileteAvion === 1 ? ' bilet' : ' bilete') + ' + transfer de asigurat'
         rows.push(av)
       }
-      rows.push(l.artist.cazare_fixa && l.artist.cazare_fixa > 0 ? 'Cazare: ' + l.artist.cazare_fixa.toLocaleString('ro-RO') + ' lei' : 'Cazare: ' + l.cazare + ' (' + l.persoane + ' persoane)')
-      if (l.tipMasa === 'diurna' && c.diurnaTotal > 0) rows.push('Diurna: ' + c.diurnaTotal.toLocaleString('ro-RO') + ' lei + TVA')
+      rows.push(l.cazareFixa > 0 ? 'Cazare: ' + l.cazareFixa.toLocaleString('ro-RO') + ' lei' : 'Cazare: ' + l.cazare + ' (' + l.persoane + ' persoane)')
+      if (c.diurnaTotal > 0) rows.push('Diurna: ' + c.diurnaTotal.toLocaleString('ro-RO') + ' lei + TVA')
       if (l.tipMasa === 'alacarte') rows.push('Masa: a la carte ' + l.persoane + ' pers (pranz, cina) + mic dejun la hotel')
       if (c.alcoolTotal > 0) rows.push('Protocol alcool: ' + c.alcoolTotal.toLocaleString('ro-RO') + ' lei + TVA')
       if (l.durata) rows.push('Durata: ' + l.durata)
@@ -677,7 +681,10 @@ export default function OfertaPage() {
           <div style={{display:'grid', gridTemplateColumns: isMobile ? '1fr' : '2fr 1fr', gap:'12px', marginBottom:'12px'}}>
             <div><label style={label}>Denumire client / instituție</label>
               <input value={numeClient} onChange={e => setNumeClient(e.target.value)} placeholder="ex: Primăria Focșani" style={inputStyle} /></div>
-            <div><label style={label}>Data eveniment</label>
+            <div style={{background: dataEveniment ? '#f0fdf4' : '#fffbeb', border: '2px solid ' + (dataEveniment ? '#059669' : '#f59e0b'), borderRadius:'10px', padding:'8px 10px'}}>
+              <label style={{...label, color: dataEveniment ? '#059669' : '#b45309', display:'flex', alignItems:'center', gap:'5px'}}>
+                📅 Data eveniment {!dataEveniment && <span style={{color:'#f59e0b', fontWeight:800}}>← completează</span>}
+              </label>
               <DatePicker value={dataEveniment} onChange={v => setDataEveniment(v)} placeholder="Alege data" /></div>
           </div>
           <div style={{display:'grid', gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr 1fr auto', gap:'12px', alignItems:'end'}}>
@@ -804,6 +811,12 @@ export default function OfertaPage() {
                 <div style={{fontSize:'12px', color:'#78716c', marginTop:'4px'}}>Protocol: {l.persoane} persoane{km !== null && km > 300 && l.bileteAvion > 0 ? ' · ' + l.bileteAvion + (l.bileteAvion === 1 ? ' bilet avion' : ' bilete avion') : ''}</div>
               </div>
 
+              {(l.diurnaFixa > 0 || l.cazareFixa > 0) && (
+                <div style={{display:'flex', gap:'8px', marginBottom:'10px', padding:'10px 12px', background:'#f0fdf4', border:'1.5px solid #059669', borderRadius:'8px'}}>
+                  <div style={{flex:1}}><label style={{...label, color:'#059669'}}>Diurnă fixă (lei)</label><input type="number" value={l.diurnaFixa || ''} onFocus={e => e.target.select()} onChange={e => updateLinie(l.key, { diurnaFixa: Number(e.target.value) })} style={inputStyle} /></div>
+                  <div style={{flex:1}}><label style={{...label, color:'#059669'}}>Cazare fixă (lei)</label><input type="number" value={l.cazareFixa || ''} onFocus={e => e.target.select()} onChange={e => updateLinie(l.key, { cazareFixa: Number(e.target.value) })} style={inputStyle} /></div>
+                </div>
+              )}
               <div style={{display:'flex', gap:'8px', marginBottom:'8px'}}>
                 <button onClick={() => updateLinie(l.key, { tipMasa: 'diurna' })} style={{flex:1, padding:'8px', borderRadius:'8px', border:'1.5px solid '+(l.tipMasa==='diurna'?'#1c1917':'#e7e5e4'), background:l.tipMasa==='diurna'?'#1c1917':'white', color:l.tipMasa==='diurna'?'white':'#78716c', fontSize:'13px', fontWeight:700, cursor:'pointer', fontFamily:F}}>Diurnă</button>
                 <button onClick={() => updateLinie(l.key, { tipMasa: 'alacarte' })} style={{flex:1, padding:'8px', borderRadius:'8px', border:'1.5px solid '+(l.tipMasa==='alacarte'?'#1c1917':'#e7e5e4'), background:l.tipMasa==='alacarte'?'#1c1917':'white', color:l.tipMasa==='alacarte'?'white':'#78716c', fontSize:'13px', fontWeight:700, cursor:'pointer', fontFamily:F}}>À la carte</button>
