@@ -4,11 +4,21 @@ import { supabase } from '@/lib/supabase'
 
 const F = 'Montserrat, sans-serif'
 
+interface Format {
+  nume: string
+  fee: number
+  leiKm: number
+  cazare: string
+  persoane: number
+  bilete: number
+  durata?: string
+  comision?: number
+}
 interface Artist {
   id: number; nume: string; fee_standard: number; lei_km: number; transport_moneda?: string
   cazare: string; nr_persoane: number; bilete_avion: number; alcool_default: number
   categorie: string; tip: string; set_type?: string; durata_default?: string
-  diurna_fixa?: number | null; observatii?: string
+  diurna_fixa?: number | null; observatii?: string; format_show?: string; formate?: Format[] | null
 }
 
 export default function RosterPage() {
@@ -21,6 +31,8 @@ export default function RosterPage() {
   const [artists, setArtists] = useState<Artist[]>([])
   const [search, setSearch] = useState('')
   const [edit, setEdit] = useState<Artist | null>(null)
+  const [filtreGen, setFiltreGen] = useState<Set<string>>(new Set())
+  const [filtruTip, setFiltruTip] = useState<'toti' | 'fwd' | 'extern'>('toti')
   const [saving, setSaving] = useState(false)
   const [msg, setMsg] = useState('')
 
@@ -54,11 +66,32 @@ export default function RosterPage() {
 
   const filtrati = useMemo(() => {
     const s = search.toLowerCase()
-    return artists.filter(a => a.nume.toLowerCase().includes(s))
-  }, [artists, search])
+    return artists.filter(a => {
+      if (!a.nume.toLowerCase().includes(s)) return false
+      if (filtruTip === 'fwd' && a.tip === 'intermediere') return false
+      if (filtruTip === 'extern' && a.tip !== 'intermediere') return false
+      if (filtreGen.size > 0 && !filtreGen.has((a.categorie || '').toLowerCase())) return false
+      return true
+    })
+  }, [artists, search, filtreGen, filtruTip])
 
-  const fwd = filtrati.filter(a => a.tip !== 'intermediere')
-  const externi = filtrati.filter(a => a.tip === 'intermediere')
+  function toggleGen(cat: string) {
+    setFiltreGen(prev => { const n = new Set(prev); if (n.has(cat)) n.delete(cat); else n.add(cat); return n })
+  }
+
+  // grupare pe gen muzical
+  const GENURI: { key: string; label: string; cats: string[] }[] = [
+    { key: 'pop', label: 'Pop', cats: ['pop'] },
+    { key: 'urban', label: 'Urban / Trap / Hip-Hop', cats: ['urban', 'trap'] },
+    { key: 'dance', label: 'Dance / Electronic', cats: ['dance', 'dj'] },
+    { key: 'manele', label: 'Manele', cats: ['manele'] },
+    { key: 'balcanic', label: 'Balcanic', cats: ['balcanic'] },
+    { key: 'lautareasca', label: 'Lăutărească / Populară', cats: ['lautareasca'] },
+    { key: 'cover', label: 'Cover Band', cats: ['cover'] },
+    { key: 'alternativ', label: 'Alternativ', cats: ['alternativ'] },
+  ]
+  const grupuri = GENURI.map(g => ({ ...g, artisti: filtrati.filter(a => g.cats.includes((a.categorie || '').toLowerCase())) })).filter(g => g.artisti.length > 0)
+  const altele = filtrati.filter(a => !GENURI.some(g => g.cats.includes((a.categorie || '').toLowerCase())))
 
   async function stergeArtist() {
     if (!edit) return
@@ -73,12 +106,28 @@ export default function RosterPage() {
     setSaving(false)
   }
 
+  function addVarianta() {
+    if (!edit) return
+    const noua = { nume: '', fee: 0, leiKm: edit.lei_km || 0, cazare: edit.cazare || '', persoane: edit.nr_persoane || 0, bilete: edit.bilete_avion || 0 }
+    setEdit({ ...edit, formate: [...(edit.formate || []), noua] })
+  }
+  function updVarianta(i: number, patch: Partial<Format>) {
+    if (!edit) return
+    const f = [...(edit.formate || [])]
+    f[i] = { ...f[i], ...patch }
+    setEdit({ ...edit, formate: f })
+  }
+  function delVarianta(i: number) {
+    if (!edit) return
+    setEdit({ ...edit, formate: (edit.formate || []).filter((_, j) => j !== i) })
+  }
+
   async function salveaza() {
     if (!edit) return
     setSaving(true); setMsg('')
     const r = await fetch('/api/oferta-update-artist', {
       method: 'PATCH', headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ ...edit, nume_original: edit.nume })
+      body: JSON.stringify({ ...edit, formate: edit.formate || null, format_show: edit.format_show || null, nume_original: edit.nume })
     })
     const d = await r.json()
     if (d.ok) {
@@ -112,8 +161,10 @@ export default function RosterPage() {
     <div key={a.id} onClick={() => setEdit({ ...a })}
       style={{display:'flex', justifyContent:'space-between', alignItems:'center', padding:'12px 16px', background:'white', borderRadius:'10px', border:'1px solid #e7e5e4', cursor:'pointer', marginBottom:'8px'}}>
       <div>
-        <div style={{fontSize:'14px', fontWeight:700}}>{a.nume}</div>
-        <div style={{fontSize:'12px', color:'#78716c', marginTop:'2px'}}>{a.categorie} · {a.set_type || 'band'} · {a.fee_standard}€{a.diurna_fixa ? ' · diurna ' + a.diurna_fixa : ''}</div>
+        <div style={{fontSize:'14px', fontWeight:700, display:'flex', alignItems:'center', gap:'8px'}}>{a.nume}
+          <span style={{fontSize:'8px', fontWeight:800, padding:'2px 6px', borderRadius:'4px', background: a.tip === 'intermediere' ? '#faf5ff' : '#f0fdf4', color: a.tip === 'intermediere' ? '#7c3aed' : '#059669'}}>{a.tip === 'intermediere' ? 'EXTERN' : 'FWD'}</span>
+        </div>
+        <div style={{fontSize:'12px', color:'#78716c', marginTop:'2px'}}>{a.set_type || 'band'} · {a.fee_standard}€{a.diurna_fixa ? ' · diurna ' + a.diurna_fixa : ''}</div>
       </div>
       <span style={{fontSize:'11px', color:'#a8a29e'}}>editează →</span>
     </div>
@@ -130,19 +181,44 @@ export default function RosterPage() {
           <a href="/oferta" style={{fontSize:'14px', color:'#059669', fontWeight:700, textDecoration:'none'}}>← Deviz</a>
         </div>
 
-        <input value={search} onChange={e => setSearch(e.target.value)} placeholder="Caută artist..." style={{...inp, marginBottom:'20px', padding:'12px 14px', fontSize:'14px'}} />
+        <input value={search} onChange={e => setSearch(e.target.value)} placeholder="Caută artist..." style={{...inp, marginBottom:'14px', padding:'12px 14px', fontSize:'14px'}} />
 
-        <div style={{display:'flex', alignItems:'center', gap:'8px', marginBottom:'12px'}}>
-          <span style={{fontSize:'11px', fontWeight:800, padding:'3px 10px', borderRadius:'6px', background:'#f0fdf4', color:'#059669'}}>FWD</span>
-          <span style={{fontSize:'13px', color:'#78716c'}}>{fwd.length} artiști</span>
+        <div style={{display:'flex', gap:'6px', marginBottom:'10px', flexWrap:'wrap'}}>
+          {(['toti','fwd','extern'] as const).map(t => (
+            <button key={t} onClick={() => setFiltruTip(t)}
+              style={{padding:'6px 14px', borderRadius:'8px', border:'1.5px solid ' + (filtruTip===t ? '#1c1917' : '#e7e5e4'), background: filtruTip===t ? '#1c1917' : 'white', color: filtruTip===t ? 'white' : '#57534e', fontSize:'12px', fontWeight:700, cursor:'pointer', fontFamily:F}}>
+              {t === 'toti' ? 'Toți' : t === 'fwd' ? 'FWD' : 'Externi'}
+            </button>
+          ))}
         </div>
-        {fwd.map(Row)}
+        <div style={{display:'flex', gap:'6px', marginBottom:'20px', flexWrap:'wrap'}}>
+          {[{c:'pop',l:'Pop'},{c:'urban',l:'Urban'},{c:'trap',l:'Trap'},{c:'dance',l:'Dance'},{c:'dj',l:'DJ'},{c:'manele',l:'Manele'},{c:'balcanic',l:'Balcanic'},{c:'lautareasca',l:'Lăutărească'},{c:'cover',l:'Cover'},{c:'alternativ',l:'Alternativ'}].map(g => (
+            <button key={g.c} onClick={() => toggleGen(g.c)}
+              style={{padding:'5px 12px', borderRadius:'20px', border:'1.5px solid ' + (filtreGen.has(g.c) ? '#7c3aed' : '#e7e5e4'), background: filtreGen.has(g.c) ? '#faf5ff' : 'white', color: filtreGen.has(g.c) ? '#7c3aed' : '#78716c', fontSize:'12px', fontWeight:700, cursor:'pointer', fontFamily:F}}>
+              {g.l}
+            </button>
+          ))}
+          {filtreGen.size > 0 && <button onClick={() => setFiltreGen(new Set())} style={{padding:'5px 12px', borderRadius:'20px', border:'none', background:'none', color:'#dc2626', fontSize:'12px', fontWeight:700, cursor:'pointer', fontFamily:F}}>× Resetează</button>}
+        </div>
 
-        <div style={{display:'flex', alignItems:'center', gap:'8px', margin:'24px 0 12px'}}>
-          <span style={{fontSize:'11px', fontWeight:800, padding:'3px 10px', borderRadius:'6px', background:'#faf5ff', color:'#7c3aed'}}>EXTERN</span>
-          <span style={{fontSize:'13px', color:'#78716c'}}>{externi.length} artiști</span>
-        </div>
-        {externi.map(Row)}
+        {grupuri.map(g => (
+          <div key={g.key} style={{marginBottom:'28px'}}>
+            <div style={{display:'flex', alignItems:'center', gap:'10px', marginBottom:'12px', paddingBottom:'8px', borderBottom:'2px solid #e7e5e4'}}>
+              <span style={{fontSize:'16px', fontWeight:800, color:'#1c1917'}}>{g.label}</span>
+              <span style={{fontSize:'12px', color:'#a8a29e', fontWeight:600}}>{g.artisti.length}</span>
+            </div>
+            {g.artisti.map(Row)}
+          </div>
+        ))}
+        {altele.length > 0 && (
+          <div style={{marginBottom:'28px'}}>
+            <div style={{display:'flex', alignItems:'center', gap:'10px', marginBottom:'12px', paddingBottom:'8px', borderBottom:'2px solid #e7e5e4'}}>
+              <span style={{fontSize:'16px', fontWeight:800, color:'#1c1917'}}>Alte genuri</span>
+              <span style={{fontSize:'12px', color:'#a8a29e', fontWeight:600}}>{altele.length}</span>
+            </div>
+            {altele.map(Row)}
+          </div>
+        )}
       </div>
 
       {edit && (
@@ -173,18 +249,41 @@ export default function RosterPage() {
                   <select value={edit.tip} onChange={e => setEdit({...edit, tip: e.target.value})} style={inp}><option value="propriu">FWD</option><option value="intermediere">EXTERN</option></select>
                 </div>
               </div>
+              <div><label style={lbl}>Format show</label>
+                <select value={edit.format_show || ''} onChange={e => setEdit({...edit, format_show: e.target.value})} style={inp}>
+                  <option value="">—</option>
+                  <option value="dj_set">DJ set (pe negative)</option>
+                  <option value="live_band">Live band</option>
+                  <option value="dansatori">Dansatori</option>
+                  <option value="live_band_dansatori">Live band + dansatori</option>
+                </select>
+              </div>
               <div style={{display:'grid', gridTemplateColumns:'1fr 1fr', gap:'12px'}}>
-                <div><label style={lbl}>Tip set (durată)</label>
-                  <select value={edit.set_type || 'band'} onChange={e => setEdit({...edit, set_type: e.target.value})} style={inp}>
-                    <option value="band">Band</option><option value="dj">DJ</option><option value="vocal">Vocal</option><option value="cover">Cover</option><option value="show">Show</option><option value="instrument">Instrument</option><option value="mc">MC</option>
-                  </select>
+                <div><label style={lbl}>Durată</label>
+                  <input value={edit.durata_default || ''} onChange={e => setEdit({...edit, durata_default: e.target.value})} placeholder="40 min" style={inp} />
                 </div>
                 <div><label style={lbl}>Diurnă fixă (lei)</label><input type="number" value={edit.diurna_fixa || ''} onFocus={e => e.target.select()} onChange={e => setEdit({...edit, diurna_fixa: e.target.value ? Number(e.target.value) : null})} placeholder="opțional" style={inp} /></div>
               </div>
               <div><label style={lbl}>Cazare (persoane auto)</label><input value={edit.cazare} onChange={e => setEdit({...edit, cazare: e.target.value})} style={inp} /></div>
               <div style={{display:'grid', gridTemplateColumns:'1fr 1fr', gap:'12px'}}>
                 <div><label style={lbl}>Bilete avion</label><input type="number" value={edit.bilete_avion} onFocus={e => e.target.select()} onChange={e => setEdit({...edit, bilete_avion: Number(e.target.value)})} style={inp} /></div>
-                <div><label style={lbl}>Alcool (lei)</label><input type="number" value={edit.alcool_default} onFocus={e => e.target.select()} onChange={e => setEdit({...edit, alcool_default: Number(e.target.value)})} style={inp} /></div>
+                <div><label style={lbl}>Protocol (lei)</label><input type="number" value={edit.alcool_default} onFocus={e => e.target.select()} onChange={e => setEdit({...edit, alcool_default: Number(e.target.value)})} style={inp} /></div>
+              </div>
+              <div>
+                <div style={{display:'flex', justifyContent:'space-between', alignItems:'center', marginBottom:'8px'}}>
+                  <label style={{...lbl, marginBottom:0}}>Variante de preț (durată + fee)</label>
+                  <button onClick={addVarianta} style={{fontSize:'11px', fontWeight:700, color:'#7c3aed', background:'none', border:'1px solid #7c3aed', borderRadius:'6px', padding:'3px 8px', cursor:'pointer', fontFamily:F}}>+ Variantă</button>
+                </div>
+                {(edit.formate || []).length === 0 && <div style={{fontSize:'12px', color:'#a8a29e', marginBottom:'8px'}}>Fără variante. Se folosește fee-ul standard. Adaugă variante pentru artiști cu prețuri diferite pe set/durată.</div>}
+                {(edit.formate || []).map((f, i) => (
+                  <div key={i} style={{background:'#f5f5f4', borderRadius:'8px', padding:'10px', marginBottom:'8px'}}>
+                    <div style={{display:'flex', gap:'6px', marginBottom:'6px'}}>
+                      <input value={f.nume} onChange={e => updVarianta(i, { nume: e.target.value })} placeholder="ex: 2 seturi × 40 min" style={{...inp, flex:1, fontSize:'12px', padding:'7px 9px'}} />
+                      <button onClick={() => delVarianta(i)} style={{padding:'0 10px', background:'#fef2f2', color:'#dc2626', border:'none', borderRadius:'6px', fontSize:'16px', cursor:'pointer'}}>×</button>
+                    </div>
+                    <div><span style={{fontSize:'9px', color:'#78716c', fontWeight:700}}>FEE €</span><input type="number" value={f.fee || ''} onFocus={e => e.target.select()} onChange={e => updVarianta(i, { fee: Number(e.target.value) })} style={{...inp, fontSize:'12px', padding:'7px 9px'}} /></div>
+                  </div>
+                ))}
               </div>
               <div><label style={lbl}>Observații</label><textarea value={edit.observatii || ''} onChange={e => setEdit({...edit, observatii: e.target.value})} rows={3} style={{...inp, resize:'vertical'}} /></div>
               {msg && <div style={{fontSize:'13px', fontWeight:700, color: msg === 'Salvat!' ? '#059669' : '#dc2626'}}>{msg}</div>}

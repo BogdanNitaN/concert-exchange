@@ -15,6 +15,8 @@ interface Format {
   cazare: string
   persoane: number
   bilete: number
+  durata?: string
+  comision?: number
 }
 interface Artist {
   nume: string
@@ -258,7 +260,7 @@ export default function OfertaPage() {
       key: a.nume + '-' + Date.now(),
       artist: a,
       formatSelectat: fmt ? fmt.nume : '',
-      durata: getDurationOptions(a.set_type)[0] || '',
+      durata: a.durata_default || '40 min',
       tipPret: 'Standard',
       feeLista: fmt ? fmt.fee : a.fee_standard,
       fee: fmt ? fmt.fee : a.fee_standard,
@@ -742,10 +744,8 @@ export default function OfertaPage() {
                   <input type="checkbox" checked={l.includeExport} onChange={e => updateLinie(l.key, { includeExport: e.target.checked })} style={{width:'18px', height:'18px', accentColor:'#059669'}} />
                   <span style={{fontSize:'18px', fontWeight:800}}>{l.artist.nume}</span>
                   <span style={{fontSize:'9px', fontWeight:800, padding:'2px 6px', borderRadius:'4px', background: l.artist.tip === 'intermediere' ? '#faf5ff' : '#f0fdf4', color: l.artist.tip === 'intermediere' ? '#7c3aed' : '#059669'}}>{l.artist.tip === 'intermediere' ? 'EXTERN' : 'FWD'}</span>
-                  <select value={l.durata || getDurationOptions(l.artist.set_type)[0]} onChange={e => updateLinie(l.key, { durata: e.target.value })}
-                    style={{marginLeft:'8px', padding:'4px 10px', borderRadius:'8px', border:'1.5px solid #0891b2', color:'#0891b2', fontSize:'12px', fontWeight:700, fontFamily:F, cursor:'pointer', background:'white'}}>
-                    {getDurationOptions(l.artist.set_type).map(d => <option key={d} value={d}>{d}</option>)}
-                  </select>
+                  <input value={l.durata} onChange={e => updateLinie(l.key, { durata: e.target.value })} placeholder="40 min"
+                    style={{marginLeft:'8px', padding:'4px 10px', borderRadius:'8px', border:'1.5px solid #0891b2', color:'#0891b2', fontSize:'12px', fontWeight:700, fontFamily:F, background:'white', width:'90px'}} />
                   {l.artist.formate && l.artist.formate.length > 1 && (
                     <select value={l.formatSelectat} onChange={e => schimbaFormat(l.key, e.target.value)}
                       style={{marginLeft:'10px', padding:'4px 10px', borderRadius:'8px', border:'1.5px solid #7c3aed', color:'#7c3aed', fontSize:'12px', fontWeight:700, fontFamily:F, cursor:'pointer', background:'white'}}>
