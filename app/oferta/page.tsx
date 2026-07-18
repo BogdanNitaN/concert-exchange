@@ -134,7 +134,7 @@ export default function OfertaPage() {
   const [codOferta, setCodOferta] = useState(() => 'GIGX-' + new Date().getFullYear() + '-' + String(Math.floor(Math.random()*9000)+1000))
   const [adaosProcent, setAdaosProcent] = useState(1)
   const [showAddArtist, setShowAddArtist] = useState(false)
-  const [newArtist, setNewArtist] = useState({ nume: '', categorie: 'pop', tip: 'propriu', fee: '', leiKm: '', cazare: '', bileteAvion: '', alcool: '' })
+  const [newArtist, setNewArtist] = useState({ nume: '', categorie: 'pop', tip: 'propriu', setType: 'band', fee: '', leiKm: '', transportMoneda: 'lei', cazare: '', bileteAvion: '', alcool: '', diurnaFixa: '' })
   const [savingArtist, setSavingArtist] = useState(false)
 
   useEffect(() => {
@@ -208,7 +208,7 @@ export default function OfertaPage() {
         const ar = await fetch('/api/oferta-artist').then(x => x.json())
         setArtists(ar.artists || [])
         setShowAddArtist(false)
-        setNewArtist({ nume: '', categorie: 'pop', tip: 'propriu', fee: '', leiKm: '', cazare: '', bileteAvion: '', alcool: '' })
+        setNewArtist({ nume: '', categorie: 'pop', tip: 'propriu', setType: 'band', fee: '', leiKm: '', transportMoneda: 'lei', cazare: '', bileteAvion: '', alcool: '', diurnaFixa: '' })
         alert('Artist adaugat! Il gasesti in cautare.')
       } else alert('Eroare: ' + (d.error || 'necunoscuta'))
     } catch { alert('Eroare la salvare') }
@@ -817,7 +817,7 @@ export default function OfertaPage() {
                 <div>
                   <label style={{fontSize:'11px', fontWeight:700, color:'#78716c', textTransform:'uppercase', display:'block', marginBottom:'4px'}}>Categorie</label>
                   <select value={newArtist.categorie} onChange={e => setNewArtist({...newArtist, categorie: e.target.value})} style={{width:'100%', padding:'10px 12px', borderRadius:'8px', border:'1.5px solid #e7e5e4', fontSize:'14px', fontFamily:F, background:'white'}}>
-                    <option value="pop">Pop</option><option value="urban">Urban</option><option value="trap">Trap</option><option value="dance">Dance</option><option value="alternativ">Alternativ</option><option value="intermediere">Intermediere</option><option value="general">General</option>
+                    <option value="pop">Pop</option><option value="urban">Urban</option><option value="trap">Trap</option><option value="dance">Dance</option><option value="manele">Manele</option><option value="balcanic">Balcanic</option><option value="lautareasca">Lăutărească</option><option value="dj">DJ</option><option value="cover">Cover band</option><option value="alternativ">Alternativ</option>
                   </select>
                 </div>
                 <div>
@@ -833,8 +833,26 @@ export default function OfertaPage() {
                   <input type="number" value={newArtist.fee} onFocus={e => e.target.select()} onChange={e => setNewArtist({...newArtist, fee: e.target.value})} placeholder="5000" style={{width:'100%', padding:'10px 12px', borderRadius:'8px', border:'1.5px solid #e7e5e4', fontSize:'14px', fontFamily:F, boxSizing:'border-box'}} />
                 </div>
                 <div>
-                  <label style={{fontSize:'11px', fontWeight:700, color:'#78716c', textTransform:'uppercase', display:'block', marginBottom:'4px'}}>Lei/km</label>
-                  <input type="number" step="0.1" value={newArtist.leiKm} onFocus={e => e.target.select()} onChange={e => setNewArtist({...newArtist, leiKm: e.target.value})} placeholder="5" style={{width:'100%', padding:'10px 12px', borderRadius:'8px', border:'1.5px solid #e7e5e4', fontSize:'14px', fontFamily:F, boxSizing:'border-box'}} />
+                  <label style={{fontSize:'11px', fontWeight:700, color:'#78716c', textTransform:'uppercase', display:'block', marginBottom:'4px'}}>Transport /km</label>
+                  <div style={{display:'flex', gap:'6px'}}>
+                    <input type="number" step="0.1" value={newArtist.leiKm} onFocus={e => e.target.select()} onChange={e => setNewArtist({...newArtist, leiKm: e.target.value})} placeholder="5" style={{flex:1, padding:'10px 12px', borderRadius:'8px', border:'1.5px solid #e7e5e4', fontSize:'14px', fontFamily:F, boxSizing:'border-box', minWidth:0}} />
+                    <select value={newArtist.transportMoneda} onChange={e => setNewArtist({...newArtist, transportMoneda: e.target.value})} style={{padding:'10px 8px', borderRadius:'8px', border:'1.5px solid #e7e5e4', fontSize:'13px', fontFamily:F, background:'white'}}>
+                      <option value="lei">lei</option><option value="euro">€</option>
+                    </select>
+                  </div>
+                </div>
+              </div>
+
+              <div style={{display:'grid', gridTemplateColumns:'1fr 1fr', gap:'12px'}}>
+                <div>
+                  <label style={{fontSize:'11px', fontWeight:700, color:'#78716c', textTransform:'uppercase', display:'block', marginBottom:'4px'}}>Tip set (durată)</label>
+                  <select value={newArtist.setType} onChange={e => setNewArtist({...newArtist, setType: e.target.value})} style={{width:'100%', padding:'10px 12px', borderRadius:'8px', border:'1.5px solid #e7e5e4', fontSize:'14px', fontFamily:F, background:'white'}}>
+                    <option value="band">Band</option><option value="dj">DJ</option><option value="vocal">Vocal</option><option value="cover">Cover</option><option value="show">Show</option><option value="instrument">Instrument</option><option value="mc">MC</option>
+                  </select>
+                </div>
+                <div>
+                  <label style={{fontSize:'11px', fontWeight:700, color:'#78716c', textTransform:'uppercase', display:'block', marginBottom:'4px'}}>Diurnă fixă (lei, opțional)</label>
+                  <input type="number" value={newArtist.diurnaFixa} onFocus={e => e.target.select()} onChange={e => setNewArtist({...newArtist, diurnaFixa: e.target.value})} placeholder="ex: 2500" style={{width:'100%', padding:'10px 12px', borderRadius:'8px', border:'1.5px solid #e7e5e4', fontSize:'14px', fontFamily:F, boxSizing:'border-box'}} />
                 </div>
               </div>
               <div>

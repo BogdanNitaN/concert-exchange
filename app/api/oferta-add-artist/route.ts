@@ -34,8 +34,11 @@ export async function POST(req: Request) {
       nr_persoane: persoane(b.cazare || ''),
       bilete_avion: Number(b.bileteAvion) || 0,
       alcool_default: Number(b.alcool) || 0,
-      categorie: b.categorie || 'general',
+      categorie: b.categorie || 'pop',
       tip: b.tip || 'propriu',
+      set_type: b.setType || 'band',
+      transport_moneda: b.transportMoneda || 'lei',
+      diurna_fixa: b.diurnaFixa ? Number(b.diurnaFixa) : null,
     }
 
     const { error } = await supabase.from('oferta_artisti').upsert(artist, { onConflict: 'nume' })
