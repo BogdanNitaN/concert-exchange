@@ -42,6 +42,7 @@ interface Linie {
   cazare: string
   persoane: number
   bileteAvion: number
+  restulRutier: boolean
   tipMasa: 'diurna' | 'alacarte'
   zile: number
   diurnaPerPers: number
@@ -251,6 +252,7 @@ export default function OfertaPage() {
       cazare: fmt ? fmt.cazare : a.cazare,
       persoane: fmt ? fmt.persoane : a.nr_persoane,
       bileteAvion: fmt ? fmt.bilete : (a.bilete_avion || 0),
+      restulRutier: true,
       tipMasa: 'alacarte',
       zile: 1,
       diurnaPerPers: 180,
@@ -296,7 +298,8 @@ export default function OfertaPage() {
   function calcLinie(l: Linie) {
     const marjaProc = km !== null && km > 300 ? 0.065 : 0.115
     const kmTotal = km !== null ? (l.useMarja ? (km + Math.round(km * marjaProc)) * 2 : km * 2) : 0
-    const transportLei = kmTotal > 0 && l.leiKm > 0 ? Math.round(kmTotal * l.leiKm / 10) * 10 : 0
+    const totiZboara = km !== null && km > 300 && !l.restulRutier
+    const transportLei = (kmTotal > 0 && l.leiKm > 0 && !totiZboara) ? Math.round(kmTotal * l.leiKm / 10) * 10 : 0
     const diurnaTotal = l.tipMasa === 'diurna' ? l.persoane * l.diurnaPerPers * l.zile : 0
     const alcoolTotal = l.useAlcool ? l.alcool : 0
     const discount = l.feeLista > l.fee ? l.feeLista - l.fee : 0
@@ -336,7 +339,12 @@ export default function OfertaPage() {
         const parts: string[] = []
         parts.push(l.fee + ' EUR + TVA')
         if (c.transportLei > 0) parts.push('transport ' + l.leiKm + ' lei/km x ' + c.kmTotal + ' km = ' + c.transportLei.toLocaleString('ro-RO') + ' lei + TVA')
-        if (km !== null && km > 300 && l.bileteAvion > 0) parts.push(l.bileteAvion + (l.bileteAvion === 1 ? ' bilet avion' : ' bilete avion'))
+        if (km !== null && km > 300 && l.bileteAvion > 0) {
+          let av = l.bileteAvion + (l.bileteAvion === 1 ? ' bilet avion' : ' bilete avion')
+          av += ' + transfer de asigurat'
+          if (l.restulRutier) av += ' + transport rutier pentru restul echipei'
+          parts.push(av)
+        }
         parts.push('cazare ' + l.cazare)
         parts.push('protocol ' + l.persoane + ' persoane')
         if (l.tipMasa === 'diurna' && c.diurnaTotal > 0) parts.push('diurna ' + c.diurnaTotal.toLocaleString('ro-RO') + ' lei + TVA')
@@ -377,7 +385,7 @@ export default function OfertaPage() {
             artistNume: l.artist.nume,
             formatSelectat: l.formatSelectat,
             tipPret: l.tipPret, feeLista: l.feeLista, fee: l.fee, leiKm: l.leiKm,
-            useMarja: l.useMarja, cazare: l.cazare, persoane: l.persoane, bileteAvion: l.bileteAvion,
+            useMarja: l.useMarja, cazare: l.cazare, persoane: l.persoane, bileteAvion: l.bileteAvion, restulRutier: l.restulRutier,
             tipMasa: l.tipMasa, zile: l.zile, diurnaPerPers: l.diurnaPerPers,
             useAlcool: l.useAlcool, alcool: l.alcool,
             useCag: l.useCag, cagProcent: l.cagProcent, cagSuma: l.cagSuma, cagMod: l.cagMod,
@@ -464,7 +472,9 @@ export default function OfertaPage() {
     doc.setFont('helvetica', 'bold'); doc.setFontSize(16)
     doc.text('FORWARD AGENCY', M, 16)
     doc.setFont('helvetica', 'normal'); doc.setFontSize(9)
+    doc.setTextColor(10, 50, 65)
     doc.text('Your #1 Artist Booking & Advising Agency', M, 22)
+    doc.setTextColor(255, 255, 255)
 
     y = 52
 
@@ -518,7 +528,11 @@ export default function OfertaPage() {
       const rows: string[] = []
       rows.push('Onorariu: ' + l.fee + ' EUR + TVA')
       if (c.transportLei > 0) rows.push('Transport: ' + l.leiKm + ' lei/km x ' + c.kmTotal + ' km = ' + c.transportLei.toLocaleString('ro-RO') + ' lei + TVA')
-      if (km !== null && km > 300 && l.bileteAvion > 0) rows.push('Avion: ' + l.bileteAvion + (l.bileteAvion === 1 ? ' bilet' : ' bilete') + ' + transfer auto')
+      if (km !== null && km > 300 && l.bileteAvion > 0) {
+        let av = 'Avion: ' + l.bileteAvion + (l.bileteAvion === 1 ? ' bilet' : ' bilete') + ' + transfer de asigurat'
+        if (l.restulRutier) av += ' (restul echipei rutier)'
+        rows.push(av)
+      }
       rows.push('Cazare: ' + l.cazare + ' (' + l.persoane + ' persoane)')
       if (l.tipMasa === 'diurna' && c.diurnaTotal > 0) rows.push('Diurna: ' + c.diurnaTotal.toLocaleString('ro-RO') + ' lei + TVA')
       if (l.tipMasa === 'alacarte') rows.push('Masa: a la carte ' + l.persoane + ' pers (pranz, cina) + mic dejun la hotel')
@@ -740,6 +754,20 @@ export default function OfertaPage() {
                 </label>
                 {c.discount > 0 && <span style={{fontSize:'12px', color:'#059669', fontWeight:700}}>Discount {c.discount} € · economie {c.savingLei.toLocaleString('ro-RO')} lei</span>}
               </div>
+
+              {km !== null && km > 300 && (
+                <div style={{display:'flex', gap:'16px', flexWrap:'wrap', marginBottom:'12px', alignItems:'center', padding:'10px 12px', background:'#f5f5f4', borderRadius:'8px'}}>
+                  <div style={{display:'flex', alignItems:'center', gap:'8px'}}>
+                    <label style={{fontSize:'12px', fontWeight:700, color:'#57534e'}}>Bilete avion (câți zboară):</label>
+                    <input type="number" value={l.bileteAvion || ''} onFocus={e => e.target.select()} onChange={e => updateLinie(l.key, { bileteAvion: Number(e.target.value) })} style={{width:'60px', padding:'6px 8px', borderRadius:'6px', border:'1.5px solid #e7e5e4', fontSize:'13px', fontFamily:F, textAlign:'center'}} />
+                  </div>
+                  <label style={{display:'flex', alignItems:'center', gap:'6px', fontSize:'13px', cursor:'pointer'}}>
+                    <input type="checkbox" checked={l.restulRutier} onChange={e => updateLinie(l.key, { restulRutier: e.target.checked })} style={{width:'16px', height:'16px', accentColor:'#059669'}} />
+                    Restul echipei rutier
+                  </label>
+                  <span style={{fontSize:'11px', color:'#a8a29e'}}>{l.restulRutier ? 'transport auto + transfer aeroport' : 'toți zboară + transfer aeroport'}</span>
+                </div>
+              )}
 
               <div style={{marginBottom:'12px'}}>
                 <label style={label}>Cazare</label>
