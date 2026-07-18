@@ -252,7 +252,7 @@ export default function OfertaPage() {
           data_eveniment: dataEveniment || null,
           destinatar: destinatar || null,
           institutie_publica: institutiePublica,
-          artisti: activi.map(l => ({ nume: l.artist.nume, fee: l.fee, feeLista: l.feeLista, tipPret: l.tipPret })),
+          artisti: activi.map(l => ({ nume: l.artist.nume, fee: l.fee, feeLista: l.feeLista, tipPret: l.tipPret, tip: l.artist.tip, format: l.formatSelectat })),
           total_fee_eur: totalFee,
           total_discount_eur: totalDiscount,
           total_cag_eur: totalCag,
@@ -540,6 +540,7 @@ export default function OfertaPage() {
                   onMouseEnter={e => (e.currentTarget.style.background = '#f5f5f4')}
                   onMouseLeave={e => (e.currentTarget.style.background = 'white')}>
                   {a.nume} <span style={{color:'#a8a29e', fontSize:'12px'}}>· {a.fee_standard}€</span>
+                  <span style={{marginLeft:'8px', fontSize:'9px', fontWeight:800, padding:'2px 6px', borderRadius:'4px', background: a.tip === 'intermediere' ? '#faf5ff' : '#f0fdf4', color: a.tip === 'intermediere' ? '#7c3aed' : '#059669'}}>{a.tip === 'intermediere' ? 'EXTERN' : 'FWD'}</span>
                 </div>
               ))}
             </div>
@@ -555,6 +556,7 @@ export default function OfertaPage() {
                 <div style={{display:'flex', alignItems:'center', gap:'10px'}}>
                   <input type="checkbox" checked={l.includeExport} onChange={e => updateLinie(l.key, { includeExport: e.target.checked })} style={{width:'18px', height:'18px', accentColor:'#059669'}} />
                   <span style={{fontSize:'18px', fontWeight:800}}>{l.artist.nume}</span>
+                  <span style={{fontSize:'9px', fontWeight:800, padding:'2px 6px', borderRadius:'4px', background: l.artist.tip === 'intermediere' ? '#faf5ff' : '#f0fdf4', color: l.artist.tip === 'intermediere' ? '#7c3aed' : '#059669'}}>{l.artist.tip === 'intermediere' ? 'EXTERN' : 'FWD'}</span>
                   {l.artist.formate && l.artist.formate.length > 1 && (
                     <select value={l.formatSelectat} onChange={e => schimbaFormat(l.key, e.target.value)}
                       style={{marginLeft:'10px', padding:'4px 10px', borderRadius:'8px', border:'1.5px solid #7c3aed', color:'#7c3aed', fontSize:'12px', fontWeight:700, fontFamily:F, cursor:'pointer', background:'white'}}>
@@ -705,7 +707,7 @@ export default function OfertaPage() {
                 <div>
                   <label style={{fontSize:'11px', fontWeight:700, color:'#78716c', textTransform:'uppercase', display:'block', marginBottom:'4px'}}>Tip</label>
                   <select value={newArtist.tip} onChange={e => setNewArtist({...newArtist, tip: e.target.value})} style={{width:'100%', padding:'10px 12px', borderRadius:'8px', border:'1.5px solid #e7e5e4', fontSize:'14px', fontFamily:F, background:'white'}}>
-                    <option value="propriu">Propriu (Forward)</option><option value="intermediere">Intermediere</option>
+                    <option value="propriu">FWD</option><option value="intermediere">EXTERN</option>
                   </select>
                 </div>
               </div>
