@@ -53,7 +53,18 @@ function formatData(v: string): string {
   return d.getDate() + ' ' + LUNI[d.getMonth()] + ' ' + d.getFullYear()
 }
 
+function useIsMobile() {
+  const [m, setM] = useState(false)
+  useEffect(() => {
+    const check = () => setM(window.innerWidth < 640)
+    check(); window.addEventListener('resize', check)
+    return () => window.removeEventListener('resize', check)
+  }, [])
+  return m
+}
+
 export default function OfertaPage() {
+  const isMobile = useIsMobile()
   const [authed, setAuthed] = useState(false)
   const [passInput, setPassInput] = useState('')
   const [artists, setArtists] = useState<Artist[]>([])
@@ -71,6 +82,7 @@ export default function OfertaPage() {
   const [useAdaos, setUseAdaos] = useState(false)
   const [destinatar, setDestinatar] = useState<'' | 'client' | 'intermediar'>('')
   const [institutiePublica, setInstitutiePublica] = useState(false)
+  const [codOferta] = useState(() => 'GIGX-' + new Date().getFullYear() + '-' + String(Math.floor(Math.random()*9000)+1000))
   const [adaosProcent, setAdaosProcent] = useState(1)
 
   useEffect(() => {
@@ -91,7 +103,7 @@ export default function OfertaPage() {
       cazare: a.cazare,
       persoane: a.nr_persoane,
       bileteAvion: a.bilete_avion || 0,
-      tipMasa: 'diurna',
+      tipMasa: 'alacarte',
       zile: 1,
       diurnaPerPers: 180,
       useAlcool: false,
@@ -181,6 +193,32 @@ export default function OfertaPage() {
     return out.join('\n').trim()
   }
 
+  async function salveazaOferta() {
+    try {
+      const activi = linii.filter(l => l.includeExport)
+      const totalFee = activi.reduce((s, l) => s + l.fee, 0)
+      const totalDiscount = activi.reduce((s, l) => { const c = calcLinie(l); return s + c.discount }, 0)
+      const totalCag = activi.reduce((s, l) => { const c = calcLinie(l); return s + c.cag }, 0)
+      await fetch('/api/oferta-save', {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          cod: codOferta,
+          client: numeClient || null,
+          oras: toCity || null,
+          locatie: locatie || null,
+          data_eveniment: dataEveniment || null,
+          destinatar: destinatar || null,
+          institutie_publica: institutiePublica,
+          artisti: activi.map(l => ({ nume: l.artist.nume, fee: l.fee, feeLista: l.feeLista, tipPret: l.tipPret })),
+          total_fee_eur: totalFee,
+          total_discount_eur: totalDiscount,
+          total_cag_eur: totalCag,
+          status: 'generata',
+        })
+      })
+    } catch {}
+  }
+
   async function downloadPDF() {
     const doc = new jsPDF({ unit: 'mm', format: 'a4' })
     const W = 210, M = 18
@@ -188,7 +226,7 @@ export default function OfertaPage() {
     // Helvetica nu suporta diacritice - le scot
     const noDia = (t: string) => t.normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/ș/g,'s').replace(/Ș/g,'S').replace(/ț/g,'t').replace(/Ț/g,'T').replace(/ă/g,'a').replace(/Ă/g,'A').replace(/â/g,'a').replace(/Â/g,'A').replace(/î/g,'i').replace(/Î/g,'I')
 
-    // helper: incarca imagine ca dataURL
+    // helper: incarca imagine ca dataURL (logo - fara compresie)
     async function toDataUrl(url: string): Promise<string | null> {
       try {
         const res = await fetch(url)
@@ -198,6 +236,24 @@ export default function OfertaPage() {
           r.onloadend = () => resolve(r.result as string)
           r.readAsDataURL(blob)
         })
+      } catch { return null }
+    }
+    // helper: incarca SI comprima poza artist (resize 160px, JPEG 0.7)
+    async function toCompressed(url: string): Promise<string | null> {
+      try {
+        const res = await fetch(url)
+        const blob = await res.blob()
+        const bitmap = await createImageBitmap(blob)
+        const size = 160
+        const canvas = document.createElement('canvas')
+        canvas.width = size; canvas.height = size
+        const ctx = canvas.getContext('2d')
+        if (!ctx) return null
+        // crop patrat centrat
+        const min = Math.min(bitmap.width, bitmap.height)
+        const sx = (bitmap.width - min) / 2, sy = (bitmap.height - min) / 2
+        ctx.drawImage(bitmap, sx, sy, min, min, 0, 0, size, size)
+        return canvas.toDataURL('image/jpeg', 0.7)
       } catch { return null }
     }
 
@@ -230,7 +286,7 @@ export default function OfertaPage() {
     y = 52
 
     // === NR OFERTA + validitate (dreapta sus sub header) ===
-    const nrOferta = 'GIGX-' + new Date().getFullYear() + '-' + String(Math.floor(Math.random()*9000)+1000)
+    const nrOferta = codOferta
     doc.setFont('helvetica', 'normal'); doc.setFontSize(8); doc.setTextColor(140,140,140)
     doc.text('Nr. ' + nrOferta, W - M, 48, { align: 'right' })
 
@@ -264,7 +320,7 @@ export default function OfertaPage() {
       try {
         const pr = await fetch('/api/oferta-poze')
         const imgs = await pr.json()
-        if (imgs[l.artist.nume]) photo = await toDataUrl(imgs[l.artist.nume])
+        if (imgs[l.artist.nume]) photo = await toCompressed(imgs[l.artist.nume])
       } catch {}
       const textX = photo ? M + 24 : M
       if (photo) {
@@ -369,19 +425,22 @@ export default function OfertaPage() {
   const filtered = search ? artists.filter(a => a.nume.toLowerCase().includes(search.toLowerCase())) : []
 
   return (
-    <div style={{minHeight:'100vh', background:'#f5f5f7', fontFamily:F, padding:'32px 20px'}}>
+    <div style={{minHeight:'100vh', background:'#f5f5f7', fontFamily:F, padding: isMobile ? '16px 12px' : '32px 20px'}}>
       <div style={{maxWidth:'1100px', margin:'0 auto'}}>
-        <div style={{fontSize:'24px', fontWeight:800, marginBottom:'24px'}}>GIG<span style={{color:'#059669'}}>x</span> · Generator deviz</div>
+        <div style={{display:'flex', justifyContent:'space-between', alignItems:'center', marginBottom:'24px'}}>
+          <div style={{fontSize:'24px', fontWeight:800}}>GIG<span style={{color:'#059669'}}>x</span> · Generator deviz</div>
+          <a href="/oferta/istoric" style={{fontSize:'14px', color:'#059669', fontWeight:700, textDecoration:'none'}}>Istoric →</a>
+        </div>
 
         {/* client + eveniment */}
         <div style={{background:'white', padding:'20px', borderRadius:'14px', border:'2px solid #e7e5e4', marginBottom:'20px'}}>
-          <div style={{display:'grid', gridTemplateColumns:'2fr 1fr', gap:'12px', marginBottom:'12px'}}>
+          <div style={{display:'grid', gridTemplateColumns: isMobile ? '1fr' : '2fr 1fr', gap:'12px', marginBottom:'12px'}}>
             <div><label style={label}>Denumire client / instituție</label>
               <input value={numeClient} onChange={e => setNumeClient(e.target.value)} placeholder="ex: Primăria Focșani" style={inputStyle} /></div>
             <div><label style={label}>Data eveniment</label>
               <DatePicker value={dataEveniment} onChange={v => setDataEveniment(v)} placeholder="Alege data" /></div>
           </div>
-          <div style={{display:'grid', gridTemplateColumns:'1fr 1fr 1fr auto', gap:'12px', alignItems:'end'}}>
+          <div style={{display:'grid', gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr 1fr auto', gap:'12px', alignItems:'end'}}>
             <div><label style={label}>Oraș plecare</label>
               <input value={fromCity} onChange={e => setFromCity(e.target.value)} style={inputStyle} /></div>
             <div><label style={label}>Destinație</label>
@@ -447,11 +506,11 @@ export default function OfertaPage() {
                   </select>
                 </div>
                 <div><label style={label}>Preț listă (€)</label>
-                  <input type="number" value={l.feeLista} onChange={e => updateLinie(l.key, { feeLista: Number(e.target.value) })} style={{...inputStyle, color:'#a8a29e'}} /></div>
+                  <input type="number" value={l.feeLista || ''} onFocus={e => e.target.select()} onChange={e => updateLinie(l.key, { feeLista: Number(e.target.value) })} style={{...inputStyle, color:'#a8a29e'}} /></div>
                 <div><label style={label}>Ofertă (€)</label>
-                  <input type="number" value={l.fee} onChange={e => updateLinie(l.key, { fee: Number(e.target.value) })} style={inputStyle} /></div>
+                  <input type="number" value={l.fee || ''} onFocus={e => e.target.select()} onChange={e => updateLinie(l.key, { fee: Number(e.target.value) })} style={inputStyle} /></div>
                 <div><label style={label}>Lei/km</label>
-                  <input type="number" step="0.1" value={l.leiKm} onChange={e => updateLinie(l.key, { leiKm: Number(e.target.value) })} style={inputStyle} /></div>
+                  <input type="number" step="0.1" value={l.leiKm || ''} onFocus={e => e.target.select()} onChange={e => updateLinie(l.key, { leiKm: Number(e.target.value) })} style={inputStyle} /></div>
               </div>
 
               <div style={{display:'flex', gap:'16px', flexWrap:'wrap', marginBottom:'12px', alignItems:'center'}}>
@@ -474,8 +533,8 @@ export default function OfertaPage() {
               </div>
               {l.tipMasa === 'diurna' ? (
                 <div style={{display:'flex', gap:'8px', marginBottom:'12px'}}>
-                  <div style={{flex:1}}><label style={label}>Lei/pers/zi</label><input type="number" value={l.diurnaPerPers} onChange={e => updateLinie(l.key, { diurnaPerPers: Number(e.target.value) })} style={inputStyle} /></div>
-                  <div style={{flex:1}}><label style={label}>Zile</label><input type="number" value={l.zile} onChange={e => updateLinie(l.key, { zile: Number(e.target.value) })} style={inputStyle} /></div>
+                  <div style={{flex:1}}><label style={label}>Lei/pers/zi</label><input type="number" value={l.diurnaPerPers || ''} onFocus={e => e.target.select()} onChange={e => updateLinie(l.key, { diurnaPerPers: Number(e.target.value) })} style={inputStyle} /></div>
+                  <div style={{flex:1}}><label style={label}>Zile</label><input type="number" value={l.zile || ''} onFocus={e => e.target.select()} onChange={e => updateLinie(l.key, { zile: Number(e.target.value) })} style={inputStyle} /></div>
                   <div style={{flex:1}}><label style={label}>Total diurnă</label><div style={{padding:'10px 0', fontWeight:700}}>{c.diurnaTotal.toLocaleString('ro-RO')} lei</div></div>
                 </div>
               ) : (
@@ -486,7 +545,7 @@ export default function OfertaPage() {
                 <input type="checkbox" checked={l.useAlcool} onChange={e => updateLinie(l.key, { useAlcool: e.target.checked })} style={{width:'16px', height:'16px', accentColor:'#059669'}} />
                 Protocol alcool
               </label>
-              {l.useAlcool && <input type="number" placeholder="Sumă lei" value={l.alcool} onChange={e => updateLinie(l.key, { alcool: Number(e.target.value) })} style={{...inputStyle, marginTop:'8px'}} />}
+              {l.useAlcool && <input type="number" placeholder="Sumă lei" value={l.alcool || ''} onFocus={e => e.target.select()} onChange={e => updateLinie(l.key, { alcool: Number(e.target.value) })} style={{...inputStyle, marginTop:'8px'}} />}
 
               <div style={{marginTop:'16px', paddingTop:'16px', borderTop:'1px dashed #e7e5e4'}}>
                 <label style={{display:'flex', alignItems:'center', gap:'8px', fontSize:'13px', cursor:'pointer', fontWeight:700}}>
@@ -500,8 +559,8 @@ export default function OfertaPage() {
                       <button onClick={() => updateLinie(l.key, { cagMod: 'suma' })} style={{padding:'6px 12px', borderRadius:'6px', border:'1.5px solid '+(l.cagMod==='suma'?'#7c3aed':'#e7e5e4'), background:l.cagMod==='suma'?'#7c3aed':'white', color:l.cagMod==='suma'?'white':'#78716c', fontSize:'12px', fontWeight:700, cursor:'pointer', fontFamily:F}}>€ fix</button>
                     </div>
                     {l.cagMod === 'procent'
-                      ? <input type="number" value={l.cagProcent} onChange={e => updateLinie(l.key, { cagProcent: Number(e.target.value) })} style={{...inputStyle, width:'90px'}} placeholder="%" />
-                      : <input type="number" value={l.cagSuma} onChange={e => updateLinie(l.key, { cagSuma: Number(e.target.value) })} style={{...inputStyle, width:'110px'}} placeholder="€" />}
+                      ? <input type="number" value={l.cagProcent || ''} onFocus={e => e.target.select()} onChange={e => updateLinie(l.key, { cagProcent: Number(e.target.value) })} style={{...inputStyle, width:'90px'}} placeholder="%" />
+                      : <input type="number" value={l.cagSuma || ''} onFocus={e => e.target.select()} onChange={e => updateLinie(l.key, { cagSuma: Number(e.target.value) })} style={{...inputStyle, width:'110px'}} placeholder="€" />}
                     <span style={{fontSize:'13px', fontWeight:700, color:'#7c3aed'}}>CAG: {c.cag} € {l.cagMod === 'procent' && c.cag === 1000 ? '(plafon)' : ''}</span>
                     <span style={{fontSize:'13px', color:'#78716c'}}>· Net GIGx: <strong>{c.netGigx} €</strong></span>
                   </div>
@@ -535,13 +594,13 @@ export default function OfertaPage() {
 
             {/* BUTOANE EXPORT - blocate pana selectezi destinatar */}
             <div style={{display:'flex', gap:'8px', flexWrap:'wrap', opacity: destinatar ? 1 : 0.4, pointerEvents: destinatar ? 'auto' : 'none'}}>
-              <button onClick={() => { navigator.clipboard.writeText(genText()); alert('Deviz copiat!') }}
+              <button onClick={() => { navigator.clipboard.writeText(genText()); salveazaOferta(); alert('Deviz copiat!') }}
                 style={{flex:1, minWidth:'120px', padding:'12px', background:'#059669', color:'white', border:'none', borderRadius:'8px', fontSize:'14px', fontWeight:700, cursor:'pointer', fontFamily:F}}>Copiază tot</button>
-              <button onClick={() => window.open('https://wa.me/?text=' + encodeURIComponent(genText()), '_blank')}
+              <button onClick={() => { salveazaOferta(); window.open('https://wa.me/?text=' + encodeURIComponent(genText()), '_blank') }}
                 style={{flex:1, minWidth:'120px', padding:'12px', background:'#25D366', color:'white', border:'none', borderRadius:'8px', fontSize:'14px', fontWeight:700, cursor:'pointer', fontFamily:F}}>WhatsApp</button>
-              <button onClick={() => window.open('mailto:?subject=' + encodeURIComponent('Oferta GIGx ' + toCity) + '&body=' + encodeURIComponent(genText().replace(/\*/g, '')))}
+              <button onClick={() => { salveazaOferta(); window.open('mailto:?subject=' + encodeURIComponent('Oferta GIGx ' + toCity) + '&body=' + encodeURIComponent(genText().replace(/\*/g, ''))) }}
                 style={{flex:1, minWidth:'120px', padding:'12px', background:'#3b82f6', color:'white', border:'none', borderRadius:'8px', fontSize:'14px', fontWeight:700, cursor:'pointer', fontFamily:F}}>Email</button>
-              <button onClick={() => downloadPDF()}
+              <button onClick={() => { salveazaOferta(); downloadPDF() }}
                 style={{flex:1, minWidth:'120px', padding:'12px', background:'#7c3aed', color:'white', border:'none', borderRadius:'8px', fontSize:'14px', fontWeight:700, cursor:'pointer', fontFamily:F}}>{typeof window !== 'undefined' && window.innerWidth < 768 ? 'Distribuie PDF' : 'Descarcă PDF'}</button>
             </div>
           </div>
@@ -558,6 +617,9 @@ export default function OfertaPage() {
       </div>
 
       <style>{`
+        input[type=number]::-webkit-inner-spin-button,
+        input[type=number]::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
+        input[type=number] { -moz-appearance: textfield; }
         @media print {
           body * { visibility: hidden; }
           .print-only, .print-only * { visibility: visible; }

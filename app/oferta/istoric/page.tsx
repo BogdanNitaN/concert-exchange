@@ -1,0 +1,224 @@
+'use client'
+
+import { useState, useEffect, useMemo } from 'react'
+
+const F = 'Montserrat,sans-serif'
+const ADMIN_PASS = 'fwd26'
+
+interface Oferta {
+  cod: string
+  client: string | null
+  oras: string | null
+  locatie: string | null
+  data_eveniment: string | null
+  destinatar: string | null
+  institutie_publica: boolean
+  artisti: { nume: string; fee: number; feeLista: number; tipPret: string }[]
+  total_fee_eur: number
+  total_discount_eur: number
+  total_cag_eur: number
+  status: string
+  created_at: string
+}
+
+const STATUSURI = ['generata', 'trimisa', 'confirmata', 'refuzata']
+const STATUS_COLOR: Record<string, string> = { generata: '#a8a29e', trimisa: '#3b82f6', confirmata: '#059669', refuzata: '#dc2626' }
+
+export default function IstoricPage() {
+  const [authed, setAuthed] = useState(false)
+  const [passInput, setPassInput] = useState('')
+  const [oferte, setOferte] = useState<Oferta[]>([])
+  const [loading, setLoading] = useState(false)
+
+  // filtre
+  const [search, setSearch] = useState('')
+  const [dataStart, setDataStart] = useState('')
+  const [dataEnd, setDataEnd] = useState('')
+  const [fStatus, setFStatus] = useState('')
+  const [fDestinatar, setFDestinatar] = useState('')
+  const [fDiscount, setFDiscount] = useState(false)
+  const [fCag, setFCag] = useState(false)
+  const [fValoareMin, setFValoareMin] = useState('')
+  const [sortBy, setSortBy] = useState('data-noua')
+
+  useEffect(() => { if (authed) load() }, [authed])
+
+  async function load() {
+    setLoading(true)
+    try {
+      const r = await fetch('/api/oferta-save')
+      const d = await r.json()
+      setOferte(d.oferte || [])
+    } catch {}
+    setLoading(false)
+  }
+
+  async function updateStatus(cod: string, status: string) {
+    setOferte(prev => prev.map(o => o.cod === cod ? { ...o, status } : o))
+    try {
+      await fetch('/api/oferta-save', { method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ cod, status }) })
+    } catch {}
+  }
+
+  const filtrate = useMemo(() => {
+    let r = [...oferte]
+    const q = search.trim().toLowerCase()
+    if (q) r = r.filter(o =>
+      o.cod.toLowerCase().includes(q) ||
+      (o.client || '').toLowerCase().includes(q) ||
+      (o.oras || '').toLowerCase().includes(q) ||
+      (o.locatie || '').toLowerCase().includes(q) ||
+      (o.artisti || []).some(a => a.nume.toLowerCase().includes(q))
+    )
+    if (dataStart) r = r.filter(o => new Date(o.created_at) >= new Date(dataStart))
+    if (dataEnd) r = r.filter(o => new Date(o.created_at) <= new Date(dataEnd + 'T23:59:59'))
+    if (fStatus) r = r.filter(o => o.status === fStatus)
+    if (fDestinatar === 'institutie') r = r.filter(o => o.institutie_publica)
+    else if (fDestinatar) r = r.filter(o => o.destinatar === fDestinatar && !o.institutie_publica)
+    if (fDiscount) r = r.filter(o => o.total_discount_eur > 0)
+    if (fCag) r = r.filter(o => o.total_cag_eur > 0)
+    if (fValoareMin) r = r.filter(o => o.total_fee_eur >= Number(fValoareMin))
+    r.sort((a, b) => {
+      if (sortBy === 'data-noua') return new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
+      if (sortBy === 'data-veche') return new Date(a.created_at).getTime() - new Date(b.created_at).getTime()
+      if (sortBy === 'valoare-mare') return b.total_fee_eur - a.total_fee_eur
+      if (sortBy === 'valoare-mica') return a.total_fee_eur - b.total_fee_eur
+      return 0
+    })
+    return r
+  }, [oferte, search, dataStart, dataEnd, fStatus, fDestinatar, fDiscount, fCag, fValoareMin, sortBy])
+
+  function resetFiltre() {
+    setSearch(''); setDataStart(''); setDataEnd(''); setFStatus(''); setFDestinatar(''); setFDiscount(false); setFCag(false); setFValoareMin(''); setSortBy('data-noua')
+  }
+
+  const inputStyle: React.CSSProperties = { padding: '9px 11px', borderRadius: '8px', border: '1.5px solid #e7e5e4', fontSize: '13px', fontFamily: F, boxSizing: 'border-box', color: '#1c1917' }
+  const label: React.CSSProperties = { fontSize: '10px', fontWeight: 700, color: '#78716c', textTransform: 'uppercase', letterSpacing: '0.04em', marginBottom: '4px', display: 'block' }
+
+  if (!authed) {
+    return (
+      <div style={{minHeight:'100vh', background:'#f5f5f7', display:'flex', alignItems:'center', justifyContent:'center', fontFamily:F}}>
+        <div style={{background:'white', padding:'40px', borderRadius:'16px', border:'2px solid #e7e5e4', width:'320px'}}>
+          <div style={{fontSize:'22px', fontWeight:800, marginBottom:'6px'}}>GIG<span style={{color:'#059669'}}>x</span> Istoric</div>
+          <div style={{fontSize:'13px', color:'#78716c', marginBottom:'20px'}}>Rapoarte oferte</div>
+          <input type="password" placeholder="Parola" value={passInput}
+            onChange={e => setPassInput(e.target.value)}
+            onKeyDown={e => { if (e.key === 'Enter' && passInput === ADMIN_PASS) setAuthed(true) }}
+            style={{...inputStyle, width:'100%', padding:'10px 12px', fontSize:'14px'}} />
+          <button onClick={() => { if (passInput === ADMIN_PASS) setAuthed(true) }}
+            style={{width:'100%', marginTop:'12px', padding:'11px', background:'#1c1917', color:'white', border:'none', borderRadius:'8px', fontSize:'14px', fontWeight:700, cursor:'pointer', fontFamily:F}}>
+            Intra
+          </button>
+        </div>
+      </div>
+    )
+  }
+
+  const totalFee = filtrate.reduce((s, o) => s + o.total_fee_eur, 0)
+  const totalDisc = filtrate.reduce((s, o) => s + o.total_discount_eur, 0)
+  const totalCag = filtrate.reduce((s, o) => s + o.total_cag_eur, 0)
+
+  return (
+    <div style={{minHeight:'100vh', background:'#f5f5f7', fontFamily:F, padding:'32px 20px'}}>
+      <div style={{maxWidth:'1100px', margin:'0 auto'}}>
+        <div style={{display:'flex', justifyContent:'space-between', alignItems:'center', marginBottom:'20px'}}>
+          <div style={{fontSize:'24px', fontWeight:800}}>GIG<span style={{color:'#059669'}}>x</span> · Istoric oferte</div>
+          <a href="/oferta" style={{fontSize:'14px', color:'#059669', fontWeight:700, textDecoration:'none'}}>+ Ofertă nouă</a>
+        </div>
+
+        {/* FILTRE */}
+        <div style={{background:'white', padding:'18px', borderRadius:'14px', border:'2px solid #e7e5e4', marginBottom:'20px'}}>
+          <input placeholder="Caută în cod, client, oraș, locație, artist..." value={search}
+            onChange={e => setSearch(e.target.value)}
+            style={{...inputStyle, width:'100%', padding:'11px 13px', fontSize:'14px', marginBottom:'14px'}} />
+
+          <div style={{display:'grid', gridTemplateColumns:'repeat(auto-fit, minmax(150px, 1fr))', gap:'12px', marginBottom:'14px'}}>
+            <div><label style={label}>De la data</label><input type="date" value={dataStart} onChange={e => setDataStart(e.target.value)} style={{...inputStyle, width:'100%'}} /></div>
+            <div><label style={label}>Până la</label><input type="date" value={dataEnd} onChange={e => setDataEnd(e.target.value)} style={{...inputStyle, width:'100%'}} /></div>
+            <div><label style={label}>Status</label>
+              <select value={fStatus} onChange={e => setFStatus(e.target.value)} style={{...inputStyle, width:'100%'}}>
+                <option value="">Toate</option>
+                {STATUSURI.map(s => <option key={s} value={s}>{s}</option>)}
+              </select>
+            </div>
+            <div><label style={label}>Destinatar</label>
+              <select value={fDestinatar} onChange={e => setFDestinatar(e.target.value)} style={{...inputStyle, width:'100%'}}>
+                <option value="">Toți</option>
+                <option value="client">Client</option>
+                <option value="intermediar">Intermediar</option>
+                <option value="institutie">Instituție publică</option>
+              </select>
+            </div>
+            <div><label style={label}>Valoare min (€)</label><input type="number" value={fValoareMin} onChange={e => setFValoareMin(e.target.value)} placeholder="ex: 5000" style={{...inputStyle, width:'100%'}} /></div>
+            <div><label style={label}>Sortare</label>
+              <select value={sortBy} onChange={e => setSortBy(e.target.value)} style={{...inputStyle, width:'100%'}}>
+                <option value="data-noua">Cele mai noi</option>
+                <option value="data-veche">Cele mai vechi</option>
+                <option value="valoare-mare">Valoare mare</option>
+                <option value="valoare-mica">Valoare mică</option>
+              </select>
+            </div>
+          </div>
+
+          <div style={{display:'flex', gap:'16px', alignItems:'center', flexWrap:'wrap'}}>
+            <label style={{display:'flex', alignItems:'center', gap:'6px', fontSize:'13px', cursor:'pointer', fontWeight:700}}>
+              <input type="checkbox" checked={fDiscount} onChange={e => setFDiscount(e.target.checked)} style={{width:'16px', height:'16px', accentColor:'#059669'}} /> Cu discount
+            </label>
+            <label style={{display:'flex', alignItems:'center', gap:'6px', fontSize:'13px', cursor:'pointer', fontWeight:700}}>
+              <input type="checkbox" checked={fCag} onChange={e => setFCag(e.target.checked)} style={{width:'16px', height:'16px', accentColor:'#7c3aed'}} /> Cu CAG
+            </label>
+            <button onClick={resetFiltre} style={{marginLeft:'auto', padding:'8px 16px', background:'#e7e5e4', color:'#1c1917', border:'none', borderRadius:'8px', fontSize:'13px', fontWeight:700, cursor:'pointer', fontFamily:F}}>Resetează</button>
+          </div>
+        </div>
+
+        {/* SUMAR */}
+        <div style={{display:'flex', gap:'12px', marginBottom:'20px', flexWrap:'wrap'}}>
+          <div style={{background:'#1c1917', color:'white', padding:'12px 18px', borderRadius:'10px', flex:1, minWidth:'140px'}}>
+            <div style={{fontSize:'11px', color:'#a8a29e', textTransform:'uppercase'}}>{filtrate.length} oferte</div>
+            <div style={{fontSize:'20px', fontWeight:800}}>{totalFee.toLocaleString('ro-RO')} €</div>
+          </div>
+          {totalDisc > 0 && <div style={{background:'white', border:'2px solid #059669', padding:'12px 18px', borderRadius:'10px', flex:1, minWidth:'140px'}}>
+            <div style={{fontSize:'11px', color:'#059669', textTransform:'uppercase', fontWeight:700}}>Total discount</div>
+            <div style={{fontSize:'20px', fontWeight:800, color:'#059669'}}>{totalDisc.toLocaleString('ro-RO')} €</div>
+          </div>}
+          {totalCag > 0 && <div style={{background:'white', border:'2px solid #7c3aed', padding:'12px 18px', borderRadius:'10px', flex:1, minWidth:'140px'}}>
+            <div style={{fontSize:'11px', color:'#7c3aed', textTransform:'uppercase', fontWeight:700}}>Total CAG</div>
+            <div style={{fontSize:'20px', fontWeight:800, color:'#7c3aed'}}>{totalCag.toLocaleString('ro-RO')} €</div>
+          </div>}
+        </div>
+
+        {loading ? <div style={{color:'#78716c'}}>Se încarcă...</div> : (
+          <div style={{display:'flex', flexDirection:'column', gap:'12px'}}>
+            {filtrate.length === 0 && <div style={{color:'#78716c', textAlign:'center', padding:'40px'}}>Nicio ofertă găsită</div>}
+            {filtrate.map(o => (
+              <div key={o.cod} style={{background:'white', padding:'18px', borderRadius:'12px', border:'2px solid #e7e5e4'}}>
+                <div style={{display:'flex', justifyContent:'space-between', alignItems:'flex-start', marginBottom:'10px'}}>
+                  <div>
+                    <div style={{fontSize:'15px', fontWeight:800, color:'#059669'}}>{o.cod}</div>
+                    <div style={{fontSize:'14px', fontWeight:700, marginTop:'2px'}}>{o.client || '—'}{o.oras ? ' · ' + o.oras : ''}{o.locatie ? ' · ' + o.locatie : ''}</div>
+                  </div>
+                  <div style={{textAlign:'right'}}>
+                    <div style={{fontSize:'11px', color:'#78716c'}}>{new Date(o.created_at).toLocaleDateString('ro-RO')} {new Date(o.created_at).toLocaleTimeString('ro-RO', {hour:'2-digit',minute:'2-digit'})}</div>
+                    <select value={o.status} onChange={e => updateStatus(o.cod, e.target.value)}
+                      style={{marginTop:'4px', padding:'3px 8px', borderRadius:'6px', border:'1.5px solid ' + (STATUS_COLOR[o.status] || '#e7e5e4'), color: STATUS_COLOR[o.status] || '#1c1917', fontSize:'11px', fontWeight:700, fontFamily:F, cursor:'pointer', background:'white'}}>
+                      {STATUSURI.map(s => <option key={s} value={s}>{s}</option>)}
+                    </select>
+                  </div>
+                </div>
+                <div style={{fontSize:'13px', color:'#57534e', marginBottom:'10px'}}>
+                  {(o.artisti || []).map(a => a.nume).join(', ')}
+                  {o.institutie_publica && <span style={{marginLeft:'8px', fontSize:'10px', fontWeight:700, color:'#7c3aed'}}>INST. PUBLICĂ</span>}
+                </div>
+                <div style={{display:'flex', gap:'20px', fontSize:'13px', paddingTop:'10px', borderTop:'1px solid #f5f5f4'}}>
+                  <span>Fee: <strong>{o.total_fee_eur.toLocaleString('ro-RO')} €</strong></span>
+                  {o.total_discount_eur > 0 && <span style={{color:'#059669'}}>Discount: <strong>{o.total_discount_eur.toLocaleString('ro-RO')} €</strong></span>}
+                  {o.total_cag_eur > 0 && <span style={{color:'#7c3aed'}}>CAG: <strong>{o.total_cag_eur.toLocaleString('ro-RO')} €</strong></span>}
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+    </div>
+  )
+}
