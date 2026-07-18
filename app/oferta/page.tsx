@@ -243,13 +243,13 @@ export default function OfertaPage() {
   }
 
   function getDurationOptions(setType?: string): string[] {
-    if (setType === 'dj') return ['60 min', '90 min', '120 min', '180 min']
-    if (setType === 'vocal') return ['45 min', '60 min', '90 min']
-    if (setType === 'band' || setType === 'cover') return ['45 min', '60 min', '90 min', '2x45 min', '2x60 min']
-    if (setType === 'show') return ['15 min', '20 min', '30 min', '45 min']
-    if (setType === 'instrument') return ['30 min', '45 min', '60 min', '90 min', '120 min']
-    if (setType === 'mc') return ['1 ora', '2 ore', '3 ore', '4 ore', '5+ ore']
-    return ['45 min', '60 min', '90 min', '2x45 min']
+    if (setType === 'dj') return ['90 min', '120 min', '180 min', 'manual']
+    if (setType === 'vocal') return ['40 min', '60 min', '90 min', 'manual']
+    if (setType === 'band' || setType === 'cover') return ['40 min', '40 x2', '40 x3', '60 min', '90 min', 'manual']
+    if (setType === 'show') return ['15 min', '20 min', '30 min', '45 min', 'manual']
+    if (setType === 'instrument') return ['30 min', '40 min', '60 min', '90 min', '120 min', 'manual']
+    if (setType === 'mc') return ['1 ora', '2 ore', '3 ore', '4 ore', 'manual']
+    return ['40 min', '40 x2', '40 x3', '60 min', '90 min', 'manual']
   }
 
   function addArtist(a: Artist) {
@@ -659,6 +659,7 @@ export default function OfertaPage() {
           <div style={{fontSize:'24px', fontWeight:800}}>GIG<span style={{color:'#059669'}}>x</span> · Generator deviz</div>
           <div style={{display:'flex', gap:'12px', alignItems:'center'}}>
             <button onClick={() => setShowAddArtist(true)} style={{fontSize:'13px', color:'#7c3aed', fontWeight:700, background:'none', border:'1.5px solid #7c3aed', borderRadius:'8px', padding:'6px 12px', cursor:'pointer', fontFamily:F}}>+ Adaugă artist</button>
+            <a href="/oferta/roster" style={{fontSize:'13px', color:'#1c1917', fontWeight:700, background:'none', border:'1.5px solid #e7e5e4', borderRadius:'8px', padding:'6px 12px', cursor:'pointer', fontFamily:F, textDecoration:'none'}}>Roster</a>
             <a href="/oferta/istoric" style={{fontSize:'14px', color:'#059669', fontWeight:700, textDecoration:'none'}}>Istoric →</a>
             <button onClick={faLogout} style={{fontSize:'13px', color:'#78716c', fontWeight:700, background:'none', border:'1.5px solid #e7e5e4', borderRadius:'8px', padding:'6px 12px', cursor:'pointer', fontFamily:F}}>Log out</button>
           </div>
