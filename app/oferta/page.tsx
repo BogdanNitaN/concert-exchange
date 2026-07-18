@@ -95,12 +95,33 @@ export default function OfertaPage() {
   const [institutiePublica, setInstitutiePublica] = useState(false)
   const [codOferta] = useState(() => 'GIGX-' + new Date().getFullYear() + '-' + String(Math.floor(Math.random()*9000)+1000))
   const [adaosProcent, setAdaosProcent] = useState(1)
+  const [showAddArtist, setShowAddArtist] = useState(false)
+  const [newArtist, setNewArtist] = useState({ nume: '', categorie: 'pop', tip: 'propriu', fee: '', leiKm: '', cazare: '', bileteAvion: '', alcool: '' })
+  const [savingArtist, setSavingArtist] = useState(false)
 
   useEffect(() => {
     if (!authed) return
     fetch('/api/oferta-artist').then(r => r.json()).then(d => setArtists(d.artists || []))
     fetch('/api/bnr-rate').then(r => r.json()).then(d => { if (d?.rate) setEurRate(d.rate) })
   }, [authed])
+
+  async function salveazaArtistNou() {
+    if (!newArtist.nume.trim()) { alert('Completeaza numele'); return }
+    setSavingArtist(true)
+    try {
+      const r = await fetch('/api/oferta-add-artist', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(newArtist) })
+      const d = await r.json()
+      if (d.ok) {
+        // reincarc lista artisti
+        const ar = await fetch('/api/oferta-artist').then(x => x.json())
+        setArtists(ar.artists || [])
+        setShowAddArtist(false)
+        setNewArtist({ nume: '', categorie: 'pop', tip: 'propriu', fee: '', leiKm: '', cazare: '', bileteAvion: '', alcool: '' })
+        alert('Artist adaugat! Il gasesti in cautare.')
+      } else alert('Eroare: ' + (d.error || 'necunoscuta'))
+    } catch { alert('Eroare la salvare') }
+    setSavingArtist(false)
+  }
 
   function addArtist(a: Artist) {
     const fmt = (a.formate && a.formate.length > 0) ? a.formate[0] : null
@@ -466,7 +487,10 @@ export default function OfertaPage() {
       <div style={{maxWidth:'1100px', margin:'0 auto'}}>
         <div style={{display:'flex', justifyContent:'space-between', alignItems:'center', marginBottom:'24px'}}>
           <div style={{fontSize:'24px', fontWeight:800}}>GIG<span style={{color:'#059669'}}>x</span> · Generator deviz</div>
-          <a href="/oferta/istoric" style={{fontSize:'14px', color:'#059669', fontWeight:700, textDecoration:'none'}}>Istoric →</a>
+          <div style={{display:'flex', gap:'12px', alignItems:'center'}}>
+            <button onClick={() => setShowAddArtist(true)} style={{fontSize:'13px', color:'#7c3aed', fontWeight:700, background:'none', border:'1.5px solid #7c3aed', borderRadius:'8px', padding:'6px 12px', cursor:'pointer', fontFamily:F}}>+ Adaugă artist</button>
+            <a href="/oferta/istoric" style={{fontSize:'14px', color:'#059669', fontWeight:700, textDecoration:'none'}}>Istoric →</a>
+          </div>
         </div>
 
         {/* client + eveniment */}
@@ -659,6 +683,64 @@ export default function OfertaPage() {
         </div>
       </div>
 
+      {showAddArtist && (
+        <div onClick={() => setShowAddArtist(false)} style={{position:'fixed', inset:0, background:'rgba(0,0,0,0.5)', display:'flex', alignItems:'center', justifyContent:'center', zIndex:1000, padding:'20px'}}>
+          <div onClick={e => e.stopPropagation()} style={{background:'white', borderRadius:'16px', padding: isMobile ? '20px' : '28px', width: isMobile ? '100%' : '480px', maxHeight:'90vh', overflowY:'auto'}}>
+            <div style={{display:'flex', justifyContent:'space-between', alignItems:'center', marginBottom:'18px'}}>
+              <div style={{fontSize:'18px', fontWeight:800}}>Adaugă artist nou</div>
+              <button onClick={() => setShowAddArtist(false)} style={{background:'none', border:'none', fontSize:'22px', cursor:'pointer', color:'#78716c'}}>×</button>
+            </div>
+            <div style={{display:'flex', flexDirection:'column', gap:'12px'}}>
+              <div>
+                <label style={{fontSize:'11px', fontWeight:700, color:'#78716c', textTransform:'uppercase', display:'block', marginBottom:'4px'}}>Nume artist *</label>
+                <input value={newArtist.nume} onChange={e => setNewArtist({...newArtist, nume: e.target.value})} placeholder="ex: Andrei Popescu" style={{width:'100%', padding:'10px 12px', borderRadius:'8px', border:'1.5px solid #e7e5e4', fontSize:'14px', fontFamily:F, boxSizing:'border-box'}} />
+              </div>
+              <div style={{display:'grid', gridTemplateColumns:'1fr 1fr', gap:'12px'}}>
+                <div>
+                  <label style={{fontSize:'11px', fontWeight:700, color:'#78716c', textTransform:'uppercase', display:'block', marginBottom:'4px'}}>Categorie</label>
+                  <select value={newArtist.categorie} onChange={e => setNewArtist({...newArtist, categorie: e.target.value})} style={{width:'100%', padding:'10px 12px', borderRadius:'8px', border:'1.5px solid #e7e5e4', fontSize:'14px', fontFamily:F, background:'white'}}>
+                    <option value="pop">Pop</option><option value="urban">Urban</option><option value="trap">Trap</option><option value="dance">Dance</option><option value="alternativ">Alternativ</option><option value="intermediere">Intermediere</option><option value="general">General</option>
+                  </select>
+                </div>
+                <div>
+                  <label style={{fontSize:'11px', fontWeight:700, color:'#78716c', textTransform:'uppercase', display:'block', marginBottom:'4px'}}>Tip</label>
+                  <select value={newArtist.tip} onChange={e => setNewArtist({...newArtist, tip: e.target.value})} style={{width:'100%', padding:'10px 12px', borderRadius:'8px', border:'1.5px solid #e7e5e4', fontSize:'14px', fontFamily:F, background:'white'}}>
+                    <option value="propriu">Propriu (Forward)</option><option value="intermediere">Intermediere</option>
+                  </select>
+                </div>
+              </div>
+              <div style={{display:'grid', gridTemplateColumns:'1fr 1fr', gap:'12px'}}>
+                <div>
+                  <label style={{fontSize:'11px', fontWeight:700, color:'#78716c', textTransform:'uppercase', display:'block', marginBottom:'4px'}}>Fee (€)</label>
+                  <input type="number" value={newArtist.fee} onFocus={e => e.target.select()} onChange={e => setNewArtist({...newArtist, fee: e.target.value})} placeholder="5000" style={{width:'100%', padding:'10px 12px', borderRadius:'8px', border:'1.5px solid #e7e5e4', fontSize:'14px', fontFamily:F, boxSizing:'border-box'}} />
+                </div>
+                <div>
+                  <label style={{fontSize:'11px', fontWeight:700, color:'#78716c', textTransform:'uppercase', display:'block', marginBottom:'4px'}}>Lei/km</label>
+                  <input type="number" step="0.1" value={newArtist.leiKm} onFocus={e => e.target.select()} onChange={e => setNewArtist({...newArtist, leiKm: e.target.value})} placeholder="5" style={{width:'100%', padding:'10px 12px', borderRadius:'8px', border:'1.5px solid #e7e5e4', fontSize:'14px', fontFamily:F, boxSizing:'border-box'}} />
+                </div>
+              </div>
+              <div>
+                <label style={{fontSize:'11px', fontWeight:700, color:'#78716c', textTransform:'uppercase', display:'block', marginBottom:'4px'}}>Cazare (persoanele se calculează automat)</label>
+                <input value={newArtist.cazare} onChange={e => setNewArtist({...newArtist, cazare: e.target.value})} placeholder="ex: 2 sng + 3 dbl" style={{width:'100%', padding:'10px 12px', borderRadius:'8px', border:'1.5px solid #e7e5e4', fontSize:'14px', fontFamily:F, boxSizing:'border-box'}} />
+              </div>
+              <div style={{display:'grid', gridTemplateColumns:'1fr 1fr', gap:'12px'}}>
+                <div>
+                  <label style={{fontSize:'11px', fontWeight:700, color:'#78716c', textTransform:'uppercase', display:'block', marginBottom:'4px'}}>Bilete avion</label>
+                  <input type="number" value={newArtist.bileteAvion} onFocus={e => e.target.select()} onChange={e => setNewArtist({...newArtist, bileteAvion: e.target.value})} placeholder="0" style={{width:'100%', padding:'10px 12px', borderRadius:'8px', border:'1.5px solid #e7e5e4', fontSize:'14px', fontFamily:F, boxSizing:'border-box'}} />
+                </div>
+                <div>
+                  <label style={{fontSize:'11px', fontWeight:700, color:'#78716c', textTransform:'uppercase', display:'block', marginBottom:'4px'}}>Alcool (lei)</label>
+                  <input type="number" value={newArtist.alcool} onFocus={e => e.target.select()} onChange={e => setNewArtist({...newArtist, alcool: e.target.value})} placeholder="0" style={{width:'100%', padding:'10px 12px', borderRadius:'8px', border:'1.5px solid #e7e5e4', fontSize:'14px', fontFamily:F, boxSizing:'border-box'}} />
+                </div>
+              </div>
+              <div style={{fontSize:'11px', color:'#a8a29e', marginTop:'-4px'}}>Poza se caută automat pe Chartex după nume.</div>
+              <button onClick={salveazaArtistNou} disabled={savingArtist} style={{marginTop:'6px', padding:'12px', background:'#7c3aed', color:'white', border:'none', borderRadius:'8px', fontSize:'14px', fontWeight:700, cursor: savingArtist ? 'wait' : 'pointer', fontFamily:F, opacity: savingArtist ? 0.6 : 1}}>
+                {savingArtist ? 'Se salvează...' : 'Salvează artist'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
       <style>{`
         input[type=number]::-webkit-inner-spin-button,
         input[type=number]::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
