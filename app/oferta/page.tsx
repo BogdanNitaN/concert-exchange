@@ -355,27 +355,24 @@ export default function OfertaPage() {
         if (l.tipMasa === 'diurna' && c.diurnaTotal > 0) out.push('Masa: ' + c.diurnaTotal.toLocaleString('ro-RO') + ' lei + TVA')
         if (l.tipMasa === 'alacarte') out.push('Masa: a la carte ' + l.persoane + ' pers (pranz, cina) + mic dejun la hotel')
         if (c.alcoolTotal > 0) out.push('Protocol alcool: ' + c.alcoolTotal.toLocaleString('ro-RO') + ' lei + TVA')
-        out.push('Protocol ' + l.persoane + ' persoane')
         // echivalent euro defalcat
         out.push('(echivalent: ' + l.fee + ' EUR onorariu, curs ' + c.cursAdaos.toFixed(4) + ' lei/EUR)')
       } else {
         // format comercial normal
         const parts: string[] = []
-        if (l.durata) parts.push('durata: ' + l.durata)
         parts.push(l.fee + ' EUR + TVA')
         if (c.transportLei > 0) parts.push('transport ' + l.leiKm + ' lei/km x ' + c.kmTotal + ' km = ' + c.transportLei.toLocaleString('ro-RO') + ' lei + TVA')
         if (c.transportEur > 0) parts.push('transport ' + l.leiKm + ' EUR/km x ' + c.kmTotal + ' km = ' + c.transportEur.toLocaleString('ro-RO') + ' EUR + TVA' + (c.transportEurInLei > 0 ? ' (aprox ' + c.transportEurInLei.toLocaleString('ro-RO') + ' lei)' : ''))
         if (km !== null && km > 300 && l.bileteAvion > 0) {
           let av = l.bileteAvion + (l.bileteAvion === 1 ? ' bilet avion' : ' bilete avion')
           av += ' + transfer de asigurat'
-          if (l.restulRutier) av += ' + transport rutier pentru restul echipei'
           parts.push(av)
         }
         parts.push(l.artist.cazare_fixa && l.artist.cazare_fixa > 0 ? 'cazare ' + l.artist.cazare_fixa.toLocaleString('ro-RO') + ' lei' : 'cazare ' + l.cazare)
-        parts.push('protocol ' + l.persoane + ' persoane')
         if (l.tipMasa === 'diurna' && c.diurnaTotal > 0) parts.push('diurna ' + c.diurnaTotal.toLocaleString('ro-RO') + ' lei + TVA')
         if (l.tipMasa === 'alacarte') parts.push('masa a la carte ' + l.persoane + ' pers (pranz, cina) + mic dejun la hotel')
         if (c.alcoolTotal > 0) parts.push('protocol alcool ' + c.alcoolTotal.toLocaleString('ro-RO') + ' lei + TVA')
+        if (l.durata) parts.push('durata: ' + l.durata)
         out.push(parts.join(' || '))
         if (destinatar === 'client' && c.discount > 0) out.push('SALVEZI: ' + c.discount + ' EUR' + (c.savingLei > 0 ? ' (aprox ' + c.savingLei.toLocaleString('ro-RO') + ' lei)' : ''))
       }
@@ -554,19 +551,18 @@ export default function OfertaPage() {
 
       doc.setFont('helvetica', 'normal'); doc.setFontSize(9.5); doc.setTextColor(60,60,60)
       const rows: string[] = []
-      if (l.durata) rows.push('Durata show: ' + l.durata)
       rows.push('Onorariu: ' + l.fee + ' EUR + TVA')
       if (c.transportLei > 0) rows.push('Transport: ' + l.leiKm + ' lei/km x ' + c.kmTotal + ' km = ' + c.transportLei.toLocaleString('ro-RO') + ' lei + TVA')
       if (c.transportEur > 0) rows.push('Transport: ' + l.leiKm + ' EUR/km x ' + c.kmTotal + ' km = ' + c.transportEur.toLocaleString('ro-RO') + ' EUR + TVA' + (c.transportEurInLei > 0 ? ' (aprox ' + c.transportEurInLei.toLocaleString('ro-RO') + ' lei)' : ''))
       if (km !== null && km > 300 && l.bileteAvion > 0) {
         let av = 'Avion: ' + l.bileteAvion + (l.bileteAvion === 1 ? ' bilet' : ' bilete') + ' + transfer de asigurat'
-        if (l.restulRutier) av += ' (restul echipei rutier)'
         rows.push(av)
       }
       rows.push(l.artist.cazare_fixa && l.artist.cazare_fixa > 0 ? 'Cazare: ' + l.artist.cazare_fixa.toLocaleString('ro-RO') + ' lei' : 'Cazare: ' + l.cazare + ' (' + l.persoane + ' persoane)')
       if (l.tipMasa === 'diurna' && c.diurnaTotal > 0) rows.push('Diurna: ' + c.diurnaTotal.toLocaleString('ro-RO') + ' lei + TVA')
       if (l.tipMasa === 'alacarte') rows.push('Masa: a la carte ' + l.persoane + ' pers (pranz, cina) + mic dejun la hotel')
       if (c.alcoolTotal > 0) rows.push('Protocol alcool: ' + c.alcoolTotal.toLocaleString('ro-RO') + ' lei + TVA')
+      if (l.durata) rows.push('Durata: ' + l.durata)
       for (const rr of rows) { doc.text(noDia(rr), textX, ly); ly += 5 }
 
       if (destinatar === 'client' && c.discount > 0) {
