@@ -7,6 +7,14 @@ import DatePicker from '@/components/modules/shared/DatePicker'
 const F = 'Montserrat,sans-serif'
 const ADMIN_PASS = 'fwd26'
 
+interface Format {
+  nume: string
+  fee: number
+  leiKm: number
+  cazare: string
+  persoane: number
+  bilete: number
+}
 interface Artist {
   nume: string
   fee_standard: number
@@ -16,12 +24,15 @@ interface Artist {
   bilete_avion: number
   alcool_default: number
   categorie: string
+  tip?: string
+  formate?: Format[] | null
 }
 
 // un artist adaugat in deviz, cu setarile lui
 interface Linie {
   key: string
   artist: Artist
+  formatSelectat: string
   tipPret: string
   feeLista: number
   fee: number
@@ -92,17 +103,19 @@ export default function OfertaPage() {
   }, [authed])
 
   function addArtist(a: Artist) {
+    const fmt = (a.formate && a.formate.length > 0) ? a.formate[0] : null
     setLinii(prev => [...prev, {
       key: a.nume + '-' + Date.now(),
       artist: a,
+      formatSelectat: fmt ? fmt.nume : '',
       tipPret: 'Standard',
-      feeLista: a.fee_standard,
-      fee: a.fee_standard,
-      leiKm: a.lei_km,
+      feeLista: fmt ? fmt.fee : a.fee_standard,
+      fee: fmt ? fmt.fee : a.fee_standard,
+      leiKm: fmt ? fmt.leiKm : a.lei_km,
       useMarja: true,
-      cazare: a.cazare,
-      persoane: a.nr_persoane,
-      bileteAvion: a.bilete_avion || 0,
+      cazare: fmt ? fmt.cazare : a.cazare,
+      persoane: fmt ? fmt.persoane : a.nr_persoane,
+      bileteAvion: fmt ? fmt.bilete : (a.bilete_avion || 0),
       tipMasa: 'alacarte',
       zile: 1,
       diurnaPerPers: 180,
@@ -115,6 +128,15 @@ export default function OfertaPage() {
       includeExport: true,
     }])
     setSearch('')
+  }
+
+  function schimbaFormat(key: string, formatNume: string) {
+    setLinii(prev => prev.map(l => {
+      if (l.key !== key) return l
+      const fmt = l.artist.formate?.find(f => f.nume === formatNume)
+      if (!fmt) return { ...l, formatSelectat: formatNume }
+      return { ...l, formatSelectat: formatNume, feeLista: fmt.fee, fee: fmt.fee, leiKm: fmt.leiKm, cazare: fmt.cazare, persoane: fmt.persoane, bileteAvion: fmt.bilete }
+    }))
   }
 
   function updateLinie(key: string, patch: Partial<Linie>) {
@@ -509,6 +531,12 @@ export default function OfertaPage() {
                 <div style={{display:'flex', alignItems:'center', gap:'10px'}}>
                   <input type="checkbox" checked={l.includeExport} onChange={e => updateLinie(l.key, { includeExport: e.target.checked })} style={{width:'18px', height:'18px', accentColor:'#059669'}} />
                   <span style={{fontSize:'18px', fontWeight:800}}>{l.artist.nume}</span>
+                  {l.artist.formate && l.artist.formate.length > 1 && (
+                    <select value={l.formatSelectat} onChange={e => schimbaFormat(l.key, e.target.value)}
+                      style={{marginLeft:'10px', padding:'4px 10px', borderRadius:'8px', border:'1.5px solid #7c3aed', color:'#7c3aed', fontSize:'12px', fontWeight:700, fontFamily:F, cursor:'pointer', background:'white'}}>
+                      {l.artist.formate.map(f => <option key={f.nume} value={f.nume}>{f.nume}</option>)}
+                    </select>
+                  )}
                 </div>
                 <button onClick={() => removeLinie(l.key)} style={{background:'none', border:'none', color:'#dc2626', cursor:'pointer', fontSize:'13px', fontWeight:600}}>Șterge</button>
               </div>

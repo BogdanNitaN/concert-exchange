@@ -19,8 +19,8 @@ export async function POST(req: Request) {
 
 export async function PATCH(req: Request) {
   try {
-    const { cod, status } = await req.json()
-    const { error } = await supabase.from('oferte_generate').update({ status }).eq('cod', cod)
+    const { cod, ...updates } = await req.json()
+    const { error } = await supabase.from('oferte_generate').update(updates).eq('cod', cod)
     if (error) return NextResponse.json({ ok: false }, { status: 400 })
     return NextResponse.json({ ok: true })
   } catch {

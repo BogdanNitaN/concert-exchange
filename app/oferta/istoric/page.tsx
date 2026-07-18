@@ -18,6 +18,8 @@ interface Oferta {
   total_discount_eur: number
   total_cag_eur: number
   status: string
+  suma_finala: number | null
+  nota: string | null
   created_at: string
 }
 
@@ -29,6 +31,7 @@ export default function IstoricPage() {
   const [passInput, setPassInput] = useState('')
   const [oferte, setOferte] = useState<Oferta[]>([])
   const [loading, setLoading] = useState(false)
+  const [expandat, setExpandat] = useState<string | null>(null)
 
   // filtre
   const [search, setSearch] = useState('')
@@ -57,6 +60,13 @@ export default function IstoricPage() {
     setOferte(prev => prev.map(o => o.cod === cod ? { ...o, status } : o))
     try {
       await fetch('/api/oferta-save', { method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ cod, status }) })
+    } catch {}
+  }
+
+  async function updateNegociere(cod: string, suma_finala: number | null, nota: string | null) {
+    setOferte(prev => prev.map(o => o.cod === cod ? { ...o, suma_finala, nota } : o))
+    try {
+      await fetch('/api/oferta-save', { method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ cod, suma_finala, nota }) })
     } catch {}
   }
 
@@ -209,11 +219,57 @@ export default function IstoricPage() {
                   {(o.artisti || []).map(a => a.nume).join(', ')}
                   {o.institutie_publica && <span style={{marginLeft:'8px', fontSize:'10px', fontWeight:700, color:'#7c3aed'}}>INST. PUBLICĂ</span>}
                 </div>
-                <div style={{display:'flex', gap:'20px', fontSize:'13px', paddingTop:'10px', borderTop:'1px solid #f5f5f4'}}>
+                <div style={{display:'flex', gap:'20px', fontSize:'13px', paddingTop:'10px', borderTop:'1px solid #f5f5f4', alignItems:'center', flexWrap:'wrap'}}>
                   <span>Fee: <strong>{o.total_fee_eur.toLocaleString('ro-RO')} €</strong></span>
                   {o.total_discount_eur > 0 && <span style={{color:'#059669'}}>Discount: <strong>{o.total_discount_eur.toLocaleString('ro-RO')} €</strong></span>}
                   {o.total_cag_eur > 0 && <span style={{color:'#7c3aed'}}>CAG: <strong>{o.total_cag_eur.toLocaleString('ro-RO')} €</strong></span>}
+                  {o.suma_finala != null && <span style={{color:'#059669', fontWeight:700}}>Închis: {o.suma_finala.toLocaleString('ro-RO')} €</span>}
+                  <button onClick={() => setExpandat(expandat === o.cod ? null : o.cod)}
+                    style={{marginLeft:'auto', padding:'6px 14px', background:'#f5f5f4', color:'#1c1917', border:'none', borderRadius:'8px', fontSize:'12px', fontWeight:700, cursor:'pointer', fontFamily:F}}>
+                    {expandat === o.cod ? 'Ascunde' : 'Detalii'}
+                  </button>
+                  <button onClick={() => { try { localStorage.setItem('oferta_edit', JSON.stringify(o)) } catch {}; window.location.href = '/oferta' }}
+                    style={{padding:'6px 14px', background:'#1c1917', color:'white', border:'none', borderRadius:'8px', fontSize:'12px', fontWeight:700, cursor:'pointer', fontFamily:F}}>
+                    Editează
+                  </button>
                 </div>
+
+                {expandat === o.cod && (
+                  <div style={{marginTop:'14px', paddingTop:'14px', borderTop:'2px solid #f5f5f4'}}>
+                    {/* detalii per artist */}
+                    <div style={{fontSize:'11px', fontWeight:700, color:'#78716c', textTransform:'uppercase', marginBottom:'8px'}}>Artiști ofertați</div>
+                    {(o.artisti || []).map((a, i) => (
+                      <div key={i} style={{display:'flex', justifyContent:'space-between', fontSize:'13px', padding:'6px 0', borderBottom:'1px solid #f5f5f4'}}>
+                        <span style={{fontWeight:600}}>{a.nume} <span style={{color:'#a8a29e', fontWeight:400}}>· {a.tipPret}</span></span>
+                        <span>{a.feeLista > a.fee ? <span style={{color:'#a8a29e', textDecoration:'line-through', marginRight:'6px'}}>{a.feeLista}€</span> : ''}<strong>{a.fee}€</strong></span>
+                      </div>
+                    ))}
+
+                    {/* negociere */}
+                    <div style={{marginTop:'14px', padding:'14px', background:'#f5f5f4', borderRadius:'10px'}}>
+                      <div style={{fontSize:'12px', fontWeight:700, color:'#1c1917', marginBottom:'10px'}}>Rezultat negociere</div>
+                      <div style={{display:'flex', gap:'10px', alignItems:'flex-end', flexWrap:'wrap'}}>
+                        <div>
+                          <label style={{fontSize:'11px', color:'#78716c', display:'block', marginBottom:'4px'}}>Sumă finală închisă (€)</label>
+                          <input type="number" defaultValue={o.suma_finala ?? ''} placeholder={String(o.total_fee_eur)}
+                            onBlur={e => updateNegociere(o.cod, e.target.value ? Number(e.target.value) : null, o.nota)}
+                            style={{padding:'8px 10px', borderRadius:'8px', border:'1.5px solid #e7e5e4', fontSize:'13px', fontFamily:F, width:'140px'}} />
+                        </div>
+                        <div style={{flex:1, minWidth:'160px'}}>
+                          <label style={{fontSize:'11px', color:'#78716c', display:'block', marginBottom:'4px'}}>Notă</label>
+                          <input type="text" defaultValue={o.nota ?? ''} placeholder="ex: a cerut reducere"
+                            onBlur={e => updateNegociere(o.cod, o.suma_finala, e.target.value || null)}
+                            style={{padding:'8px 10px', borderRadius:'8px', border:'1.5px solid #e7e5e4', fontSize:'13px', fontFamily:F, width:'100%', boxSizing:'border-box'}} />
+                        </div>
+                      </div>
+                      {o.suma_finala != null && o.suma_finala !== o.total_fee_eur && (
+                        <div style={{fontSize:'12px', marginTop:'8px', fontWeight:700, color: o.suma_finala < o.total_fee_eur ? '#dc2626' : '#059669'}}>
+                          {o.suma_finala < o.total_fee_eur ? 'Scădere' : 'Creștere'}: {Math.abs(o.total_fee_eur - o.suma_finala).toLocaleString('ro-RO')} € față de ofertă
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                )}
               </div>
             ))}
           </div>
