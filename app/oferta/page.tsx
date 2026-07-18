@@ -3,9 +3,10 @@
 import { useState, useEffect } from 'react'
 import { jsPDF } from 'jspdf'
 import DatePicker from '@/components/modules/shared/DatePicker'
+import { supabase } from '@/lib/supabase'
+import { useRouter } from 'next/navigation'
 
 const F = 'Montserrat,sans-serif'
-const ADMIN_PASS = 'fwd26'
 
 interface Format {
   nume: string
@@ -76,8 +77,45 @@ function useIsMobile() {
 
 export default function OfertaPage() {
   const isMobile = useIsMobile()
+  const router = useRouter()
   const [authed, setAuthed] = useState(false)
-  const [passInput, setPassInput] = useState('')
+  const [checkingAuth, setCheckingAuth] = useState(true)
+  const [userRole, setUserRole] = useState('')
+  const [loginEmail, setLoginEmail] = useState('')
+  const [loginPass, setLoginPass] = useState('')
+  const [loginErr, setLoginErr] = useState('')
+  const [loggingIn, setLoggingIn] = useState(false)
+  const [resetMsg, setResetMsg] = useState('')
+
+  async function faLogin() {
+    setLoggingIn(true); setLoginErr('')
+    const mapRes = await fetch('/api/oferta-login', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ username: loginEmail.trim() }) })
+    const mapData = await mapRes.json()
+    const emailReal = mapData.email
+    if (!emailReal) { setLoginErr('Utilizator inexistent'); setLoggingIn(false); return }
+    if (mapData.blocat) { setLoginErr('Cont blocat. Contacteaza administratorul.'); setLoggingIn(false); return }
+    const { data, error } = await supabase.auth.signInWithPassword({ email: emailReal, password: loginPass })
+    if (error) { setLoginErr('Utilizator sau parola gresita'); setLoggingIn(false); return }
+    const role = data.user?.user_metadata?.role
+    const blocat = data.user?.user_metadata?.blocat
+    if (blocat) { setLoginErr('Cont blocat. Contacteaza administratorul.'); await supabase.auth.signOut(); setLoggingIn(false); return }
+    if (role === 'oferta_admin' || role === 'oferta_user') { setAuthed(true); setUserRole(role) }
+    else { setLoginErr('Nu ai acces la aceasta sectiune'); await supabase.auth.signOut() }
+    setLoggingIn(false)
+  }
+
+  async function faLogout() {
+    await supabase.auth.signOut()
+    setAuthed(false)
+    setLoginEmail(''); setLoginPass('')
+  }
+
+  async function faReset() {
+    if (!loginEmail.trim()) { setLoginErr('Introdu email-ul pentru resetare'); return }
+    const { error } = await supabase.auth.resetPasswordForEmail(loginEmail.trim(), { redirectTo: window.location.origin + '/oferta' })
+    if (error) setLoginErr('Eroare la trimiterea email-ului')
+    else setResetMsg('Ti-am trimis un email cu link de resetare.')
+  }
   const [artists, setArtists] = useState<Artist[]>([])
   const [search, setSearch] = useState('')
   const [linii, setLinii] = useState<Linie[]>([])
@@ -93,15 +131,69 @@ export default function OfertaPage() {
   const [useAdaos, setUseAdaos] = useState(false)
   const [destinatar, setDestinatar] = useState<'' | 'client' | 'intermediar'>('')
   const [institutiePublica, setInstitutiePublica] = useState(false)
-  const [codOferta] = useState(() => 'GIGX-' + new Date().getFullYear() + '-' + String(Math.floor(Math.random()*9000)+1000))
+  const [codOferta, setCodOferta] = useState(() => 'GIGX-' + new Date().getFullYear() + '-' + String(Math.floor(Math.random()*9000)+1000))
   const [adaosProcent, setAdaosProcent] = useState(1)
   const [showAddArtist, setShowAddArtist] = useState(false)
   const [newArtist, setNewArtist] = useState({ nume: '', categorie: 'pop', tip: 'propriu', fee: '', leiKm: '', cazare: '', bileteAvion: '', alcool: '' })
   const [savingArtist, setSavingArtist] = useState(false)
 
   useEffect(() => {
+    // verific sesiunea Supabase
+    supabase.auth.getSession().then(({ data }) => {
+      const user = data.session?.user
+      const role = user?.user_metadata?.role
+      const blocat = user?.user_metadata?.blocat
+      if (user && (role === 'oferta_admin' || role === 'oferta_user') && !blocat) {
+        setAuthed(true)
+        setUserRole(role)
+      } else if (user && blocat) {
+        supabase.auth.signOut()
+        setAuthed(false)
+      }
+      setCheckingAuth(false)
+    })
+  }, [])
+
+  useEffect(() => {
     if (!authed) return
-    fetch('/api/oferta-artist').then(r => r.json()).then(d => setArtists(d.artists || []))
+    fetch('/api/oferta-artist').then(r => r.json()).then(d => {
+      const arts = d.artists || []
+      setArtists(arts)
+      // verific daca vine o oferta de editat din istoric
+      try {
+        const raw = localStorage.getItem('oferta_edit')
+        if (raw) {
+          const o = JSON.parse(raw)
+          localStorage.removeItem('oferta_edit')
+          if (o.cod) setCodOferta(o.cod)
+          if (o.client) setNumeClient(o.client)
+          if (o.oras) setToCity(o.oras)
+          if (o.locatie) setLocatie(o.locatie)
+          if (o.data_eveniment) setDataEveniment(o.data_eveniment)
+          if (o.from_city) setFromCity(o.from_city)
+          if (o.destinatar) setDestinatar(o.destinatar)
+          if (o.institutie_publica) setInstitutiePublica(o.institutie_publica)
+          if (o.use_adaos) setUseAdaos(o.use_adaos)
+          // reconstruiesc liniile
+          if (o.linii_complete && Array.isArray(o.linii_complete)) {
+            const noiLinii = o.linii_complete.map((lc: any, i: number) => {
+              const art = arts.find((a: Artist) => a.nume === lc.artistNume) || { nume: lc.artistNume, fee_standard: lc.fee, lei_km: lc.leiKm, cazare: lc.cazare, nr_persoane: lc.persoane, bilete_avion: lc.bileteAvion, alcool_default: 0, categorie: '', tip: lc.tip }
+              return {
+                key: lc.artistNume + '-' + Date.now() + '-' + i,
+                artist: art, formatSelectat: lc.formatSelectat || '',
+                tipPret: lc.tipPret, feeLista: lc.feeLista, fee: lc.fee, leiKm: lc.leiKm,
+                useMarja: lc.useMarja, cazare: lc.cazare, persoane: lc.persoane, bileteAvion: lc.bileteAvion,
+                tipMasa: lc.tipMasa, zile: lc.zile, diurnaPerPers: lc.diurnaPerPers,
+                useAlcool: lc.useAlcool, alcool: lc.alcool,
+                useCag: lc.useCag, cagProcent: lc.cagProcent, cagSuma: lc.cagSuma, cagMod: lc.cagMod,
+                includeExport: true,
+              }
+            })
+            setLinii(noiLinii)
+          }
+        }
+      } catch {}
+    })
     fetch('/api/bnr-rate').then(r => r.json()).then(d => { if (d?.rate) setEurRate(d.rate) })
   }, [authed])
 
@@ -257,6 +349,17 @@ export default function OfertaPage() {
           total_discount_eur: totalDiscount,
           total_cag_eur: totalCag,
           status: 'generata',
+          from_city: fromCity,
+          use_adaos: useAdaos,
+          linii_complete: activi.map(l => ({
+            artistNume: l.artist.nume,
+            formatSelectat: l.formatSelectat,
+            tipPret: l.tipPret, feeLista: l.feeLista, fee: l.fee, leiKm: l.leiKm,
+            useMarja: l.useMarja, cazare: l.cazare, persoane: l.persoane, bileteAvion: l.bileteAvion,
+            tipMasa: l.tipMasa, zile: l.zile, diurnaPerPers: l.diurnaPerPers,
+            useAlcool: l.useAlcool, alcool: l.alcool,
+            useCag: l.useCag, cagProcent: l.cagProcent, cagSuma: l.cagSuma, cagMod: l.cagMod,
+          })),
         })
       })
     } catch {}
@@ -461,19 +564,31 @@ export default function OfertaPage() {
   const inputStyle: React.CSSProperties = { width: '100%', padding: '10px 12px', borderRadius: '8px', border: '1.5px solid #e7e5e4', fontSize: '14px', fontFamily: F, boxSizing: 'border-box', color: '#1c1917' }
   const label: React.CSSProperties = { fontSize: '11px', fontWeight: 700, color: '#78716c', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '6px', display: 'block' }
 
+  if (checkingAuth) {
+    return <div style={{minHeight:'100vh', background:'#f5f5f7', display:'flex', alignItems:'center', justifyContent:'center', fontFamily:F, color:'#78716c'}}>Verificare...</div>
+  }
   if (!authed) {
     return (
-      <div style={{minHeight:'100vh', background:'#f5f5f7', display:'flex', alignItems:'center', justifyContent:'center', fontFamily:F}}>
-        <div style={{background:'white', padding:'40px', borderRadius:'16px', border:'2px solid #e7e5e4', width:'320px'}}>
-          <div style={{fontSize:'22px', fontWeight:800, marginBottom:'6px'}}>GIG<span style={{color:'#059669'}}>x</span> Admin</div>
-          <div style={{fontSize:'13px', color:'#78716c', marginBottom:'20px'}}>Generator deviz intern</div>
-          <input type="password" placeholder="Parola" value={passInput}
-            onChange={e => setPassInput(e.target.value)}
-            onKeyDown={e => { if (e.key === 'Enter' && passInput === ADMIN_PASS) setAuthed(true) }}
+      <div style={{minHeight:'100vh', background:'#f5f5f7', display:'flex', alignItems:'center', justifyContent:'center', fontFamily:F, padding:'20px'}}>
+        <div style={{background:'white', padding:'40px', borderRadius:'16px', border:'2px solid #e7e5e4', width:'340px'}}>
+          <div style={{fontSize:'22px', fontWeight:800, marginBottom:'6px'}}>GIG<span style={{color:'#059669'}}>x</span></div>
+          <div style={{fontSize:'13px', color:'#78716c', marginBottom:'20px'}}>Autentificare</div>
+          <input type="text" placeholder="Utilizator" value={loginEmail} autoComplete="username"
+            onChange={e => setLoginEmail(e.target.value)}
+            style={{...inputStyle, marginBottom:'10px'}} />
+          <input type="password" placeholder="Parola" value={loginPass} autoComplete="current-password"
+            onChange={e => setLoginPass(e.target.value)}
+            onKeyDown={e => { if (e.key === 'Enter') faLogin() }}
             style={inputStyle} />
-          <button onClick={() => { if (passInput === ADMIN_PASS) setAuthed(true) }}
-            style={{width:'100%', marginTop:'12px', padding:'11px', background:'#1c1917', color:'white', border:'none', borderRadius:'8px', fontSize:'14px', fontWeight:700, cursor:'pointer', fontFamily:F}}>
-            Intra
+          {loginErr && <div style={{fontSize:'12px', color:'#dc2626', marginTop:'8px'}}>{loginErr}</div>}
+          {resetMsg && <div style={{fontSize:'12px', color:'#059669', marginTop:'8px'}}>{resetMsg}</div>}
+          <button onClick={faLogin} disabled={loggingIn}
+            style={{width:'100%', marginTop:'14px', padding:'12px', background:'#1c1917', color:'white', border:'none', borderRadius:'8px', fontSize:'14px', fontWeight:700, cursor: loggingIn ? 'wait' : 'pointer', fontFamily:F, opacity: loggingIn ? 0.6 : 1}}>
+            {loggingIn ? 'Se conecteaza...' : 'Intra in cont'}
+          </button>
+          <button onClick={faReset}
+            style={{width:'100%', marginTop:'10px', padding:'8px', background:'none', color:'#78716c', border:'none', fontSize:'12px', cursor:'pointer', fontFamily:F, textDecoration:'underline'}}>
+            Am uitat parola
           </button>
         </div>
       </div>
@@ -490,6 +605,7 @@ export default function OfertaPage() {
           <div style={{display:'flex', gap:'12px', alignItems:'center'}}>
             <button onClick={() => setShowAddArtist(true)} style={{fontSize:'13px', color:'#7c3aed', fontWeight:700, background:'none', border:'1.5px solid #7c3aed', borderRadius:'8px', padding:'6px 12px', cursor:'pointer', fontFamily:F}}>+ Adaugă artist</button>
             <a href="/oferta/istoric" style={{fontSize:'14px', color:'#059669', fontWeight:700, textDecoration:'none'}}>Istoric →</a>
+            <button onClick={faLogout} style={{fontSize:'13px', color:'#78716c', fontWeight:700, background:'none', border:'1.5px solid #e7e5e4', borderRadius:'8px', padding:'6px 12px', cursor:'pointer', fontFamily:F}}>Log out</button>
           </div>
         </div>
 
