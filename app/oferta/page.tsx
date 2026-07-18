@@ -238,6 +238,21 @@ export default function OfertaPage() {
         })
       } catch { return null }
     }
+    // helper: comprima logo (PNG cu transparenta, resize mic)
+    async function toCompressedLogo(url: string): Promise<string | null> {
+      try {
+        const res = await fetch(url)
+        const blob = await res.blob()
+        const bitmap = await createImageBitmap(blob)
+        const w = 200, h = Math.round(200 * bitmap.height / bitmap.width)
+        const canvas = document.createElement('canvas')
+        canvas.width = w; canvas.height = h
+        const ctx = canvas.getContext('2d')
+        if (!ctx) return null
+        ctx.drawImage(bitmap, 0, 0, w, h)
+        return canvas.toDataURL('image/png')
+      } catch { return null }
+    }
     // helper: incarca SI comprima poza artist (resize 160px, JPEG 0.7)
     async function toCompressed(url: string): Promise<string | null> {
       try {
@@ -273,7 +288,7 @@ export default function OfertaPage() {
     doc.triangle(0, 38, 0, 44, 70, 44, 'F')
 
     // logo Forward dreapta
-    const logo = await toDataUrl('/forward-logo.png')
+    const logo = await toCompressedLogo('/forward-logo.png')
     if (logo) doc.addImage(logo, 'PNG', W - M - 34, 8, 34, 21)
 
     // text header stanga
