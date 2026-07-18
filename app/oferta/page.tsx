@@ -5,8 +5,28 @@ import { jsPDF } from 'jspdf'
 import DatePicker from '@/components/modules/shared/DatePicker'
 import { supabase } from '@/lib/supabase'
 import { useRouter } from 'next/navigation'
+import { UserPlus, Users, History, LogOut, Copy, MessageCircle, Mail, FileDown } from 'lucide-react'
 
 const F = 'Montserrat,sans-serif'
+// Design tokens premium
+const UI = {
+  bg: '#fafaf9',
+  card: '#ffffff',
+  ink: '#1c1917',
+  sub: '#78716c',
+  faint: '#a8a29e',
+  line: '#f0efed',
+  lineStrong: '#e7e5e4',
+  green: '#059669',
+  greenSoft: '#f0fdf4',
+  greenLine: '#d1fae5',
+  purple: '#7c3aed',
+  purpleSoft: '#faf5ff',
+  radius: '14px',
+  radiusSm: '10px',
+  shadow: '0 1px 2px rgba(28,25,23,0.04), 0 4px 16px rgba(28,25,23,0.04)',
+  shadowHover: '0 2px 8px rgba(28,25,23,0.06), 0 12px 32px rgba(28,25,23,0.08)',
+}
 
 interface Format {
   nume: string
@@ -627,8 +647,8 @@ export default function OfertaPage() {
     doc.save(filename)
   }
 
-  const inputStyle: React.CSSProperties = { width: '100%', padding: '10px 12px', borderRadius: '8px', border: '1.5px solid #e7e5e4', fontSize: '14px', fontFamily: F, boxSizing: 'border-box', color: '#1c1917' }
-  const label: React.CSSProperties = { fontSize: '11px', fontWeight: 700, color: '#78716c', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '6px', display: 'block' }
+  const inputStyle: React.CSSProperties = { width: '100%', padding: '11px 14px', borderRadius: UI.radiusSm, border: '1px solid ' + UI.lineStrong, fontSize: '14px', fontFamily: F, boxSizing: 'border-box', color: UI.ink, background: '#fff', transition: 'border-color 0.15s, box-shadow 0.15s', outline: 'none' }
+  const label: React.CSSProperties = { fontSize: '10.5px', fontWeight: 700, color: UI.faint, textTransform: 'uppercase', letterSpacing: '0.07em', marginBottom: '7px', display: 'block' }
 
   if (checkingAuth) {
     return <div style={{minHeight:'100vh', background:'#f5f5f7', display:'flex', alignItems:'center', justifyContent:'center', fontFamily:F, color:'#78716c'}}>Verificare...</div>
@@ -664,20 +684,23 @@ export default function OfertaPage() {
   const filtered = search ? artists.filter(a => a.nume.toLowerCase().includes(search.toLowerCase())) : []
 
   return (
-    <div style={{minHeight:'100vh', background:'#f5f5f7', fontFamily:F, padding: isMobile ? '16px 12px' : '32px 20px'}}>
-      <div style={{maxWidth:'1100px', margin:'0 auto'}}>
+    <div style={{minHeight:'100vh', background:UI.bg, fontFamily:F, padding: isMobile ? '16px 12px' : '40px 20px'}}>
+      <div style={{maxWidth:'1080px', margin:'0 auto'}}>
         <div style={{display:'flex', justifyContent:'space-between', alignItems:'center', marginBottom:'24px'}}>
-          <div style={{fontSize:'24px', fontWeight:800}}>GIG<span style={{color:'#059669'}}>x</span> · Generator deviz</div>
+          <div>
+            <div style={{fontSize:'26px', fontWeight:800, letterSpacing:'-0.5px', color:'#1c1917'}}>GIG<span style={{color:'#059669'}}>x</span></div>
+            <div style={{fontSize:'13px', color:'#a8a29e', fontWeight:500, marginTop:'2px'}}>Generator deviz intern</div>
+          </div>
           <div style={{display:'flex', gap:'12px', alignItems:'center'}}>
-            <button onClick={() => setShowAddArtist(true)} style={{fontSize:'13px', color:'#7c3aed', fontWeight:700, background:'none', border:'1.5px solid #7c3aed', borderRadius:'8px', padding:'6px 12px', cursor:'pointer', fontFamily:F}}>+ Adaugă artist</button>
-            <a href="/oferta/roster" style={{fontSize:'13px', color:'#1c1917', fontWeight:700, background:'none', border:'1.5px solid #e7e5e4', borderRadius:'8px', padding:'6px 12px', cursor:'pointer', fontFamily:F, textDecoration:'none'}}>Roster</a>
-            <a href="/oferta/istoric" style={{fontSize:'14px', color:'#059669', fontWeight:700, textDecoration:'none'}}>Istoric →</a>
-            <button onClick={faLogout} style={{fontSize:'13px', color:'#78716c', fontWeight:700, background:'none', border:'1.5px solid #e7e5e4', borderRadius:'8px', padding:'6px 12px', cursor:'pointer', fontFamily:F}}>Log out</button>
+            <button onClick={() => setShowAddArtist(true)} style={{display:'flex', alignItems:'center', gap:'6px', fontSize:'13px', color:'#7c3aed', fontWeight:700, background:'white', border:'1.5px solid #ede9fe', borderRadius:'10px', padding:'9px 14px', cursor:'pointer', fontFamily:F}}><UserPlus size={15} strokeWidth={2.2} /> Adaugă artist</button>
+            <a href="/oferta/roster" style={{display:'flex', alignItems:'center', gap:'6px', fontSize:'13px', color:'#44403c', fontWeight:700, background:'white', border:'1.5px solid #e7e5e4', borderRadius:'10px', padding:'9px 14px', cursor:'pointer', fontFamily:F, textDecoration:'none'}}><Users size={15} strokeWidth={2.2} /> Roster</a>
+            <a href="/oferta/istoric" style={{display:'flex', alignItems:'center', gap:'6px', fontSize:'13px', color:'#059669', fontWeight:700, background:'white', border:'1.5px solid #d1fae5', borderRadius:'10px', padding:'9px 14px', cursor:'pointer', fontFamily:F, textDecoration:'none'}}><History size={15} strokeWidth={2.2} /> Istoric</a>
+            <button onClick={faLogout} title="Log out" style={{display:'flex', alignItems:'center', gap:'6px', fontSize:'13px', color:'#a8a29e', fontWeight:700, background:'none', border:'1.5px solid #e7e5e4', borderRadius:'10px', padding:'9px 12px', cursor:'pointer', fontFamily:F}}><LogOut size={15} strokeWidth={2.2} /></button>
           </div>
         </div>
 
         {/* client + eveniment */}
-        <div style={{background:'white', padding:'20px', borderRadius:'14px', border:'2px solid #e7e5e4', marginBottom:'20px'}}>
+        <div style={{background:UI.card, padding: isMobile ? '20px' : '28px', borderRadius:UI.radius, border:'1px solid '+UI.line, boxShadow:UI.shadow, marginBottom:'20px'}}>
           <div style={{display:'grid', gridTemplateColumns: isMobile ? '1fr' : '2fr 1fr', gap:'12px', marginBottom:'12px'}}>
             <div><label style={label}>Denumire client / instituție</label>
               <input value={numeClient} onChange={e => setNumeClient(e.target.value)} placeholder="ex: Primăria Focșani" style={inputStyle} /></div>
@@ -750,7 +773,7 @@ export default function OfertaPage() {
         {linii.map(l => {
           const c = calcLinie(l)
           return (
-            <div key={l.key} style={{background:'white', padding:'20px', borderRadius:'14px', border:'2px solid #e7e5e4', marginBottom:'16px'}}>
+            <div key={l.key} style={{background:UI.card, padding: isMobile ? '20px' : '24px', borderRadius:UI.radius, border:'1px solid '+UI.line, boxShadow:UI.shadow, marginBottom:'16px'}}>
               <div style={{display:'flex', justifyContent:'space-between', alignItems:'center', marginBottom:'16px'}}>
                 <div style={{display:'flex', alignItems:'center', gap:'10px'}}>
                   <input type="checkbox" checked={l.includeExport} onChange={e => updateLinie(l.key, { includeExport: e.target.checked })} style={{width:'18px', height:'18px', accentColor:'#059669'}} />
@@ -891,13 +914,13 @@ export default function OfertaPage() {
             {/* BUTOANE EXPORT - blocate pana selectezi destinatar */}
             <div style={{display:'flex', gap:'8px', flexWrap:'wrap', opacity: destinatar ? 1 : 0.4, pointerEvents: destinatar ? 'auto' : 'none'}}>
               <button onClick={() => { navigator.clipboard.writeText(genText()); salveazaOferta(); alert('Deviz copiat!') }}
-                style={{flex:1, minWidth:'120px', padding:'12px', background:'#059669', color:'white', border:'none', borderRadius:'8px', fontSize:'14px', fontWeight:700, cursor:'pointer', fontFamily:F}}>Copiază tot</button>
+                style={{flex:1, minWidth:'120px', display:'flex', alignItems:'center', justifyContent:'center', gap:'7px', padding:'13px', background:UI.green, color:'white', border:'none', borderRadius:UI.radiusSm, fontSize:'14px', fontWeight:700, cursor:'pointer', fontFamily:F, boxShadow:'0 1px 3px rgba(5,150,105,0.3)'}}><Copy size={16} strokeWidth={2.2} /> Copiază tot</button>
               <button onClick={() => { salveazaOferta(); window.open('https://wa.me/?text=' + encodeURIComponent(genText()), '_blank') }}
-                style={{flex:1, minWidth:'120px', padding:'12px', background:'#25D366', color:'white', border:'none', borderRadius:'8px', fontSize:'14px', fontWeight:700, cursor:'pointer', fontFamily:F}}>WhatsApp</button>
+                style={{flex:1, minWidth:'120px', display:'flex', alignItems:'center', justifyContent:'center', gap:'7px', padding:'13px', background:'#25D366', color:'white', border:'none', borderRadius:UI.radiusSm, fontSize:'14px', fontWeight:700, cursor:'pointer', fontFamily:F, boxShadow:'0 1px 3px rgba(37,211,102,0.3)'}}><MessageCircle size={16} strokeWidth={2.2} /> WhatsApp</button>
               <button onClick={() => { salveazaOferta(); window.open('mailto:?subject=' + encodeURIComponent([numeClient, toCity, locatie].filter(Boolean).join(' - ') || 'Oferta') + '&body=' + encodeURIComponent(genText().replace(/\*/g, ''))) }}
-                style={{flex:1, minWidth:'120px', padding:'12px', background:'#3b82f6', color:'white', border:'none', borderRadius:'8px', fontSize:'14px', fontWeight:700, cursor:'pointer', fontFamily:F}}>Email</button>
+                style={{flex:1, minWidth:'120px', display:'flex', alignItems:'center', justifyContent:'center', gap:'7px', padding:'13px', background:'#3b82f6', color:'white', border:'none', borderRadius:UI.radiusSm, fontSize:'14px', fontWeight:700, cursor:'pointer', fontFamily:F, boxShadow:'0 1px 3px rgba(59,130,246,0.3)'}}><Mail size={16} strokeWidth={2.2} /> Email</button>
               <button onClick={() => { salveazaOferta(); downloadPDF() }}
-                style={{flex:1, minWidth:'120px', padding:'12px', background:'#7c3aed', color:'white', border:'none', borderRadius:'8px', fontSize:'14px', fontWeight:700, cursor:'pointer', fontFamily:F}}>{typeof window !== 'undefined' && window.innerWidth < 768 ? 'Distribuie PDF' : 'Descarcă PDF'}</button>
+                style={{flex:1, minWidth:'120px', display:'flex', alignItems:'center', justifyContent:'center', gap:'7px', padding:'13px', background:UI.purple, color:'white', border:'none', borderRadius:UI.radiusSm, fontSize:'14px', fontWeight:700, cursor:'pointer', fontFamily:F, boxShadow:'0 1px 3px rgba(124,58,237,0.3)'}}><FileDown size={16} strokeWidth={2.2} /> {typeof window !== 'undefined' && window.innerWidth < 768 ? 'Distribuie PDF' : 'Descarcă PDF'}</button>
             </div>
           </div>
         )}
@@ -992,6 +1015,8 @@ export default function OfertaPage() {
         input[type=number]::-webkit-inner-spin-button,
         input[type=number]::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
         input[type=number] { -moz-appearance: textfield; }
+        input:focus, select:focus, textarea:focus { border-color: #059669 !important; box-shadow: 0 0 0 3px rgba(5,150,105,0.1) !important; }
+        button { transition: all 0.15s ease; }
         @media print {
           body * { visibility: hidden; }
           .print-only, .print-only * { visibility: visible; }
