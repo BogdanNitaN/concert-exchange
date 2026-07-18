@@ -357,7 +357,7 @@ export default function OfertaPage() {
         if (c.transportEur > 0) out.push('Transport: ' + c.transportEur.toLocaleString('ro-RO') + ' EUR + TVA' + (c.transportEurInLei > 0 ? ' (aprox ' + c.transportEurInLei.toLocaleString('ro-RO') + ' lei)' : ''))
         out.push(l.cazareFixa > 0 ? 'Cazare: ' + l.cazareFixa.toLocaleString('ro-RO') + ' lei' : 'Cazare: ' + l.cazare)
         if (c.diurnaTotal > 0) out.push('Diurna: ' + c.diurnaTotal.toLocaleString('ro-RO') + ' lei + TVA')
-        if (l.tipMasa === 'alacarte') out.push('Masa: a la carte ' + l.persoane + ' pers (pranz, cina) + mic dejun la hotel')
+        if (l.tipMasa === 'alacarte' && l.diurnaFixa === 0 && l.cazareFixa === 0) out.push('Masa: a la carte ' + l.persoane + ' pers (pranz, cina) + mic dejun la hotel')
         if (c.alcoolTotal > 0) out.push('Protocol alcool: ' + c.alcoolTotal.toLocaleString('ro-RO') + ' lei + TVA')
         // echivalent euro defalcat
         out.push('(echivalent: ' + l.fee + ' EUR onorariu, curs ' + c.cursAdaos.toFixed(4) + ' lei/EUR)')
@@ -374,7 +374,7 @@ export default function OfertaPage() {
         }
         parts.push(l.cazareFixa > 0 ? 'cazare ' + l.cazareFixa.toLocaleString('ro-RO') + ' lei' : 'cazare ' + l.cazare)
         if (c.diurnaTotal > 0) parts.push('diurna ' + c.diurnaTotal.toLocaleString('ro-RO') + ' lei + TVA')
-        if (l.tipMasa === 'alacarte') parts.push('masa a la carte ' + l.persoane + ' pers (pranz, cina) + mic dejun la hotel')
+        if (l.tipMasa === 'alacarte' && l.diurnaFixa === 0 && l.cazareFixa === 0) parts.push('masa a la carte ' + l.persoane + ' pers (pranz, cina) + mic dejun la hotel')
         if (c.alcoolTotal > 0) parts.push('protocol alcool ' + c.alcoolTotal.toLocaleString('ro-RO') + ' lei + TVA')
         if (l.durata) parts.push('durata: ' + l.durata)
         out.push(parts.join(' || '))
@@ -564,7 +564,7 @@ export default function OfertaPage() {
       }
       rows.push(l.cazareFixa > 0 ? 'Cazare: ' + l.cazareFixa.toLocaleString('ro-RO') + ' lei' : 'Cazare: ' + l.cazare + ' (' + l.persoane + ' persoane)')
       if (c.diurnaTotal > 0) rows.push('Diurna: ' + c.diurnaTotal.toLocaleString('ro-RO') + ' lei + TVA')
-      if (l.tipMasa === 'alacarte') rows.push('Masa: a la carte ' + l.persoane + ' pers (pranz, cina) + mic dejun la hotel')
+      if (l.tipMasa === 'alacarte' && l.diurnaFixa === 0 && l.cazareFixa === 0) rows.push('Masa: a la carte ' + l.persoane + ' pers (pranz, cina) + mic dejun la hotel')
       if (c.alcoolTotal > 0) rows.push('Protocol alcool: ' + c.alcoolTotal.toLocaleString('ro-RO') + ' lei + TVA')
       if (l.durata) rows.push('Durata: ' + l.durata)
       for (const rr of rows) { doc.text(noDia(rr), textX, ly); ly += 5 }
@@ -843,10 +843,11 @@ export default function OfertaPage() {
               {l.useAlcool && <input type="number" placeholder="Sumă lei" value={l.alcool || ''} onFocus={e => e.target.select()} onChange={e => updateLinie(l.key, { alcool: Number(e.target.value) })} style={{...inputStyle, marginTop:'8px'}} />}
 
               <div style={{marginTop:'16px', paddingTop:'16px', borderTop:'1px dashed #e7e5e4'}}>
-                <label style={{display:'flex', alignItems:'center', gap:'8px', fontSize:'13px', cursor:'pointer', fontWeight:700}}>
-                  <input type="checkbox" checked={l.useCag} onChange={e => updateLinie(l.key, { useCag: e.target.checked })} style={{width:'16px', height:'16px', accentColor:'#7c3aed'}} />
-                  CAG · comision agenție (intern)
+                <label style={{display:'flex', alignItems:'center', gap:'8px', fontSize:'13px', cursor: destinatar==='client'?'not-allowed':'pointer', fontWeight:700, opacity: destinatar==='client'?0.4:1}}>
+                  <input type="checkbox" checked={l.useCag} disabled={destinatar==='client'} onChange={e => { updateLinie(l.key, { useCag: e.target.checked }); if (e.target.checked) setDestinatar('intermediar') }} style={{width:'16px', height:'16px', accentColor:'#7c3aed'}} />
+                  CAG · comision agenție (doar intermediar)
                 </label>
+                {destinatar==='client' && <div style={{fontSize:'11px', color:'#a8a29e', marginTop:'4px'}}>La client se dă discount, nu comision.</div>}
                 {l.useCag && (
                   <div style={{marginTop:'8px', display:'flex', gap:'8px', alignItems:'center', flexWrap:'wrap'}}>
                     <div style={{display:'flex', gap:'4px'}}>
@@ -874,7 +875,7 @@ export default function OfertaPage() {
                 {!destinatar && '⚠️ '}Pentru cine este oferta?
               </div>
               <div style={{display:'flex', gap:'8px'}}>
-                <button onClick={() => setDestinatar('client')}
+                <button onClick={() => { setDestinatar('client'); setLinii(prev => prev.map(x => ({ ...x, useCag: false }))) }}
                   style={{flex:1, padding:'10px', borderRadius:'8px', border:'1.5px solid ' + (destinatar==='client'?'#059669':'#44403c'), background: destinatar==='client'?'#059669':'transparent', color: destinatar==='client'?'white':'#a8a29e', fontSize:'14px', fontWeight:700, cursor:'pointer', fontFamily:F}}>
                   Client {destinatar==='client' ? '✓' : ''}
                 </button>
