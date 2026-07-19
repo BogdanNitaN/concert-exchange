@@ -106,12 +106,12 @@ export default function DisponibilitatePage() {
   async function exportaPdf() {
     const { default: jsPDF } = await import('jspdf')
     const doc = new jsPDF()
-    const noDia = (t) => t.normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/ș/g,'s').replace(/Ș/g,'S').replace(/ț/g,'t').replace(/Ț/g,'T').replace(/ă/g,'a').replace(/î/g,'i').replace(/â/g,'a')
+    const noDia = (t: string) => t.normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/ș/g,'s').replace(/Ș/g,'S').replace(/ț/g,'t').replace(/Ț/g,'T').replace(/ă/g,'a').replace(/î/g,'i').replace(/â/g,'a')
     let y = 20
     doc.setFontSize(16); doc.setFont('helvetica','bold')
     doc.text(noDia('Artisti disponibili' + (data ? ' pe ' + new Date(data).toLocaleDateString('ro-RO',{day:'numeric',month:'long',year:'numeric'}) : '') + (oras ? ' - ' + oras : '')), 20, y)
     y += 12
-    const perGen = {}
+    const perGen: Record<string, string[]> = {}
     for (const b of bifatiLista) { (perGen[b.gen] = perGen[b.gen] || []).push(b.artist) }
     doc.setFontSize(12)
     for (const g of GENURI) {
