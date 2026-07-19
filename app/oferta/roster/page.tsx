@@ -73,11 +73,17 @@ export default function RosterPage() {
   }, [authed])
 
   const GENURI: { key: string; label: string; cats: string[] }[] = [
-    { key: 'international', label: 'Internațional', cats: ['international', 'pop', 'alternativ', 'special', 'rock'] },
-    { key: 'urban', label: 'Urban', cats: ['urban', 'trap'] },
-    { key: 'romanesc', label: 'Românesc', cats: ['romanesc', 'balcanic', 'manele', 'lautareasca'] },
-    { key: 'electronic', label: 'Electronic', cats: ['electronic', 'dance', 'dj'] },
-    { key: 'live', label: 'Live', cats: ['live', 'cover'] },
+    { key: 'pop', label: 'Pop', cats: ['pop'] },
+    { key: 'balcanic_pop', label: 'Balcanic Pop', cats: ['balcanic_pop', 'balcanic'] },
+    { key: 'manele', label: 'Manele', cats: ['manele'] },
+    { key: 'trap', label: 'Trap', cats: ['trap'] },
+    { key: 'rap', label: 'Rap / Hip-Hop', cats: ['rap'] },
+    { key: 'dance', label: 'Dance / Electronic', cats: ['dance', 'dj', 'electronic'] },
+    { key: 'rock', label: 'Rock', cats: ['rock', 'alternativ'] },
+    { key: 'lautareasca', label: 'Lăutărească / Populară', cats: ['lautareasca'] },
+    { key: 'petrecere', label: 'Petrecere', cats: ['petrecere'] },
+    { key: 'cover', label: 'Cover / Party Band', cats: ['cover'] },
+    { key: 'altele', label: 'Altele', cats: ['altele', 'special', 'international'] },
   ]
   const filtrati = useMemo(() => {
     const s = search.toLowerCase()
@@ -201,7 +207,7 @@ export default function RosterPage() {
           ))}
         </div>
         <div style={{display:'flex', gap:'6px', marginBottom:'20px', flexWrap:'wrap'}}>
-          {[{c:'international',l:'Internațional'},{c:'urban',l:'Urban'},{c:'romanesc',l:'Românesc'},{c:'electronic',l:'Electronic'},{c:'live',l:'Live'}].map(g => (
+          {[{c:'pop',l:'Pop'},{c:'balcanic_pop',l:'Balcanic Pop'},{c:'manele',l:'Manele'},{c:'trap',l:'Trap'},{c:'rap',l:'Rap/Hip-Hop'},{c:'dance',l:'Dance'},{c:'rock',l:'Rock'},{c:'lautareasca',l:'Lăutărească'},{c:'petrecere',l:'Petrecere'},{c:'cover',l:'Cover'},{c:'altele',l:'Altele'}].map(g => (
             <button key={g.c} onClick={() => toggleGen(g.c)}
               style={{padding:'5px 12px', borderRadius:'20px', border:'1.5px solid ' + (filtreGen.has(g.c) ? '#7c3aed' : '#e7e5e4'), background: filtreGen.has(g.c) ? '#faf5ff' : 'white', color: filtreGen.has(g.c) ? '#7c3aed' : '#78716c', fontSize:'12px', fontWeight:700, cursor:'pointer', fontFamily:F}}>
               {g.l}
@@ -251,7 +257,7 @@ export default function RosterPage() {
               <div style={{display:'grid', gridTemplateColumns:'1fr 1fr', gap:'12px'}}>
                 <div><label style={lbl}>Categorie</label>
                   <select value={edit.categorie} onChange={e => setEdit({...edit, categorie: e.target.value})} style={inp}>
-                    <option value="International">Internațional</option><option value="Urban">Urban</option><option value="Romanesc">Românesc</option><option value="Electronic">Electronic</option><option value="Live">Live</option>
+                    <option value="pop">Pop</option><option value="balcanic_pop">Balcanic Pop</option><option value="manele">Manele</option><option value="trap">Trap</option><option value="rap">Rap / Hip-Hop</option><option value="dance">Dance / Electronic</option><option value="rock">Rock</option><option value="lautareasca">Lăutărească / Populară</option><option value="petrecere">Petrecere</option><option value="cover">Cover / Party Band</option><option value="altele">Altele</option>
                   </select>
                 </div>
                 <div><label style={lbl}>Tip</label>

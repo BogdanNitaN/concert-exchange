@@ -170,7 +170,7 @@ export default function OfertaPage() {
   const [codOferta, setCodOferta] = useState(() => 'GIGX-' + new Date().getFullYear() + '-' + String(Math.floor(Math.random()*9000)+1000))
   const [adaosProcent, setAdaosProcent] = useState(1)
   const [showAddArtist, setShowAddArtist] = useState(false)
-  const [newArtist, setNewArtist] = useState<any>({ nume: '', categorie: 'International', tip: 'propriu', durata: '40 min', fee: '', leiKm: '', transportMoneda: 'lei', cazare: '', bileteAvion: '', alcool: '', diurnaFixa: '', variante: [] as {nume:string,fee:string,durata:string}[] })
+  const [newArtist, setNewArtist] = useState<any>({ nume: '', categorie: 'pop', tip: 'propriu', durata: '40 min', fee: '', leiKm: '', transportMoneda: 'lei', cazare: '', bileteAvion: '', alcool: '', diurnaFixa: '', variante: [] as {nume:string,fee:string,durata:string}[] })
   const [savingArtist, setSavingArtist] = useState(false)
 
   useEffect(() => {
@@ -253,7 +253,7 @@ export default function OfertaPage() {
         const ar = await fetch('/api/oferta-artist').then(x => x.json())
         setArtists(ar.artists || [])
         setShowAddArtist(false)
-        setNewArtist({ nume: '', categorie: 'International', tip: 'propriu', durata: '40 min', fee: '', leiKm: '', transportMoneda: 'lei', cazare: '', bileteAvion: '', alcool: '', diurnaFixa: '', variante: [] })
+        setNewArtist({ nume: '', categorie: 'pop', tip: 'propriu', durata: '40 min', fee: '', leiKm: '', transportMoneda: 'lei', cazare: '', bileteAvion: '', alcool: '', diurnaFixa: '', variante: [] })
         alert('Artist adaugat! Il gasesti in cautare.')
       } else alert('Eroare: ' + (d.error || 'necunoscuta'))
     } catch { alert('Eroare la salvare') }
@@ -964,7 +964,7 @@ export default function OfertaPage() {
                 <div>
                   <label style={{fontSize:'11px', fontWeight:700, color:'#78716c', textTransform:'uppercase', display:'block', marginBottom:'4px'}}>Categorie</label>
                   <select value={newArtist.categorie} onChange={e => setNewArtist({...newArtist, categorie: e.target.value})} style={{width:'100%', padding:'10px 12px', borderRadius:'8px', border:'1.5px solid #e7e5e4', fontSize:'14px', fontFamily:F, background:'white'}}>
-                    <option value="International">Internațional</option><option value="Urban">Urban</option><option value="Romanesc">Românesc</option><option value="Electronic">Electronic</option><option value="Live">Live</option>
+                    <option value="pop">Pop</option><option value="balcanic_pop">Balcanic Pop</option><option value="manele">Manele</option><option value="trap">Trap</option><option value="rap">Rap / Hip-Hop</option><option value="dance">Dance / Electronic</option><option value="rock">Rock</option><option value="lautareasca">Lăutărească / Populară</option><option value="petrecere">Petrecere</option><option value="cover">Cover / Party Band</option><option value="altele">Altele</option>
                   </select>
                 </div>
                 <div>
