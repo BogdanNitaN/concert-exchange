@@ -2,6 +2,7 @@
 import { useState, useEffect } from 'react'
 import { supabase } from '@/lib/supabase'
 import { CalendarSearch, ArrowLeft, Check, X, Send } from 'lucide-react'
+import DatePicker from '@/components/modules/shared/DatePicker'
 const F = 'Montserrat,sans-serif'
 const UI = {
   bg: '#f5f5f7', card: '#ffffff', ink: '#1c1917', sub: '#57534e', faint: '#a8a29e',
@@ -114,6 +115,9 @@ export default function DisponibilitatePage() {
     const deAnalizat = bifatiLista.filter(l => !analize[l.artist])
     for (const l of deAnalizat) { await analizeaza(l) }
   }
+  function dataScurta(iso: string): string {
+    try { return new Date(iso + 'T12:00:00').toLocaleDateString('ro-RO', { day: 'numeric', month: 'long' }) } catch { return '' }
+  }
   function zileText(zile: number): string {
     const abs = Math.abs(zile)
     if (zile < 0) return 'acum ' + abs + (abs === 1 ? ' zi' : ' zile')
@@ -213,7 +217,7 @@ export default function DisponibilitatePage() {
         <div style={{background:UI.card, borderRadius:UI.radius, border:'1px solid '+UI.line, padding:'20px', marginBottom:'20px', boxShadow:UI.shadow, display:'flex', gap:'12px', alignItems:'flex-end', flexWrap:'wrap'}}>
           <div>
             <label style={{fontSize:'11px', fontWeight:700, color:UI.sub, textTransform:'uppercase', display:'block', marginBottom:'6px'}}>Data</label>
-            <input type="date" value={data} onChange={e => setData(e.target.value)} style={inp} />
+            <DatePicker value={data} onChange={v => setData(v)} placeholder="Alege data" />
           </div>
           <div>
             <label style={{fontSize:'11px', fontWeight:700, color:UI.sub, textTransform:'uppercase', display:'block', marginBottom:'6px'}}>Oraș (opțional, pt. calcul)</label>
@@ -260,11 +264,11 @@ export default function DisponibilitatePage() {
                         <div style={{background:'#faf9f7', border:'1px solid '+UI.line, borderRadius:'8px', padding:'12px', marginTop:'4px', fontSize:'12px'}}>
                           <div style={{display:'grid', gridTemplateColumns:'1fr 1fr', gap:'8px', marginBottom:(a.proximitati?.length||a.ultimaInZona)?'10px':'0'}}>
                             <div style={{background: a.ziMinus?'#fff7ed':'#f5f5f4', border:'1px solid '+(a.ziMinus?'#fed7aa':UI.line), borderRadius:'7px', padding:'8px 10px'}}>
-                              <div style={{fontSize:'10px', fontWeight:800, color: a.ziMinus?'#c2410c':UI.faint, textTransform:'uppercase', marginBottom:'3px'}}>Ziua dinainte</div>
+                              <div style={{fontSize:'10px', fontWeight:800, color: a.ziMinus?'#c2410c':UI.faint, textTransform:'uppercase', marginBottom:'3px'}}>Ziua dinainte{a.ziMinus ? ' · ' + dataScurta(a.ziMinus.data) : ''}</div>
                               <div style={{fontSize:'12px', fontWeight:600, color: a.ziMinus?UI.ink:UI.faint}}>{a.ziMinus ? a.ziMinus.titlu : 'liber / nimic notat'}</div>
                             </div>
                             <div style={{background: a.ziPlus?'#fff7ed':'#f5f5f4', border:'1px solid '+(a.ziPlus?'#fed7aa':UI.line), borderRadius:'7px', padding:'8px 10px'}}>
-                              <div style={{fontSize:'10px', fontWeight:800, color: a.ziPlus?'#c2410c':UI.faint, textTransform:'uppercase', marginBottom:'3px'}}>Ziua după</div>
+                              <div style={{fontSize:'10px', fontWeight:800, color: a.ziPlus?'#c2410c':UI.faint, textTransform:'uppercase', marginBottom:'3px'}}>Ziua după{a.ziPlus ? ' · ' + dataScurta(a.ziPlus.data) : ''}</div>
                               <div style={{fontSize:'12px', fontWeight:600, color: a.ziPlus?UI.ink:UI.faint}}>{a.ziPlus ? a.ziPlus.titlu : 'liber / nimic notat'}</div>
                             </div>
                           </div>
@@ -303,11 +307,12 @@ export default function DisponibilitatePage() {
             {bifatiLista.length > 0 && (
               <div style={{position:'sticky', bottom:'20px', marginTop:'24px', background:UI.dark, borderRadius:UI.radius, padding:'16px 20px', boxShadow:'0 8px 30px rgba(0,0,0,0.25)', display:'flex', alignItems:'center', justifyContent:'space-between', gap:'12px', flexWrap:'wrap'}}>
                 <span style={{fontSize:'14px', fontWeight:700, color:'white'}}>{bifatiLista.length} artiști bifați</span>
-                <div style={{display:'flex', gap:'8px', flexWrap:'wrap'}}>
+                <div style={{display:'flex', gap:'8px', flexWrap:'wrap', alignItems:'center'}}>
+                  {oras && <button onClick={analizeazaToti} style={{display:'flex', alignItems:'center', gap:'6px', padding:'10px 18px', background:UI.purple, color:'white', border:'none', borderRadius:'10px', fontSize:'13px', fontWeight:700, cursor:'pointer', fontFamily:F}}><CalendarSearch size={14} strokeWidth={2.4} /> Analizează toți</button>}
+                  {oras && <div style={{width:'1px', height:'26px', background:'rgba(255,255,255,0.2)'}} />}
                   <button onClick={() => { navigator.clipboard.writeText(textExport()) }} style={{padding:'10px 16px', background:'rgba(255,255,255,0.15)', color:'white', border:'none', borderRadius:'10px', fontSize:'13px', fontWeight:700, cursor:'pointer', fontFamily:F}}>Copiază</button>
                   <button onClick={() => window.open('https://wa.me/?text=' + encodeURIComponent(textExport(true)), '_blank')} style={{padding:'10px 16px', background:'#25D366', color:'white', border:'none', borderRadius:'10px', fontSize:'13px', fontWeight:700, cursor:'pointer', fontFamily:F}}>WhatsApp</button>
                   <button onClick={() => window.open('mailto:?subject=' + encodeURIComponent('Artiști disponibili' + (oras?' - '+oras:'')) + '&body=' + encodeURIComponent(textExport()))} style={{padding:'10px 16px', background:'#3b82f6', color:'white', border:'none', borderRadius:'10px', fontSize:'13px', fontWeight:700, cursor:'pointer', fontFamily:F}}>Email</button>
-                  {oras && <button onClick={analizeazaToti} style={{padding:'10px 16px', background:UI.purple, color:'white', border:'none', borderRadius:'10px', fontSize:'13px', fontWeight:700, cursor:'pointer', fontFamily:F}}>Analizează toți</button>}
                   <button onClick={exportaPdf} style={{padding:'10px 16px', background:'rgba(255,255,255,0.15)', color:'white', border:'none', borderRadius:'10px', fontSize:'13px', fontWeight:700, cursor:'pointer', fontFamily:F}}>PDF</button>
                   <button onClick={trimiteInOferta} style={{display:'flex', alignItems:'center', gap:'6px', padding:'10px 16px', background:UI.green, color:'white', border:'none', borderRadius:'10px', fontSize:'13px', fontWeight:700, cursor:'pointer', fontFamily:F}}><Send size={14} /> Trimite în ofertă</button>
                 </div>

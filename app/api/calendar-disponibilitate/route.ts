@@ -37,7 +37,8 @@ export async function GET(req: Request) {
     const timeMax = data + 'T23:59:59+03:00'
     const rezultate = await Promise.all(calendare.map(async c => {
       const numeCalNorm = normNume(c.summary!)
-      const artist = calToRosterNorm.get(numeCalNorm) || c.summary!.trim()
+      const curatEpicenter = (n: string) => n.replace(/\s*[-x@]?\s*epicentr[u]?\b/gi, '').replace(/\s+/g, ' ').trim()
+      const artist = calToRosterNorm.get(numeCalNorm) || curatEpicenter(c.summary!.trim())
       const rd: any = rosterNorm.get(normNume(artist)) || null
       try {
         const ev = await cal.events.list({ calendarId: c.id!, timeMin, timeMax, singleEvents: true, maxResults: 10 })

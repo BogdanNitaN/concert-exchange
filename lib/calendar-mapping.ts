@@ -58,7 +58,7 @@ export const CALENDAR_EXCLUSE = [
   'Holidays in Romania', 'OCS', 'Forward Booking', 'Forward Team',
   'contact.forward.agency@gmail.com', 'tbackaugust@gmail.com',
   'RATB @ EPICENTRU', 'Bad & Boujee Party', '911', '(🚀) TKS Concerte',
-  'Îngeri Şi Corbi - Epicenter', 'Helda', 'Alesta', 'Badd G', 'Chris Hype',
+  'Helda', 'Alesta', 'Badd G', 'Chris Hype',
   'Sasha Lopez', 'Sickotoy', 'DJ PROJECT', 'Manuel Riva', 'Nuante Epicenter',
   'NICOLE CHERRY', 'Nicole Cherry',
 ]
