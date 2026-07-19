@@ -433,6 +433,8 @@ export default function OfertaPage() {
         if (l.durata) parts.push('durata: ' + l.durata)
         out.push(parts.join(' || '))
         if (destinatar === 'client' && c.discount > 0) out.push('SALVEZI: ' + c.discount + ' EUR' + (c.savingLei > 0 ? ' (aprox ' + c.savingLei.toLocaleString('ro-RO') + ' lei)' : ''))
+        if (destinatar === 'intermediar' && c.discount > 0) out.push('Economie: ' + c.discount + ' EUR' + (c.savingLei > 0 ? ' (aprox ' + c.savingLei.toLocaleString('ro-RO') + ' lei)' : ''))
+        if (destinatar === 'intermediar' && l.useCag && l.cagMod === 'procent') out.push('CAG ' + l.cagProcent + '% din fee')
       }
       out.push('')
     }

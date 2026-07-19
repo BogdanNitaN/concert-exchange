@@ -83,14 +83,36 @@ export default function DisponibilitatePage() {
 
   const bifatiLista = (rez?.liberi || []).filter(l => bifati.has(l.artist))
 
-  function textExport(): string {
-    const linii = ['Artiști disponibili' + (data ? ' pe ' + new Date(data).toLocaleDateString('ro-RO', {day:'numeric',month:'long',year:'numeric'}) : '') + (oras ? ' - ' + oras : '') + ':', '']
+  function textExport(bold = false): string {
+    const b0 = bold ? '*' : ''
+    const linii = [b0 + 'Artiști disponibili' + (data ? ' pe ' + new Date(data).toLocaleDateString('ro-RO', {day:'numeric',month:'long',year:'numeric'}) : '') + (oras ? ' - ' + oras : '') + ':' + b0, '']
     const perGen: Record<string, string[]> = {}
     for (const b of bifatiLista) { (perGen[b.gen] = perGen[b.gen] || []).push(b.artist) }
     for (const g of GENURI) {
-      if (perGen[g.key]?.length) linii.push(g.label + ': ' + perGen[g.key].join(', '))
+      if (perGen[g.key]?.length) linii.push(b0 + g.label + ':' + b0 + ' ' + perGen[g.key].join(', '))
     }
     return linii.join('\n')
+  }
+  async function exportaPdf() {
+    const { default: jsPDF } = await import('jspdf')
+    const doc = new jsPDF()
+    const noDia = (t) => t.normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/ș/g,'s').replace(/Ș/g,'S').replace(/ț/g,'t').replace(/Ț/g,'T').replace(/ă/g,'a').replace(/î/g,'i').replace(/â/g,'a')
+    let y = 20
+    doc.setFontSize(16); doc.setFont('helvetica','bold')
+    doc.text(noDia('Artisti disponibili' + (data ? ' pe ' + new Date(data).toLocaleDateString('ro-RO',{day:'numeric',month:'long',year:'numeric'}) : '') + (oras ? ' - ' + oras : '')), 20, y)
+    y += 12
+    const perGen = {}
+    for (const b of bifatiLista) { (perGen[b.gen] = perGen[b.gen] || []).push(b.artist) }
+    doc.setFontSize(12)
+    for (const g of GENURI) {
+      if (!perGen[g.key]?.length) continue
+      doc.setFont('helvetica','bold'); doc.text(noDia(g.label + ':'), 20, y); y += 7
+      doc.setFont('helvetica','normal')
+      for (const a of perGen[g.key]) { doc.text(noDia('- ' + a), 25, y); y += 6 }
+      y += 3
+      if (y > 275) { doc.addPage(); y = 20 }
+    }
+    doc.save('disponibilitate-' + (data || 'artisti') + '.pdf')
   }
 
   function trimiteInOferta() {
@@ -207,8 +229,9 @@ export default function DisponibilitatePage() {
                 <span style={{fontSize:'14px', fontWeight:700, color:'white'}}>{bifatiLista.length} artiști bifați</span>
                 <div style={{display:'flex', gap:'8px', flexWrap:'wrap'}}>
                   <button onClick={() => { navigator.clipboard.writeText(textExport()) }} style={{padding:'10px 16px', background:'rgba(255,255,255,0.15)', color:'white', border:'none', borderRadius:'10px', fontSize:'13px', fontWeight:700, cursor:'pointer', fontFamily:F}}>Copiază</button>
-                  <button onClick={() => window.open('https://wa.me/?text=' + encodeURIComponent(textExport()), '_blank')} style={{padding:'10px 16px', background:'#25D366', color:'white', border:'none', borderRadius:'10px', fontSize:'13px', fontWeight:700, cursor:'pointer', fontFamily:F}}>WhatsApp</button>
+                  <button onClick={() => window.open('https://wa.me/?text=' + encodeURIComponent(textExport(true)), '_blank')} style={{padding:'10px 16px', background:'#25D366', color:'white', border:'none', borderRadius:'10px', fontSize:'13px', fontWeight:700, cursor:'pointer', fontFamily:F}}>WhatsApp</button>
                   <button onClick={() => window.open('mailto:?subject=' + encodeURIComponent('Artiști disponibili' + (oras?' - '+oras:'')) + '&body=' + encodeURIComponent(textExport()))} style={{padding:'10px 16px', background:'#3b82f6', color:'white', border:'none', borderRadius:'10px', fontSize:'13px', fontWeight:700, cursor:'pointer', fontFamily:F}}>Email</button>
+                  <button onClick={exportaPdf} style={{padding:'10px 16px', background:'rgba(255,255,255,0.15)', color:'white', border:'none', borderRadius:'10px', fontSize:'13px', fontWeight:700, cursor:'pointer', fontFamily:F}}>PDF</button>
                   <button onClick={trimiteInOferta} style={{display:'flex', alignItems:'center', gap:'6px', padding:'10px 16px', background:UI.green, color:'white', border:'none', borderRadius:'10px', fontSize:'13px', fontWeight:700, cursor:'pointer', fontFamily:F}}><Send size={14} /> Trimite în ofertă</button>
                 </div>
               </div>

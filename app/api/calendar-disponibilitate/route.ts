@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server'
 import { google } from 'googleapis'
-import { CALENDAR_TO_ROSTER, CALENDAR_EXCLUSE } from '@/lib/calendar-mapping'
+import { CALENDAR_TO_ROSTER, CALENDAR_EXCLUSE, normNume } from '@/lib/calendar-mapping'
 import { createClient } from '@supabase/supabase-js'
 
 function getCal() {
@@ -22,15 +22,23 @@ export async function GET(req: Request) {
     const sb = createClient(process.env.NEXT_PUBLIC_SUPABASE_URL!, process.env.SUPABASE_SECRET_KEY!, { auth: { autoRefreshToken: false, persistSession: false } })
     const { data: rosterData } = await sb.from('oferta_artisti').select('nume, categorie, fee_standard, lei_km, cazare, nr_persoane, bilete_avion, tip')
     const roster = new Map((rosterData || []).map((a: any) => [a.nume, a]))
+    // mapare normalizata: nume calendar normalizat -> nume roster
+    const calToRosterNorm = new Map<string, string>()
+    for (const [k, v] of Object.entries(CALENDAR_TO_ROSTER)) calToRosterNorm.set(normNume(k), v)
+    // roster normalizat: nume normalizat -> date
+    const rosterNorm = new Map<string, any>()
+    for (const a of (rosterData || [])) rosterNorm.set(normNume(a.nume), a)
 
     const cal = getCal()
     const lista = await cal.calendarList.list({ maxResults: 250 })
-    const calendare = (lista.data.items || []).filter(c => c.summary && !CALENDAR_EXCLUSE.includes(c.summary))
+    const excluseNorm = CALENDAR_EXCLUSE.map(normNume)
+    const calendare = (lista.data.items || []).filter(c => c.summary && !excluseNorm.includes(normNume(c.summary)))
     const timeMin = data + 'T00:00:00+03:00'
     const timeMax = data + 'T23:59:59+03:00'
     const rezultate = await Promise.all(calendare.map(async c => {
-      const artist = CALENDAR_TO_ROSTER[c.summary!] || c.summary!
-      const rd: any = roster.get(artist) || null
+      const numeCalNorm = normNume(c.summary!)
+      const artist = calToRosterNorm.get(numeCalNorm) || c.summary!.trim()
+      const rd: any = rosterNorm.get(normNume(artist)) || null
       try {
         const ev = await cal.events.list({ calendarId: c.id!, timeMin, timeMax, singleEvents: true, maxResults: 10 })
         const evenimente = (ev.data.items || []).map(e => ({ titlu: e.summary || '(fara titlu)', descriere: e.description || '', allDay: !!e.start?.date }))
