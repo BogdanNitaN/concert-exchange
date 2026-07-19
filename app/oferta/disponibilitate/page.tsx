@@ -85,6 +85,21 @@ export default function DisponibilitatePage() {
   function toggleBifat(nume: string) {
     setBifati(prev => { const n = new Set(prev); n.has(nume) ? n.delete(nume) : n.add(nume); return n })
   }
+  function selecteazaToti() {
+    const toti = liberiFiltrati.map(l => l.artist)
+    const totiBifati = toti.every(a => bifati.has(a))
+    setBifati(totiBifati ? new Set() : new Set(toti))
+  }
+  function selecteazaGen(genKey: string) {
+    const dinGen = (grupati[genKey] || []).map(l => l.artist)
+    const totiBifati = dinGen.every(a => bifati.has(a))
+    setBifati(prev => {
+      const n = new Set(prev)
+      if (totiBifati) dinGen.forEach(a => n.delete(a))
+      else dinGen.forEach(a => n.add(a))
+      return n
+    })
+  }
   async function analizeaza(l: Rez) {
     if (analize[l.artist]) { setAnalize(prev => { const n = {...prev}; delete n[l.artist]; return n }); return }
     setAnalizand(prev => new Set(prev).add(l.artist))
@@ -220,10 +235,14 @@ export default function DisponibilitatePage() {
               <div>
                 <div style={{display:'flex', alignItems:'center', gap:'8px', marginBottom:'12px'}}>
                   <Check size={18} color={UI.green} /><span style={{fontSize:'15px', fontWeight:800, color:UI.ink}}>Liberi ({liberiFiltrati.length})</span>
+                  {liberiFiltrati.length > 0 && <button onClick={selecteazaToti} style={{marginLeft:'auto', fontSize:'11px', fontWeight:700, padding:'5px 12px', borderRadius:'7px', border:'1.5px solid '+UI.green, background: liberiFiltrati.every(l => bifati.has(l.artist)) ? UI.green : 'white', color: liberiFiltrati.every(l => bifati.has(l.artist)) ? 'white' : UI.green, cursor:'pointer', fontFamily:F}}>{liberiFiltrati.every(l => bifati.has(l.artist)) ? 'Deselectează' : 'Selectează toți'}</button>}
                 </div>
                 {genuriPrezente.map(g => (
                   <div key={g.key} style={{marginBottom:'16px'}}>
-                    <div style={{fontSize:'12px', fontWeight:800, color:UI.purple, textTransform:'uppercase', marginBottom:'6px'}}>{g.label} ({grupati[g.key].length})</div>
+                    <div style={{display:'flex', alignItems:'center', gap:'8px', marginBottom:'6px'}}>
+                      <span style={{fontSize:'12px', fontWeight:800, color:UI.purple, textTransform:'uppercase'}}>{g.label} ({grupati[g.key].length})</span>
+                      <button onClick={() => selecteazaGen(g.key)} style={{fontSize:'10px', fontWeight:700, padding:'2px 8px', borderRadius:'6px', border:'1px solid '+UI.line, background: (grupati[g.key]||[]).every(l => bifati.has(l.artist)) ? UI.purple : 'white', color: (grupati[g.key]||[]).every(l => bifati.has(l.artist)) ? 'white' : UI.sub, cursor:'pointer', fontFamily:F}}>toți</button>
+                    </div>
                     {grupati[g.key].map(l => {
                       const a = analize[l.artist]
                       return (
