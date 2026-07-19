@@ -692,7 +692,7 @@ export default function OfertaPage() {
           {loginErr && <div style={{fontSize:'12px', color:'#dc2626', marginTop:'8px'}}>{loginErr}</div>}
           {resetMsg && <div style={{fontSize:'12px', color:'#059669', marginTop:'8px'}}>{resetMsg}</div>}
           <button onClick={faLogin} disabled={loggingIn}
-            style={{width:'100%', marginTop:'14px', padding:'12px', background:'#1c1917', color:'white', border:'none', borderRadius:'8px', fontSize:'14px', fontWeight:700, cursor: loggingIn ? 'wait' : 'pointer', fontFamily:F, opacity: loggingIn ? 0.6 : 1}}>
+            style={{width:'100%', marginTop:'14px', padding:'13px', background:UI.dark, color:'white', border:'none', borderRadius:UI.radiusSm, fontSize:'14px', fontWeight:700, cursor: loggingIn ? 'wait' : 'pointer', fontFamily:F, opacity: loggingIn ? 0.6 : 1, boxShadow:UI.shadowBtn}}>
             {loggingIn ? 'Se conecteaza...' : 'Intra in cont'}
           </button>
           <button onClick={faReset}
@@ -745,7 +745,7 @@ export default function OfertaPage() {
             <div style={{position:'relative'}}><label style={label}>Destinație</label>
               <input value={toCity} onChange={e => cautaOras(e.target.value)} onKeyDown={e => { if (e.key==='Enter') { setShowCitySugg(false); calcTransport() } }} onBlur={() => setTimeout(() => setShowCitySugg(false), 200)} autoComplete="off" style={inputStyle} />
               {showCitySugg && citySuggestions.length > 0 && (
-                <div style={{position:'absolute', top:'100%', left:0, right:0, background:'white', border:'1px solid #e7e5e4', borderRadius:'8px', marginTop:'4px', maxHeight:'200px', overflowY:'auto', zIndex:20, boxShadow:'0 4px 12px rgba(0,0,0,0.1)'}}>
+                <div style={{position:'absolute', top:'100%', left:0, right:0, background:'white', border:'1px solid '+UI.line, borderRadius:UI.radiusSm, marginTop:'4px', maxHeight:'200px', overflowY:'auto', zIndex:20, boxShadow:UI.shadowHover}}>
                   {citySuggestions.map((sg, i) => (
                     <div key={i} onClick={() => alegeOras(sg.description)}
                       style={{padding:'9px 12px', cursor:'pointer', fontSize:'13px', borderBottom: i < citySuggestions.length-1 ? '1px solid #f5f5f4' : 'none'}}
@@ -759,7 +759,7 @@ export default function OfertaPage() {
             </div>
             <div><label style={label}>Locație / Client</label>
               <input value={locatie} onChange={e => setLocatie(e.target.value)} placeholder="ex: Club Nish" style={inputStyle} /></div>
-            <button onClick={calcTransport} style={{padding:'10px 20px', background:'#059669', color:'white', border:'none', borderRadius:'8px', fontWeight:700, cursor:'pointer', fontFamily:F, whiteSpace:'nowrap'}}>
+            <button onClick={calcTransport} style={{padding:'11px 22px', background:UI.green, color:'white', border:'none', borderRadius:UI.radiusSm, fontWeight:700, cursor:'pointer', fontFamily:F, whiteSpace:'nowrap', boxShadow:'0 1px 3px rgba(5,150,105,0.3)'}}>
               {loadingKm ? '...' : 'Calculează'}
             </button>
           </div>
@@ -784,7 +784,7 @@ export default function OfertaPage() {
           <input placeholder="Caută și adaugă artist..." value={search}
             onChange={e => setSearch(e.target.value)} style={inputStyle} />
           {filtered.length > 0 && (
-            <div style={{position:'absolute', top:'100%', left:'20px', right:'20px', background:'white', border:'1px solid #e7e5e4', borderRadius:'8px', marginTop:'4px', maxHeight:'240px', overflowY:'auto', zIndex:10, boxShadow:'0 4px 12px rgba(0,0,0,0.1)'}}>
+            <div style={{position:'absolute', top:'100%', left:'20px', right:'20px', background:'white', border:'1px solid '+UI.line, borderRadius:UI.radiusSm, marginTop:'4px', maxHeight:'240px', overflowY:'auto', zIndex:10, boxShadow:UI.shadowHover}}>
               {filtered.map(a => (
                 <div key={a.nume} onClick={() => addArtist(a)}
                   style={{padding:'10px 12px', cursor:'pointer', fontSize:'14px', borderBottom:'1px solid #f5f5f4'}}
@@ -812,7 +812,7 @@ export default function OfertaPage() {
                     style={{marginLeft:'8px', padding:'4px 10px', borderRadius:'8px', border:'1.5px solid #0891b2', color:'#0891b2', fontSize:'12px', fontWeight:700, fontFamily:F, background:'white', width:'90px'}} />
                   {l.artist.formate && l.artist.formate.length > 1 && (
                     <select value={l.formatSelectat} onChange={e => schimbaFormat(l.key, e.target.value)}
-                      style={{marginLeft:'10px', padding:'4px 10px', borderRadius:'8px', border:'1.5px solid #7c3aed', color:'#7c3aed', fontSize:'12px', fontWeight:700, fontFamily:F, cursor:'pointer', background:'white'}}>
+                      style={{marginLeft:'10px', padding:'6px 12px', borderRadius:UI.radiusSm, border:'1.5px solid '+UI.purple, color:UI.purple, fontSize:'12px', fontWeight:700, fontFamily:F, cursor:'pointer', background:UI.purpleSoft}}>
                       {l.artist.formate.map(f => <option key={f.nume} value={f.nume}>{f.nume}</option>)}
                     </select>
                   )}
@@ -844,10 +844,10 @@ export default function OfertaPage() {
               </div>
 
               {km !== null && km > 300 && (
-                <div style={{display:'flex', gap:'16px', flexWrap:'wrap', marginBottom:'12px', alignItems:'center', padding:'10px 12px', background:'#f5f5f4', borderRadius:'8px'}}>
+                <div style={{display:'flex', gap:'16px', flexWrap:'wrap', marginBottom:'12px', alignItems:'center', padding:'12px 14px', background:UI.bg, borderRadius:UI.radiusSm, border:'1px solid '+UI.line}}>
                   <div style={{display:'flex', alignItems:'center', gap:'8px'}}>
                     <label style={{fontSize:'12px', fontWeight:700, color:'#57534e'}}>Bilete avion (câți zboară):</label>
-                    <input type="number" value={l.bileteAvion || ''} onFocus={e => e.target.select()} onChange={e => updateLinie(l.key, { bileteAvion: Number(e.target.value) })} style={{width:'60px', padding:'6px 8px', borderRadius:'6px', border:'1.5px solid #e7e5e4', fontSize:'13px', fontFamily:F, textAlign:'center'}} />
+                    <input type="number" value={l.bileteAvion || ''} onFocus={e => e.target.select()} onChange={e => updateLinie(l.key, { bileteAvion: Number(e.target.value) })} style={{width:'60px', padding:'7px 9px', borderRadius:'8px', border:'1px solid '+UI.lineStrong, fontSize:'13px', fontFamily:F, textAlign:'center', outline:'none'}} />
                   </div>
                   <label style={{display:'flex', alignItems:'center', gap:'6px', fontSize:'13px', cursor:'pointer'}}>
                     <input type="checkbox" checked={l.restulRutier} onChange={e => updateLinie(l.key, { restulRutier: e.target.checked })} style={{width:'16px', height:'16px', accentColor:'#059669'}} />
@@ -874,8 +874,8 @@ export default function OfertaPage() {
                 </div>
               ) : (<>
               <div style={{display:'flex', gap:'8px', marginBottom:'8px'}}>
-                <button onClick={() => updateLinie(l.key, { tipMasa: 'diurna' })} style={{flex:1, padding:'8px', borderRadius:'8px', border:'1.5px solid '+(l.tipMasa==='diurna'?'#1c1917':'#e7e5e4'), background:l.tipMasa==='diurna'?'#1c1917':'white', color:l.tipMasa==='diurna'?'white':'#78716c', fontSize:'13px', fontWeight:700, cursor:'pointer', fontFamily:F}}>Diurnă</button>
-                <button onClick={() => updateLinie(l.key, { tipMasa: 'alacarte' })} style={{flex:1, padding:'8px', borderRadius:'8px', border:'1.5px solid '+(l.tipMasa==='alacarte'?'#1c1917':'#e7e5e4'), background:l.tipMasa==='alacarte'?'#1c1917':'white', color:l.tipMasa==='alacarte'?'white':'#78716c', fontSize:'13px', fontWeight:700, cursor:'pointer', fontFamily:F}}>À la carte</button>
+                <button onClick={() => updateLinie(l.key, { tipMasa: 'diurna' })} style={{flex:1, padding:'9px', borderRadius:UI.radiusSm, border:'1.5px solid '+(l.tipMasa==='diurna'?UI.dark:UI.lineStrong), background:l.tipMasa==='diurna'?UI.dark:'white', color:l.tipMasa==='diurna'?'white':UI.sub, fontSize:'13px', fontWeight:700, cursor:'pointer', fontFamily:F}}>Diurnă</button>
+                <button onClick={() => updateLinie(l.key, { tipMasa: 'alacarte' })} style={{flex:1, padding:'9px', borderRadius:UI.radiusSm, border:'1.5px solid '+(l.tipMasa==='alacarte'?UI.dark:UI.lineStrong), background:l.tipMasa==='alacarte'?UI.dark:'white', color:l.tipMasa==='alacarte'?'white':UI.sub, fontSize:'13px', fontWeight:700, cursor:'pointer', fontFamily:F}}>À la carte</button>
               </div>
               {l.tipMasa === 'diurna' ? (
                 <div style={{display:'flex', gap:'8px', marginBottom:'12px'}}>
@@ -884,7 +884,7 @@ export default function OfertaPage() {
                   <div style={{flex:1}}><label style={label}>Total diurnă</label><div style={{padding:'10px 0', fontWeight:700}}>{c.diurnaTotal.toLocaleString('ro-RO')} lei</div></div>
                 </div>
               ) : (
-                <div style={{fontSize:'13px', color:'#78716c', padding:'8px', background:'#f5f5f4', borderRadius:'8px', marginBottom:'12px'}}>Masă à la carte {l.persoane} pers (prânz, cină) + mic dejun la hotel</div>
+                <div style={{fontSize:'13px', color:UI.sub, padding:'12px 14px', background:UI.bg, borderRadius:UI.radiusSm, border:'1px solid '+UI.line, marginBottom:'12px'}}>Masă à la carte {l.persoane} pers (prânz, cină) + mic dejun la hotel</div>
               )}
               </>)}
 
@@ -920,7 +920,7 @@ export default function OfertaPage() {
 
         {/* cheia de control + export */}
         {linii.length > 0 && (
-          <div style={{background:'#1c1917', padding:'20px', borderRadius:'14px', marginTop:'8px'}}>
+          <div style={{background:UI.dark, padding: isMobile ? '20px' : '24px', borderRadius:UI.radius, marginTop:'8px', boxShadow:UI.shadowHover}}>
             {/* CHEIA DE CONTROL */}
             <div style={{marginBottom:'16px', padding:'14px', borderRadius:'10px', background: destinatar ? 'rgba(5,150,105,0.15)' : 'rgba(234,88,12,0.15)', border:'1.5px solid ' + (destinatar ? 'rgba(5,150,105,0.4)' : 'rgba(234,88,12,0.5)')}}>
               <div style={{fontSize:'13px', fontWeight:700, color: destinatar ? '#6ee7b7' : '#fdba74', marginBottom:'10px', display:'flex', alignItems:'center', gap:'6px'}}>
@@ -928,11 +928,11 @@ export default function OfertaPage() {
               </div>
               <div style={{display:'flex', gap:'8px'}}>
                 <button onClick={() => { setDestinatar('client'); setLinii(prev => prev.map(x => ({ ...x, useCag: false }))) }}
-                  style={{flex:1, padding:'10px', borderRadius:'8px', border:'1.5px solid ' + (destinatar==='client'?'#059669':'#44403c'), background: destinatar==='client'?'#059669':'transparent', color: destinatar==='client'?'white':'#a8a29e', fontSize:'14px', fontWeight:700, cursor:'pointer', fontFamily:F}}>
+                  style={{flex:1, padding:'12px', borderRadius:UI.radiusSm, border:'1.5px solid ' + (destinatar==='client'?UI.green:UI.lineStrong), background: destinatar==='client'?UI.green:'white', color: destinatar==='client'?'white':UI.sub, fontSize:'14px', fontWeight:700, cursor:'pointer', fontFamily:F, transition:'all 0.15s'}}>
                   Client {destinatar==='client' ? '✓' : ''}
                 </button>
                 <button onClick={() => setDestinatar('intermediar')}
-                  style={{flex:1, padding:'10px', borderRadius:'8px', border:'1.5px solid ' + (destinatar==='intermediar'?'#059669':'#44403c'), background: destinatar==='intermediar'?'#059669':'transparent', color: destinatar==='intermediar'?'white':'#a8a29e', fontSize:'14px', fontWeight:700, cursor:'pointer', fontFamily:F}}>
+                  style={{flex:1, padding:'12px', borderRadius:UI.radiusSm, border:'1.5px solid ' + (destinatar==='intermediar'?UI.green:UI.lineStrong), background: destinatar==='intermediar'?UI.green:'white', color: destinatar==='intermediar'?'white':UI.sub, fontSize:'14px', fontWeight:700, cursor:'pointer', fontFamily:F, transition:'all 0.15s'}}>
                   Intermediar {destinatar==='intermediar' ? '✓' : ''}
                 </button>
               </div>
@@ -966,7 +966,7 @@ export default function OfertaPage() {
 
       {showAddArtist && (
         <div onClick={() => setShowAddArtist(false)} style={{position:'fixed', inset:0, background:'rgba(0,0,0,0.5)', display:'flex', alignItems:'center', justifyContent:'center', zIndex:1000, padding:'20px'}}>
-          <div onClick={e => e.stopPropagation()} style={{background:'white', borderRadius:'16px', padding: isMobile ? '20px' : '28px', width: isMobile ? '100%' : '480px', maxHeight:'90vh', overflowY:'auto'}}>
+          <div onClick={e => e.stopPropagation()} style={{background:'white', borderRadius:UI.radius, padding: isMobile ? '20px' : '28px', width: isMobile ? '100%' : '480px', maxHeight:'90vh', overflowY:'auto', boxShadow:'0 20px 60px rgba(0,0,0,0.3)'}}>
             <div style={{display:'flex', justifyContent:'space-between', alignItems:'center', marginBottom:'18px'}}>
               <div style={{fontSize:'18px', fontWeight:800}}>Adaugă artist nou</div>
               <button onClick={() => setShowAddArtist(false)} style={{background:'none', border:'none', fontSize:'22px', cursor:'pointer', color:'#78716c'}}>×</button>
@@ -1050,7 +1050,7 @@ export default function OfertaPage() {
                 </div>
               </div>
               <div style={{fontSize:'11px', color:'#a8a29e', marginTop:'-4px'}}>Poza se caută automat pe Chartex după nume.</div>
-              <button onClick={salveazaArtistNou} disabled={savingArtist} style={{marginTop:'6px', padding:'12px', background:'#7c3aed', color:'white', border:'none', borderRadius:'8px', fontSize:'14px', fontWeight:700, cursor: savingArtist ? 'wait' : 'pointer', fontFamily:F, opacity: savingArtist ? 0.6 : 1}}>
+              <button onClick={salveazaArtistNou} disabled={savingArtist} style={{marginTop:'6px', padding:'13px', background:UI.purple, color:'white', border:'none', borderRadius:UI.radiusSm, fontSize:'14px', fontWeight:700, cursor: savingArtist ? 'wait' : 'pointer', fontFamily:F, opacity: savingArtist ? 0.6 : 1, boxShadow:'0 1px 3px rgba(124,58,237,0.3)'}}>
                 {savingArtist ? 'Se salvează...' : 'Salvează artist'}
               </button>
             </div>
