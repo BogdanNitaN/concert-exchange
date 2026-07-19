@@ -174,7 +174,7 @@ export default function RosterPage() {
         <div style={{fontSize:'14px', fontWeight:700, display:'flex', alignItems:'center', gap:'8px'}}>{a.nume}
           <span style={{fontSize:'8px', fontWeight:800, padding:'2px 6px', borderRadius:'4px', background: a.tip === 'intermediere' ? '#faf5ff' : '#f0fdf4', color: a.tip === 'intermediere' ? '#7c3aed' : '#059669'}}>{a.tip === 'intermediere' ? 'EXTERN' : 'FWD'}</span>
         </div>
-        <div style={{fontSize:'12px', color:'#78716c', marginTop:'2px'}}>{a.set_type || 'band'} · {a.fee_standard}€{a.diurna_fixa ? ' · diurna ' + a.diurna_fixa : ''}</div>
+        <div style={{fontSize:'12px', color:'#78716c', marginTop:'2px'}}>{a.durata_default || '40 min'} · {a.fee_standard}€{a.diurna_fixa ? ' · diurnă ' + a.diurna_fixa : ''}</div>
       </div>
       <span style={{fontSize:'11px', color:'#a8a29e'}}>editează →</span>
     </div>
