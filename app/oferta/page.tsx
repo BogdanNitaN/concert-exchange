@@ -10,34 +10,34 @@ import { UserPlus, Users, History, LogOut, Copy, MessageCircle, Mail, FileDown, 
 const F = 'Montserrat,sans-serif'
 // Design tokens premium
 const UI = {
-  bg: '#f7f6f9',
+  bg: '#f5f5f7',
   card: '#ffffff',
-  ink: '#141414',
-  sub: '#333333',
-  faint: '#8a8a8f',
-  line: '#F2F2F3',
-  lineStrong: '#e4e4e7',
-  green: '#7D51FE',
-  greenSoft: '#f3efff',
-  greenLine: '#e5dcff',
-  purple: '#7D51FE',
-  purpleSoft: '#f3efff',
-  gold: '#AAFF00',
-  neon: '#AAFF00',
-  ok: '#7AB800',
-  okSoft: '#f4fbe6',
-  attention: '#7D51FE',
-  attentionSoft: '#f3efff',
-  violet: '#7D51FE',
-  dark: '#141414',
-  charcoal: '#333333',
+  ink: '#1c1917',
+  sub: '#57534e',
+  faint: '#a8a29e',
+  line: '#e7e5e4',
+  lineStrong: '#e7e5e4',
+  green: '#059669',
+  greenSoft: '#f0fdf4',
+  greenLine: '#d1fae5',
+  purple: '#7c3aed',
+  purpleSoft: '#faf5ff',
+  gold: '#eacda3',
+  neon: '#059669',
+  violet: '#7c3aed',
+  ok: '#059669',
+  okSoft: '#f0fdf4',
+  attention: '#7c3aed',
+  attentionSoft: '#faf5ff',
+  dark: '#1c1917',
+  charcoal: '#292524',
   radius: '16px',
   radiusSm: '12px',
-  shadow: '0 1px 3px rgba(20,20,20,0.05), 0 8px 24px rgba(125,81,254,0.06)',
-  shadowHover: '0 8px 30px rgba(125,81,254,0.15)',
-  shadowBtn: '0 8px 30px rgba(20,20,20,0.25)',
-  shadowNeon: '0 4px 20px rgba(170,255,0,0.4)',
-  mesh: 'radial-gradient(ellipse 70% 55% at 12% 8%, rgba(125,81,254,0.10) 0%, transparent 55%), radial-gradient(ellipse 60% 50% at 88% 20%, rgba(125,81,254,0.06) 0%, transparent 50%), radial-gradient(ellipse 80% 60% at 50% 100%, rgba(170,255,0,0.05) 0%, transparent 60%)',
+  shadow: '0 1px 3px rgba(0,0,0,0.04), 0 8px 24px rgba(0,0,0,0.04)',
+  shadowHover: '0 8px 30px rgba(0,0,0,0.12)',
+  shadowBtn: '0 8px 30px rgba(0,0,0,0.18)',
+  shadowNeon: '0 8px 30px rgba(0,0,0,0.18)',
+  mesh: 'radial-gradient(circle at 20% 20%, rgba(5,150,105,0.06) 0%, transparent 50%), radial-gradient(circle at 80% 30%, rgba(124,58,237,0.05) 0%, transparent 50%), radial-gradient(circle at 50% 90%, rgba(234,205,163,0.06) 0%, transparent 50%)',
 }
 
 interface Format {
@@ -689,7 +689,7 @@ export default function OfertaPage() {
     return (
       <div style={{minHeight:'100vh', background:'#f3efff', display:'flex', alignItems:'center', justifyContent:'center', fontFamily:F, padding:'20px'}}>
         <div style={{background:'white', padding:'40px', borderRadius:'16px', border:'2px solid #e7e5e4', width:'340px'}}>
-          <div style={{fontSize:'22px', fontWeight:800, marginBottom:'6px'}}>GIG<span style={{background:'#AAFF00', padding:'0 5px', borderRadius:'5px'}}>x</span></div>
+          <div style={{fontSize:'22px', fontWeight:800, marginBottom:'6px'}}>GIG<span style={{color:'#059669'}}>x</span></div>
           <div style={{fontSize:'13px', color:'#78716c', marginBottom:'20px'}}>Autentificare</div>
           <input type="text" placeholder="Utilizator" value={loginEmail} autoComplete="username"
             onChange={e => setLoginEmail(e.target.value)}
@@ -699,7 +699,7 @@ export default function OfertaPage() {
             onKeyDown={e => { if (e.key === 'Enter') faLogin() }}
             style={inputStyle} />
           {loginErr && <div style={{fontSize:'12px', color:'#dc2626', marginTop:'8px'}}>{loginErr}</div>}
-          {resetMsg && <div style={{fontSize:'12px', color:'#121212', marginTop:'8px'}}>{resetMsg}</div>}
+          {resetMsg && <div style={{fontSize:'12px', color:'#1c1917', marginTop:'8px'}}>{resetMsg}</div>}
           <button onClick={faLogin} disabled={loggingIn}
             style={{width:'100%', marginTop:'14px', padding:'13px', background:UI.dark, color:'white', border:'none', borderRadius:UI.radiusSm, fontSize:'14px', fontWeight:700, cursor: loggingIn ? 'wait' : 'pointer', fontFamily:F, opacity: loggingIn ? 0.6 : 1, boxShadow:UI.shadowBtn}}>
             {loggingIn ? 'Se conecteaza...' : 'Intra in cont'}
@@ -716,23 +716,23 @@ export default function OfertaPage() {
   const filtered = search ? artists.filter(a => a.nume.toLowerCase().includes(search.toLowerCase())) : []
 
   return (
-    <div style={{minHeight:'100vh', background:'linear-gradient(160deg, #ffffff 0%, #fbfaff 35%, #f5f2fe 70%, #efe9fc 100%)', fontFamily:F, padding: isMobile ? '16px 12px' : '40px 20px', position:'relative'}}>
+    <div style={{minHeight:'100vh', background:UI.bg, fontFamily:F, padding: isMobile ? '16px 12px' : '40px 20px', position:'relative'}}>
       <div style={{position:'fixed', inset:0, background:UI.mesh, pointerEvents:'none', zIndex:0}} />
       {toast && (
         <div style={{position:'fixed', bottom:'28px', left:'50%', transform:'translateX(-50%)', zIndex:1000, background:UI.dark, color:'white', padding:'14px 24px', borderRadius:'12px', fontSize:'14px', fontWeight:700, fontFamily:F, boxShadow:'0 8px 30px rgba(0,0,0,0.25)', display:'flex', alignItems:'center', gap:'8px', animation:'slideUp 0.25s ease'}}>
-          <span style={{color:'#AAFF00', fontSize:'16px'}}>✓</span> {toast}
+          <span style={{color:'#7c3aed', fontSize:'16px'}}>✓</span> {toast}
         </div>
       )}
       <div style={{maxWidth:'1080px', margin:'0 auto', position:'relative', zIndex:1}}>
         <div style={{display:'flex', justifyContent:'space-between', alignItems:'center', marginBottom:'24px'}}>
           <div>
-            <div style={{fontSize:'26px', fontWeight:800, letterSpacing:'-0.5px', color:'#121212'}}>GIG<span style={{background:'#AAFF00', color:'#121212', padding:'0 6px', borderRadius:'6px', marginLeft:'1px'}}>x</span></div>
+            <div style={{fontSize:'27px', fontWeight:800, letterSpacing:'-1px', color:UI.ink}}>GIG<span style={{color:'#059669'}}>x</span></div>
             <div style={{fontSize:'13px', color:'#a8a29e', fontWeight:500, marginTop:'2px'}}>Generator deviz intern</div>
           </div>
           <div style={{display:'flex', gap:'12px', alignItems:'center'}}>
-            <button onClick={() => setShowAddArtist(true)} style={{display:'flex', alignItems:'center', gap:'6px', fontSize:'13px', color:'#121212', fontWeight:700, background:'white', border:'1.5px solid #ececec', borderRadius:'10px', padding:'9px 14px', cursor:'pointer', fontFamily:F}}><UserPlus size={15} strokeWidth={2.2} /> Adaugă artist</button>
-            <a href="/oferta/roster" style={{display:'flex', alignItems:'center', gap:'6px', fontSize:'13px', color:'#121212', fontWeight:700, background:'white', border:'1.5px solid #ececec', borderRadius:'10px', padding:'9px 14px', cursor:'pointer', fontFamily:F, textDecoration:'none'}}><Users size={15} strokeWidth={2.2} /> Roster</a>
-            <a href="/oferta/istoric" style={{display:'flex', alignItems:'center', gap:'6px', fontSize:'13px', color:'#121212', fontWeight:700, background:'white', border:'1.5px solid #ececec', borderRadius:'10px', padding:'9px 14px', cursor:'pointer', fontFamily:F, textDecoration:'none'}}><History size={15} strokeWidth={2.2} /> Istoric</a>
+            <button onClick={() => setShowAddArtist(true)} style={{display:'flex', alignItems:'center', gap:'6px', fontSize:'13px', color:'#1c1917', fontWeight:700, background:'white', border:'1.5px solid #ececec', borderRadius:'10px', padding:'9px 14px', cursor:'pointer', fontFamily:F}}><UserPlus size={15} strokeWidth={2.2} /> Adaugă artist</button>
+            <a href="/oferta/roster" style={{display:'flex', alignItems:'center', gap:'6px', fontSize:'13px', color:'#1c1917', fontWeight:700, background:'white', border:'1.5px solid #ececec', borderRadius:'10px', padding:'9px 14px', cursor:'pointer', fontFamily:F, textDecoration:'none'}}><Users size={15} strokeWidth={2.2} /> Roster</a>
+            <a href="/oferta/istoric" style={{display:'flex', alignItems:'center', gap:'6px', fontSize:'13px', color:'#1c1917', fontWeight:700, background:'white', border:'1.5px solid #ececec', borderRadius:'10px', padding:'9px 14px', cursor:'pointer', fontFamily:F, textDecoration:'none'}}><History size={15} strokeWidth={2.2} /> Istoric</a>
             <button onClick={faLogout} title="Log out" style={{display:'flex', alignItems:'center', gap:'6px', fontSize:'13px', color:'#a8a29e', fontWeight:700, background:'none', border:'1.5px solid #e7e5e4', borderRadius:'10px', padding:'9px 12px', cursor:'pointer', fontFamily:F}}><LogOut size={15} strokeWidth={2.2} /></button>
           </div>
         </div>
@@ -772,14 +772,14 @@ export default function OfertaPage() {
               {loadingKm ? '...' : 'Calculează'}
             </button>
           </div>
-          {km !== null && <div style={{fontSize:'13px', color:'#121212', fontWeight:700, marginTop:'10px'}}>Distanță: {km} km dus-întors {(km + Math.round(km*(km>300?0.065:0.115)))*2} km cu marjă</div>}
+          {km !== null && <div style={{display:'inline-flex', alignItems:'center', gap:'8px', fontSize:'13px', marginTop:'10px', padding:'7px 12px', background:UI.greenSoft, border:'1px solid '+UI.greenLine, borderRadius:'8px'}}><span style={{color:UI.sub, fontWeight:600}}>Distanță</span> <span style={{color:UI.violet, fontWeight:800, fontSize:'14px'}}>{km} km</span> <span style={{color:UI.faint, fontSize:'12px'}}>dus-întors · {(km + Math.round(km*(km>300?0.065:0.115)))*2} km cu marjă</span></div>}
           <div style={{display:'flex', gap:'16px', marginTop:'12px', alignItems:'center'}}>
             <label style={{display:'flex', alignItems:'center', gap:'8px', fontSize:'13px', cursor:'pointer', fontWeight:700}}>
-              <input type="checkbox" checked={useAdaos} onChange={e => setUseAdaos(e.target.checked)} style={{width:'16px', height:'16px', accentColor:'#AAFF00'}} />
+              <input type="checkbox" checked={useAdaos} onChange={e => setUseAdaos(e.target.checked)} style={{width:'16px', height:'16px', accentColor:'#7c3aed'}} />
               Aplică adaos curs BNR
             </label>
-            <label style={{display:'flex', alignItems:'center', gap:'8px', fontSize:'13px', cursor:'pointer', fontWeight:700, color:'#121212'}}>
-              <input type="checkbox" checked={institutiePublica} onChange={e => setInstitutiePublica(e.target.checked)} style={{width:'16px', height:'16px', accentColor:'#AAFF00'}} />
+            <label style={{display:'flex', alignItems:'center', gap:'8px', fontSize:'13px', cursor:'pointer', fontWeight:700, color:'#1c1917'}}>
+              <input type="checkbox" checked={institutiePublica} onChange={e => setInstitutiePublica(e.target.checked)} style={{width:'16px', height:'16px', accentColor:'#7c3aed'}} />
               Instituție publică (ofertă în lei)
             </label>
             {useAdaos && <input type="number" step="0.1" value={adaosProcent} onChange={e => setAdaosProcent(Number(e.target.value))} style={{...inputStyle, width:'80px'}} />}
@@ -800,7 +800,7 @@ export default function OfertaPage() {
                   onMouseEnter={e => (e.currentTarget.style.background = '#f5f5f4')}
                   onMouseLeave={e => (e.currentTarget.style.background = 'white')}>
                   {a.nume} <span style={{color:'#a8a29e', fontSize:'12px'}}>· {a.fee_standard}€</span>
-                  <span style={{marginLeft:'8px', fontSize:'9px', fontWeight:800, padding:'2px 6px', borderRadius:'4px', background: a.tip === 'intermediere' ? '#f3efff' : '#f3efff', color: a.tip === 'intermediere' ? '#121212' : '#121212'}}>{a.tip === 'intermediere' ? 'EXTERN' : 'FWD'}</span>
+                  <span style={{marginLeft:'8px', fontSize:'9px', fontWeight:800, padding:'2px 6px', borderRadius:'4px', background: a.tip === 'intermediere' ? '#f3efff' : '#f3efff', color: a.tip === 'intermediere' ? '#1c1917' : '#1c1917'}}>{a.tip === 'intermediere' ? 'EXTERN' : 'FWD'}</span>
                 </div>
               ))}
             </div>
@@ -814,9 +814,9 @@ export default function OfertaPage() {
             <div key={l.key} style={{background:UI.card, padding: isMobile ? '20px' : '24px', borderRadius:UI.radius, border:'1px solid '+UI.line, boxShadow:UI.shadow, marginBottom:'16px'}}>
               <div style={{display:'flex', justifyContent:'space-between', alignItems:'center', marginBottom:'16px'}}>
                 <div style={{display:'flex', alignItems:'center', gap:'10px'}}>
-                  <input type="checkbox" checked={l.includeExport} onChange={e => updateLinie(l.key, { includeExport: e.target.checked })} style={{width:'18px', height:'18px', accentColor:'#AAFF00'}} />
+                  <input type="checkbox" checked={l.includeExport} onChange={e => updateLinie(l.key, { includeExport: e.target.checked })} style={{width:'18px', height:'18px', accentColor:'#7c3aed'}} />
                   <span style={{fontSize:'18px', fontWeight:800}}>{l.artist.nume}</span>
-                  <span style={{fontSize:'9px', fontWeight:800, padding:'2px 6px', borderRadius:'4px', background: l.artist.tip === 'intermediere' ? '#f3efff' : '#f3efff', color: l.artist.tip === 'intermediere' ? '#121212' : '#121212'}}>{l.artist.tip === 'intermediere' ? 'EXTERN' : 'FWD'}</span>
+                  <span style={{fontSize:'9px', fontWeight:800, padding:'2px 6px', borderRadius:'4px', background: l.artist.tip === 'intermediere' ? '#f3efff' : '#f3efff', color: l.artist.tip === 'intermediere' ? '#1c1917' : '#1c1917'}}>{l.artist.tip === 'intermediere' ? 'EXTERN' : 'FWD'}</span>
                   <input value={l.durata} onChange={e => updateLinie(l.key, { durata: e.target.value })} placeholder="40 min"
                     style={{marginLeft:'8px', padding:'4px 10px', borderRadius:'8px', border:'1.5px solid #0891b2', color:'#0891b2', fontSize:'12px', fontWeight:700, fontFamily:F, background:'white', width:'90px'}} />
                   {l.artist.formate && l.artist.formate.length > 1 && (
@@ -839,17 +839,17 @@ export default function OfertaPage() {
                 <div><label style={label}>Preț listă (€)</label>
                   <input type="number" value={l.feeLista || ''} onFocus={e => e.target.select()} onChange={e => updateLinie(l.key, { feeLista: Number(e.target.value) })} style={{...inputStyle, color:'#a8a29e'}} /></div>
                 <div><label style={label}>Ofertă (€)</label>
-                  <input type="number" value={l.fee || ''} onFocus={e => e.target.select()} onChange={e => updateLinie(l.key, { fee: Number(e.target.value) })} style={inputStyle} /></div>
+                  <input type="number" value={l.fee || ''} onFocus={e => e.target.select()} onChange={e => updateLinie(l.key, { fee: Number(e.target.value) })} style={{...inputStyle, fontWeight:800, fontSize:'15px', color:UI.ink}} /></div>
                 <div><label style={label}>Lei/km</label>
                   <input type="number" step="0.1" value={l.leiKm || ''} onFocus={e => e.target.select()} onChange={e => updateLinie(l.key, { leiKm: Number(e.target.value) })} style={inputStyle} /></div>
               </div>
 
               <div style={{display:'flex', gap:'16px', flexWrap:'wrap', marginBottom:'12px', alignItems:'center'}}>
                 <label style={{display:'flex', alignItems:'center', gap:'6px', fontSize:'13px', cursor:'pointer'}}>
-                  <input type="checkbox" checked={l.useMarja} onChange={e => updateLinie(l.key, { useMarja: e.target.checked })} style={{width:'16px', height:'16px', accentColor:'#AAFF00'}} />
+                  <input type="checkbox" checked={l.useMarja} onChange={e => updateLinie(l.key, { useMarja: e.target.checked })} style={{width:'16px', height:'16px', accentColor:'#7c3aed'}} />
                   Marjă transport
                 </label>
-                {c.discount > 0 && <span style={{fontSize:'12px', color:'#121212', fontWeight:700}}>Discount {c.discount} € · economie {c.savingLei.toLocaleString('ro-RO')} lei</span>}
+                {c.discount > 0 && <span style={{fontSize:'12px', color:'#1c1917', fontWeight:700}}>Discount {c.discount} € · economie {c.savingLei.toLocaleString('ro-RO')} lei</span>}
               </div>
 
               {km !== null && km > 300 && (
@@ -859,7 +859,7 @@ export default function OfertaPage() {
                     <input type="number" value={l.bileteAvion || ''} onFocus={e => e.target.select()} onChange={e => updateLinie(l.key, { bileteAvion: Number(e.target.value) })} style={{width:'60px', padding:'7px 9px', borderRadius:'8px', border:'1px solid '+UI.lineStrong, fontSize:'13px', fontFamily:F, textAlign:'center', outline:'none'}} />
                   </div>
                   <label style={{display:'flex', alignItems:'center', gap:'6px', fontSize:'13px', cursor:'pointer'}}>
-                    <input type="checkbox" checked={l.restulRutier} onChange={e => updateLinie(l.key, { restulRutier: e.target.checked })} style={{width:'16px', height:'16px', accentColor:'#AAFF00'}} />
+                    <input type="checkbox" checked={l.restulRutier} onChange={e => updateLinie(l.key, { restulRutier: e.target.checked })} style={{width:'16px', height:'16px', accentColor:'#7c3aed'}} />
                     Restul echipei rutier
                   </label>
                   <span style={{fontSize:'11px', color:'#a8a29e'}}>{l.restulRutier ? 'transport auto + transfer aeroport' : 'toți zboară + transfer aeroport'}</span>
@@ -877,9 +877,9 @@ export default function OfertaPage() {
               )}
 
               {(l.diurnaFixa > 0 || l.cazareFixa > 0) ? (
-                <div style={{display:'flex', gap:'8px', marginBottom:'12px', padding:'10px 12px', background:'#f3efff', border:'1.5px solid #121212', borderRadius:'8px'}}>
-                  <div style={{flex:1}}><label style={{...label, color:'#121212'}}>Diurnă fixă (lei)</label><input type="number" value={l.diurnaFixa || ''} onFocus={e => e.target.select()} onChange={e => updateLinie(l.key, { diurnaFixa: Number(e.target.value) })} style={inputStyle} /></div>
-                  <div style={{flex:1}}><label style={{...label, color:'#121212'}}>Cazare fixă (lei)</label><input type="number" value={l.cazareFixa || ''} onFocus={e => e.target.select()} onChange={e => updateLinie(l.key, { cazareFixa: Number(e.target.value) })} style={inputStyle} /></div>
+                <div style={{display:'flex', gap:'8px', marginBottom:'12px', padding:'10px 12px', background:'#f3efff', border:'1.5px solid #1c1917', borderRadius:'8px'}}>
+                  <div style={{flex:1}}><label style={{...label, color:'#1c1917'}}>Diurnă fixă (lei)</label><input type="number" value={l.diurnaFixa || ''} onFocus={e => e.target.select()} onChange={e => updateLinie(l.key, { diurnaFixa: Number(e.target.value) })} style={inputStyle} /></div>
+                  <div style={{flex:1}}><label style={{...label, color:'#1c1917'}}>Cazare fixă (lei)</label><input type="number" value={l.cazareFixa || ''} onFocus={e => e.target.select()} onChange={e => updateLinie(l.key, { cazareFixa: Number(e.target.value) })} style={inputStyle} /></div>
                 </div>
               ) : (<>
               <div style={{display:'flex', gap:'8px', marginBottom:'8px'}}>
@@ -898,27 +898,27 @@ export default function OfertaPage() {
               </>)}
 
               <label style={{display:'flex', alignItems:'center', gap:'8px', fontSize:'13px', cursor:'pointer', fontWeight:700}}>
-                <input type="checkbox" checked={l.useAlcool} onChange={e => updateLinie(l.key, { useAlcool: e.target.checked })} style={{width:'16px', height:'16px', accentColor:'#AAFF00'}} />
+                <input type="checkbox" checked={l.useAlcool} onChange={e => updateLinie(l.key, { useAlcool: e.target.checked })} style={{width:'16px', height:'16px', accentColor:'#7c3aed'}} />
                 Protocol
               </label>
               {l.useAlcool && <input type="number" placeholder="Sumă lei" value={l.alcool || ''} onFocus={e => e.target.select()} onChange={e => updateLinie(l.key, { alcool: Number(e.target.value) })} style={{...inputStyle, marginTop:'8px'}} />}
 
               <div style={{marginTop:'16px', paddingTop:'16px', borderTop:'1px dashed #e7e5e4'}}>
                 <label style={{display:'flex', alignItems:'center', gap:'8px', fontSize:'13px', cursor: destinatar==='client'?'not-allowed':'pointer', fontWeight:700, opacity: destinatar==='client'?0.4:1}}>
-                  <input type="checkbox" checked={l.useCag} disabled={destinatar==='client'} onChange={e => { updateLinie(l.key, { useCag: e.target.checked }); if (e.target.checked) setDestinatar('intermediar') }} style={{width:'16px', height:'16px', accentColor:'#AAFF00'}} />
+                  <input type="checkbox" checked={l.useCag} disabled={destinatar==='client'} onChange={e => { updateLinie(l.key, { useCag: e.target.checked }); if (e.target.checked) setDestinatar('intermediar') }} style={{width:'16px', height:'16px', accentColor:'#7c3aed'}} />
                   CAG · comision agenție (doar intermediar)
                 </label>
                 {destinatar==='client' && <div style={{fontSize:'11px', color:'#a8a29e', marginTop:'4px'}}>La client se dă discount, nu comision.</div>}
                 {l.useCag && (
                   <div style={{marginTop:'8px', display:'flex', gap:'8px', alignItems:'center', flexWrap:'wrap'}}>
                     <div style={{display:'flex', gap:'4px'}}>
-                      <button onClick={() => updateLinie(l.key, { cagMod: 'procent' })} style={{padding:'6px 12px', borderRadius:'6px', border:'1.5px solid '+(l.cagMod==='procent'?'#121212':'#e7e5e4'), background:l.cagMod==='procent'?'#121212':'white', color:l.cagMod==='procent'?'white':'#78716c', fontSize:'12px', fontWeight:700, cursor:'pointer', fontFamily:F}}>%</button>
-                      <button onClick={() => updateLinie(l.key, { cagMod: 'suma' })} style={{padding:'6px 12px', borderRadius:'6px', border:'1.5px solid '+(l.cagMod==='suma'?'#121212':'#e7e5e4'), background:l.cagMod==='suma'?'#121212':'white', color:l.cagMod==='suma'?'white':'#78716c', fontSize:'12px', fontWeight:700, cursor:'pointer', fontFamily:F}}>€ fix</button>
+                      <button onClick={() => updateLinie(l.key, { cagMod: 'procent' })} style={{padding:'6px 12px', borderRadius:'6px', border:'1.5px solid '+(l.cagMod==='procent'?'#1c1917':'#e7e5e4'), background:l.cagMod==='procent'?'#1c1917':'white', color:l.cagMod==='procent'?'white':'#78716c', fontSize:'12px', fontWeight:700, cursor:'pointer', fontFamily:F}}>%</button>
+                      <button onClick={() => updateLinie(l.key, { cagMod: 'suma' })} style={{padding:'6px 12px', borderRadius:'6px', border:'1.5px solid '+(l.cagMod==='suma'?'#1c1917':'#e7e5e4'), background:l.cagMod==='suma'?'#1c1917':'white', color:l.cagMod==='suma'?'white':'#78716c', fontSize:'12px', fontWeight:700, cursor:'pointer', fontFamily:F}}>€ fix</button>
                     </div>
                     {l.cagMod === 'procent'
                       ? <input type="number" value={l.cagProcent || ''} onFocus={e => e.target.select()} onChange={e => updateLinie(l.key, { cagProcent: Number(e.target.value) })} style={{...inputStyle, width:'90px'}} placeholder="%" />
                       : <input type="number" value={l.cagSuma || ''} onFocus={e => e.target.select()} onChange={e => updateLinie(l.key, { cagSuma: Number(e.target.value) })} style={{...inputStyle, width:'110px'}} placeholder="€" />}
-                    <span style={{fontSize:'13px', fontWeight:700, color:'#121212'}}>CAG: {c.cag} € {l.cagMod === 'procent' && c.cag === 1000 ? '(plafon)' : ''}</span>
+                    <span style={{fontSize:'13px', fontWeight:700, color:'#1c1917'}}>CAG: {c.cag} € {l.cagMod === 'procent' && c.cag === 1000 ? '(plafon)' : ''}</span>
                     <span style={{fontSize:'13px', color:'#78716c'}}>· Net GIGx: <strong>{c.netGigx} €</strong></span>
                   </div>
                 )}
@@ -931,8 +931,8 @@ export default function OfertaPage() {
         {linii.length > 0 && (
           <div style={{background:UI.dark, padding: isMobile ? '20px' : '24px', borderRadius:UI.radius, marginTop:'8px', boxShadow:UI.shadowHover}}>
             {/* CHEIA DE CONTROL */}
-            <div style={{marginBottom:'16px', padding:'16px', borderRadius:UI.radiusSm, background: destinatar ? 'rgba(170,255,0,0.15)' : 'rgba(125,81,254,0.18)', border:'1px solid ' + (destinatar ? 'rgba(170,255,0,0.5)' : 'rgba(125,81,254,0.5)')}}>
-              <div style={{fontSize:'13px', fontWeight:700, color: destinatar ? '#AAFF00' : 'rgba(255,255,255,0.7)', marginBottom:'12px', display:'flex', alignItems:'center', gap:'6px'}}>
+            <div style={{marginBottom:'16px', padding:'16px', borderRadius:UI.radiusSm, background: destinatar ? 'rgba(124,58,237,0.15)' : 'rgba(124,58,237,0.18)', border:'1px solid ' + (destinatar ? 'rgba(124,58,237,0.5)' : 'rgba(124,58,237,0.5)')}}>
+              <div style={{fontSize:'13px', fontWeight:700, color: destinatar ? '#7c3aed' : 'rgba(255,255,255,0.7)', marginBottom:'12px', display:'flex', alignItems:'center', gap:'6px'}}>
                 Pentru cine este oferta?
               </div>
               <div style={{display:'flex', gap:'8px'}}>
@@ -945,14 +945,14 @@ export default function OfertaPage() {
                   Intermediar {destinatar==='intermediar' ? '✓' : ''}
                 </button>
               </div>
-              {destinatar === 'client' && <div style={{fontSize:'12px', color:'#AAFF00', marginTop:'8px'}}>Se afișează economia (SALVEZI)</div>}
+              {destinatar === 'client' && <div style={{fontSize:'12px', color:'#7c3aed', marginTop:'8px'}}>Se afișează economia (SALVEZI)</div>}
               {destinatar === 'intermediar' && <div style={{fontSize:'12px', color:'#a8a29e', marginTop:'8px'}}>Sumă fără mențiune de comision</div>}
             </div>
 
             {/* BUTOANE EXPORT - blocate pana selectezi destinatar */}
             <div style={{display:'flex', gap:'8px', flexWrap:'wrap', opacity: destinatar ? 1 : 0.4, pointerEvents: destinatar ? 'auto' : 'none'}}>
               <button onClick={() => { navigator.clipboard.writeText(genText()); salveazaOferta(); arataToast('Deviz copiat și ofertă salvată') }}
-                style={{flex:1, minWidth:'120px', display:'flex', alignItems:'center', justifyContent:'center', gap:'7px', padding:'13px', background:UI.neon, color:'#121212', border:'none', borderRadius:UI.radiusSm, fontSize:'14px', fontWeight:800, cursor:'pointer', fontFamily:F, boxShadow:'0 4px 16px rgba(206,254,70,0.4)'}}><Copy size={16} strokeWidth={2.5} /> Copiază tot</button>
+                style={{flex:1, minWidth:'120px', display:'flex', alignItems:'center', justifyContent:'center', gap:'7px', padding:'13px', background:UI.neon, color:'#1c1917', border:'none', borderRadius:UI.radiusSm, fontSize:'14px', fontWeight:800, cursor:'pointer', fontFamily:F, boxShadow:'0 4px 16px rgba(206,254,70,0.4)'}}><Copy size={16} strokeWidth={2.5} /> Copiază tot</button>
               <button onClick={() => { salveazaOferta(); arataToast('Ofertă salvată'); window.open('https://wa.me/?text=' + encodeURIComponent(genText()), '_blank') }}
                 style={{flex:1, minWidth:'120px', display:'flex', alignItems:'center', justifyContent:'center', gap:'7px', padding:'13px', background:'#25D366', color:'white', border:'none', borderRadius:UI.radiusSm, fontSize:'14px', fontWeight:700, cursor:'pointer', fontFamily:F, boxShadow:'0 1px 3px rgba(37,211,102,0.3)'}}><MessageCircle size={16} strokeWidth={2.2} /> WhatsApp</button>
               <button onClick={() => { salveazaOferta(); arataToast('Ofertă salvată'); window.open('mailto:?subject=' + encodeURIComponent([numeClient, toCity, locatie].filter(Boolean).join(' - ') || 'Oferta') + '&body=' + encodeURIComponent(genText().replace(/\*/g, ''))) }}
@@ -1031,8 +1031,8 @@ export default function OfertaPage() {
               </div>
               <div style={{border:'1px solid #e7e5e4', borderRadius:'10px', padding:'12px', background:'#f3efff'}}>
                 <div style={{display:'flex', justifyContent:'space-between', alignItems:'center', marginBottom:'8px'}}>
-                  <label style={{fontSize:'11px', fontWeight:700, color:'#121212', textTransform:'uppercase'}}>Variante de preț (seturi × durată + fee)</label>
-                  <button onClick={addVariantaNou} style={{fontSize:'11px', fontWeight:700, color:'#121212', background:'white', border:'1px solid #121212', borderRadius:'6px', padding:'3px 8px', cursor:'pointer', fontFamily:F}}>+ Variantă</button>
+                  <label style={{fontSize:'11px', fontWeight:700, color:'#1c1917', textTransform:'uppercase'}}>Variante de preț (seturi × durată + fee)</label>
+                  <button onClick={addVariantaNou} style={{fontSize:'11px', fontWeight:700, color:'#1c1917', background:'white', border:'1px solid #1c1917', borderRadius:'6px', padding:'3px 8px', cursor:'pointer', fontFamily:F}}>+ Variantă</button>
                 </div>
                 {(newArtist.variante || []).length === 0 && <div style={{fontSize:'11px', color:'#a8a29e'}}>Fără variante = se folosește fee-ul de sus. Adaugă variante pentru artiști cu prețuri diferite pe seturi (ex: 1 set / 2 seturi).</div>}
                 {(newArtist.variante || []).map((v: any, i: number) => (
@@ -1070,7 +1070,7 @@ export default function OfertaPage() {
         input[type=number]::-webkit-inner-spin-button,
         input[type=number]::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
         input[type=number] { -moz-appearance: textfield; }
-        input:focus, select:focus, textarea:focus { border-color: #121212 !important; box-shadow: 0 0 0 3px rgba(5,150,105,0.1) !important; }
+        input:focus, select:focus, textarea:focus { border-color: #1c1917 !important; box-shadow: 0 0 0 3px rgba(5,150,105,0.1) !important; }
         button { transition: all 0.15s ease; }
         @keyframes slideUp { from { opacity: 0; transform: translate(-50%, 10px); } to { opacity: 1; transform: translate(-50%, 0); } }
         @media print {

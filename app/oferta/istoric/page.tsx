@@ -7,7 +7,7 @@ import { FileText, Plus } from 'lucide-react'
 const F = 'Montserrat,sans-serif'
 const UI = {
   bg: '#f5f5f7', card: '#ffffff', ink: '#1c1917', sub: '#57534e', faint: '#a8a29e',
-  line: '#e7e5e4', green: '#7D51FE', greenSoft: '#f3efff', purple: '#7D51FE', dark: '#1c1917',
+  line: '#e7e5e4', green: '#7c3aed', greenSoft: '#f0fdf4', purple: '#7c3aed', dark: '#1c1917',
   radius: '16px', radiusSm: '12px',
   shadow: '0 1px 3px rgba(0,0,0,0.04), 0 8px 24px rgba(0,0,0,0.04)',
   shadowBtn: '0 8px 30px rgba(0,0,0,0.18)',
@@ -33,7 +33,7 @@ interface Oferta {
 }
 
 const STATUSURI = ['generata', 'trimisa', 'confirmata', 'refuzata']
-const STATUS_COLOR: Record<string, string> = { generata: '#a8a29e', trimisa: '#3b82f6', confirmata: '#7D51FE', refuzata: '#dc2626' }
+const STATUS_COLOR: Record<string, string> = { generata: '#a8a29e', trimisa: '#3b82f6', confirmata: '#7c3aed', refuzata: '#dc2626' }
 
 export default function IstoricPage() {
   const [authed, setAuthed] = useState(false)
@@ -173,7 +173,7 @@ export default function IstoricPage() {
     return (
       <div style={{minHeight:'100vh', background:'#f5f5f7', display:'flex', alignItems:'center', justifyContent:'center', fontFamily:F, padding:'20px'}}>
         <div style={{background:'white', padding:'40px', borderRadius:'16px', border:'2px solid #e7e5e4', width:'340px'}}>
-          <div style={{fontSize:'22px', fontWeight:800, marginBottom:'6px'}}>GIG<span style={{color:'#7D51FE'}}>x</span> Istoric</div>
+          <div style={{fontSize:'22px', fontWeight:800, marginBottom:'6px'}}>GIG<span style={{color:'#7c3aed'}}>x</span> Istoric</div>
           <div style={{fontSize:'13px', color:'#78716c', marginBottom:'20px'}}>Autentificare</div>
           <input type="text" placeholder="Utilizator" value={loginUser} autoComplete="username"
             onChange={e => setLoginUser(e.target.value)}
@@ -246,10 +246,10 @@ export default function IstoricPage() {
 
           <div style={{display:'flex', gap:'16px', alignItems:'center', flexWrap:'wrap'}}>
             <label style={{display:'flex', alignItems:'center', gap:'6px', fontSize:'13px', cursor:'pointer', fontWeight:700}}>
-              <input type="checkbox" checked={fDiscount} onChange={e => setFDiscount(e.target.checked)} style={{width:'16px', height:'16px', accentColor:'#7D51FE'}} /> Cu discount
+              <input type="checkbox" checked={fDiscount} onChange={e => setFDiscount(e.target.checked)} style={{width:'16px', height:'16px', accentColor:'#7c3aed'}} /> Cu discount
             </label>
             <label style={{display:'flex', alignItems:'center', gap:'6px', fontSize:'13px', cursor:'pointer', fontWeight:700}}>
-              <input type="checkbox" checked={fCag} onChange={e => setFCag(e.target.checked)} style={{width:'16px', height:'16px', accentColor:'#7D51FE'}} /> Cu CAG
+              <input type="checkbox" checked={fCag} onChange={e => setFCag(e.target.checked)} style={{width:'16px', height:'16px', accentColor:'#7c3aed'}} /> Cu CAG
             </label>
             <button onClick={resetFiltre} style={{marginLeft:'auto', padding:'8px 16px', background:'#e7e5e4', color:'#1c1917', border:'none', borderRadius:'8px', fontSize:'13px', fontWeight:700, cursor:'pointer', fontFamily:F}}>Resetează</button>
           </div>
@@ -262,12 +262,12 @@ export default function IstoricPage() {
             <div style={{fontSize:'20px', fontWeight:800}}>{totalFee.toLocaleString('ro-RO')} €</div>
           </div>
           {totalDisc > 0 && <div style={{background:UI.card, border:'1px solid '+UI.green, padding:'14px 18px', borderRadius:UI.radiusSm, flex:1, minWidth:'140px', boxShadow:UI.shadow}}>
-            <div style={{fontSize:'11px', color:'#7D51FE', textTransform:'uppercase', fontWeight:700}}>Total discount</div>
-            <div style={{fontSize:'20px', fontWeight:800, color:'#7D51FE'}}>{totalDisc.toLocaleString('ro-RO')} €</div>
+            <div style={{fontSize:'11px', color:'#7c3aed', textTransform:'uppercase', fontWeight:700}}>Total discount</div>
+            <div style={{fontSize:'20px', fontWeight:800, color:'#7c3aed'}}>{totalDisc.toLocaleString('ro-RO')} €</div>
           </div>}
-          {totalCag > 0 && <div style={{background:'white', border:'2px solid #7D51FE', padding:'12px 18px', borderRadius:'10px', flex:1, minWidth:'140px'}}>
-            <div style={{fontSize:'11px', color:'#7D51FE', textTransform:'uppercase', fontWeight:700}}>Total CAG</div>
-            <div style={{fontSize:'20px', fontWeight:800, color:'#7D51FE'}}>{totalCag.toLocaleString('ro-RO')} €</div>
+          {totalCag > 0 && <div style={{background:'white', border:'2px solid #7c3aed', padding:'12px 18px', borderRadius:'10px', flex:1, minWidth:'140px'}}>
+            <div style={{fontSize:'11px', color:'#7c3aed', textTransform:'uppercase', fontWeight:700}}>Total CAG</div>
+            <div style={{fontSize:'20px', fontWeight:800, color:'#7c3aed'}}>{totalCag.toLocaleString('ro-RO')} €</div>
           </div>}
         </div>
 
@@ -289,7 +289,7 @@ export default function IstoricPage() {
                   <div style={{display:'flex', gap:'10px', alignItems:'flex-start'}}>
                     <input type="checkbox" checked={selectate.has(o.cod)} onChange={() => toggleSelect(o.cod)} style={{width:'18px', height:'18px', marginTop:'2px', accentColor:'#dc2626', cursor:'pointer'}} />
                     <div>
-                    <div style={{fontSize:'15px', fontWeight:800, color:'#7D51FE'}}>{o.cod}</div>
+                    <div style={{fontSize:'15px', fontWeight:800, color:'#7c3aed'}}>{o.cod}</div>
                     <div style={{fontSize:'14px', fontWeight:700, marginTop:'2px'}}>{o.client || '—'}{o.oras ? ' · ' + o.oras : ''}{o.locatie ? ' · ' + o.locatie : ''}</div>
                     </div>
                   </div>
@@ -303,13 +303,13 @@ export default function IstoricPage() {
                 </div>
                 <div style={{fontSize:'13px', color:'#57534e', marginBottom:'10px'}}>
                   {(o.artisti || []).map(a => a.nume).join(', ')}
-                  {o.institutie_publica && <span style={{marginLeft:'8px', fontSize:'10px', fontWeight:700, color:'#7D51FE'}}>INST. PUBLICĂ</span>}
+                  {o.institutie_publica && <span style={{marginLeft:'8px', fontSize:'10px', fontWeight:700, color:'#7c3aed'}}>INST. PUBLICĂ</span>}
                 </div>
                 <div style={{display:'flex', gap:'20px', fontSize:'13px', paddingTop:'10px', borderTop:'1px solid #f5f5f4', alignItems:'center', flexWrap:'wrap'}}>
                   <span>Fee: <strong>{o.total_fee_eur.toLocaleString('ro-RO')} €</strong></span>
-                  {o.total_discount_eur > 0 && <span style={{color:'#7D51FE'}}>Discount: <strong>{o.total_discount_eur.toLocaleString('ro-RO')} €</strong></span>}
-                  {o.total_cag_eur > 0 && <span style={{color:'#7D51FE'}}>CAG: <strong>{o.total_cag_eur.toLocaleString('ro-RO')} €</strong></span>}
-                  {o.suma_finala != null && <span style={{color:'#7D51FE', fontWeight:700}}>Închis: {o.suma_finala.toLocaleString('ro-RO')} €</span>}
+                  {o.total_discount_eur > 0 && <span style={{color:'#7c3aed'}}>Discount: <strong>{o.total_discount_eur.toLocaleString('ro-RO')} €</strong></span>}
+                  {o.total_cag_eur > 0 && <span style={{color:'#7c3aed'}}>CAG: <strong>{o.total_cag_eur.toLocaleString('ro-RO')} €</strong></span>}
+                  {o.suma_finala != null && <span style={{color:'#7c3aed', fontWeight:700}}>Închis: {o.suma_finala.toLocaleString('ro-RO')} €</span>}
                   <button onClick={() => setExpandat(expandat === o.cod ? null : o.cod)}
                     style={{marginLeft:'auto', padding:'6px 14px', background:'#f5f5f4', color:'#1c1917', border:'none', borderRadius:'8px', fontSize:'12px', fontWeight:700, cursor:'pointer', fontFamily:F}}>
                     {expandat === o.cod ? 'Ascunde' : 'Detalii'}
@@ -331,7 +331,7 @@ export default function IstoricPage() {
                     {(o.artisti || []).map((a, i) => (
                       <div key={i} style={{display:'flex', justifyContent:'space-between', fontSize:'13px', padding:'6px 0', borderBottom:'1px solid #f5f5f4'}}>
                         <span style={{fontWeight:600}}>{a.nume}
-                          <span style={{marginLeft:'6px', fontSize:'8px', fontWeight:800, padding:'1px 5px', borderRadius:'4px', background: a.tip === 'intermediere' ? '#faf5ff' : '#f3efff', color: a.tip === 'intermediere' ? '#7D51FE' : '#7D51FE'}}>{a.tip === 'intermediere' ? 'EXTERN' : 'FWD'}</span>
+                          <span style={{marginLeft:'6px', fontSize:'8px', fontWeight:800, padding:'1px 5px', borderRadius:'4px', background: a.tip === 'intermediere' ? '#faf5ff' : '#f0fdf4', color: a.tip === 'intermediere' ? '#7c3aed' : '#7c3aed'}}>{a.tip === 'intermediere' ? 'EXTERN' : 'FWD'}</span>
                           {a.format && <span style={{color:'#a8a29e', fontWeight:400, fontSize:'12px'}}> · {a.format}</span>}
                           <span style={{color:'#a8a29e', fontWeight:400}}> · {a.tipPret}</span></span>
                         <span>{a.feeLista > a.fee ? <span style={{color:'#a8a29e', textDecoration:'line-through', marginRight:'6px'}}>{a.feeLista}€</span> : ''}<strong>{a.fee}€</strong></span>
@@ -356,7 +356,7 @@ export default function IstoricPage() {
                         </div>
                       </div>
                       {o.suma_finala != null && o.suma_finala !== o.total_fee_eur && (
-                        <div style={{fontSize:'12px', marginTop:'8px', fontWeight:700, color: o.suma_finala < o.total_fee_eur ? '#dc2626' : '#7D51FE'}}>
+                        <div style={{fontSize:'12px', marginTop:'8px', fontWeight:700, color: o.suma_finala < o.total_fee_eur ? '#dc2626' : '#7c3aed'}}>
                           {o.suma_finala < o.total_fee_eur ? 'Scădere' : 'Creștere'}: {Math.abs(o.total_fee_eur - o.suma_finala).toLocaleString('ro-RO')} € față de ofertă
                         </div>
                       )}

@@ -5,7 +5,7 @@ import { supabase } from '@/lib/supabase'
 const F = 'Montserrat, sans-serif'
 const UI = {
   bg: '#f5f5f7', card: '#ffffff', ink: '#1c1917', sub: '#57534e', faint: '#a8a29e',
-  line: '#e7e5e4', green: '#7D51FE', greenSoft: '#f3efff', purple: '#7D51FE', dark: '#1c1917',
+  line: '#e7e5e4', green: '#7c3aed', greenSoft: '#f0fdf4', purple: '#7c3aed', dark: '#1c1917',
   radius: '16px', radiusSm: '12px',
   shadow: '0 1px 3px rgba(0,0,0,0.04), 0 8px 24px rgba(0,0,0,0.04)',
   shadowBtn: '0 8px 30px rgba(0,0,0,0.18)',
@@ -157,7 +157,7 @@ export default function RosterPage() {
   if (!authed) return (
     <div style={{minHeight:'100vh', background:'#f5f5f7', display:'flex', alignItems:'center', justifyContent:'center', fontFamily:F, padding:'20px'}}>
       <div style={{background:'white', padding:'40px', borderRadius:'16px', border:'2px solid #e7e5e4', width:'340px'}}>
-        <div style={{fontSize:'22px', fontWeight:800, marginBottom:'6px'}}>GIG<span style={{color:'#7D51FE'}}>x</span> Roster</div>
+        <div style={{fontSize:'22px', fontWeight:800, marginBottom:'6px'}}>GIG<span style={{color:'#7c3aed'}}>x</span> Roster</div>
         <div style={{fontSize:'13px', color:'#78716c', marginBottom:'20px'}}>Autentificare</div>
         <input type="text" placeholder="Utilizator" value={loginUser} onChange={e => setLoginUser(e.target.value)} style={{...inp, marginBottom:'10px'}} />
         <input type="password" placeholder="Parola" value={loginPass} onChange={e => setLoginPass(e.target.value)} onKeyDown={e => { if (e.key === 'Enter') faLogin() }} style={inp} />
@@ -172,7 +172,7 @@ export default function RosterPage() {
       style={{display:'flex', justifyContent:'space-between', alignItems:'center', padding:'14px 18px', background:UI.card, borderRadius:UI.radiusSm, border:'1px solid '+UI.line, boxShadow:UI.shadow, cursor:'pointer', marginBottom:'8px', transition:'all 0.15s'}}>
       <div>
         <div style={{fontSize:'14px', fontWeight:700, display:'flex', alignItems:'center', gap:'8px'}}>{a.nume}
-          <span style={{fontSize:'8px', fontWeight:800, padding:'2px 6px', borderRadius:'4px', background: a.tip === 'intermediere' ? '#faf5ff' : '#f3efff', color: a.tip === 'intermediere' ? '#7D51FE' : '#7D51FE'}}>{a.tip === 'intermediere' ? 'EXTERN' : 'FWD'}</span>
+          <span style={{fontSize:'8px', fontWeight:800, padding:'2px 6px', borderRadius:'4px', background: a.tip === 'intermediere' ? '#faf5ff' : '#f0fdf4', color: a.tip === 'intermediere' ? '#7c3aed' : '#7c3aed'}}>{a.tip === 'intermediere' ? 'EXTERN' : 'FWD'}</span>
         </div>
         <div style={{fontSize:'12px', color:'#78716c', marginTop:'2px'}}>{a.durata_default || '40 min'} · {a.fee_standard}€{a.diurna_fixa ? ' · diurnă ' + a.diurna_fixa : ''}</div>
       </div>
@@ -209,7 +209,7 @@ export default function RosterPage() {
         <div style={{display:'flex', gap:'6px', marginBottom:'20px', flexWrap:'wrap'}}>
           {[{c:'pop',l:'Pop'},{c:'balcanic_pop',l:'Balcanic Pop'},{c:'manele',l:'Manele'},{c:'trap',l:'Trap'},{c:'rap',l:'Rap/Hip-Hop'},{c:'dance',l:'Dance'},{c:'rock',l:'Rock'},{c:'lautareasca',l:'Lăutărească'},{c:'petrecere',l:'Petrecere'},{c:'cover',l:'Cover'},{c:'altele',l:'Altele'}].map(g => (
             <button key={g.c} onClick={() => toggleGen(g.c)}
-              style={{padding:'5px 12px', borderRadius:'20px', border:'1.5px solid ' + (filtreGen.has(g.c) ? '#7D51FE' : '#e7e5e4'), background: filtreGen.has(g.c) ? '#faf5ff' : 'white', color: filtreGen.has(g.c) ? '#7D51FE' : '#78716c', fontSize:'12px', fontWeight:700, cursor:'pointer', fontFamily:F}}>
+              style={{padding:'5px 12px', borderRadius:'20px', border:'1.5px solid ' + (filtreGen.has(g.c) ? '#7c3aed' : '#e7e5e4'), background: filtreGen.has(g.c) ? '#faf5ff' : 'white', color: filtreGen.has(g.c) ? '#7c3aed' : '#78716c', fontSize:'12px', fontWeight:700, cursor:'pointer', fontFamily:F}}>
               {g.l}
             </button>
           ))}
@@ -288,7 +288,7 @@ export default function RosterPage() {
               <div>
                 <div style={{display:'flex', justifyContent:'space-between', alignItems:'center', marginBottom:'8px'}}>
                   <label style={{...lbl, marginBottom:0}}>Variante de preț (durată + fee)</label>
-                  <button onClick={addVarianta} style={{fontSize:'11px', fontWeight:700, color:'#7D51FE', background:'none', border:'1px solid #7D51FE', borderRadius:'6px', padding:'3px 8px', cursor:'pointer', fontFamily:F}}>+ Variantă</button>
+                  <button onClick={addVarianta} style={{fontSize:'11px', fontWeight:700, color:'#7c3aed', background:'none', border:'1px solid #7c3aed', borderRadius:'6px', padding:'3px 8px', cursor:'pointer', fontFamily:F}}>+ Variantă</button>
                 </div>
                 {(edit.formate || []).length === 0 && <div style={{fontSize:'12px', color:'#a8a29e', marginBottom:'8px'}}>Fără variante. Se folosește fee-ul standard. Adaugă variante pentru artiști cu prețuri diferite pe set/durată.</div>}
                 {(edit.formate || []).map((f, i) => (
@@ -305,9 +305,9 @@ export default function RosterPage() {
                 ))}
               </div>
               <div><label style={lbl}>Observații</label><textarea value={edit.observatii || ''} onChange={e => setEdit({...edit, observatii: e.target.value})} rows={3} style={{...inp, resize:'vertical'}} /></div>
-              {msg && <div style={{fontSize:'13px', fontWeight:700, color: msg === 'Salvat!' ? '#7D51FE' : '#dc2626'}}>{msg}</div>}
+              {msg && <div style={{fontSize:'13px', fontWeight:700, color: msg === 'Salvat!' ? '#7c3aed' : '#dc2626'}}>{msg}</div>}
               <div style={{display:'flex', gap:'10px'}}>
-                <button onClick={salveaza} disabled={saving} style={{flex:1, padding:'12px', background:'#7D51FE', color:'white', border:'none', borderRadius:'8px', fontSize:'14px', fontWeight:700, cursor: saving ? 'wait' : 'pointer', fontFamily:F, opacity: saving ? 0.6 : 1}}>{saving ? 'Se salvează...' : 'Salvează'}</button>
+                <button onClick={salveaza} disabled={saving} style={{flex:1, padding:'12px', background:'#7c3aed', color:'white', border:'none', borderRadius:'8px', fontSize:'14px', fontWeight:700, cursor: saving ? 'wait' : 'pointer', fontFamily:F, opacity: saving ? 0.6 : 1}}>{saving ? 'Se salvează...' : 'Salvează'}</button>
                 <button onClick={stergeArtist} disabled={saving} style={{padding:'12px 18px', background:'#fef2f2', color:'#dc2626', border:'1.5px solid #fecaca', borderRadius:'8px', fontSize:'14px', fontWeight:700, cursor:'pointer', fontFamily:F}}>Șterge</button>
               </div>
             </div>
