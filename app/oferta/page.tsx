@@ -170,7 +170,7 @@ export default function OfertaPage() {
   const [codOferta, setCodOferta] = useState(() => 'GIGX-' + new Date().getFullYear() + '-' + String(Math.floor(Math.random()*9000)+1000))
   const [adaosProcent, setAdaosProcent] = useState(1)
   const [showAddArtist, setShowAddArtist] = useState(false)
-  const [newArtist, setNewArtist] = useState({ nume: '', categorie: 'pop', tip: 'propriu', setType: 'band', fee: '', leiKm: '', transportMoneda: 'lei', cazare: '', bileteAvion: '', alcool: '', diurnaFixa: '' })
+  const [newArtist, setNewArtist] = useState({ nume: '', categorie: 'International', tip: 'propriu', setType: 'band', fee: '', leiKm: '', transportMoneda: 'lei', cazare: '', bileteAvion: '', alcool: '', diurnaFixa: '' })
   const [savingArtist, setSavingArtist] = useState(false)
 
   useEffect(() => {
@@ -244,7 +244,7 @@ export default function OfertaPage() {
         const ar = await fetch('/api/oferta-artist').then(x => x.json())
         setArtists(ar.artists || [])
         setShowAddArtist(false)
-        setNewArtist({ nume: '', categorie: 'pop', tip: 'propriu', setType: 'band', fee: '', leiKm: '', transportMoneda: 'lei', cazare: '', bileteAvion: '', alcool: '', diurnaFixa: '' })
+        setNewArtist({ nume: '', categorie: 'International', tip: 'propriu', setType: 'band', fee: '', leiKm: '', transportMoneda: 'lei', cazare: '', bileteAvion: '', alcool: '', diurnaFixa: '' })
         alert('Artist adaugat! Il gasesti in cautare.')
       } else alert('Eroare: ' + (d.error || 'necunoscuta'))
     } catch { alert('Eroare la salvare') }
@@ -955,7 +955,7 @@ export default function OfertaPage() {
                 <div>
                   <label style={{fontSize:'11px', fontWeight:700, color:'#78716c', textTransform:'uppercase', display:'block', marginBottom:'4px'}}>Categorie</label>
                   <select value={newArtist.categorie} onChange={e => setNewArtist({...newArtist, categorie: e.target.value})} style={{width:'100%', padding:'10px 12px', borderRadius:'8px', border:'1.5px solid #e7e5e4', fontSize:'14px', fontFamily:F, background:'white'}}>
-                    <option value="pop">Pop</option><option value="urban">Urban</option><option value="trap">Trap</option><option value="dance">Dance</option><option value="manele">Manele</option><option value="balcanic">Balcanic</option><option value="lautareasca">Lăutărească</option><option value="dj">DJ</option><option value="cover">Cover band</option><option value="alternativ">Alternativ</option>
+                    <option value="International">Internațional</option><option value="Urban">Urban</option><option value="Romanesc">Românesc</option><option value="Electronic">Electronic</option><option value="Live">Live</option>
                   </select>
                 </div>
                 <div>
