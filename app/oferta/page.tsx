@@ -164,6 +164,7 @@ export default function OfertaPage() {
   const [km, setKm] = useState<number | null>(null)
   const [loadingKm, setLoadingKm] = useState(false)
   const [eurRate, setEurRate] = useState<number | null>(null)
+  const [toast, setToast] = useState<string>('')
   const [useAdaos, setUseAdaos] = useState(false)
   const [destinatar, setDestinatar] = useState<'' | 'client' | 'intermediar'>('')
   const [institutiePublica, setInstitutiePublica] = useState(false)
@@ -243,7 +244,13 @@ export default function OfertaPage() {
     setNewArtist((prev: any) => ({ ...prev, variante: (prev.variante || []).filter((_: any, j: number) => j !== i) }))
   }
   async function salveazaArtistNou() {
-    if (!newArtist.nume.trim()) { alert('Completeaza numele'); return }
+    if (!newArtist.nume.trim()) { alert('Completează numele'); return }
+    // verific conflict: exista deja artist cu acest nume?
+    const existent = artists.find(a => a.nume.toLowerCase().trim() === newArtist.nume.toLowerCase().trim())
+    if (existent) {
+      const ok = confirm('Artistul "' + existent.nume + '" există deja în bază.\n\nVrei să actualizezi datele lui cu cele introduse acum?')
+      if (!ok) return
+    }
     setSavingArtist(true)
     try {
       const r = await fetch('/api/oferta-add-artist', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(newArtist) })
@@ -254,7 +261,7 @@ export default function OfertaPage() {
         setArtists(ar.artists || [])
         setShowAddArtist(false)
         setNewArtist({ nume: '', categorie: 'pop', tip: 'propriu', durata: '40 min', fee: '', leiKm: '', transportMoneda: 'lei', cazare: '', bileteAvion: '', alcool: '', diurnaFixa: '', variante: [] })
-        alert('Artist adaugat! Il gasesti in cautare.')
+        arataToast('Artist salvat')
       } else alert('Eroare: ' + (d.error || 'necunoscuta'))
     } catch { alert('Eroare la salvare') }
     setSavingArtist(false)
@@ -417,6 +424,10 @@ export default function OfertaPage() {
     return out.join('\n').trim()
   }
 
+  function arataToast(msg: string) {
+    setToast(msg)
+    setTimeout(() => setToast(''), 2500)
+  }
   async function salveazaOferta() {
     try {
       const activi = linii.filter(l => l.includeExport)
@@ -698,6 +709,11 @@ export default function OfertaPage() {
   return (
     <div style={{minHeight:'100vh', background:UI.bg, fontFamily:F, padding: isMobile ? '16px 12px' : '40px 20px', position:'relative'}}>
       <div style={{position:'fixed', inset:0, background:UI.mesh, pointerEvents:'none', zIndex:0}} />
+      {toast && (
+        <div style={{position:'fixed', bottom:'28px', left:'50%', transform:'translateX(-50%)', zIndex:1000, background:UI.dark, color:'white', padding:'14px 24px', borderRadius:'12px', fontSize:'14px', fontWeight:700, fontFamily:F, boxShadow:'0 8px 30px rgba(0,0,0,0.25)', display:'flex', alignItems:'center', gap:'8px', animation:'slideUp 0.25s ease'}}>
+          <span style={{color:'#34d399', fontSize:'16px'}}>✓</span> {toast}
+        </div>
+      )}
       <div style={{maxWidth:'1080px', margin:'0 auto', position:'relative', zIndex:1}}>
         <div style={{display:'flex', justifyContent:'space-between', alignItems:'center', marginBottom:'24px'}}>
           <div>
@@ -926,13 +942,13 @@ export default function OfertaPage() {
 
             {/* BUTOANE EXPORT - blocate pana selectezi destinatar */}
             <div style={{display:'flex', gap:'8px', flexWrap:'wrap', opacity: destinatar ? 1 : 0.4, pointerEvents: destinatar ? 'auto' : 'none'}}>
-              <button onClick={() => { navigator.clipboard.writeText(genText()); salveazaOferta(); alert('Deviz copiat!') }}
+              <button onClick={() => { navigator.clipboard.writeText(genText()); salveazaOferta(); arataToast('Deviz copiat și ofertă salvată') }}
                 style={{flex:1, minWidth:'120px', display:'flex', alignItems:'center', justifyContent:'center', gap:'7px', padding:'13px', background:UI.green, color:'white', border:'none', borderRadius:UI.radiusSm, fontSize:'14px', fontWeight:700, cursor:'pointer', fontFamily:F, boxShadow:'0 1px 3px rgba(5,150,105,0.3)'}}><Copy size={16} strokeWidth={2.2} /> Copiază tot</button>
-              <button onClick={() => { salveazaOferta(); window.open('https://wa.me/?text=' + encodeURIComponent(genText()), '_blank') }}
+              <button onClick={() => { salveazaOferta(); arataToast('Ofertă salvată'); window.open('https://wa.me/?text=' + encodeURIComponent(genText()), '_blank') }}
                 style={{flex:1, minWidth:'120px', display:'flex', alignItems:'center', justifyContent:'center', gap:'7px', padding:'13px', background:'#25D366', color:'white', border:'none', borderRadius:UI.radiusSm, fontSize:'14px', fontWeight:700, cursor:'pointer', fontFamily:F, boxShadow:'0 1px 3px rgba(37,211,102,0.3)'}}><MessageCircle size={16} strokeWidth={2.2} /> WhatsApp</button>
-              <button onClick={() => { salveazaOferta(); window.open('mailto:?subject=' + encodeURIComponent([numeClient, toCity, locatie].filter(Boolean).join(' - ') || 'Oferta') + '&body=' + encodeURIComponent(genText().replace(/\*/g, ''))) }}
+              <button onClick={() => { salveazaOferta(); arataToast('Ofertă salvată'); window.open('mailto:?subject=' + encodeURIComponent([numeClient, toCity, locatie].filter(Boolean).join(' - ') || 'Oferta') + '&body=' + encodeURIComponent(genText().replace(/\*/g, ''))) }}
                 style={{flex:1, minWidth:'120px', display:'flex', alignItems:'center', justifyContent:'center', gap:'7px', padding:'13px', background:'#3b82f6', color:'white', border:'none', borderRadius:UI.radiusSm, fontSize:'14px', fontWeight:700, cursor:'pointer', fontFamily:F, boxShadow:'0 1px 3px rgba(59,130,246,0.3)'}}><Mail size={16} strokeWidth={2.2} /> Email</button>
-              <button onClick={() => { salveazaOferta(); downloadPDF() }}
+              <button onClick={() => { salveazaOferta(); arataToast('Ofertă salvată'); downloadPDF() }}
                 style={{flex:1, minWidth:'120px', display:'flex', alignItems:'center', justifyContent:'center', gap:'7px', padding:'13px', background:UI.purple, color:'white', border:'none', borderRadius:UI.radiusSm, fontSize:'14px', fontWeight:700, cursor:'pointer', fontFamily:F, boxShadow:'0 1px 3px rgba(124,58,237,0.3)'}}><FileDown size={16} strokeWidth={2.2} /> {typeof window !== 'undefined' && window.innerWidth < 768 ? 'Distribuie PDF' : 'Descarcă PDF'}</button>
             </div>
           </div>
@@ -1047,6 +1063,7 @@ export default function OfertaPage() {
         input[type=number] { -moz-appearance: textfield; }
         input:focus, select:focus, textarea:focus { border-color: #059669 !important; box-shadow: 0 0 0 3px rgba(5,150,105,0.1) !important; }
         button { transition: all 0.15s ease; }
+        @keyframes slideUp { from { opacity: 0; transform: translate(-50%, 10px); } to { opacity: 1; transform: translate(-50%, 0); } }
         @media print {
           body * { visibility: hidden; }
           .print-only, .print-only * { visibility: visible; }
