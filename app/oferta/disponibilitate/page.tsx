@@ -217,7 +217,7 @@ export default function DisponibilitatePage() {
         <div style={{background:UI.card, borderRadius:UI.radius, border:'1px solid '+UI.line, padding:'20px', marginBottom:'20px', boxShadow:UI.shadow, display:'flex', gap:'12px', alignItems:'flex-end', flexWrap:'wrap'}}>
           <div>
             <label style={{fontSize:'11px', fontWeight:700, color:UI.sub, textTransform:'uppercase', display:'block', marginBottom:'6px'}}>Data</label>
-            <DatePicker value={data} onChange={v => setData(v)} placeholder="Alege data" />
+            <div style={{width:'220px'}}><DatePicker value={data} onChange={v => setData(v)} placeholder="Alege data" /></div>
           </div>
           <div>
             <label style={{fontSize:'11px', fontWeight:700, color:UI.sub, textTransform:'uppercase', display:'block', marginBottom:'6px'}}>Oraș (opțional, pt. calcul)</label>
