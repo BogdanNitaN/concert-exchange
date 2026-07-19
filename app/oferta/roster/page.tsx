@@ -72,6 +72,13 @@ export default function RosterPage() {
     fetch('/api/oferta-artist').then(r => r.json()).then(d => setArtists(d.artists || []))
   }, [authed])
 
+  const GENURI: { key: string; label: string; cats: string[] }[] = [
+    { key: 'international', label: 'Internațional', cats: ['international', 'pop', 'alternativ', 'special', 'rock'] },
+    { key: 'urban', label: 'Urban', cats: ['urban', 'trap'] },
+    { key: 'romanesc', label: 'Românesc', cats: ['romanesc', 'balcanic', 'manele', 'lautareasca'] },
+    { key: 'electronic', label: 'Electronic', cats: ['electronic', 'dance', 'dj'] },
+    { key: 'live', label: 'Live', cats: ['live', 'cover'] },
+  ]
   const filtrati = useMemo(() => {
     const s = search.toLowerCase()
     return artists.filter(a => {
@@ -87,14 +94,6 @@ export default function RosterPage() {
     setFiltreGen(prev => { const n = new Set(prev); if (n.has(cat)) n.delete(cat); else n.add(cat); return n })
   }
 
-  // grupare pe gen muzical
-  const GENURI: { key: string; label: string; cats: string[] }[] = [
-    { key: 'international', label: 'Internațional', cats: ['international', 'pop', 'alternativ', 'special', 'rock'] },
-    { key: 'urban', label: 'Urban', cats: ['urban', 'trap'] },
-    { key: 'romanesc', label: 'Românesc', cats: ['romanesc', 'balcanic', 'manele', 'lautareasca'] },
-    { key: 'electronic', label: 'Electronic', cats: ['electronic', 'dance', 'dj'] },
-    { key: 'live', label: 'Live', cats: ['live', 'cover'] },
-  ]
   const grupuri = GENURI.map(g => ({ ...g, artisti: filtrati.filter(a => g.cats.includes((a.categorie || '').toLowerCase())) })).filter(g => g.artisti.length > 0)
   const altele = filtrati.filter(a => !GENURI.some(g => g.cats.includes((a.categorie || '').toLowerCase())))
 

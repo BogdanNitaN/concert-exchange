@@ -35,7 +35,7 @@ export async function POST(req: Request) {
       alcool_default: Number(b.alcool) || 0,
       categorie: b.categorie || 'pop',
       tip: b.tip || 'propriu',
-      set_type: b.setType || 'band',
+      durata_default: b.durata || '40 min',
       transport_moneda: b.transportMoneda || 'lei',
       diurna_fixa: b.diurnaFixa ? Number(b.diurnaFixa) : null,
     }

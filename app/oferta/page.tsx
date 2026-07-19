@@ -170,7 +170,7 @@ export default function OfertaPage() {
   const [codOferta, setCodOferta] = useState(() => 'GIGX-' + new Date().getFullYear() + '-' + String(Math.floor(Math.random()*9000)+1000))
   const [adaosProcent, setAdaosProcent] = useState(1)
   const [showAddArtist, setShowAddArtist] = useState(false)
-  const [newArtist, setNewArtist] = useState({ nume: '', categorie: 'International', tip: 'propriu', setType: 'band', fee: '', leiKm: '', transportMoneda: 'lei', cazare: '', bileteAvion: '', alcool: '', diurnaFixa: '' })
+  const [newArtist, setNewArtist] = useState({ nume: '', categorie: 'International', tip: 'propriu', durata: '40 min', fee: '', leiKm: '', transportMoneda: 'lei', cazare: '', bileteAvion: '', alcool: '', diurnaFixa: '' })
   const [savingArtist, setSavingArtist] = useState(false)
 
   useEffect(() => {
@@ -244,7 +244,7 @@ export default function OfertaPage() {
         const ar = await fetch('/api/oferta-artist').then(x => x.json())
         setArtists(ar.artists || [])
         setShowAddArtist(false)
-        setNewArtist({ nume: '', categorie: 'International', tip: 'propriu', setType: 'band', fee: '', leiKm: '', transportMoneda: 'lei', cazare: '', bileteAvion: '', alcool: '', diurnaFixa: '' })
+        setNewArtist({ nume: '', categorie: 'International', tip: 'propriu', durata: '40 min', fee: '', leiKm: '', transportMoneda: 'lei', cazare: '', bileteAvion: '', alcool: '', diurnaFixa: '' })
         alert('Artist adaugat! Il gasesti in cautare.')
       } else alert('Eroare: ' + (d.error || 'necunoscuta'))
     } catch { alert('Eroare la salvare') }
@@ -381,7 +381,7 @@ export default function OfertaPage() {
         out.push(l.cazareFixa > 0 ? 'Cazare: ' + l.cazareFixa.toLocaleString('ro-RO') + ' lei' : 'Cazare: ' + l.cazare)
         if (c.diurnaTotal > 0) out.push('Diurna: ' + c.diurnaTotal.toLocaleString('ro-RO') + ' lei + TVA')
         if (l.tipMasa === 'alacarte' && l.diurnaFixa === 0 && l.cazareFixa === 0) out.push('Masa: a la carte ' + l.persoane + ' pers (pranz, cina) + mic dejun la hotel')
-        if (c.alcoolTotal > 0) out.push('Protocol alcool: ' + c.alcoolTotal.toLocaleString('ro-RO') + ' lei + TVA')
+        if (c.alcoolTotal > 0) out.push('Protocol: ' + c.alcoolTotal.toLocaleString('ro-RO') + ' lei + TVA')
         // echivalent euro defalcat
         out.push('(echivalent: ' + l.fee + ' EUR onorariu, curs ' + c.cursAdaos.toFixed(4) + ' lei/EUR)')
       } else {
@@ -398,7 +398,7 @@ export default function OfertaPage() {
         parts.push(l.cazareFixa > 0 ? 'cazare ' + l.cazareFixa.toLocaleString('ro-RO') + ' lei' : 'cazare ' + l.cazare)
         if (c.diurnaTotal > 0) parts.push('diurna ' + c.diurnaTotal.toLocaleString('ro-RO') + ' lei + TVA')
         if (l.tipMasa === 'alacarte' && l.diurnaFixa === 0 && l.cazareFixa === 0) parts.push('masa a la carte ' + l.persoane + ' pers (pranz, cina) + mic dejun la hotel')
-        if (c.alcoolTotal > 0) parts.push('protocol alcool ' + c.alcoolTotal.toLocaleString('ro-RO') + ' lei + TVA')
+        if (c.alcoolTotal > 0) parts.push('protocol ' + c.alcoolTotal.toLocaleString('ro-RO') + ' lei + TVA')
         if (l.durata) parts.push('durata: ' + l.durata)
         out.push(parts.join(' || '))
         if (destinatar === 'client' && c.discount > 0) out.push('SALVEZI: ' + c.discount + ' EUR' + (c.savingLei > 0 ? ' (aprox ' + c.savingLei.toLocaleString('ro-RO') + ' lei)' : ''))
@@ -588,7 +588,7 @@ export default function OfertaPage() {
       rows.push(l.cazareFixa > 0 ? 'Cazare: ' + l.cazareFixa.toLocaleString('ro-RO') + ' lei' : 'Cazare: ' + l.cazare + ' (' + l.persoane + ' persoane)')
       if (c.diurnaTotal > 0) rows.push('Diurna: ' + c.diurnaTotal.toLocaleString('ro-RO') + ' lei + TVA')
       if (l.tipMasa === 'alacarte' && l.diurnaFixa === 0 && l.cazareFixa === 0) rows.push('Masa: a la carte ' + l.persoane + ' pers (pranz, cina) + mic dejun la hotel')
-      if (c.alcoolTotal > 0) rows.push('Protocol alcool: ' + c.alcoolTotal.toLocaleString('ro-RO') + ' lei + TVA')
+      if (c.alcoolTotal > 0) rows.push('Protocol: ' + c.alcoolTotal.toLocaleString('ro-RO') + ' lei + TVA')
       if (l.durata) rows.push('Durata: ' + l.durata)
       for (const rr of rows) { doc.text(noDia(rr), textX, ly); ly += 5 }
 
@@ -865,7 +865,7 @@ export default function OfertaPage() {
 
               <label style={{display:'flex', alignItems:'center', gap:'8px', fontSize:'13px', cursor:'pointer', fontWeight:700}}>
                 <input type="checkbox" checked={l.useAlcool} onChange={e => updateLinie(l.key, { useAlcool: e.target.checked })} style={{width:'16px', height:'16px', accentColor:'#059669'}} />
-                Protocol alcool
+                Protocol
               </label>
               {l.useAlcool && <input type="number" placeholder="Sumă lei" value={l.alcool || ''} onFocus={e => e.target.select()} onChange={e => updateLinie(l.key, { alcool: Number(e.target.value) })} style={{...inputStyle, marginTop:'8px'}} />}
 
@@ -983,10 +983,8 @@ export default function OfertaPage() {
 
               <div style={{display:'grid', gridTemplateColumns:'1fr 1fr', gap:'12px'}}>
                 <div>
-                  <label style={{fontSize:'11px', fontWeight:700, color:'#78716c', textTransform:'uppercase', display:'block', marginBottom:'4px'}}>Tip set (durată)</label>
-                  <select value={newArtist.setType} onChange={e => setNewArtist({...newArtist, setType: e.target.value})} style={{width:'100%', padding:'10px 12px', borderRadius:'8px', border:'1.5px solid #e7e5e4', fontSize:'14px', fontFamily:F, background:'white'}}>
-                    <option value="band">Band</option><option value="dj">DJ</option><option value="vocal">Vocal</option><option value="cover">Cover</option><option value="show">Show</option><option value="instrument">Instrument</option><option value="mc">MC</option>
-                  </select>
+                  <label style={{fontSize:'11px', fontWeight:700, color:'#78716c', textTransform:'uppercase', display:'block', marginBottom:'4px'}}>Durată</label>
+                  <input value={newArtist.durata} onChange={e => setNewArtist({...newArtist, durata: e.target.value})} placeholder="40 min" style={{width:'100%', padding:'10px 12px', borderRadius:'8px', border:'1.5px solid #e7e5e4', fontSize:'14px', fontFamily:F, background:'white', boxSizing:'border-box'}} />
                 </div>
                 <div>
                   <label style={{fontSize:'11px', fontWeight:700, color:'#78716c', textTransform:'uppercase', display:'block', marginBottom:'4px'}}>Diurnă fixă (lei, opțional)</label>
@@ -1003,7 +1001,7 @@ export default function OfertaPage() {
                   <input type="number" value={newArtist.bileteAvion} onFocus={e => e.target.select()} onChange={e => setNewArtist({...newArtist, bileteAvion: e.target.value})} placeholder="0" style={{width:'100%', padding:'10px 12px', borderRadius:'8px', border:'1.5px solid #e7e5e4', fontSize:'14px', fontFamily:F, boxSizing:'border-box'}} />
                 </div>
                 <div>
-                  <label style={{fontSize:'11px', fontWeight:700, color:'#78716c', textTransform:'uppercase', display:'block', marginBottom:'4px'}}>Alcool (lei)</label>
+                  <label style={{fontSize:'11px', fontWeight:700, color:'#78716c', textTransform:'uppercase', display:'block', marginBottom:'4px'}}>Protocol (lei)</label>
                   <input type="number" value={newArtist.alcool} onFocus={e => e.target.select()} onChange={e => setNewArtist({...newArtist, alcool: e.target.value})} placeholder="0" style={{width:'100%', padding:'10px 12px', borderRadius:'8px', border:'1.5px solid #e7e5e4', fontSize:'14px', fontFamily:F, boxSizing:'border-box'}} />
                 </div>
               </div>
