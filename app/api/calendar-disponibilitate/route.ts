@@ -47,9 +47,22 @@ export async function GET(req: Request) {
         return { artist, calendar: c.summary, calendarId: c.id, gen: rd?.categorie || 'altele', rosterData: rd, liber: null, eroare: true, evenimente: [] }
       }
     }))
-    const liberi = rezultate.filter(r => r.liber === true).sort((a,b) => a.artist.localeCompare(b.artist))
-    const ocupati = rezultate.filter(r => r.liber === false).sort((a,b) => a.artist.localeCompare(b.artist))
-    const erori = rezultate.filter(r => r.liber === null)
+    // deduplic pe artist: daca 2 calendare -> acelasi artist, ocupat are prioritate
+    const perArtist = new Map<string, any>()
+    for (const r of rezultate) {
+      const ex = perArtist.get(r.artist)
+      if (!ex) { perArtist.set(r.artist, r); continue }
+      // daca noul e ocupat sau are evenimente, il prefer (ocupat > liber)
+      if (r.liber === false && ex.liber !== false) perArtist.set(r.artist, r)
+      else if (r.liber === false && ex.liber === false) {
+        // ambele ocupate: combin evenimentele
+        ex.evenimente = [...ex.evenimente, ...r.evenimente]
+      }
+    }
+    const dedup = Array.from(perArtist.values())
+    const liberi = dedup.filter(r => r.liber === true).sort((a,b) => a.artist.localeCompare(b.artist))
+    const ocupati = dedup.filter(r => r.liber === false).sort((a,b) => a.artist.localeCompare(b.artist))
+    const erori = dedup.filter(r => r.liber === null)
     return NextResponse.json({ ok: true, data, totalVerificati: rezultate.length, nrLiberi: liberi.length, nrOcupati: ocupati.length, liberi, ocupati, erori })
   } catch (e) {
     return NextResponse.json({ ok: false, error: String(e) }, { status: 500 })
