@@ -71,10 +71,36 @@ export function normNume(s: string): string {
 // orase RO cunoscute pentru validarea extragerii din titluri
 const RO_CITIES_ORAS = ['bucuresti','cluj','cluj-napoca','timisoara','iasi','constanta','craiova','brasov','galati','ploiesti','oradea','braila','arad','pitesti','sibiu','bacau','targu mures','baia mare','baia sprie','buzau','satu mare','ardud','botosani','suceava','piatra neamt','focsani','targu jiu','deva','alba iulia','resita','tulcea','slatina','ramnicu valcea','targoviste','giurgiu','alexandria','calarasi','slobozia','zalau','bistrita','vaslui','sfantu gheorghe','miercurea ciuc','onesti','roman','dej','turda','sighisoara','medias','costinesti','mamaia','vama veche','sinaia','predeal','busteni','tasnad','baia sprie']
 
+
+// festivaluri cunoscute -> oras (nu au orasul in titlu)
+const FESTIVAL_ORAS: Record<string, string> = {
+  'untold': 'Cluj-Napoca',
+  'neversea': 'Constanta',
+  'electric castle': 'Cluj-Napoca',
+  'electric castel': 'Cluj-Napoca',
+  'summer well': 'Buftea',
+  'summerwell': 'Buftea',
+  'saga': 'Bucuresti',
+  'beach please': 'Costinesti',
+  'sunwaves': 'Mamaia',
+  'neversea': 'Constanta',
+  'afterhills': 'Iasi',
+  'wine village': 'Alba Iulia',
+  'jazz in the park': 'Cluj-Napoca',
+  'padina fest': 'Padina',
+  'meci': 'Bucuresti',
+  'untold universe': 'Cluj-Napoca',
+}
+
 // extrage orasul dintr-un titlu de eveniment. null daca nu-i un show cu locatie.
 export function extragOrasDinTitlu(titlu: string): string | null {
   if (!titlu) return null
   if (/\bblocat\b/i.test(titlu)) return null
+  // verific festival cunoscut (nu are oras in titlu)
+  const tLow = titlu.toLowerCase()
+  for (const [fest, oras] of Object.entries(FESTIVAL_ORAS)) {
+    if (tLow.includes(fest)) return oras
+  }
   let t = titlu.replace(/^\([^)]*\)\s*/, '').trim()
   t = t.replace(/\([^)]*\)/g, '').trim()
   const areVirgula = t.includes(',')

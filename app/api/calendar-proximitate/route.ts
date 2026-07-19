@@ -54,9 +54,16 @@ export async function GET(req: Request) {
     const proximitati = []
     let ultimaInZona: any = null
     if (oras) {
+      const orasNormCautat = normNume(oras)
       for (const e of evenimente) {
         if (!e.oras) continue
-        const km = await distanta(oras, e.oras, origin)
+        // acelasi oras (nume identice normalizate) -> 0 km, fara apel (Google da 'no route' pt origine=destinatie)
+        let km: number | null
+        if (normNume(e.oras) === orasNormCautat) {
+          km = 0
+        } else {
+          km = await distanta(oras, e.oras, origin)
+        }
         if (km === null) continue
         const zile = zileDiff(e.data)
         if (km <= 200) {
