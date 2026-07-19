@@ -3,11 +3,11 @@ import './globals.css'
 
 export const metadata: Metadata = {
   title: 'GIGx',
-  description: 'Platforma de booking pentru industria muzicală',
+  description: 'We book the artists behind the moments people remember.',
   metadataBase: new URL('https://gigx.ro'),
   openGraph: {
     title: 'GIGx',
-    description: 'Platforma de booking pentru industria muzicală',
+    description: 'We book the artists behind the moments people remember.',
     url: 'https://gigx.ro',
     siteName: 'GIGx',
     images: [{ url: '/og-image.png', width: 1200, height: 630 }],
