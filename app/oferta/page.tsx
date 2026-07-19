@@ -5,7 +5,7 @@ import { jsPDF } from 'jspdf'
 import DatePicker from '@/components/modules/shared/DatePicker'
 import { supabase } from '@/lib/supabase'
 import { useRouter } from 'next/navigation'
-import { UserPlus, Users, History, LogOut, Copy, MessageCircle, Mail, FileDown, Calendar } from 'lucide-react'
+import { UserPlus, Users, History, LogOut, Copy, MessageCircle, Mail, FileDown, Calendar, Shield } from 'lucide-react'
 
 const F = 'Montserrat,sans-serif'
 // Design tokens premium
@@ -748,6 +748,7 @@ export default function OfertaPage() {
             <button onClick={() => setShowAddArtist(true)} style={{display:'flex', alignItems:'center', gap:'6px', fontSize:'13px', color:'#1c1917', fontWeight:700, background:'white', border:'1.5px solid #ececec', borderRadius:'10px', padding:'9px 14px', cursor:'pointer', fontFamily:F}}><UserPlus size={15} strokeWidth={2.2} /> Adaugă artist</button>
             <a href="/oferta/roster" style={{display:'flex', alignItems:'center', gap:'6px', fontSize:'13px', color:'#1c1917', fontWeight:700, background:'white', border:'1.5px solid #ececec', borderRadius:'10px', padding:'9px 14px', cursor:'pointer', fontFamily:F, textDecoration:'none'}}><Users size={15} strokeWidth={2.2} /> Roster</a>
             <a href="/oferta/istoric" style={{display:'flex', alignItems:'center', gap:'6px', fontSize:'13px', color:'#1c1917', fontWeight:700, background:'white', border:'1.5px solid #ececec', borderRadius:'10px', padding:'9px 14px', cursor:'pointer', fontFamily:F, textDecoration:'none'}}><History size={15} strokeWidth={2.2} /> Istoric</a>
+            {userRole === 'oferta_admin' && <a href="/oferta/admin" style={{display:'flex', alignItems:'center', gap:'6px', fontSize:'13px', color:UI.purple, fontWeight:700, background:'white', border:'1.5px solid '+UI.purpleSoft, borderRadius:'10px', padding:'9px 14px', cursor:'pointer', fontFamily:F, textDecoration:'none'}}><Shield size={15} strokeWidth={2.2} /> Admin</a>}
             <button onClick={faLogout} title="Log out" style={{display:'flex', alignItems:'center', gap:'6px', fontSize:'13px', color:'#a8a29e', fontWeight:700, background:'none', border:'1.5px solid #e7e5e4', borderRadius:'10px', padding:'9px 12px', cursor:'pointer', fontFamily:F}}><LogOut size={15} strokeWidth={2.2} /></button>
           </div>
         </div>
