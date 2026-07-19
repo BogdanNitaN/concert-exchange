@@ -291,7 +291,10 @@ export default function RosterPage() {
                       <input value={f.nume} onChange={e => updVarianta(i, { nume: e.target.value })} placeholder="ex: 2 seturi × 40 min" style={{...inp, flex:1, fontSize:'12px', padding:'7px 9px'}} />
                       <button onClick={() => delVarianta(i)} style={{padding:'0 10px', background:'#fef2f2', color:'#dc2626', border:'none', borderRadius:'6px', fontSize:'16px', cursor:'pointer'}}>×</button>
                     </div>
-                    <div><span style={{fontSize:'9px', color:'#78716c', fontWeight:700}}>FEE €</span><input type="number" value={f.fee || ''} onFocus={e => e.target.select()} onChange={e => updVarianta(i, { fee: Number(e.target.value) })} style={{...inp, fontSize:'12px', padding:'7px 9px'}} /></div>
+                    <div style={{display:'flex', gap:'6px'}}>
+                      <div style={{flex:1}}><span style={{fontSize:'9px', color:'#78716c', fontWeight:700}}>FEE €</span><input type="number" value={f.fee || ''} onFocus={e => e.target.select()} onChange={e => updVarianta(i, { fee: Number(e.target.value) })} style={{...inp, fontSize:'12px', padding:'7px 9px'}} /></div>
+                      <div style={{flex:1}}><span style={{fontSize:'9px', color:'#78716c', fontWeight:700}}>DURATĂ</span><input value={f.durata || ''} onChange={e => updVarianta(i, { durata: e.target.value })} placeholder="2 × 40 min" style={{...inp, fontSize:'12px', padding:'7px 9px'}} /></div>
+                    </div>
                   </div>
                 ))}
               </div>

@@ -170,7 +170,7 @@ export default function OfertaPage() {
   const [codOferta, setCodOferta] = useState(() => 'GIGX-' + new Date().getFullYear() + '-' + String(Math.floor(Math.random()*9000)+1000))
   const [adaosProcent, setAdaosProcent] = useState(1)
   const [showAddArtist, setShowAddArtist] = useState(false)
-  const [newArtist, setNewArtist] = useState({ nume: '', categorie: 'International', tip: 'propriu', durata: '40 min', fee: '', leiKm: '', transportMoneda: 'lei', cazare: '', bileteAvion: '', alcool: '', diurnaFixa: '' })
+  const [newArtist, setNewArtist] = useState<any>({ nume: '', categorie: 'International', tip: 'propriu', durata: '40 min', fee: '', leiKm: '', transportMoneda: 'lei', cazare: '', bileteAvion: '', alcool: '', diurnaFixa: '', variante: [] as {nume:string,fee:string,durata:string}[] })
   const [savingArtist, setSavingArtist] = useState(false)
 
   useEffect(() => {
@@ -233,6 +233,15 @@ export default function OfertaPage() {
     fetch('/api/bnr-rate').then(r => r.json()).then(d => { if (d?.rate) setEurRate(d.rate) })
   }, [authed])
 
+  function addVariantaNou() {
+    setNewArtist((prev: any) => ({ ...prev, variante: [...(prev.variante || []), { nume: '', fee: '', durata: '' }] }))
+  }
+  function updVariantaNou(i: number, patch: any) {
+    setNewArtist((prev: any) => { const v = [...(prev.variante || [])]; v[i] = { ...v[i], ...patch }; return { ...prev, variante: v } })
+  }
+  function delVariantaNou(i: number) {
+    setNewArtist((prev: any) => ({ ...prev, variante: (prev.variante || []).filter((_: any, j: number) => j !== i) }))
+  }
   async function salveazaArtistNou() {
     if (!newArtist.nume.trim()) { alert('Completeaza numele'); return }
     setSavingArtist(true)
@@ -244,7 +253,7 @@ export default function OfertaPage() {
         const ar = await fetch('/api/oferta-artist').then(x => x.json())
         setArtists(ar.artists || [])
         setShowAddArtist(false)
-        setNewArtist({ nume: '', categorie: 'International', tip: 'propriu', durata: '40 min', fee: '', leiKm: '', transportMoneda: 'lei', cazare: '', bileteAvion: '', alcool: '', diurnaFixa: '' })
+        setNewArtist({ nume: '', categorie: 'International', tip: 'propriu', durata: '40 min', fee: '', leiKm: '', transportMoneda: 'lei', cazare: '', bileteAvion: '', alcool: '', diurnaFixa: '', variante: [] })
         alert('Artist adaugat! Il gasesti in cautare.')
       } else alert('Eroare: ' + (d.error || 'necunoscuta'))
     } catch { alert('Eroare la salvare') }
@@ -287,7 +296,7 @@ export default function OfertaPage() {
       key: a.nume + '-' + Date.now(),
       artist: a,
       formatSelectat: fmt ? fmt.nume : '',
-      durata: a.durata_default || '40 min',
+      durata: (fmt && fmt.durata) ? fmt.durata : (a.durata_default || '40 min'),
       tipPret: 'Standard',
       feeLista: fmt ? fmt.fee : a.fee_standard,
       fee: fmt ? fmt.fee : a.fee_standard,
@@ -318,7 +327,7 @@ export default function OfertaPage() {
       if (l.key !== key) return l
       const fmt = l.artist.formate?.find(f => f.nume === formatNume)
       if (!fmt) return { ...l, formatSelectat: formatNume }
-      return { ...l, formatSelectat: formatNume, feeLista: fmt.fee, fee: fmt.fee, leiKm: fmt.leiKm, cazare: fmt.cazare, persoane: fmt.persoane, bileteAvion: fmt.bilete }
+      return { ...l, formatSelectat: formatNume, feeLista: fmt.fee, fee: fmt.fee, leiKm: fmt.leiKm, cazare: fmt.cazare, persoane: fmt.persoane, bileteAvion: fmt.bilete, durata: fmt.durata || l.durata }
     }))
   }
 
@@ -994,6 +1003,25 @@ export default function OfertaPage() {
               <div>
                 <label style={{fontSize:'11px', fontWeight:700, color:'#78716c', textTransform:'uppercase', display:'block', marginBottom:'4px'}}>Cazare (persoanele se calculează automat)</label>
                 <input value={newArtist.cazare} onChange={e => setNewArtist({...newArtist, cazare: e.target.value})} placeholder="ex: 2 sng + 3 dbl" style={{width:'100%', padding:'10px 12px', borderRadius:'8px', border:'1.5px solid #e7e5e4', fontSize:'14px', fontFamily:F, boxSizing:'border-box'}} />
+              </div>
+              <div style={{border:'1px solid #e7e5e4', borderRadius:'10px', padding:'12px', background:'#faf5ff'}}>
+                <div style={{display:'flex', justifyContent:'space-between', alignItems:'center', marginBottom:'8px'}}>
+                  <label style={{fontSize:'11px', fontWeight:700, color:'#7c3aed', textTransform:'uppercase'}}>Variante de preț (seturi × durată + fee)</label>
+                  <button onClick={addVariantaNou} style={{fontSize:'11px', fontWeight:700, color:'#7c3aed', background:'white', border:'1px solid #7c3aed', borderRadius:'6px', padding:'3px 8px', cursor:'pointer', fontFamily:F}}>+ Variantă</button>
+                </div>
+                {(newArtist.variante || []).length === 0 && <div style={{fontSize:'11px', color:'#a8a29e'}}>Fără variante = se folosește fee-ul de sus. Adaugă variante pentru artiști cu prețuri diferite pe seturi (ex: 1 set / 2 seturi).</div>}
+                {(newArtist.variante || []).map((v: any, i: number) => (
+                  <div key={i} style={{background:'white', borderRadius:'8px', padding:'8px', marginBottom:'6px'}}>
+                    <div style={{display:'flex', gap:'6px', marginBottom:'6px'}}>
+                      <input value={v.nume} onChange={e => updVariantaNou(i, { nume: e.target.value })} placeholder="ex: 2 seturi" style={{flex:1, padding:'7px 9px', borderRadius:'6px', border:'1px solid #e7e5e4', fontSize:'12px', fontFamily:F, boxSizing:'border-box'}} />
+                      <button onClick={() => delVariantaNou(i)} style={{padding:'0 10px', background:'#fef2f2', color:'#dc2626', border:'none', borderRadius:'6px', fontSize:'16px', cursor:'pointer'}}>×</button>
+                    </div>
+                    <div style={{display:'flex', gap:'6px'}}>
+                      <input type="number" value={v.fee} onFocus={e => e.target.select()} onChange={e => updVariantaNou(i, { fee: e.target.value })} placeholder="fee €" style={{flex:1, padding:'7px 9px', borderRadius:'6px', border:'1px solid #e7e5e4', fontSize:'12px', fontFamily:F, boxSizing:'border-box'}} />
+                      <input value={v.durata} onChange={e => updVariantaNou(i, { durata: e.target.value })} placeholder="2 × 40 min" style={{flex:1, padding:'7px 9px', borderRadius:'6px', border:'1px solid #e7e5e4', fontSize:'12px', fontFamily:F, boxSizing:'border-box'}} />
+                    </div>
+                  </div>
+                ))}
               </div>
               <div style={{display:'grid', gridTemplateColumns:'1fr 1fr', gap:'12px'}}>
                 <div>

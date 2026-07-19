@@ -38,6 +38,15 @@ export async function POST(req: Request) {
       durata_default: b.durata || '40 min',
       transport_moneda: b.transportMoneda || 'lei',
       diurna_fixa: b.diurnaFixa ? Number(b.diurnaFixa) : null,
+      formate: (b.variante && b.variante.length > 0) ? b.variante.filter((v: any) => v.nume || v.fee).map((v: any) => ({
+        nume: v.nume || 'Variantă',
+        fee: Number(v.fee) || 0,
+        leiKm: Number(b.leiKm) || 0,
+        cazare: b.cazare || '',
+        persoane: persoane(b.cazare || ''),
+        bilete: Number(b.bileteAvion) || 0,
+        durata: v.durata || '',
+      })) : null,
     }
 
     const { error } = await supabase.from('oferta_artisti').upsert(artist, { onConflict: 'nume' })
