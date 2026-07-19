@@ -3,6 +3,14 @@ import { useState, useEffect, useMemo } from 'react'
 import { supabase } from '@/lib/supabase'
 
 const F = 'Montserrat, sans-serif'
+const UI = {
+  bg: '#f5f5f7', card: '#ffffff', ink: '#1c1917', sub: '#57534e', faint: '#a8a29e',
+  line: '#e7e5e4', green: '#059669', greenSoft: '#f0fdf4', purple: '#7c3aed', dark: '#1c1917',
+  radius: '16px', radiusSm: '12px',
+  shadow: '0 1px 3px rgba(0,0,0,0.04), 0 8px 24px rgba(0,0,0,0.04)',
+  shadowBtn: '0 8px 30px rgba(0,0,0,0.18)',
+  mesh: 'radial-gradient(circle at 20% 20%, rgba(5,150,105,0.06) 0%, transparent 50%), radial-gradient(circle at 80% 30%, rgba(124,58,237,0.05) 0%, transparent 50%), radial-gradient(circle at 50% 90%, rgba(234,205,163,0.06) 0%, transparent 50%)',
+}
 
 interface Format {
   nume: string
@@ -70,7 +78,7 @@ export default function RosterPage() {
       if (!a.nume.toLowerCase().includes(s)) return false
       if (filtruTip === 'fwd' && a.tip === 'intermediere') return false
       if (filtruTip === 'extern' && a.tip !== 'intermediere') return false
-      if (filtreGen.size > 0 && !filtreGen.has((a.categorie || '').toLowerCase())) return false
+      if (filtreGen.size > 0) { const gg = GENURI.find(g => g.cats.includes((a.categorie || '').toLowerCase())); if (!gg || !filtreGen.has(gg.key)) return false }
       return true
     })
   }, [artists, search, filtreGen, filtruTip])
@@ -81,14 +89,11 @@ export default function RosterPage() {
 
   // grupare pe gen muzical
   const GENURI: { key: string; label: string; cats: string[] }[] = [
-    { key: 'pop', label: 'Pop', cats: ['pop'] },
-    { key: 'urban', label: 'Urban / Trap / Hip-Hop', cats: ['urban', 'trap'] },
-    { key: 'dance', label: 'Dance / Electronic', cats: ['dance', 'dj'] },
-    { key: 'manele', label: 'Manele', cats: ['manele'] },
-    { key: 'balcanic', label: 'Balcanic', cats: ['balcanic'] },
-    { key: 'lautareasca', label: 'Lăutărească / Populară', cats: ['lautareasca'] },
-    { key: 'cover', label: 'Cover Band', cats: ['cover'] },
-    { key: 'alternativ', label: 'Alternativ', cats: ['alternativ'] },
+    { key: 'international', label: 'Internațional', cats: ['international', 'pop', 'alternativ', 'special', 'rock'] },
+    { key: 'urban', label: 'Urban', cats: ['urban', 'trap'] },
+    { key: 'romanesc', label: 'Românesc', cats: ['romanesc', 'balcanic', 'manele', 'lautareasca'] },
+    { key: 'electronic', label: 'Electronic', cats: ['electronic', 'dance', 'dj'] },
+    { key: 'live', label: 'Live', cats: ['live', 'cover'] },
   ]
   const grupuri = GENURI.map(g => ({ ...g, artisti: filtrati.filter(a => g.cats.includes((a.categorie || '').toLowerCase())) })).filter(g => g.artisti.length > 0)
   const altele = filtrati.filter(a => !GENURI.some(g => g.cats.includes((a.categorie || '').toLowerCase())))
@@ -159,7 +164,7 @@ export default function RosterPage() {
 
   const Row = (a: Artist) => (
     <div key={a.id} onClick={() => setEdit({ ...a })}
-      style={{display:'flex', justifyContent:'space-between', alignItems:'center', padding:'12px 16px', background:'white', borderRadius:'10px', border:'1px solid #e7e5e4', cursor:'pointer', marginBottom:'8px'}}>
+      style={{display:'flex', justifyContent:'space-between', alignItems:'center', padding:'14px 18px', background:UI.card, borderRadius:UI.radiusSm, border:'1px solid '+UI.line, boxShadow:UI.shadow, cursor:'pointer', marginBottom:'8px', transition:'all 0.15s'}}>
       <div>
         <div style={{fontSize:'14px', fontWeight:700, display:'flex', alignItems:'center', gap:'8px'}}>{a.nume}
           <span style={{fontSize:'8px', fontWeight:800, padding:'2px 6px', borderRadius:'4px', background: a.tip === 'intermediere' ? '#faf5ff' : '#f0fdf4', color: a.tip === 'intermediere' ? '#7c3aed' : '#059669'}}>{a.tip === 'intermediere' ? 'EXTERN' : 'FWD'}</span>
@@ -180,10 +185,10 @@ export default function RosterPage() {
       <div style={{maxWidth:'760px', margin:'0 auto'}}>
         <div style={{display:'flex', justifyContent:'space-between', alignItems:'center', marginBottom:'20px'}}>
           <div>
-            <div style={{fontSize:'24px', fontWeight:800}}>Roster artiști</div>
-            <div style={{fontSize:'13px', color:'#78716c'}}>{artists.length} artiști în baza de date</div>
+            <div style={{fontSize:'26px', fontWeight:800, letterSpacing:'-0.5px', color:UI.ink}}>GIG<span style={{color:UI.green}}>x</span></div>
+            <div style={{fontSize:'13px', color:UI.faint, fontWeight:500, marginTop:'2px'}}>Roster · {artists.length} artiști</div>
           </div>
-          <a href="/oferta" style={{fontSize:'14px', color:'#059669', fontWeight:700, textDecoration:'none'}}>← Deviz</a>
+          <a href="/oferta" style={{display:'flex', alignItems:'center', gap:'7px', fontSize:'13px', color:'white', fontWeight:700, textDecoration:'none', background:UI.dark, padding:'11px 18px', borderRadius:UI.radiusSm, boxShadow:UI.shadowBtn}}>Deviz</a>
         </div>
 
         <input value={search} onChange={e => setSearch(e.target.value)} placeholder="Caută artist..." style={{...inp, marginBottom:'14px', padding:'12px 14px', fontSize:'14px'}} />
@@ -197,7 +202,7 @@ export default function RosterPage() {
           ))}
         </div>
         <div style={{display:'flex', gap:'6px', marginBottom:'20px', flexWrap:'wrap'}}>
-          {[{c:'pop',l:'Pop'},{c:'urban',l:'Urban'},{c:'trap',l:'Trap'},{c:'dance',l:'Dance'},{c:'dj',l:'DJ'},{c:'manele',l:'Manele'},{c:'balcanic',l:'Balcanic'},{c:'lautareasca',l:'Lăutărească'},{c:'cover',l:'Cover'},{c:'alternativ',l:'Alternativ'}].map(g => (
+          {[{c:'international',l:'Internațional'},{c:'urban',l:'Urban'},{c:'romanesc',l:'Românesc'},{c:'electronic',l:'Electronic'},{c:'live',l:'Live'}].map(g => (
             <button key={g.c} onClick={() => toggleGen(g.c)}
               style={{padding:'5px 12px', borderRadius:'20px', border:'1.5px solid ' + (filtreGen.has(g.c) ? '#7c3aed' : '#e7e5e4'), background: filtreGen.has(g.c) ? '#faf5ff' : 'white', color: filtreGen.has(g.c) ? '#7c3aed' : '#78716c', fontSize:'12px', fontWeight:700, cursor:'pointer', fontFamily:F}}>
               {g.l}
@@ -247,7 +252,7 @@ export default function RosterPage() {
               <div style={{display:'grid', gridTemplateColumns:'1fr 1fr', gap:'12px'}}>
                 <div><label style={lbl}>Categorie</label>
                   <select value={edit.categorie} onChange={e => setEdit({...edit, categorie: e.target.value})} style={inp}>
-                    <option value="pop">Pop</option><option value="urban">Urban</option><option value="trap">Trap</option><option value="dance">Dance</option><option value="manele">Manele</option><option value="balcanic">Balcanic</option><option value="lautareasca">Lăutărească</option><option value="dj">DJ</option><option value="cover">Cover band</option><option value="alternativ">Alternativ</option>
+                    <option value="International">Internațional</option><option value="Urban">Urban</option><option value="Romanesc">Românesc</option><option value="Electronic">Electronic</option><option value="Live">Live</option>
                   </select>
                 </div>
                 <div><label style={lbl}>Tip</label>
