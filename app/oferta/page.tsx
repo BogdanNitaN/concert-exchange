@@ -25,6 +25,7 @@ const UI = {
   gold: '#eacda3',
   neon: '#059669',
   violet: '#7c3aed',
+  navy: '#1c1917',
   ok: '#059669',
   okSoft: '#f0fdf4',
   attention: '#7c3aed',
@@ -37,6 +38,11 @@ const UI = {
   shadowHover: '0 8px 30px rgba(0,0,0,0.12)',
   shadowBtn: '0 8px 30px rgba(0,0,0,0.18)',
   shadowNeon: '0 8px 30px rgba(0,0,0,0.18)',
+  glass: 'rgba(255,255,255,0.18)',
+  glassStrong: 'rgba(255,255,255,0.28)',
+  glassBorder: '1px solid rgba(255,255,255,0.35)',
+  glassShadow: '0 8px 32px rgba(0,0,0,0.08), inset 0 1px 0 rgba(255,255,255,0.4)',
+  glassBlur: 'blur(16px)',
   mesh: 'radial-gradient(circle at 20% 20%, rgba(5,150,105,0.06) 0%, transparent 50%), radial-gradient(circle at 80% 30%, rgba(124,58,237,0.05) 0%, transparent 50%), radial-gradient(circle at 50% 90%, rgba(234,205,163,0.06) 0%, transparent 50%)',
 }
 
@@ -443,7 +449,7 @@ export default function OfertaPage() {
       const totalFee = activi.reduce((s, l) => s + l.fee, 0)
       const totalDiscount = activi.reduce((s, l) => { const c = calcLinie(l); return s + c.discount }, 0)
       const totalCag = activi.reduce((s, l) => { const c = calcLinie(l); return s + c.cag }, 0)
-      await fetch('/api/oferta-save', {
+      const rezSalvare = await fetch('/api/oferta-save', {
         method: 'POST', headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           cod: codOferta,
@@ -471,7 +477,16 @@ export default function OfertaPage() {
           })),
         })
       })
-    } catch {}
+      if (!rezSalvare.ok) {
+        const err = await rezSalvare.json().catch(() => ({}))
+        arataToast('Eroare la salvare: ' + (err.error || 'necunoscută'))
+        return
+      }
+      // ofertă salvată cu succes → generez cod nou pentru următoarea (ca să nu se suprascrie)
+      setCodOferta('GIGX-' + new Date().getFullYear() + '-' + String(Math.floor(Math.random()*9000)+1000))
+    } catch (e) {
+      arataToast('Eroare rețea la salvare')
+    }
   }
 
   async function downloadPDF() {
@@ -716,15 +731,15 @@ export default function OfertaPage() {
   const filtered = search ? artists.filter(a => a.nume.toLowerCase().includes(search.toLowerCase())) : []
 
   return (
-    <div style={{minHeight:'100vh', background:UI.bg, fontFamily:F, padding: isMobile ? '16px 12px' : '40px 20px', position:'relative'}}>
+    <div style={{minHeight:'100vh', background:'linear-gradient(160deg, #eceef2 0%, #e8eaf0 45%, #dde1ea 100%)', fontFamily:F, padding: isMobile ? '16px 12px' : '40px 20px', position:'relative'}}>
       <div style={{position:'fixed', inset:0, background:UI.mesh, pointerEvents:'none', zIndex:0}} />
       {toast && (
         <div style={{position:'fixed', bottom:'28px', left:'50%', transform:'translateX(-50%)', zIndex:1000, background:UI.dark, color:'white', padding:'14px 24px', borderRadius:'12px', fontSize:'14px', fontWeight:700, fontFamily:F, boxShadow:'0 8px 30px rgba(0,0,0,0.25)', display:'flex', alignItems:'center', gap:'8px', animation:'slideUp 0.25s ease'}}>
-          <span style={{color:'#7c3aed', fontSize:'16px'}}>✓</span> {toast}
+          <span style={{color:'#059669', fontSize:'16px'}}>✓</span> {toast}
         </div>
       )}
       <div style={{maxWidth:'1080px', margin:'0 auto', position:'relative', zIndex:1}}>
-        <div style={{display:'flex', justifyContent:'space-between', alignItems:'center', marginBottom:'24px'}}>
+        <div style={{display:'flex', justifyContent:'space-between', alignItems:'center', marginBottom:'24px', position:'sticky', top:'12px', zIndex:50, background:'rgba(255,255,255,0.7)', backdropFilter:'blur(16px)', WebkitBackdropFilter:'blur(16px)', border:'1px solid rgba(255,255,255,0.5)', borderRadius:'16px', padding:'12px 18px', boxShadow:'0 8px 32px rgba(0,0,0,0.06), inset 0 1px 0 rgba(255,255,255,0.5)'}}>
           <div>
             <div style={{fontSize:'27px', fontWeight:800, letterSpacing:'-1px', color:UI.ink}}>GIG<span style={{color:'#059669'}}>x</span></div>
             <div style={{fontSize:'13px', color:'#a8a29e', fontWeight:500, marginTop:'2px'}}>Generator deviz intern</div>
@@ -772,14 +787,14 @@ export default function OfertaPage() {
               {loadingKm ? '...' : 'Calculează'}
             </button>
           </div>
-          {km !== null && <div style={{display:'inline-flex', alignItems:'center', gap:'8px', fontSize:'13px', marginTop:'10px', padding:'7px 12px', background:UI.greenSoft, border:'1px solid '+UI.greenLine, borderRadius:'8px'}}><span style={{color:UI.sub, fontWeight:600}}>Distanță</span> <span style={{color:UI.violet, fontWeight:800, fontSize:'14px'}}>{km} km</span> <span style={{color:UI.faint, fontSize:'12px'}}>dus-întors · {(km + Math.round(km*(km>300?0.065:0.115)))*2} km cu marjă</span></div>}
+          {km !== null && <div style={{display:'inline-flex', alignItems:'center', gap:'8px', fontSize:'13px', marginTop:'10px', padding:'7px 12px', background:UI.greenSoft, border:'1px solid '+UI.greenLine, borderRadius:'8px'}}><span style={{color:UI.sub, fontWeight:600}}>Distanță</span> <span style={{color:UI.green, fontWeight:800, fontSize:'14px'}}>{km} km</span> <span style={{color:UI.faint, fontSize:'12px'}}>dus-întors · {(km + Math.round(km*(km>300?0.065:0.115)))*2} km cu marjă</span></div>}
           <div style={{display:'flex', gap:'16px', marginTop:'12px', alignItems:'center'}}>
             <label style={{display:'flex', alignItems:'center', gap:'8px', fontSize:'13px', cursor:'pointer', fontWeight:700}}>
-              <input type="checkbox" checked={useAdaos} onChange={e => setUseAdaos(e.target.checked)} style={{width:'16px', height:'16px', accentColor:'#7c3aed'}} />
+              <input type="checkbox" checked={useAdaos} onChange={e => setUseAdaos(e.target.checked)} style={{width:'16px', height:'16px', accentColor:'#059669'}} />
               Aplică adaos curs BNR
             </label>
             <label style={{display:'flex', alignItems:'center', gap:'8px', fontSize:'13px', cursor:'pointer', fontWeight:700, color:'#1c1917'}}>
-              <input type="checkbox" checked={institutiePublica} onChange={e => setInstitutiePublica(e.target.checked)} style={{width:'16px', height:'16px', accentColor:'#7c3aed'}} />
+              <input type="checkbox" checked={institutiePublica} onChange={e => setInstitutiePublica(e.target.checked)} style={{width:'16px', height:'16px', accentColor:'#059669'}} />
               Instituție publică (ofertă în lei)
             </label>
             {useAdaos && <input type="number" step="0.1" value={adaosProcent} onChange={e => setAdaosProcent(Number(e.target.value))} style={{...inputStyle, width:'80px'}} />}
@@ -814,7 +829,7 @@ export default function OfertaPage() {
             <div key={l.key} style={{background:UI.card, padding: isMobile ? '20px' : '24px', borderRadius:UI.radius, border:'1px solid '+UI.line, boxShadow:UI.shadow, marginBottom:'16px'}}>
               <div style={{display:'flex', justifyContent:'space-between', alignItems:'center', marginBottom:'16px'}}>
                 <div style={{display:'flex', alignItems:'center', gap:'10px'}}>
-                  <input type="checkbox" checked={l.includeExport} onChange={e => updateLinie(l.key, { includeExport: e.target.checked })} style={{width:'18px', height:'18px', accentColor:'#7c3aed'}} />
+                  <input type="checkbox" checked={l.includeExport} onChange={e => updateLinie(l.key, { includeExport: e.target.checked })} style={{width:'18px', height:'18px', accentColor:'#059669'}} />
                   <span style={{fontSize:'18px', fontWeight:800}}>{l.artist.nume}</span>
                   <span style={{fontSize:'9px', fontWeight:800, padding:'2px 6px', borderRadius:'4px', background: l.artist.tip === 'intermediere' ? '#f3efff' : '#f3efff', color: l.artist.tip === 'intermediere' ? '#1c1917' : '#1c1917'}}>{l.artist.tip === 'intermediere' ? 'EXTERN' : 'FWD'}</span>
                   <input value={l.durata} onChange={e => updateLinie(l.key, { durata: e.target.value })} placeholder="40 min"
@@ -846,7 +861,7 @@ export default function OfertaPage() {
 
               <div style={{display:'flex', gap:'16px', flexWrap:'wrap', marginBottom:'12px', alignItems:'center'}}>
                 <label style={{display:'flex', alignItems:'center', gap:'6px', fontSize:'13px', cursor:'pointer'}}>
-                  <input type="checkbox" checked={l.useMarja} onChange={e => updateLinie(l.key, { useMarja: e.target.checked })} style={{width:'16px', height:'16px', accentColor:'#7c3aed'}} />
+                  <input type="checkbox" checked={l.useMarja} onChange={e => updateLinie(l.key, { useMarja: e.target.checked })} style={{width:'16px', height:'16px', accentColor:'#059669'}} />
                   Marjă transport
                 </label>
                 {c.discount > 0 && <span style={{fontSize:'12px', color:'#1c1917', fontWeight:700}}>Discount {c.discount} € · economie {c.savingLei.toLocaleString('ro-RO')} lei</span>}
@@ -859,7 +874,7 @@ export default function OfertaPage() {
                     <input type="number" value={l.bileteAvion || ''} onFocus={e => e.target.select()} onChange={e => updateLinie(l.key, { bileteAvion: Number(e.target.value) })} style={{width:'60px', padding:'7px 9px', borderRadius:'8px', border:'1px solid '+UI.lineStrong, fontSize:'13px', fontFamily:F, textAlign:'center', outline:'none'}} />
                   </div>
                   <label style={{display:'flex', alignItems:'center', gap:'6px', fontSize:'13px', cursor:'pointer'}}>
-                    <input type="checkbox" checked={l.restulRutier} onChange={e => updateLinie(l.key, { restulRutier: e.target.checked })} style={{width:'16px', height:'16px', accentColor:'#7c3aed'}} />
+                    <input type="checkbox" checked={l.restulRutier} onChange={e => updateLinie(l.key, { restulRutier: e.target.checked })} style={{width:'16px', height:'16px', accentColor:'#059669'}} />
                     Restul echipei rutier
                   </label>
                   <span style={{fontSize:'11px', color:'#a8a29e'}}>{l.restulRutier ? 'transport auto + transfer aeroport' : 'toți zboară + transfer aeroport'}</span>
@@ -898,14 +913,14 @@ export default function OfertaPage() {
               </>)}
 
               <label style={{display:'flex', alignItems:'center', gap:'8px', fontSize:'13px', cursor:'pointer', fontWeight:700}}>
-                <input type="checkbox" checked={l.useAlcool} onChange={e => updateLinie(l.key, { useAlcool: e.target.checked })} style={{width:'16px', height:'16px', accentColor:'#7c3aed'}} />
+                <input type="checkbox" checked={l.useAlcool} onChange={e => updateLinie(l.key, { useAlcool: e.target.checked })} style={{width:'16px', height:'16px', accentColor:'#059669'}} />
                 Protocol
               </label>
               {l.useAlcool && <input type="number" placeholder="Sumă lei" value={l.alcool || ''} onFocus={e => e.target.select()} onChange={e => updateLinie(l.key, { alcool: Number(e.target.value) })} style={{...inputStyle, marginTop:'8px'}} />}
 
               <div style={{marginTop:'16px', paddingTop:'16px', borderTop:'1px dashed #e7e5e4'}}>
                 <label style={{display:'flex', alignItems:'center', gap:'8px', fontSize:'13px', cursor: destinatar==='client'?'not-allowed':'pointer', fontWeight:700, opacity: destinatar==='client'?0.4:1}}>
-                  <input type="checkbox" checked={l.useCag} disabled={destinatar==='client'} onChange={e => { updateLinie(l.key, { useCag: e.target.checked }); if (e.target.checked) setDestinatar('intermediar') }} style={{width:'16px', height:'16px', accentColor:'#7c3aed'}} />
+                  <input type="checkbox" checked={l.useCag} disabled={destinatar==='client'} onChange={e => { updateLinie(l.key, { useCag: e.target.checked }); if (e.target.checked) setDestinatar('intermediar') }} style={{width:'16px', height:'16px', accentColor:'#059669'}} />
                   CAG · comision agenție (doar intermediar)
                 </label>
                 {destinatar==='client' && <div style={{fontSize:'11px', color:'#a8a29e', marginTop:'4px'}}>La client se dă discount, nu comision.</div>}
@@ -931,8 +946,8 @@ export default function OfertaPage() {
         {linii.length > 0 && (
           <div style={{background:UI.dark, padding: isMobile ? '20px' : '24px', borderRadius:UI.radius, marginTop:'8px', boxShadow:UI.shadowHover}}>
             {/* CHEIA DE CONTROL */}
-            <div style={{marginBottom:'16px', padding:'16px', borderRadius:UI.radiusSm, background: destinatar ? 'rgba(124,58,237,0.15)' : 'rgba(124,58,237,0.18)', border:'1px solid ' + (destinatar ? 'rgba(124,58,237,0.5)' : 'rgba(124,58,237,0.5)')}}>
-              <div style={{fontSize:'13px', fontWeight:700, color: destinatar ? '#7c3aed' : 'rgba(255,255,255,0.7)', marginBottom:'12px', display:'flex', alignItems:'center', gap:'6px'}}>
+            <div style={{marginBottom:'16px', padding:'16px', borderRadius:UI.radiusSm, background: destinatar ? 'rgba(0,0,0,0.15)' : 'rgba(0,0,0,0.18)', border:'1px solid ' + (destinatar ? 'rgba(0,0,0,0.5)' : 'rgba(0,0,0,0.5)')}}>
+              <div style={{fontSize:'13px', fontWeight:700, color: destinatar ? '#6ee7b7' : 'rgba(255,255,255,0.7)', marginBottom:'12px', display:'flex', alignItems:'center', gap:'6px'}}>
                 Pentru cine este oferta?
               </div>
               <div style={{display:'flex', gap:'8px'}}>
@@ -945,20 +960,20 @@ export default function OfertaPage() {
                   Intermediar {destinatar==='intermediar' ? '✓' : ''}
                 </button>
               </div>
-              {destinatar === 'client' && <div style={{fontSize:'12px', color:'#7c3aed', marginTop:'8px'}}>Se afișează economia (SALVEZI)</div>}
+              {destinatar === 'client' && <div style={{fontSize:'12px', color:'#6ee7b7', marginTop:'8px'}}>Se afișează economia (SALVEZI)</div>}
               {destinatar === 'intermediar' && <div style={{fontSize:'12px', color:'#a8a29e', marginTop:'8px'}}>Sumă fără mențiune de comision</div>}
             </div>
 
             {/* BUTOANE EXPORT - blocate pana selectezi destinatar */}
             <div style={{display:'flex', gap:'8px', flexWrap:'wrap', opacity: destinatar ? 1 : 0.4, pointerEvents: destinatar ? 'auto' : 'none'}}>
               <button onClick={() => { navigator.clipboard.writeText(genText()); salveazaOferta(); arataToast('Deviz copiat și ofertă salvată') }}
-                style={{flex:1, minWidth:'120px', display:'flex', alignItems:'center', justifyContent:'center', gap:'7px', padding:'13px', background:UI.neon, color:'#1c1917', border:'none', borderRadius:UI.radiusSm, fontSize:'14px', fontWeight:800, cursor:'pointer', fontFamily:F, boxShadow:'0 4px 16px rgba(206,254,70,0.4)'}}><Copy size={16} strokeWidth={2.5} /> Copiază tot</button>
+                style={{flex:1, minWidth:'120px', display:'flex', alignItems:'center', justifyContent:'center', gap:'7px', padding:'13px', background:UI.green, color:'white', border:'none', borderRadius:UI.radiusSm, fontSize:'14px', fontWeight:700, cursor:'pointer', fontFamily:F, boxShadow:'0 1px 3px rgba(5,150,105,0.3)'}}><Copy size={16} strokeWidth={2.2} /> Copiază tot</button>
               <button onClick={() => { salveazaOferta(); arataToast('Ofertă salvată'); window.open('https://wa.me/?text=' + encodeURIComponent(genText()), '_blank') }}
                 style={{flex:1, minWidth:'120px', display:'flex', alignItems:'center', justifyContent:'center', gap:'7px', padding:'13px', background:'#25D366', color:'white', border:'none', borderRadius:UI.radiusSm, fontSize:'14px', fontWeight:700, cursor:'pointer', fontFamily:F, boxShadow:'0 1px 3px rgba(37,211,102,0.3)'}}><MessageCircle size={16} strokeWidth={2.2} /> WhatsApp</button>
               <button onClick={() => { salveazaOferta(); arataToast('Ofertă salvată'); window.open('mailto:?subject=' + encodeURIComponent([numeClient, toCity, locatie].filter(Boolean).join(' - ') || 'Oferta') + '&body=' + encodeURIComponent(genText().replace(/\*/g, ''))) }}
                 style={{flex:1, minWidth:'120px', display:'flex', alignItems:'center', justifyContent:'center', gap:'7px', padding:'13px', background:'#3b82f6', color:'white', border:'none', borderRadius:UI.radiusSm, fontSize:'14px', fontWeight:700, cursor:'pointer', fontFamily:F, boxShadow:'0 1px 3px rgba(59,130,246,0.3)'}}><Mail size={16} strokeWidth={2.2} /> Email</button>
               <button onClick={() => { salveazaOferta(); arataToast('Ofertă salvată'); downloadPDF() }}
-                style={{flex:1, minWidth:'120px', display:'flex', alignItems:'center', justifyContent:'center', gap:'7px', padding:'13px', background:UI.purple, color:'white', border:'none', borderRadius:UI.radiusSm, fontSize:'14px', fontWeight:700, cursor:'pointer', fontFamily:F, boxShadow:'0 1px 3px rgba(124,58,237,0.3)'}}><FileDown size={16} strokeWidth={2.2} /> {typeof window !== 'undefined' && window.innerWidth < 768 ? 'Distribuie PDF' : 'Descarcă PDF'}</button>
+                style={{flex:1, minWidth:'120px', display:'flex', alignItems:'center', justifyContent:'center', gap:'7px', padding:'13px', background:UI.purple, color:'white', border:'none', borderRadius:UI.radiusSm, fontSize:'14px', fontWeight:700, cursor:'pointer', fontFamily:F, boxShadow:'0 1px 3px rgba(0,0,0,0.3)'}}><FileDown size={16} strokeWidth={2.2} /> {typeof window !== 'undefined' && window.innerWidth < 768 ? 'Distribuie PDF' : 'Descarcă PDF'}</button>
             </div>
           </div>
         )}
@@ -1059,7 +1074,7 @@ export default function OfertaPage() {
                 </div>
               </div>
               <div style={{fontSize:'11px', color:'#a8a29e', marginTop:'-4px'}}>Poza se caută automat pe Chartex după nume.</div>
-              <button onClick={salveazaArtistNou} disabled={savingArtist} style={{marginTop:'6px', padding:'13px', background:UI.purple, color:'white', border:'none', borderRadius:UI.radiusSm, fontSize:'14px', fontWeight:700, cursor: savingArtist ? 'wait' : 'pointer', fontFamily:F, opacity: savingArtist ? 0.6 : 1, boxShadow:'0 1px 3px rgba(124,58,237,0.3)'}}>
+              <button onClick={salveazaArtistNou} disabled={savingArtist} style={{marginTop:'6px', padding:'13px', background:UI.purple, color:'white', border:'none', borderRadius:UI.radiusSm, fontSize:'14px', fontWeight:700, cursor: savingArtist ? 'wait' : 'pointer', fontFamily:F, opacity: savingArtist ? 0.6 : 1, boxShadow:'0 1px 3px rgba(0,0,0,0.3)'}}>
                 {savingArtist ? 'Se salvează...' : 'Salvează artist'}
               </button>
             </div>
