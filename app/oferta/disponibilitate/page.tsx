@@ -20,7 +20,17 @@ const GEN_LABEL: Record<string,string> = Object.fromEntries(GENURI.map(g => [g.k
 interface Ev { titlu: string; descriere: string; allDay: boolean }
 interface Rez { artist: string; calendar: string; gen: string; rosterData: any; liber: boolean | null; evenimente: Ev[] }
 
+function useIsMobile() {
+  const [m, setM] = useState(false)
+  useEffect(() => {
+    const check = () => setM(window.innerWidth < 768)
+    check(); window.addEventListener('resize', check)
+    return () => window.removeEventListener('resize', check)
+  }, [])
+  return m
+}
 export default function DisponibilitatePage() {
+  const isMobile = useIsMobile()
   const [authed, setAuthed] = useState(false)
   const [checkingAuth, setCheckingAuth] = useState(true)
   const [loginUser, setLoginUser] = useState('')
@@ -153,7 +163,7 @@ export default function DisponibilitatePage() {
   )
 
   return (
-    <div style={{minHeight:'100vh', background:bg, fontFamily:F, padding:'40px 20px'}}>
+    <div style={{minHeight:'100vh', background:bg, fontFamily:F, padding: isMobile ? '20px 14px' : '40px 20px'}}>
       <div style={{maxWidth:'980px', margin:'0 auto'}}>
         <a href="/oferta" style={{display:'inline-flex', alignItems:'center', gap:'6px', fontSize:'13px', color:UI.sub, textDecoration:'none', marginBottom:'20px'}}><ArrowLeft size={15} /> Înapoi la ofertă</a>
         <div style={{display:'flex', alignItems:'center', gap:'10px', marginBottom:'24px'}}>
@@ -188,7 +198,7 @@ export default function DisponibilitatePage() {
               {filtreGen.size > 0 && <button onClick={() => setFiltreGen(new Set())} style={{fontSize:'12px', fontWeight:700, padding:'6px 12px', borderRadius:'8px', cursor:'pointer', fontFamily:F, border:'1.5px solid '+UI.line, background:'white', color:UI.faint}}>Toate</button>}
             </div>
 
-            <div style={{display:'grid', gridTemplateColumns:'1.3fr 1fr', gap:'16px'}}>
+            <div style={{display:'grid', gridTemplateColumns: isMobile ? '1fr' : '1.3fr 1fr', gap:'16px'}}>
               {/* LIBERI grupati pe gen */}
               <div>
                 <div style={{display:'flex', alignItems:'center', gap:'8px', marginBottom:'12px'}}>

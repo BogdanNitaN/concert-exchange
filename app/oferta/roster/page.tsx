@@ -29,7 +29,17 @@ interface Artist {
   diurna_fixa?: number | null; cazare_fixa?: number | null; observatii?: string; format_show?: string; formate?: Format[] | null
 }
 
+function useIsMobile() {
+  const [m, setM] = useState(false)
+  useEffect(() => {
+    const check = () => setM(window.innerWidth < 768)
+    check(); window.addEventListener('resize', check)
+    return () => window.removeEventListener('resize', check)
+  }, [])
+  return m
+}
 export default function RosterPage() {
+  const isMobile = useIsMobile()
   const [authed, setAuthed] = useState(false)
   const [checkingAuth, setCheckingAuth] = useState(true)
   const [loginUser, setLoginUser] = useState('')
@@ -245,7 +255,7 @@ export default function RosterPage() {
             </div>
             <div style={{display:'flex', flexDirection:'column', gap:'12px'}}>
               <div><label style={lbl}>Nume</label><input value={edit.nume} onChange={e => setEdit({...edit, nume: e.target.value})} style={inp} /></div>
-              <div style={{display:'grid', gridTemplateColumns:'1fr 1fr', gap:'12px'}}>
+              <div style={{display:'grid', gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr', gap:'12px'}}>
                 <div><label style={lbl}>Fee (€)</label><input type="number" value={edit.fee_standard} onFocus={e => e.target.select()} onChange={e => setEdit({...edit, fee_standard: Number(e.target.value)})} style={inp} /></div>
                 <div><label style={lbl}>Transport /km</label>
                   <div style={{display:'flex', gap:'6px'}}>
@@ -254,7 +264,7 @@ export default function RosterPage() {
                   </div>
                 </div>
               </div>
-              <div style={{display:'grid', gridTemplateColumns:'1fr 1fr', gap:'12px'}}>
+              <div style={{display:'grid', gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr', gap:'12px'}}>
                 <div><label style={lbl}>Categorie</label>
                   <select value={edit.categorie} onChange={e => setEdit({...edit, categorie: e.target.value})} style={inp}>
                     <option value="pop">Pop</option><option value="balcanic_pop">Balcanic Pop</option><option value="manele">Manele</option><option value="trap">Trap</option><option value="rap">Rap / Hip-Hop</option><option value="dance">Dance / Electronic</option><option value="rock">Rock</option><option value="lautareasca">Lăutărească / Populară</option><option value="petrecere">Petrecere</option><option value="cover">Cover / Party Band</option><option value="altele">Altele</option>
@@ -273,7 +283,7 @@ export default function RosterPage() {
                   <option value="live_band_dansatori">Live band + dansatori</option>
                 </select>
               </div>
-              <div style={{display:'grid', gridTemplateColumns:'1fr 1fr', gap:'12px'}}>
+              <div style={{display:'grid', gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr', gap:'12px'}}>
                 <div><label style={lbl}>Durată</label>
                   <input value={edit.durata_default || ''} onChange={e => setEdit({...edit, durata_default: e.target.value})} placeholder="40 min" style={inp} />
                 </div>
@@ -281,7 +291,7 @@ export default function RosterPage() {
                 <div><label style={lbl}>Cazare fixă (lei)</label><input type="number" value={edit.cazare_fixa || ''} onFocus={e => e.target.select()} onChange={e => setEdit({...edit, cazare_fixa: e.target.value ? Number(e.target.value) : null})} placeholder="opțional" style={inp} /></div>
               </div>
               <div><label style={lbl}>Cazare (persoane auto)</label><input value={edit.cazare} onChange={e => setEdit({...edit, cazare: e.target.value})} style={inp} /></div>
-              <div style={{display:'grid', gridTemplateColumns:'1fr 1fr', gap:'12px'}}>
+              <div style={{display:'grid', gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr', gap:'12px'}}>
                 <div><label style={lbl}>Bilete avion</label><input type="number" value={edit.bilete_avion} onFocus={e => e.target.select()} onChange={e => setEdit({...edit, bilete_avion: Number(e.target.value)})} style={inp} /></div>
                 <div><label style={lbl}>Protocol (lei)</label><input type="number" value={edit.alcool_default} onFocus={e => e.target.select()} onChange={e => setEdit({...edit, alcool_default: Number(e.target.value)})} style={inp} /></div>
               </div>
