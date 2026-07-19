@@ -4,6 +4,17 @@ import './globals.css'
 export const metadata: Metadata = {
   title: 'GIGx',
   description: 'Platforma de booking pentru industria muzicală',
+  metadataBase: new URL('https://gigx.ro'),
+  openGraph: {
+    title: 'GIGx',
+    description: 'Platforma de booking pentru industria muzicală',
+    url: 'https://gigx.ro',
+    siteName: 'GIGx',
+    images: [{ url: '/og-image.png', width: 1200, height: 630 }],
+    locale: 'ro_RO',
+    type: 'website',
+  },
+  appleWebApp: { capable: true, title: 'GIGx', statusBarStyle: 'black-translucent' },
 }
 
 export default function RootLayout({
