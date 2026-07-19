@@ -7,7 +7,7 @@ import { FileText, Plus } from 'lucide-react'
 const F = 'Montserrat,sans-serif'
 const UI = {
   bg: '#f5f5f7', card: '#ffffff', ink: '#1c1917', sub: '#57534e', faint: '#a8a29e',
-  line: '#e7e5e4', green: '#7c3aed', greenSoft: '#f0fdf4', purple: '#7c3aed', dark: '#1c1917',
+  line: '#e7e5e4', green: '#059669', greenSoft: '#f0fdf4', purple: '#7c3aed', dark: '#1c1917',
   radius: '16px', radiusSm: '12px',
   shadow: '0 1px 3px rgba(0,0,0,0.04), 0 8px 24px rgba(0,0,0,0.04)',
   shadowBtn: '0 8px 30px rgba(0,0,0,0.18)',
