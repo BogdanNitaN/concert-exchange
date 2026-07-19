@@ -42,9 +42,9 @@ export async function GET(req: Request) {
       try {
         const ev = await cal.events.list({ calendarId: c.id!, timeMin, timeMax, singleEvents: true, maxResults: 10 })
         const evenimente = (ev.data.items || []).map(e => ({ titlu: e.summary || '(fara titlu)', descriere: e.description || '', allDay: !!e.start?.date }))
-        return { artist, calendar: c.summary, gen: rd?.categorie || 'altele', rosterData: rd, liber: evenimente.length === 0, evenimente }
+        return { artist, calendar: c.summary, calendarId: c.id, gen: rd?.categorie || 'altele', rosterData: rd, liber: evenimente.length === 0, evenimente }
       } catch {
-        return { artist, calendar: c.summary, gen: rd?.categorie || 'altele', rosterData: rd, liber: null, eroare: true, evenimente: [] }
+        return { artist, calendar: c.summary, calendarId: c.id, gen: rd?.categorie || 'altele', rosterData: rd, liber: null, eroare: true, evenimente: [] }
       }
     }))
     const liberi = rezultate.filter(r => r.liber === true).sort((a,b) => a.artist.localeCompare(b.artist))

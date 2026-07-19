@@ -18,7 +18,7 @@ const GENURI = [
 ]
 const GEN_LABEL: Record<string,string> = Object.fromEntries(GENURI.map(g => [g.key, g.label]))
 interface Ev { titlu: string; descriere: string; allDay: boolean }
-interface Rez { artist: string; calendar: string; gen: string; rosterData: any; liber: boolean | null; evenimente: Ev[] }
+interface Rez { artist: string; calendar: string; calendarId: string; gen: string; rosterData: any; liber: boolean | null; evenimente: Ev[] }
 
 function useIsMobile() {
   const [m, setM] = useState(false)
@@ -43,6 +43,8 @@ export default function DisponibilitatePage() {
   const [rez, setRez] = useState<{ liberi: Rez[]; ocupati: Rez[]; nrLiberi: number; nrOcupati: number } | null>(null)
   const [filtreGen, setFiltreGen] = useState<Set<string>>(new Set())
   const [bifati, setBifati] = useState<Set<string>>(new Set())
+  const [analize, setAnalize] = useState<Record<string, any>>({})
+  const [analizand, setAnalizand] = useState<Set<string>>(new Set())
 
   async function faLogin() {
     setLoggingIn(true); setLoginErr('')
@@ -82,6 +84,21 @@ export default function DisponibilitatePage() {
   }
   function toggleBifat(nume: string) {
     setBifati(prev => { const n = new Set(prev); n.has(nume) ? n.delete(nume) : n.add(nume); return n })
+  }
+  async function analizeaza(l: Rez) {
+    if (analize[l.artist]) { setAnalize(prev => { const n = {...prev}; delete n[l.artist]; return n }); return }
+    setAnalizand(prev => new Set(prev).add(l.artist))
+    try {
+      const r = await fetch('/api/calendar-proximitate?calendarId=' + encodeURIComponent(l.calendarId) + '&data=' + data + '&oras=' + encodeURIComponent(oras))
+      const d = await r.json()
+      if (d.ok) setAnalize(prev => ({ ...prev, [l.artist]: d }))
+    } catch {}
+    setAnalizand(prev => { const n = new Set(prev); n.delete(l.artist); return n })
+  }
+  function zileText(zile: number): string {
+    const abs = Math.abs(zile)
+    if (zile < 0) return 'acum ' + abs + (abs === 1 ? ' zi' : ' zile')
+    return 'peste ' + abs + (abs === 1 ? ' zi' : ' zile')
   }
 
   // liberi filtrati pe gen
@@ -207,12 +224,30 @@ export default function DisponibilitatePage() {
                 {genuriPrezente.map(g => (
                   <div key={g.key} style={{marginBottom:'16px'}}>
                     <div style={{fontSize:'12px', fontWeight:800, color:UI.purple, textTransform:'uppercase', marginBottom:'6px'}}>{g.label} ({grupati[g.key].length})</div>
-                    {grupati[g.key].map(l => (
-                      <label key={l.artist} style={{display:'flex', alignItems:'center', gap:'10px', background:UI.card, borderRadius:'10px', border:'1px solid '+(bifati.has(l.artist)?UI.green:UI.greenSoft), borderLeft:'3px solid '+UI.green, padding:'10px 14px', marginBottom:'6px', cursor:'pointer'}}>
-                        <input type="checkbox" checked={bifati.has(l.artist)} onChange={() => toggleBifat(l.artist)} style={{width:'16px', height:'16px', accentColor:UI.green}} />
-                        <span style={{fontSize:'14px', fontWeight:600, color:UI.ink}}>{l.artist}</span>
-                      </label>
-                    ))}
+                    {grupati[g.key].map(l => {
+                      const a = analize[l.artist]
+                      return (
+                      <div key={l.artist} style={{marginBottom:'6px'}}>
+                      <div style={{display:'flex', alignItems:'center', gap:'10px', background:UI.card, borderRadius:'10px', border:'1px solid '+(bifati.has(l.artist)?UI.green:UI.greenSoft), borderLeft:'3px solid '+UI.green, padding:'10px 14px'}}>
+                        <input type="checkbox" checked={bifati.has(l.artist)} onChange={() => toggleBifat(l.artist)} style={{width:'16px', height:'16px', accentColor:UI.green, cursor:'pointer'}} />
+                        <span style={{fontSize:'14px', fontWeight:600, color:UI.ink, flex:1}}>{l.artist}</span>
+                        {oras && <button onClick={() => analizeaza(l)} disabled={analizand.has(l.artist)} style={{fontSize:'11px', fontWeight:700, padding:'4px 10px', borderRadius:'7px', border:'1.5px solid '+UI.line, background:a?UI.purple:'white', color:a?'white':UI.sub, cursor:'pointer', fontFamily:F}}>{analizand.has(l.artist) ? '...' : a ? 'Ascunde' : 'Analizează'}</button>}
+                      </div>
+                      {a && (
+                        <div style={{background:'#faf9f7', border:'1px solid '+UI.line, borderRadius:'8px', padding:'10px 12px', marginTop:'4px', fontSize:'12px'}}>
+                          {a.proximitati?.length > 0 && a.proximitati.map((p: any, i: number) => (
+                            <div key={i} style={{marginBottom:'5px', color: p.tip==='acelasi_oras' ? '#c2410c' : UI.green, fontWeight:600}}>
+                              {p.tip==='acelasi_oras' ? '⚠ acelasi oras' : '✓ poti lega'} ({p.km} km, {zileText(p.zile)}): <span style={{color:UI.sub, fontWeight:500}}>{p.titlu}</span>
+                            </div>
+                          ))}
+                          {a.ziMinus && <div style={{color:UI.sub, marginBottom:'3px'}}>zi -1: {a.ziMinus.titlu}</div>}
+                          {a.ziPlus && <div style={{color:UI.sub, marginBottom:'3px'}}>zi +1: {a.ziPlus.titlu}</div>}
+                          {a.ultimaInZona && <div style={{color:UI.faint, marginTop:'3px'}}>ultima data in zona: {zileText(a.ultimaInZona.zile)} ({a.ultimaInZona.oras})</div>}
+                          {!a.proximitati?.length && !a.ziMinus && !a.ziPlus && !a.ultimaInZona && <div style={{color:UI.faint}}>fara evenimente in apropiere</div>}
+                        </div>
+                      )}
+                      </div>
+                    )})}
                   </div>
                 ))}
               </div>

@@ -67,3 +67,24 @@ export const CALENDAR_EXCLUSE = [
 export function normNume(s: string): string {
   return (s || '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-z0-9]/g, '')
 }
+
+// orase RO cunoscute pentru validarea extragerii din titluri
+const RO_CITIES_ORAS = ['bucuresti','cluj','cluj-napoca','timisoara','iasi','constanta','craiova','brasov','galati','ploiesti','oradea','braila','arad','pitesti','sibiu','bacau','targu mures','baia mare','baia sprie','buzau','satu mare','ardud','botosani','suceava','piatra neamt','focsani','targu jiu','deva','alba iulia','resita','tulcea','slatina','ramnicu valcea','targoviste','giurgiu','alexandria','calarasi','slobozia','zalau','bistrita','vaslui','sfantu gheorghe','miercurea ciuc','onesti','roman','dej','turda','sighisoara','medias','costinesti','mamaia','vama veche','sinaia','predeal','busteni','tasnad','baia sprie']
+
+// extrage orasul dintr-un titlu de eveniment. null daca nu-i un show cu locatie.
+export function extragOrasDinTitlu(titlu: string): string | null {
+  if (!titlu) return null
+  if (/\bblocat\b/i.test(titlu)) return null
+  let t = titlu.replace(/^\([^)]*\)\s*/, '').trim()
+  t = t.replace(/\([^)]*\)/g, '').trim()
+  const areVirgula = t.includes(',')
+  const segmente = t.split(',').map(s => s.trim()).filter(Boolean)
+  if (segmente.length === 0) return null
+  let oras = segmente[segmente.length - 1]
+  oras = oras.replace(/\b(open air|aer liber|plaja|festival|fest|corporate|nunta|privat|venue)\b/gi, '').trim()
+  const orasNorm = normNume(oras)
+  const eOras = RO_CITIES_ORAS.map(normNume).includes(orasNorm)
+  if (!eOras && !areVirgula) return null
+  if (!eOras && oras.split(' ').length > 2) return null
+  return oras || null
+}
