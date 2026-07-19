@@ -110,6 +110,10 @@ export default function DisponibilitatePage() {
     } catch {}
     setAnalizand(prev => { const n = new Set(prev); n.delete(l.artist); return n })
   }
+  async function analizeazaToti() {
+    const deAnalizat = bifatiLista.filter(l => !analize[l.artist])
+    for (const l of deAnalizat) { await analizeaza(l) }
+  }
   function zileText(zile: number): string {
     const abs = Math.abs(zile)
     if (zile < 0) return 'acum ' + abs + (abs === 1 ? ' zi' : ' zile')
@@ -253,16 +257,24 @@ export default function DisponibilitatePage() {
                         {oras && <button onClick={() => analizeaza(l)} disabled={analizand.has(l.artist)} style={{fontSize:'11px', fontWeight:700, padding:'4px 10px', borderRadius:'7px', border:'1.5px solid '+UI.line, background:a?UI.purple:'white', color:a?'white':UI.sub, cursor:'pointer', fontFamily:F}}>{analizand.has(l.artist) ? '...' : a ? 'Ascunde' : 'Analizează'}</button>}
                       </div>
                       {a && (
-                        <div style={{background:'#faf9f7', border:'1px solid '+UI.line, borderRadius:'8px', padding:'10px 12px', marginTop:'4px', fontSize:'12px'}}>
+                        <div style={{background:'#faf9f7', border:'1px solid '+UI.line, borderRadius:'8px', padding:'12px', marginTop:'4px', fontSize:'12px'}}>
+                          <div style={{display:'grid', gridTemplateColumns:'1fr 1fr', gap:'8px', marginBottom:(a.proximitati?.length||a.ultimaInZona)?'10px':'0'}}>
+                            <div style={{background: a.ziMinus?'#fff7ed':'#f5f5f4', border:'1px solid '+(a.ziMinus?'#fed7aa':UI.line), borderRadius:'7px', padding:'8px 10px'}}>
+                              <div style={{fontSize:'10px', fontWeight:800, color: a.ziMinus?'#c2410c':UI.faint, textTransform:'uppercase', marginBottom:'3px'}}>Ziua dinainte</div>
+                              <div style={{fontSize:'12px', fontWeight:600, color: a.ziMinus?UI.ink:UI.faint}}>{a.ziMinus ? a.ziMinus.titlu : 'liber / nimic notat'}</div>
+                            </div>
+                            <div style={{background: a.ziPlus?'#fff7ed':'#f5f5f4', border:'1px solid '+(a.ziPlus?'#fed7aa':UI.line), borderRadius:'7px', padding:'8px 10px'}}>
+                              <div style={{fontSize:'10px', fontWeight:800, color: a.ziPlus?'#c2410c':UI.faint, textTransform:'uppercase', marginBottom:'3px'}}>Ziua după</div>
+                              <div style={{fontSize:'12px', fontWeight:600, color: a.ziPlus?UI.ink:UI.faint}}>{a.ziPlus ? a.ziPlus.titlu : 'liber / nimic notat'}</div>
+                            </div>
+                          </div>
                           {a.proximitati?.length > 0 && a.proximitati.map((p: any, i: number) => (
                             <div key={i} style={{marginBottom:'5px', color: p.tip==='acelasi_oras' ? '#c2410c' : UI.green, fontWeight:600}}>
                               {p.tip==='acelasi_oras' ? '⚠ acelasi oras' : '✓ poti lega'} ({p.km} km, {zileText(p.zile)}): <span style={{color:UI.sub, fontWeight:500}}>{p.titlu}</span>
                             </div>
                           ))}
-                          {a.ziMinus && <div style={{color:UI.sub, marginBottom:'3px'}}>zi -1: {a.ziMinus.titlu}</div>}
-                          {a.ziPlus && <div style={{color:UI.sub, marginBottom:'3px'}}>zi +1: {a.ziPlus.titlu}</div>}
-                          {a.ultimaInZona && <div style={{color:UI.faint, marginTop:'3px'}}>ultima data in zona: {zileText(a.ultimaInZona.zile)} ({a.ultimaInZona.oras})</div>}
-                          {!a.proximitati?.length && !a.ziMinus && !a.ziPlus && !a.ultimaInZona && <div style={{color:UI.faint}}>fara evenimente in apropiere</div>}
+                          {a.ultimaInZona && <div style={{color:UI.faint, marginTop:'3px'}}>ultima dată în zonă: {zileText(a.ultimaInZona.zile)} ({a.ultimaInZona.oras})</div>}
+                          {!a.proximitati?.length && !a.ultimaInZona && <div style={{color:UI.faint, marginTop:'2px'}}>fără alte evenimente în apropiere</div>}
                         </div>
                       )}
                       </div>
@@ -295,6 +307,7 @@ export default function DisponibilitatePage() {
                   <button onClick={() => { navigator.clipboard.writeText(textExport()) }} style={{padding:'10px 16px', background:'rgba(255,255,255,0.15)', color:'white', border:'none', borderRadius:'10px', fontSize:'13px', fontWeight:700, cursor:'pointer', fontFamily:F}}>Copiază</button>
                   <button onClick={() => window.open('https://wa.me/?text=' + encodeURIComponent(textExport(true)), '_blank')} style={{padding:'10px 16px', background:'#25D366', color:'white', border:'none', borderRadius:'10px', fontSize:'13px', fontWeight:700, cursor:'pointer', fontFamily:F}}>WhatsApp</button>
                   <button onClick={() => window.open('mailto:?subject=' + encodeURIComponent('Artiști disponibili' + (oras?' - '+oras:'')) + '&body=' + encodeURIComponent(textExport()))} style={{padding:'10px 16px', background:'#3b82f6', color:'white', border:'none', borderRadius:'10px', fontSize:'13px', fontWeight:700, cursor:'pointer', fontFamily:F}}>Email</button>
+                  {oras && <button onClick={analizeazaToti} style={{padding:'10px 16px', background:UI.purple, color:'white', border:'none', borderRadius:'10px', fontSize:'13px', fontWeight:700, cursor:'pointer', fontFamily:F}}>Analizează toți</button>}
                   <button onClick={exportaPdf} style={{padding:'10px 16px', background:'rgba(255,255,255,0.15)', color:'white', border:'none', borderRadius:'10px', fontSize:'13px', fontWeight:700, cursor:'pointer', fontFamily:F}}>PDF</button>
                   <button onClick={trimiteInOferta} style={{display:'flex', alignItems:'center', gap:'6px', padding:'10px 16px', background:UI.green, color:'white', border:'none', borderRadius:'10px', fontSize:'13px', fontWeight:700, cursor:'pointer', fontFamily:F}}><Send size={14} /> Trimite în ofertă</button>
                 </div>
