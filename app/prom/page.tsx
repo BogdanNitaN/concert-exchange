@@ -85,7 +85,7 @@ const PROM_MAP: { name: string; genre: GenreKey; promTier: string; display?: str
   { name: 'Mira', genre: 'pop_dance', promTier: 'A+' },
   { name: 'Antonia', genre: 'pop_dance', promTier: 'A+' },
   { name: 'Alina Eremia', genre: 'pop_dance', promTier: 'A+' },
-  { name: 'Mario Fresh', genre: 'pop_dance', promTier: 'A+' },
+  { name: 'Mario', genre: 'pop_dance', promTier: 'A+' },
   { name: 'Ami', genre: 'pop_dance', promTier: 'A+', display: 'AMI' },
   { name: 'Stefania', genre: 'pop_dance', promTier: 'A+' },
   { name: 'Holy Molly', genre: 'pop_dance', promTier: 'A' },

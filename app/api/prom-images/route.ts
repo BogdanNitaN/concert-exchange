@@ -40,7 +40,7 @@ const SPOTIFY_IDS: Record<string, string> = {
   'Mira': '2nMFC7hWK0haX8ilvRpb59',
   'Antonia': '4TLzMoEaUDkcAfIlY3Xhxn',
   'Alina Eremia': '6cpj6MeLF0pLx34Un9Bpj3',
-  'Mario Fresh': '04jpM7EVND9s2HYC2HDLuR',
+  'Mario': '2vMjgLGSb1lKiHySf3l9lF',
   'AMI': '6ZQhxROkDyYGsijIBDBrhF',
   'Stefania': '3GyTyH3aepWj2Z2wC3FqHy',
   'Holy Molly': '4ljZpmnnnA1ezEdylZuNLK',

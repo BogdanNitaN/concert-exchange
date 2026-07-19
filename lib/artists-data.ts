@@ -1272,7 +1272,7 @@ export const ARTISTS_DATA = [
   , "setType": "vocal"},
   {
     "id": 98,
-    "name": "Mario Fresh",
+    "name": "Mario",
     "genres": [
       "Pop",
       "Dance"
