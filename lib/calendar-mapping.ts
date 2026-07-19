@@ -83,7 +83,6 @@ const FESTIVAL_ORAS: Record<string, string> = {
   'saga': 'Bucuresti',
   'beach please': 'Costinesti',
   'sunwaves': 'Mamaia',
-  'neversea': 'Constanta',
   'afterhills': 'Iasi',
   'wine village': 'Alba Iulia',
   'jazz in the park': 'Cluj-Napoca',
