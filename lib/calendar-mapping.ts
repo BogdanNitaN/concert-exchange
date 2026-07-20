@@ -63,6 +63,8 @@ export const CALENDAR_EXCLUSE = [
   'NICOLE CHERRY', 'Nicole Cherry',
 ]
 
+export const ARTISTI_INACTIVI = ['Dara']
+
 // normalizare pentru potrivire fallback
 export function normNume(s: string): string {
   return (s || '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-z0-9]/g, '')

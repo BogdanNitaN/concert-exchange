@@ -12,15 +12,21 @@ interface Props {
 const MONTHS = ['Ianuarie', 'Februarie', 'Martie', 'Aprilie', 'Mai', 'Iunie', 'Iulie', 'August', 'Septembrie', 'Octombrie', 'Noiembrie', 'Decembrie']
 const DAYS = ['Lu', 'Ma', 'Mi', 'Jo', 'Vi', 'Sâ', 'Du']
 
+function parseLocal(v: string): Date | null {
+  if (!v) return null
+  const [y, m, d] = v.split('-').map(Number)
+  if (!y || !m || !d) return null
+  return new Date(y, m - 1, d)
+}
 export default function DatePicker({ value, onChange, placeholder = 'Selectează data' }: Props) {
   const today = new Date()
   const [open, setOpen] = useState(false)
   const [viewDate, setViewDate] = useState(() => {
-    if (value) return new Date(value)
+    if (value) { const p = parseLocal(value); if (p) return p }
     return new Date(today.getFullYear(), today.getMonth(), 1)
   })
 
-  const selectedDate = value ? new Date(value) : null
+  const selectedDate = value ? parseLocal(value) : null
 
   const getDaysInMonth = (year: number, month: number) => new Date(year, month + 1, 0).getDate()
   const getFirstDayOfMonth = (year: number, month: number) => {

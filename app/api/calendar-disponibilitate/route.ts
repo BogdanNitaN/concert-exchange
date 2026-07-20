@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server'
 import { google } from 'googleapis'
-import { CALENDAR_TO_ROSTER, CALENDAR_EXCLUSE, normNume } from '@/lib/calendar-mapping'
+import { CALENDAR_TO_ROSTER, CALENDAR_EXCLUSE, normNume, ARTISTI_INACTIVI } from '@/lib/calendar-mapping'
 import { createClient } from '@supabase/supabase-js'
 
 function getCal() {
@@ -60,7 +60,8 @@ export async function GET(req: Request) {
         ex.evenimente = [...ex.evenimente, ...r.evenimente]
       }
     }
-    const dedup = Array.from(perArtist.values())
+    const inactiviNorm = ARTISTI_INACTIVI.map(normNume)
+    const dedup = Array.from(perArtist.values()).filter((r: any) => !inactiviNorm.includes(normNume(r.artist)))
     const liberi = dedup.filter(r => r.liber === true).sort((a,b) => a.artist.localeCompare(b.artist))
     const ocupati = dedup.filter(r => r.liber === false).sort((a,b) => a.artist.localeCompare(b.artist))
     const erori = dedup.filter(r => r.liber === null)
