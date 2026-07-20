@@ -41,7 +41,7 @@ export async function GET(req: Request) {
     })
     const evenimente = (ev.data.items || []).map(e => {
       const start = e.start?.date || e.start?.dateTime?.slice(0,10) || ''
-      return { titlu: e.summary || '', data: start, oras: extragOrasDinTitlu(e.summary || '') }
+      return { titlu: e.summary || '', data: start, oras: extragOrasDinTitlu(e.summary || ''), created: e.created || null }
     }).filter(e => e.data && e.data !== data) // exclud ziua cautata
 
     const zileDiff = (d: string) => Math.round((new Date(d + 'T12:00:00').getTime() - dataObj.getTime()) / 86400000)
@@ -67,11 +67,11 @@ export async function GET(req: Request) {
         if (km === null) continue
         const zile = zileDiff(e.data)
         if (km <= 200) {
-          proximitati.push({ titlu: e.titlu, data: e.data, oras: e.oras, km, zile, tip: km <= 30 ? 'acelasi_oras' : 'aproape' })
+          proximitati.push({ titlu: e.titlu, data: e.data, oras: e.oras, km, zile, created: e.created, tip: km <= 30 ? 'acelasi_oras' : 'aproape' })
         }
         // ultima data in zona (in trecut, <= 60km)
         if (km <= 60 && zile < 0) {
-          if (!ultimaInZona || zile > ultimaInZona.zile) ultimaInZona = { titlu: e.titlu, data: e.data, oras: e.oras, km, zile }
+          if (!ultimaInZona || zile > ultimaInZona.zile) ultimaInZona = { titlu: e.titlu, data: e.data, oras: e.oras, km, zile, created: e.created }
         }
       }
     }

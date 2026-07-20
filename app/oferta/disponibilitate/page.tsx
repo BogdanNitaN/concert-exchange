@@ -271,18 +271,20 @@ export default function DisponibilitatePage() {
                             <div style={{background: a.ziMinus?'#fff7ed':'#f5f5f4', border:'1px solid '+(a.ziMinus?'#fed7aa':UI.line), borderRadius:'7px', padding:'8px 10px'}}>
                               <div style={{fontSize:'10px', fontWeight:800, color: a.ziMinus?'#c2410c':UI.faint, textTransform:'uppercase', marginBottom:'3px'}}>Ziua dinainte{a.ziMinus ? ' · ' + dataScurta(a.ziMinus.data) : ''}</div>
                               <div style={{fontSize:'12px', fontWeight:600, color: a.ziMinus?UI.ink:UI.faint}}>{a.ziMinus ? a.ziMinus.titlu : 'liber / nimic notat'}</div>
+                              {a.ziMinus?.created && <div style={{fontSize:'9px', color:UI.faint, marginTop:'2px'}}>pus: {dataCreare(a.ziMinus.created)}</div>}
                             </div>
                             <div style={{background: a.ziPlus?'#fff7ed':'#f5f5f4', border:'1px solid '+(a.ziPlus?'#fed7aa':UI.line), borderRadius:'7px', padding:'8px 10px'}}>
                               <div style={{fontSize:'10px', fontWeight:800, color: a.ziPlus?'#c2410c':UI.faint, textTransform:'uppercase', marginBottom:'3px'}}>Ziua după{a.ziPlus ? ' · ' + dataScurta(a.ziPlus.data) : ''}</div>
                               <div style={{fontSize:'12px', fontWeight:600, color: a.ziPlus?UI.ink:UI.faint}}>{a.ziPlus ? a.ziPlus.titlu : 'liber / nimic notat'}</div>
+                              {a.ziPlus?.created && <div style={{fontSize:'9px', color:UI.faint, marginTop:'2px'}}>pus: {dataCreare(a.ziPlus.created)}</div>}
                             </div>
                           </div>
                           {a.proximitati?.length > 0 && a.proximitati.map((p: any, i: number) => (
                             <div key={i} style={{marginBottom:'5px', color: p.tip==='acelasi_oras' ? '#c2410c' : UI.green, fontWeight:600}}>
-                              {p.tip==='acelasi_oras' ? '⚠ acelasi oras' : '✓ poti lega'} ({p.km} km, {zileText(p.zile)}): <span style={{color:UI.sub, fontWeight:500}}>{p.titlu}</span>
+                              {p.tip==='acelasi_oras' ? '⚠ acelasi oras' : '✓ poti lega'} ({p.km} km, {zileText(p.zile)}): <span style={{color:UI.sub, fontWeight:500}}>{p.titlu}</span>{p.created && <span style={{color:UI.faint, fontWeight:400, fontSize:'10px'}}> · pus {dataCreare(p.created)}</span>}
                             </div>
                           ))}
-                          {a.ultimaInZona && <div style={{color:UI.faint, marginTop:'3px'}}>ultima dată în zonă: {zileText(a.ultimaInZona.zile)} ({a.ultimaInZona.oras})</div>}
+                          {a.ultimaInZona && <div style={{color:UI.faint, marginTop:'3px'}}>ultima dată în zonă: {zileText(a.ultimaInZona.zile)} ({a.ultimaInZona.oras}){a.ultimaInZona.created ? ' · pus ' + dataCreare(a.ultimaInZona.created) : ''}</div>}
                           {!a.proximitati?.length && !a.ultimaInZona && <div style={{color:UI.faint, marginTop:'2px'}}>fără alte evenimente în apropiere</div>}
                         </div>
                       )}
