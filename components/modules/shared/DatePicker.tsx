@@ -32,8 +32,10 @@ export default function DatePicker({ value, onChange, placeholder = 'Selectează
   const nextMonth = () => setViewDate(new Date(viewDate.getFullYear(), viewDate.getMonth() + 1, 1))
 
   const selectDay = (day: number) => {
-    const d = new Date(viewDate.getFullYear(), viewDate.getMonth(), day)
-    const str = d.toISOString().split('T')[0]
+    const y = viewDate.getFullYear()
+    const m = String(viewDate.getMonth() + 1).padStart(2, '0')
+    const dd = String(day).padStart(2, '0')
+    const str = y + '-' + m + '-' + dd
     onChange(str)
     setOpen(false)
   }
