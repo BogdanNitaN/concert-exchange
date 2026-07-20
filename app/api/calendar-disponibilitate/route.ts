@@ -42,7 +42,7 @@ export async function GET(req: Request) {
       const rd: any = rosterNorm.get(normNume(artist)) || null
       try {
         const ev = await cal.events.list({ calendarId: c.id!, timeMin, timeMax, singleEvents: true, maxResults: 10 })
-        const evenimente = (ev.data.items || []).map(e => ({ titlu: e.summary || '(fara titlu)', descriere: e.description || '', allDay: !!e.start?.date }))
+        const evenimente = (ev.data.items || []).map(e => ({ titlu: e.summary || '(fara titlu)', descriere: e.description || '', allDay: !!e.start?.date, created: e.created || null }))
         return { artist, calendar: c.summary, calendarId: c.id, gen: rd?.categorie || 'altele', rosterData: rd, liber: evenimente.length === 0, evenimente }
       } catch {
         return { artist, calendar: c.summary, calendarId: c.id, gen: rd?.categorie || 'altele', rosterData: rd, liber: null, eroare: true, evenimente: [] }

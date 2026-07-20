@@ -115,6 +115,11 @@ export default function DisponibilitatePage() {
     const deAnalizat = bifatiLista.filter(l => !analize[l.artist])
     for (const l of deAnalizat) { await analizeaza(l) }
   }
+  function dataCreare(iso: string): string {
+    try {
+      return new Date(iso).toLocaleString('ro-RO', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit', timeZone: 'Europe/Bucharest' })
+    } catch { return '' }
+  }
   function dataScurta(iso: string): string {
     try { return new Date(iso + 'T12:00:00').toLocaleDateString('ro-RO', { day: 'numeric', month: 'long' }) } catch { return '' }
   }
@@ -296,7 +301,10 @@ export default function DisponibilitatePage() {
                   <div key={r.artist} style={{background:UI.card, borderRadius:'10px', border:'1px solid '+UI.line, borderLeft:'3px solid #dc2626', padding:'10px 14px', marginBottom:'8px'}}>
                     <div style={{fontSize:'14px', fontWeight:700, color:UI.ink}}>{r.artist}</div>
                     {r.evenimente.map((e, i) => (
-                      <div key={i} style={{fontSize:'12px', color:UI.sub, marginTop:'3px'}}>{e.titlu}{e.descriere ? ' · ' + e.descriere.slice(0,80) : ''}</div>
+                      <div key={i} style={{marginTop:'3px'}}>
+                        <div style={{fontSize:'12px', color:UI.sub}}>{e.titlu}{e.descriere ? ' · ' + e.descriere.slice(0,80) : ''}</div>
+                        {(e as any).created && <div style={{fontSize:'10px', color:UI.faint, marginTop:'1px'}}>pus în agendă: {dataCreare((e as any).created)}</div>}
+                      </div>
                     ))}
                   </div>
                 ))}
