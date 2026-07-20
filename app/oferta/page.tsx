@@ -188,6 +188,15 @@ export default function OfertaPage() {
   const [showAddArtist, setShowAddArtist] = useState(false)
   const [newArtist, setNewArtist] = useState<any>({ nume: '', categorie: 'pop', tip: 'propriu', durata: '40 min', fee: '', leiKm: '', transportMoneda: 'lei', cazare: '', bileteAvion: '', alcool: '', diurnaFixa: '', variante: [] as {nume:string,fee:string,durata:string}[] })
   const [savingArtist, setSavingArtist] = useState(false)
+  function resetOferta() {
+    const areDate = numeClient || toCity || dataEveniment || linii.length > 0 || locatie
+    if (areDate && !confirm('Începi o ofertă nouă? Se șterge oferta curentă.')) return
+    setLinii([]); setToCity(''); setDataEveniment(''); setNumeClient(''); setLocatie('')
+    setKm(null); setDestinatar(''); setUseAdaos(false); setInstitutiePublica(false)
+    setSearch(''); setFromCity('Bucuresti'); setAdaosProcent(1)
+    setCodOferta('GIGX-' + new Date().getFullYear() + '-' + String(Math.floor(Math.random()*9000)+1000))
+    window.scrollTo({ top: 0, behavior: 'smooth' })
+  }
 
   useEffect(() => {
     // verific sesiunea Supabase
@@ -743,7 +752,7 @@ export default function OfertaPage() {
       <div style={{maxWidth:'1080px', margin:'0 auto', position:'relative', zIndex:1}}>
         <div style={{display:'flex', justifyContent:'space-between', alignItems:'center', marginBottom:'24px', position:'sticky', top:'12px', zIndex:50, background:'rgba(255,255,255,0.7)', backdropFilter:'blur(16px)', WebkitBackdropFilter:'blur(16px)', border:'1px solid rgba(255,255,255,0.5)', borderRadius:'16px', padding:'12px 18px', boxShadow:'0 8px 32px rgba(0,0,0,0.06), inset 0 1px 0 rgba(255,255,255,0.5)'}}>
           <div>
-            <div style={{fontSize:'27px', fontWeight:800, letterSpacing:'-1px', color:UI.ink}}>GIG<span style={{color:'#059669'}}>x</span></div>
+            <div onClick={resetOferta} title="Ofertă nouă" style={{fontSize:'27px', fontWeight:800, letterSpacing:'-1px', color:UI.ink, cursor:'pointer'}}>GIG<span style={{color:'#059669'}}>x</span></div>
             <div style={{fontSize:'13px', color:'#a8a29e', fontWeight:500, marginTop:'2px'}}>Generator deviz intern</div>
           </div>
           <div style={{display:'flex', gap: isMobile ? '8px' : '10px', alignItems:'center', flexWrap:'wrap', justifyContent: isMobile ? 'flex-start' : 'flex-end'}}>
