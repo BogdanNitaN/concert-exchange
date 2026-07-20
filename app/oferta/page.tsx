@@ -188,6 +188,7 @@ export default function OfertaPage() {
   const [showAddArtist, setShowAddArtist] = useState(false)
   const [newArtist, setNewArtist] = useState<any>({ nume: '', categorie: 'pop', tip: 'propriu', durata: '40 min', fee: '', leiKm: '', transportMoneda: 'lei', cazare: '', bileteAvion: '', alcool: '', diurnaFixa: '', variante: [] as {nume:string,fee:string,durata:string}[] })
   const [savingArtist, setSavingArtist] = useState(false)
+  const [conflicte, setConflicte] = useState<Record<string, {titlu: string, created: string | null}[]>>({})
   function resetOferta() {
     const areDate = numeClient || toCity || dataEveniment || linii.length > 0 || locatie
     if (areDate && !confirm('Începi o ofertă nouă? Se șterge oferta curentă.')) return
@@ -319,6 +320,29 @@ export default function OfertaPage() {
     if (setType === 'instrument') return ['30 min', '40 min', '60 min', '90 min', '120 min', 'manual']
     if (setType === 'mc') return ['1 ora', '2 ore', '3 ore', '4 ore', 'manual']
     return ['40 min', '40 x2', '40 x3', '60 min', '90 min', 'manual']
+  }
+
+  useEffect(() => {
+    if (!dataEveniment || linii.length === 0) { setConflicte({}); return }
+    let anulat = false
+    const verifica = async () => {
+      const rez: Record<string, {titlu: string, created: string | null}[]> = {}
+      for (const l of linii) {
+        try {
+          const r = await fetch('/api/calendar-verifica-artist?artist=' + encodeURIComponent(l.artist.nume) + '&data=' + dataEveniment)
+          const d = await r.json()
+          if (d.ok && d.ocupat && d.evenimente?.length) rez[l.artist.nume] = d.evenimente
+        } catch {}
+      }
+      if (!anulat) setConflicte(rez)
+    }
+    verifica()
+    return () => { anulat = true }
+  }, [dataEveniment, linii.map(l => l.artist.nume).join(',')])
+
+  function dataCreareOferta(iso: string | null): string {
+    if (!iso) return ''
+    try { return new Date(iso).toLocaleString('ro-RO', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit', timeZone: 'Europe/Bucharest' }) } catch { return '' }
   }
 
   function addArtist(a: Artist) {
@@ -857,6 +881,14 @@ export default function OfertaPage() {
                 <button onClick={() => removeLinie(l.key)} style={{background:'none', border:'none', color:'#dc2626', cursor:'pointer', fontSize:'13px', fontWeight:600}}>Șterge</button>
               </div>
 
+              {conflicte[l.artist.nume] && conflicte[l.artist.nume].length > 0 && (
+                <div style={{background:'#fef2f2', border:'1.5px solid #fca5a5', borderRadius:UI.radiusSm, padding:'10px 12px', marginBottom:'14px'}}>
+                  <div style={{fontSize:'12px', fontWeight:800, color:'#dc2626', marginBottom:'4px'}}>⚠ Atenție — {l.artist.nume} are deja în agendă pe {dataEveniment ? formatData(dataEveniment) : 'această dată'}:</div>
+                  {conflicte[l.artist.nume].map((e, i) => (
+                    <div key={i} style={{fontSize:'12px', color:'#7f1d1d', marginTop:'2px'}}>• {e.titlu}{e.created ? <span style={{color:'#b91c1c', fontSize:'10px'}}> (pus în agendă: {dataCreareOferta(e.created)})</span> : ''}</div>
+                  ))}
+                </div>
+              )}
               <div style={{display:'grid', gridTemplateColumns:'repeat(auto-fit, minmax(140px, 1fr))', gap:'12px', marginBottom:'12px'}}>
                 <div>
                   <label style={label}>Tip preț</label>
