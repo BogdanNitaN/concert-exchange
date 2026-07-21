@@ -1,0 +1,98 @@
+import { NextResponse } from 'next/server'
+import { google } from 'googleapis'
+import { CALENDAR_TO_ROSTER, normNume, extragOrasDinTitlu } from '@/lib/calendar-mapping'
+
+function getCal() {
+  const o = new google.auth.OAuth2(
+    process.env.GOOGLE_CALENDAR_CLIENT_ID,
+    process.env.GOOGLE_CALENDAR_CLIENT_SECRET,
+    process.env.GOOGLE_CALENDAR_REDIRECT_URI
+  )
+  o.setCredentials({ refresh_token: process.env.GOOGLE_CALENDAR_REFRESH_TOKEN })
+  return google.calendar({ version: 'v3', auth: o })
+}
+
+async function distanta(a: string, b: string, origin: string): Promise<number | null> {
+  if (normNume(a) === normNume(b)) return 0
+  try {
+    const r = await fetch(origin + '/api/distance?from=' + encodeURIComponent(a) + '&to=' + encodeURIComponent(b))
+    const d = await r.json()
+    return typeof d.km === 'number' ? d.km : null
+  } catch { return null }
+}
+
+export async function GET(req: Request) {
+  try {
+    const url = new URL(req.url)
+    const origin = url.origin
+    const artist = url.searchParams.get('artist')
+    const oras = url.searchParams.get('oras') || ''
+    if (!artist) return NextResponse.json({ ok: false, error: 'lipsa artist' }, { status: 400 })
+
+    const cal = getCal()
+    const lista = await cal.calendarList.list({ maxResults: 250 })
+    const calToRosterNorm = new Map<string, string>()
+    for (const [k, v] of Object.entries(CALENDAR_TO_ROSTER)) calToRosterNorm.set(normNume(k), v)
+    const artistNorm = normNume(artist)
+    // matching fuzzy: potrivire exacta intai, apoi "contine"
+    const candidati = (lista.data.items || []).filter(c => c.summary).map(c => {
+      const rosterNume = calToRosterNorm.get(normNume(c.summary!)) || c.summary!.trim()
+      return { cal: c, rosterNume, norm: normNume(rosterNume) }
+    })
+    let calArtist = candidati.find(x => x.norm === artistNorm)?.cal
+    let numeGasit = candidati.find(x => x.norm === artistNorm)?.rosterNume
+    if (!calArtist) {
+      // contine (Motans -> The Motans, carlas -> Carla's Dreams)
+      const potriviri = candidati.filter(x => x.norm.includes(artistNorm) || artistNorm.includes(x.norm))
+      if (potriviri.length > 0) { calArtist = potriviri[0].cal; numeGasit = potriviri[0].rosterNume }
+    }
+    if (!calArtist) return NextResponse.json({ ok: true, gasit: false })
+
+    const acum = new Date()
+    const min = new Date(acum.getFullYear(), acum.getMonth() - 3, 1)
+    const max = new Date(acum.getFullYear(), 11, 31, 23, 59, 59)
+    const ev = await cal.events.list({
+      calendarId: calArtist.id!, timeMin: min.toISOString(), timeMax: max.toISOString(),
+      singleEvents: true, orderBy: 'startTime', maxResults: 300
+    })
+    const evenimente = (ev.data.items || []).map(e => {
+      const start = (e.start?.date || e.start?.dateTime || '').slice(0, 10)
+      const titlu = e.summary || ''
+      const orasEv = extragOrasDinTitlu(titlu)
+      // clasific: blocat (indisponibil), show (concert real), nota (context)
+      let tip: 'show' | 'blocat' | 'nota' = 'nota'
+      if (/blocat/i.test(titlu)) tip = 'blocat'
+      else if (/^\s*\((P|C)/i.test(titlu) || !!orasEv) tip = 'show'
+      return { titlu, data: start, oras: orasEv, created: e.created || null, tip }
+    }).filter(e => e.data)
+
+    const azi = new Date(); azi.setHours(0, 0, 0, 0)
+    const ocupate = evenimente.map(e => ({ ...e, viitor: new Date(e.data + 'T12:00:00') >= azi }))
+
+    let inOrasViitor: any[] = []
+    let ultimaInZona: any = null
+    if (oras) {
+      const orasNorm = normNume(oras)
+      for (const e of evenimente) {
+        if (!e.oras) continue
+        let km: number | null
+        if (normNume(e.oras) === orasNorm) km = 0
+        else km = await distanta(oras, e.oras, origin)
+        if (km === null) continue
+        const viitor = new Date(e.data + 'T12:00:00') >= azi
+        if (viitor && km <= 50) inOrasViitor.push({ ...e, km })
+        if (!viitor && km <= 200) {
+          if (!ultimaInZona || e.data > ultimaInZona.data) ultimaInZona = { ...e, km }
+        }
+      }
+    }
+
+    return NextResponse.json({
+      ok: true, gasit: true, artist: numeGasit || artist,
+      ocupate: ocupate.sort((a, b) => a.data.localeCompare(b.data)),
+      inOrasViitor, ultimaInZona
+    })
+  } catch (e) {
+    return NextResponse.json({ ok: false, error: String(e) }, { status: 500 })
+  }
+}
