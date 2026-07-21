@@ -57,10 +57,10 @@ export async function GET(req: Request) {
           return { titlu, descriere: e.description || '', allDay: !!e.start?.date, created: e.created || null, tip }
         })
         const blocante = evenimente.filter((e: any) => e.tip === 'show' || e.tip === 'indisponibil')
-        const neclare = evenimente.filter((e: any) => e.tip === 'echipa' || e.tip === 'nota')
+        const echipaEv = evenimente.filter((e: any) => e.tip === 'echipa')
         let status: string = 'liber'
         if (blocante.length > 0) status = 'ocupat'
-        else if (neclare.length > 0) status = 'verifica'
+        else if (echipaEv.length > 0) status = 'verifica'
         return { artist, calendar: c.summary, calendarId: c.id, gen: rd?.categorie || 'altele', rosterData: rd, liber: blocante.length === 0, status, evenimente }
       } catch {
         return { artist, calendar: c.summary, calendarId: c.id, gen: rd?.categorie || 'altele', rosterData: rd, liber: null, eroare: true, evenimente: [] }

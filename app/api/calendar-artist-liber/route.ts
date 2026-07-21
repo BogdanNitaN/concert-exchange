@@ -134,11 +134,11 @@ export async function GET(req: Request) {
       const iso = (d: Date) => d.toISOString().slice(0, 10)
       const contextZile = ocupate.filter((e: any) => e.data >= iso(dMin) && e.data <= iso(dMax) && e.data !== dataQuery)
       const blocante = evPeData.filter((e: any) => e.tip === 'show' || e.tip === 'indisponibil')
-      const neclare = evPeData.filter((e: any) => e.tip === 'echipa' || e.tip === 'nota')
-      // status: ocupat daca are show/indisponibil; verifica daca doar echipa/note; liber daca nimic
+      const echipaEv = evPeData.filter((e: any) => e.tip === 'echipa')
+      // status: ocupat daca show/indisponibil; verifica DOAR daca echipa (poate afecta); liber daca doar note
       let status: 'liber' | 'ocupat' | 'verifica' = 'liber'
       if (blocante.length > 0) status = 'ocupat'
-      else if (neclare.length > 0) status = 'verifica'
+      else if (echipaEv.length > 0) status = 'verifica'
       peData = {
         data: dataQuery,
         liber: blocante.length === 0,
