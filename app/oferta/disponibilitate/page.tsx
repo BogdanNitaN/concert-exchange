@@ -452,7 +452,7 @@ export default function DisponibilitatePage() {
                       {ra.inOrasViitor?.map((e: any, i: number) => (
                         <div key={i} style={{fontSize:'13px', color:'#c2410c', fontWeight:600, marginBottom:'3px'}}>deja programat: {lunaData(e.data)}, {e.titlu} ({e.km} km)</div>
                       ))}
-                      {ra.ultimaInZona && <div style={{fontSize:'13px', color:UI.sub}}>ultima data in zona: {lunaData(ra.ultimaInZona.data)}, {ra.ultimaInZona.oras} ({ra.ultimaInZona.km} km)</div>}
+                      {ra.ultimaInZona && <div style={{fontSize:'13px', color:UI.sub}}>ultima data in zona: {lunaData(ra.ultimaInZona.data)}, {ra.ultimaInZona.oras} ({ra.ultimaInZona.km} km){ra.ultimaInZona.titlu ? ' — ' + ra.ultimaInZona.titlu : ''}</div>}
                     </div>
                   )}
 
