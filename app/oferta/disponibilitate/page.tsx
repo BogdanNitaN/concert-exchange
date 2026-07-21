@@ -269,7 +269,7 @@ export default function DisponibilitatePage() {
           </div>
           <div>
             <label style={{fontSize:'11px', fontWeight:700, color:UI.sub, textTransform:'uppercase', display:'block', marginBottom:'6px'}}>Data (opțional)</label>
-            <div style={{width:'180px'}}><DatePicker value={dataArtist} onChange={v => setDataArtist(v)} placeholder="Orice dată" /></div>
+            <div style={{width:'220px'}}><DatePicker value={dataArtist} onChange={v => setDataArtist(v)} placeholder="Orice dată" /></div>
           </div>
           <div>
             <label style={{fontSize:'11px', fontWeight:700, color:UI.sub, textTransform:'uppercase', display:'block', marginBottom:'6px'}}>Oraș (opțional, pt. zonă)</label>
