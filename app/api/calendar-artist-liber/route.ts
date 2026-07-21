@@ -147,10 +147,21 @@ export async function GET(req: Request) {
         context: contextZile.sort((a: any, b: any) => a.data.localeCompare(b.data))
       }
     }
+    // numar zile libere viitoare (de azi pana final an) - fara show/indisponibil
+    const aziISO = new Date().toISOString().slice(0, 10)
+    const finalAn = new Date(new Date().getFullYear(), 11, 31).toISOString().slice(0, 10)
+    const zileOcupateSet = new Set(ocupate.filter((e: any) => (e.tip === 'show' || e.tip === 'indisponibil') && e.data >= aziISO).map((e: any) => e.data))
+    // total zile ramase in an
+    let totalZile = 0
+    const azic = new Date(aziISO + 'T12:00:00'), fin = new Date(finalAn + 'T12:00:00')
+    while (azic <= fin) { totalZile++; azic.setDate(azic.getDate() + 1) }
+    const zileLibere = totalZile - zileOcupateSet.size
+
     return NextResponse.json({
       ok: true, gasit: true, artist: numeGasit || artist,
       ocupate: ocupate.sort((a, b) => a.data.localeCompare(b.data)),
-      inOrasViitor, ultimaInZona, peData, rosterData
+      inOrasViitor, ultimaInZona, peData, rosterData,
+      zileLibere, zileOcupate: zileOcupateSet.size, totalZile
     })
   } catch (e) {
     return NextResponse.json({ ok: false, error: String(e) }, { status: 500 })

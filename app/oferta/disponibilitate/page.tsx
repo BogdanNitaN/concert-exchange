@@ -55,8 +55,6 @@ export default function DisponibilitatePage() {
   const [copiat, setCopiat] = useState(false)
   const [contextExpandat, setContextExpandat] = useState<Set<number>>(new Set())
   function toggleContext(idx: number) { setContextExpandat(prev => { const n = new Set(prev); n.has(idx) ? n.delete(idx) : n.add(idx); return n }) }
-  const [contextExpandat, setContextExpandat] = useState<Set<number>>(new Set())
-  function toggleContext(idx: number) { setContextExpandat(prev => { const n = new Set(prev); n.has(idx) ? n.delete(idx) : n.add(idx); return n }) }
   function arataToast(msg: string) { setToast(msg); setTimeout(() => setToast(''), 2500) }
   const [loadingArtist, setLoadingArtist] = useState(false)
   async function cautaArtist() {
@@ -152,6 +150,9 @@ export default function DisponibilitatePage() {
       rez.push({ ...e, dataEnd: e.data })
     }
     return rez
+  }
+  function eWeekend(iso: string): boolean {
+    try { const z = new Date(iso + 'T12:00:00').getDay(); return z === 0 || z === 5 || z === 6 } catch { return false }
   }
   function lunaData(iso: string): string {
     try { return new Date(iso + 'T12:00:00').toLocaleDateString('ro-RO', { day: 'numeric', month: 'short' }) } catch { return iso }
@@ -372,7 +373,11 @@ export default function DisponibilitatePage() {
 
         {mod === 'artist' && rezArtist.length > 0 && (
           <div style={{display:'flex', flexDirection:'column', gap:'16px'}}>
-            {rezArtist.map((ra: any, idx: number) => {
+            {[...rezArtist].sort((a: any, b: any) => {
+              if (!dataArtist) return 0
+              const rank = (r: any) => { if (!r.peData) return 3; if (r.peData.status === 'liber') return 0; if (r.peData.status === 'verifica') return 1; return 2 }
+              return rank(a) - rank(b)
+            }).map((ra: any, idx: number) => {
               if (!ra.ok || ra.gasit === false) {
                 return <div key={idx} style={{background:UI.card, borderRadius:UI.radius, border:'1px solid '+UI.line, padding:'18px', color:UI.sub}}>Nu am gasit calendar pentru „{ra.cautat}".</div>
               }
@@ -390,6 +395,9 @@ export default function DisponibilitatePage() {
                     )}
                     <div style={{fontSize:'20px', fontWeight:800, color:UI.ink}}>{ra.artist}</div>
                   </div>
+                  {!pd && typeof ra.zileLibere === 'number' && (
+                    <div style={{fontSize:'12px', color:UI.faint, marginBottom:'10px'}}>{ra.zileLibere} zile libere din {ra.totalZile} până la final de an</div>
+                  )}
 
                   {/* daca e data specifica: status + context */}
                   {pd ? (
@@ -400,7 +408,7 @@ export default function DisponibilitatePage() {
                         const cfg = cfgMap[st] || cfgMap.ocupat
                         return (
                       <div style={{marginTop:'10px', marginBottom:'14px', padding:'14px', borderRadius:UI.radiusSm, background: cfg.bg, border:'1.5px solid '+cfg.bd}}>
-                        <div style={{fontSize:'15px', fontWeight:800, color: cfg.col, marginBottom: pd.evenimente.length ? '8px' : '0'}}>{cfg.txt} pe {lunaData(pd.data)}</div>
+                        <div style={{fontSize:'15px', fontWeight:800, color: cfg.col, marginBottom: pd.evenimente.length ? '8px' : '0'}}>{cfg.txt} pe {lunaData(pd.data)}{eWeekend(pd.data) ? ' (weekend)' : ''}</div>
                         {pd.evenimente.map((e: any, i: number) => (
                           <div key={i} style={{marginTop:'6px'}}>
                             <div style={{display:'flex', alignItems:'center', gap:'6px'}}>
@@ -420,7 +428,7 @@ export default function DisponibilitatePage() {
                           {(contextExpandat.has(idx) ? pd.context : pd.context.slice(0, 2)).map((e: any, i: number) => (
                             <div key={i} style={{padding:'4px 0'}}>
                               <div style={{display:'flex', alignItems:'center', gap:'8px', fontSize:'12px'}}>
-                                <span style={{fontWeight:700, minWidth:'56px', color:UI.sub}}>{lunaData(e.data)}</span>
+                                <span style={{fontWeight:700, minWidth:'56px', color: eWeekend(e.data) ? '#ea580c' : UI.sub}}>{lunaData(e.data)}{eWeekend(e.data) ? ' ·wk' : ''}</span>
                                 <span style={{fontSize:'8px', fontWeight:800, textTransform:'uppercase', padding:'2px 5px', borderRadius:'4px', color:'white', background: badgeCol(e.tip)}}>{badgeLabel(e.tip)}</span>
                                 <span style={{color:UI.sub}}>{e.titlu}</span>
                               </div>
