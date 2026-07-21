@@ -51,6 +51,9 @@ export default function DisponibilitatePage() {
   const [rezArtist, setRezArtist] = useState<any[]>([])
   const [dataArtist, setDataArtist] = useState('')
   const [bifatiArtist, setBifatiArtist] = useState<Set<string>>(new Set())
+  const [toast, setToast] = useState('')
+  const [copiat, setCopiat] = useState(false)
+  function arataToast(msg: string) { setToast(msg); setTimeout(() => setToast(''), 2500) }
   const [loadingArtist, setLoadingArtist] = useState(false)
   async function cautaArtist() {
     if (!artistCautat.trim()) return
@@ -87,6 +90,7 @@ export default function DisponibilitatePage() {
     const linii = liberi.map((ra: any) => '*' + ra.artist + '*')
     const txt = (dataArtist ? 'Disponibili pe ' + lunaData(dataArtist) + (oras ? ', ' + oras : '') + ':\n\n' : '') + linii.join('\n')
     navigator.clipboard.writeText(txt)
+    setCopiat(true); setTimeout(() => setCopiat(false), 1800)
   }
   function trimiteLiberiInOferta() {
     const liberi = liberiBifati()
@@ -105,7 +109,8 @@ export default function DisponibilitatePage() {
     })
     const oferta = { oras: oras || null, data_eveniment: dataArtist || null, linii_complete }
     try { localStorage.setItem('oferta_edit', JSON.stringify(oferta)) } catch {}
-    window.location.href = '/oferta'
+    arataToast('Se trimite în ofertă...')
+    setTimeout(() => { window.location.href = '/oferta' }, 500)
   }
   function lunaData(iso: string): string {
     try { return new Date(iso + 'T12:00:00').toLocaleDateString('ro-RO', { day: 'numeric', month: 'short' }) } catch { return iso }
@@ -250,7 +255,8 @@ export default function DisponibilitatePage() {
     })
     const oferta = { oras: oras || null, data_eveniment: data || null, linii_complete }
     try { localStorage.setItem('oferta_edit', JSON.stringify(oferta)) } catch {}
-    window.location.href = '/oferta'
+    arataToast('Se trimite în ofertă...')
+    setTimeout(() => { window.location.href = '/oferta' }, 500)
   }
 
   const inp: React.CSSProperties = { padding: '11px 14px', borderRadius: UI.radiusSm, border: '1px solid ' + UI.line, fontSize: '14px', fontFamily: F, boxSizing: 'border-box', outline: 'none' }
@@ -412,7 +418,7 @@ export default function DisponibilitatePage() {
           <div style={{position:'sticky', bottom:'20px', marginTop:'20px', background:UI.dark, borderRadius:UI.radius, padding:'16px 20px', boxShadow:'0 8px 30px rgba(0,0,0,0.25)', display:'flex', alignItems:'center', justifyContent:'space-between', gap:'12px', flexWrap:'wrap'}}>
             <span style={{fontSize:'14px', fontWeight:700, color:'white'}}>{liberiArtist().length} disponibili pe {lunaData(dataArtist)}</span>
             <div style={{display:'flex', gap:'8px', flexWrap:'wrap'}}>
-              <button onClick={copiazaLiberi} style={{padding:'10px 16px', background:'rgba(255,255,255,0.15)', color:'white', border:'none', borderRadius:'10px', fontSize:'13px', fontWeight:700, cursor:'pointer', fontFamily:F}}>Copiază</button>
+              <button onClick={copiazaLiberi} style={{padding:'10px 16px', background: copiat ? UI.green : 'rgba(255,255,255,0.15)', color:'white', border:'none', borderRadius:'10px', fontSize:'13px', fontWeight:700, cursor:'pointer', fontFamily:F, transition:'background 0.2s'}}>{copiat ? '✓ Copiat' : 'Copiază'}</button>
               <button onClick={trimiteLiberiInOferta} style={{display:'flex', alignItems:'center', gap:'6px', padding:'10px 16px', background:UI.green, color:'white', border:'none', borderRadius:'10px', fontSize:'13px', fontWeight:700, cursor:'pointer', fontFamily:F}}><Send size={14} /> Trimite în ofertă</button>
             </div>
           </div>
@@ -514,6 +520,11 @@ export default function DisponibilitatePage() {
             )}
           </>
         )}
+      {toast && (
+        <div style={{position:'fixed', bottom:'24px', left:'50%', transform:'translateX(-50%)', background:UI.dark, color:'white', padding:'12px 22px', borderRadius:'12px', fontSize:'14px', fontWeight:700, fontFamily:F, boxShadow:'0 8px 30px rgba(0,0,0,0.3)', zIndex:1000, display:'flex', alignItems:'center', gap:'8px'}}>
+          <span style={{color:'#34d399', fontSize:'16px'}}>✓</span> {toast}
+        </div>
+      )}
       </div>
     </div>
   )

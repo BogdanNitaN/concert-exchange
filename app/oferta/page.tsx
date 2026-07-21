@@ -229,7 +229,11 @@ export default function OfertaPage() {
           localStorage.removeItem('oferta_edit')
           if (o.cod) setCodOferta(o.cod)
           if (o.client) setNumeClient(o.client)
-          if (o.oras) setToCity(o.oras)
+          if (o.oras) {
+            setToCity(o.oras)
+            // calculez km automat ca sa apara avion/transport fara click manual
+            fetch('/api/distance?to=' + encodeURIComponent(o.oras) + '&from=' + encodeURIComponent(o.from_city || 'Bucuresti')).then(r => r.json()).then(d => { if (d?.km) setKm(d.km) }).catch(() => {})
+          }
           if (o.locatie) setLocatie(o.locatie)
           if (o.data_eveniment) setDataEveniment(o.data_eveniment)
           if (o.from_city) setFromCity(o.from_city)
