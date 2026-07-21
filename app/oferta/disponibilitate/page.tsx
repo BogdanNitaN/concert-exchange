@@ -53,6 +53,10 @@ export default function DisponibilitatePage() {
   const [bifatiArtist, setBifatiArtist] = useState<Set<string>>(new Set())
   const [toast, setToast] = useState('')
   const [copiat, setCopiat] = useState(false)
+  const [contextExpandat, setContextExpandat] = useState<Set<number>>(new Set())
+  function toggleContext(idx: number) { setContextExpandat(prev => { const n = new Set(prev); n.has(idx) ? n.delete(idx) : n.add(idx); return n }) }
+  const [contextExpandat, setContextExpandat] = useState<Set<number>>(new Set())
+  function toggleContext(idx: number) { setContextExpandat(prev => { const n = new Set(prev); n.has(idx) ? n.delete(idx) : n.add(idx); return n }) }
   function arataToast(msg: string) { setToast(msg); setTimeout(() => setToast(''), 2500) }
   const [loadingArtist, setLoadingArtist] = useState(false)
   async function cautaArtist() {
@@ -86,6 +90,12 @@ export default function DisponibilitatePage() {
   }
   function toggleBifaArtist(nume: string) {
     setBifatiArtist(prev => { const n = new Set(prev); n.has(nume) ? n.delete(nume) : n.add(nume); return n })
+  }
+  function selecteazaTotiLiberi() {
+    setBifatiArtist(new Set(liberiArtist().map((ra: any) => ra.artist)))
+  }
+  function deselecteazaToti() {
+    setBifatiArtist(new Set())
   }
   function copiazaLiberi() {
     const liberi = liberiBifati()
@@ -407,7 +417,7 @@ export default function DisponibilitatePage() {
                       {pd.context?.length > 0 && (
                         <div style={{marginBottom:'8px'}}>
                           <div style={{fontSize:'11px', fontWeight:800, color:UI.sub, textTransform:'uppercase', marginBottom:'6px'}}>Context ±3 zile</div>
-                          {pd.context.map((e: any, i: number) => (
+                          {(contextExpandat.has(idx) ? pd.context : pd.context.slice(0, 2)).map((e: any, i: number) => (
                             <div key={i} style={{padding:'4px 0'}}>
                               <div style={{display:'flex', alignItems:'center', gap:'8px', fontSize:'12px'}}>
                                 <span style={{fontWeight:700, minWidth:'56px', color:UI.sub}}>{lunaData(e.data)}</span>
@@ -417,6 +427,9 @@ export default function DisponibilitatePage() {
                               {(e.descriere || e.created) && <div style={{fontSize:'10px', color:UI.faint, marginLeft:'64px'}}>{e.descriere ? e.descriere.slice(0,70) : ''}{e.descriere && e.created ? ' · ' : ''}{e.created ? 'pus ' + dataCreare(e.created) : ''}</div>}
                             </div>
                           ))}
+                          {pd.context.length > 2 && (
+                            <button onClick={() => toggleContext(idx)} style={{marginTop:'4px', padding:'4px 0', background:'none', border:'none', color:UI.purple, fontSize:'12px', fontWeight:700, cursor:'pointer', fontFamily:F}}>{contextExpandat.has(idx) ? 'Arată mai puțin' : '+ ' + (pd.context.length - 2) + ' mai multe zile'}</button>
+                          )}
                         </div>
                       )}
                     </>
@@ -471,6 +484,7 @@ export default function DisponibilitatePage() {
           <div style={{position:'sticky', bottom:'20px', marginTop:'20px', background:UI.dark, borderRadius:UI.radius, padding:'16px 20px', boxShadow:'0 8px 30px rgba(0,0,0,0.25)', display:'flex', alignItems:'center', justifyContent:'space-between', gap:'12px', flexWrap:'wrap'}}>
             <span style={{fontSize:'14px', fontWeight:700, color:'white'}}>{liberiBifati().length} din {liberiArtist().length} selectați pe {lunaData(dataArtist)}</span>
             <div style={{display:'flex', gap:'8px', flexWrap:'wrap'}}>
+              <button onClick={() => liberiBifati().length === liberiArtist().length ? deselecteazaToti() : selecteazaTotiLiberi()} style={{padding:'10px 16px', background:'rgba(255,255,255,0.15)', color:'white', border:'none', borderRadius:'10px', fontSize:'13px', fontWeight:700, cursor:'pointer', fontFamily:F}}>{liberiBifati().length === liberiArtist().length ? 'Deselectează' : 'Toți'}</button>
               <button onClick={copiazaLiberi} style={{padding:'10px 16px', background: copiat ? UI.green : 'rgba(255,255,255,0.15)', color:'white', border:'none', borderRadius:'10px', fontSize:'13px', fontWeight:700, cursor:'pointer', fontFamily:F, transition:'background 0.2s'}}>{copiat ? '✓ Copiat' : 'Copiază'}</button>
               <button onClick={trimiteLiberiInOferta} style={{display:'flex', alignItems:'center', gap:'6px', padding:'10px 16px', background:UI.green, color:'white', border:'none', borderRadius:'10px', fontSize:'13px', fontWeight:700, cursor:'pointer', fontFamily:F}}><Send size={14} /> Trimite în ofertă</button>
             </div>
