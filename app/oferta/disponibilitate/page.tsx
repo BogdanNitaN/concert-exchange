@@ -69,6 +69,11 @@ export default function DisponibilitatePage() {
       } catch { rezultate.push({ cautat: n, ok: false }) }
     }
     setRezArtist(rezultate)
+    // bifez automat toti liberii pe data cautata
+    if (dataArtist) {
+      const liberi = rezultate.filter((ra: any) => ra.ok && ra.gasit && ra.peData && ra.peData.liber).map((ra: any) => ra.artist)
+      setBifatiArtist(new Set(liberi))
+    }
     setLoadingArtist(false)
   }
   function liberiArtist() {
@@ -76,10 +81,8 @@ export default function DisponibilitatePage() {
     return rezArtist.filter((ra: any) => ra.ok && ra.gasit && ra.peData && ra.peData.liber)
   }
   function liberiBifati() {
-    // liberi + bifati (daca nimic bifat, ii ia pe toti liberii)
-    const liberi = liberiArtist()
-    if (bifatiArtist.size === 0) return liberi
-    return liberi.filter((ra: any) => bifatiArtist.has(ra.artist))
+    // liberi SI bifati (toti pornesc bifati la cautare, debifezi ce excluzi)
+    return liberiArtist().filter((ra: any) => bifatiArtist.has(ra.artist))
   }
   function toggleBifaArtist(nume: string) {
     setBifatiArtist(prev => { const n = new Set(prev); n.has(nume) ? n.delete(nume) : n.add(nume); return n })
@@ -371,7 +374,12 @@ export default function DisponibilitatePage() {
               const pd = ra.peData
               return (
                 <div key={idx} style={{background:UI.card, borderRadius:UI.radius, border:'1px solid '+UI.line, padding:'24px', boxShadow:UI.shadow}}>
-                  <div style={{fontSize:'20px', fontWeight:800, color:UI.ink, marginBottom:'4px'}}>{ra.artist}</div>
+                  <div style={{display:'flex', alignItems:'center', gap:'10px', marginBottom:'4px'}}>
+                    {pd && pd.liber && (
+                      <input type="checkbox" checked={bifatiArtist.has(ra.artist)} onChange={() => toggleBifaArtist(ra.artist)} style={{width:'18px', height:'18px', accentColor:UI.green, cursor:'pointer'}} />
+                    )}
+                    <div style={{fontSize:'20px', fontWeight:800, color:UI.ink}}>{ra.artist}</div>
+                  </div>
 
                   {/* daca e data specifica: status + context */}
                   {pd ? (
@@ -461,7 +469,7 @@ export default function DisponibilitatePage() {
 
         {mod === 'artist' && dataArtist && liberiArtist().length > 0 && (
           <div style={{position:'sticky', bottom:'20px', marginTop:'20px', background:UI.dark, borderRadius:UI.radius, padding:'16px 20px', boxShadow:'0 8px 30px rgba(0,0,0,0.25)', display:'flex', alignItems:'center', justifyContent:'space-between', gap:'12px', flexWrap:'wrap'}}>
-            <span style={{fontSize:'14px', fontWeight:700, color:'white'}}>{liberiArtist().length} disponibili pe {lunaData(dataArtist)}</span>
+            <span style={{fontSize:'14px', fontWeight:700, color:'white'}}>{liberiBifati().length} din {liberiArtist().length} selectați pe {lunaData(dataArtist)}</span>
             <div style={{display:'flex', gap:'8px', flexWrap:'wrap'}}>
               <button onClick={copiazaLiberi} style={{padding:'10px 16px', background: copiat ? UI.green : 'rgba(255,255,255,0.15)', color:'white', border:'none', borderRadius:'10px', fontSize:'13px', fontWeight:700, cursor:'pointer', fontFamily:F, transition:'background 0.2s'}}>{copiat ? '✓ Copiat' : 'Copiază'}</button>
               <button onClick={trimiteLiberiInOferta} style={{display:'flex', alignItems:'center', gap:'6px', padding:'10px 16px', background:UI.green, color:'white', border:'none', borderRadius:'10px', fontSize:'13px', fontWeight:700, cursor:'pointer', fontFamily:F}}><Send size={14} /> Trimite în ofertă</button>
