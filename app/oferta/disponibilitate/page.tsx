@@ -120,6 +120,26 @@ export default function DisponibilitatePage() {
     const m: Record<string,string> = { show: 'concert', indisponibil: 'indisponibil', echipa: 'echipă', nota: 'notă', blocat: 'blocat' }
     return m[tip] || tip
   }
+  function afiseazaInterval(e: any): string {
+    if (e.dataEnd && e.dataEnd !== e.data) return lunaData(e.data) + ' - ' + lunaData(e.dataEnd)
+    return lunaData(e.data)
+  }
+  function grupeazaIntervale(evenimente: any[]): any[] {
+    // grupez zilele consecutive cu acelasi titlu intr-un interval
+    const sortate = [...evenimente].sort((a, b) => a.data.localeCompare(b.data) || a.titlu.localeCompare(b.titlu))
+    const rez: any[] = []
+    for (const e of sortate) {
+      const ultim = rez[rez.length - 1]
+      if (ultim && ultim.titlu === e.titlu && ultim.tip === e.tip) {
+        const dUltim = new Date(ultim.dataEnd + 'T12:00:00')
+        const dE = new Date(e.data + 'T12:00:00')
+        const diff = Math.round((dE.getTime() - dUltim.getTime()) / 86400000)
+        if (diff === 1) { ultim.dataEnd = e.data; continue }
+      }
+      rez.push({ ...e, dataEnd: e.data })
+    }
+    return rez
+  }
   function lunaData(iso: string): string {
     try { return new Date(iso + 'T12:00:00').toLocaleDateString('ro-RO', { day: 'numeric', month: 'short' }) } catch { return iso }
   }
@@ -344,9 +364,10 @@ export default function DisponibilitatePage() {
                 return <div key={idx} style={{background:UI.card, borderRadius:UI.radius, border:'1px solid '+UI.line, padding:'18px', color:UI.sub}}>Nu am gasit calendar pentru „{ra.cautat}".</div>
               }
               const showuri = ra.ocupate.filter((e: any) => e.tip === 'show')
-              const blocari = ra.ocupate.filter((e: any) => e.tip === 'blocat')
               const note = ra.ocupate.filter((e: any) => e.tip === 'nota')
-              const showViitor = showuri.filter((e: any) => e.viitor)
+              const showViitor = grupeazaIntervale(showuri.filter((e: any) => e.viitor))
+              // perioade indisponibile viitoare (vacante, off), grupate ca intervale
+              const indispViitor = grupeazaIntervale(ra.ocupate.filter((e: any) => e.tip === 'indisponibil' && e.viitor))
               const pd = ra.peData
               return (
                 <div key={idx} style={{background:UI.card, borderRadius:UI.radius, border:'1px solid '+UI.line, padding:'24px', boxShadow:UI.shadow}}>
@@ -392,7 +413,7 @@ export default function DisponibilitatePage() {
                       )}
                     </>
                   ) : (
-                    <div style={{fontSize:'12px', color:UI.faint, marginBottom:'14px'}}>{showViitor.length} show-uri programate, {blocari.length} blocari, restul liber</div>
+                    <div style={{fontSize:'12px', color:UI.faint, marginBottom:'14px'}}>{showViitor.length} show-uri programate, {indispViitor.length} perioade indisponibile, restul liber</div>
                   )}
 
                   {/* zona oras */}
@@ -406,14 +427,26 @@ export default function DisponibilitatePage() {
                     </div>
                   )}
 
-                  {/* show-uri viitoare (doar cand nu e data specifica) */}
+                  {!pd && indispViitor.length > 0 && (
+                    <div style={{marginTop:'12px'}}>
+                      <div style={{fontSize:'12px', fontWeight:800, color:'#dc2626', marginBottom:'8px'}}>Perioade indisponibile ({indispViitor.length})</div>
+                      {indispViitor.map((e: any, i: number) => (
+                        <div key={i} style={{padding:'5px 0', borderBottom:'1px solid '+UI.line}}>
+                          <div style={{display:'flex', alignItems:'center', gap:'8px', fontSize:'13px'}}>
+                            <span style={{fontSize:'8px', fontWeight:800, textTransform:'uppercase', padding:'2px 5px', borderRadius:'4px', color:'white', background: badgeCol(e.tip)}}>{badgeLabel(e.tip)}</span>
+                            <span style={{fontWeight:700, color:UI.ink}}>{afiseazaInterval(e)}</span><span style={{color:UI.sub}}>{e.titlu}</span>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  )}
                   {!pd && showViitor.length > 0 && (
                     <div style={{marginTop:'12px'}}>
                       <div style={{fontSize:'12px', fontWeight:800, color:UI.ink, marginBottom:'8px'}}>Show-uri programate ({showViitor.length})</div>
                       {showViitor.map((e: any, i: number) => (
                         <div key={i} style={{padding:'5px 0', borderBottom:'1px solid '+UI.line}}>
                           <div style={{display:'flex', gap:'10px', fontSize:'13px', color:UI.sub}}>
-                            <span style={{fontWeight:700, color:UI.ink, minWidth:'70px'}}>{lunaData(e.data)}</span><span>{e.titlu}</span>
+                            <span style={{fontWeight:700, color:UI.ink, minWidth:'90px'}}>{afiseazaInterval(e)}</span><span>{e.titlu}</span>
                           </div>
                           {(e.descriere || e.created) && <div style={{fontSize:'10px', color:UI.faint, marginLeft:'80px'}}>{e.descriere ? e.descriere.slice(0,70) : ''}{e.descriere && e.created ? ' · ' : ''}{e.created ? 'pus ' + dataCreare(e.created) : ''}</div>}
                         </div>

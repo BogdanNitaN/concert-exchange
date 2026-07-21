@@ -42,8 +42,26 @@ export async function GET(req: Request) {
       const rd: any = rosterNorm.get(normNume(artist)) || null
       try {
         const ev = await cal.events.list({ calendarId: c.id!, timeMin, timeMax, singleEvents: true, maxResults: 10 })
-        const evenimente = (ev.data.items || []).map(e => ({ titlu: e.summary || '(fara titlu)', descriere: e.description || '', allDay: !!e.start?.date, created: e.created || null }))
-        return { artist, calendar: c.summary, calendarId: c.id, gen: rd?.categorie || 'altele', rosterData: rd, liber: evenimente.length === 0, evenimente }
+        // clasificare inteligenta: distinge artist vs echipa
+        const cuvinteArtist = artist.toLowerCase().replace(/[^a-z0-9\u00e0-\u017f ]/gi, '').split(/\s+/).filter((w: string) => w.length >= 3 && !['the','and','feat'].includes(w))
+        const despreArtist = (titlu: string) => { const t = titlu.toLowerCase(); return cuvinteArtist.some((w: string) => t.includes(w)) }
+        const evenimente = (ev.data.items || []).map(e => {
+          const titlu = e.summary || '(fara titlu)'
+          const desprEl = despreArtist(titlu)
+          const areMarcajConcert = /^\s*\((P|C)/i.test(titlu)
+          const areCuvantBlocaj = /vacan|concediu|liber|off|indisponibil|blocat|nu se ia|pauza/i.test(titlu)
+          let tip: string = 'nota'
+          if (desprEl && areCuvantBlocaj) tip = 'indisponibil'
+          else if (desprEl && areMarcajConcert) tip = 'show'
+          else if (!desprEl && (areMarcajConcert || areCuvantBlocaj)) tip = 'echipa'
+          return { titlu, descriere: e.description || '', allDay: !!e.start?.date, created: e.created || null, tip }
+        })
+        const blocante = evenimente.filter((e: any) => e.tip === 'show' || e.tip === 'indisponibil')
+        const neclare = evenimente.filter((e: any) => e.tip === 'echipa' || e.tip === 'nota')
+        let status: string = 'liber'
+        if (blocante.length > 0) status = 'ocupat'
+        else if (neclare.length > 0) status = 'verifica'
+        return { artist, calendar: c.summary, calendarId: c.id, gen: rd?.categorie || 'altele', rosterData: rd, liber: blocante.length === 0, status, evenimente }
       } catch {
         return { artist, calendar: c.summary, calendarId: c.id, gen: rd?.categorie || 'altele', rosterData: rd, liber: null, eroare: true, evenimente: [] }
       }

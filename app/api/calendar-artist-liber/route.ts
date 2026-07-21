@@ -63,22 +63,37 @@ export async function GET(req: Request) {
       const t = titlu.toLowerCase()
       return cuvinteArtist.some(w => t.includes(w))
     }
-    const evenimente = (ev.data.items || []).map(e => {
+    const evenimente = (ev.data.items || []).flatMap(e => {
       const start = (e.start?.date || e.start?.dateTime || '').slice(0, 10)
+      if (!start) return []
+      // end: pt all-day Google da end exclusiv (ziua urmatoare), deci scad 1 zi
+      let endRaw = (e.end?.date || e.end?.dateTime || '').slice(0, 10)
       const titlu = e.summary || ''
       const descriere = e.description || ''
       const orasEv = extragOrasDinTitlu(titlu)
       const desprEl = despreArtist(titlu)
       const areMarcajConcert = /^\s*\((P|C)/i.test(titlu) || !!orasEv
       const areCuvantBlocaj = /vacan|concediu|liber|off|indisponibil|blocat|nu se ia|zi liber|pauza/i.test(titlu)
-      // clasific: show, indisponibil (ea nu poate), echipa (alt membru), nota (context)
       let tip: 'show' | 'indisponibil' | 'echipa' | 'nota' = 'nota'
       if (desprEl && areCuvantBlocaj) tip = 'indisponibil'
       else if (desprEl && areMarcajConcert) tip = 'show'
       else if (!desprEl && (areMarcajConcert || areCuvantBlocaj)) tip = 'echipa'
       else if (desprEl && !areMarcajConcert && !areCuvantBlocaj) tip = 'nota'
-      return { titlu, descriere, data: start, oras: orasEv, created: e.created || null, tip, despreArtist: desprEl }
-    }).filter(e => e.data)
+      // expandez intervalul: o intrare pentru fiecare zi intre start si end
+      const zile: string[] = [start]
+      if (e.start?.date && endRaw && endRaw > start) {
+        // all-day pe interval: end exclusiv, generez zilele pana la end-1
+        let d = new Date(start + 'T12:00:00')
+        const dEnd = new Date(endRaw + 'T12:00:00')
+        while (true) {
+          d.setDate(d.getDate() + 1)
+          const ds = d.toISOString().slice(0, 10)
+          if (ds >= endRaw) break
+          zile.push(ds)
+        }
+      }
+      return zile.map(z => ({ titlu, descriere, data: z, oras: orasEv, created: e.created || null, tip, despreArtist: desprEl }))
+    })
 
     const azi = new Date(); azi.setHours(0, 0, 0, 0)
     const ocupate = evenimente.map(e => ({ ...e, viitor: new Date(e.data + 'T12:00:00') >= azi }))
