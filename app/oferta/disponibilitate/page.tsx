@@ -48,16 +48,23 @@ export default function DisponibilitatePage() {
   const [analizand, setAnalizand] = useState<Set<string>>(new Set())
   const [mod, setMod] = useState<'data' | 'artist'>('data')
   const [artistCautat, setArtistCautat] = useState('')
-  const [rezArtist, setRezArtist] = useState<any>(null)
+  const [rezArtist, setRezArtist] = useState<any[]>([])
+  const [dataArtist, setDataArtist] = useState('')
   const [loadingArtist, setLoadingArtist] = useState(false)
   async function cautaArtist() {
     if (!artistCautat.trim()) return
-    setLoadingArtist(true); setRezArtist(null)
-    try {
-      const r = await fetch('/api/calendar-artist-liber?artist=' + encodeURIComponent(artistCautat) + (oras ? '&oras=' + encodeURIComponent(oras) : ''))
-      const d = await r.json()
-      setRezArtist(d)
-    } catch { setRezArtist({ ok: false }) }
+    setLoadingArtist(true); setRezArtist([])
+    const nume = artistCautat.split(',').map(n => n.trim()).filter(Boolean)
+    const rezultate: any[] = []
+    for (const n of nume) {
+      try {
+        const q = '/api/calendar-artist-liber?artist=' + encodeURIComponent(n) + (oras ? '&oras=' + encodeURIComponent(oras) : '') + (dataArtist ? '&data=' + dataArtist : '')
+        const r = await fetch(q)
+        const d = await r.json()
+        rezultate.push({ cautat: n, ...d })
+      } catch { rezultate.push({ cautat: n, ok: false }) }
+    }
+    setRezArtist(rezultate)
     setLoadingArtist(false)
   }
   function lunaData(iso: string): string {
@@ -258,7 +265,11 @@ export default function DisponibilitatePage() {
         <div style={{background:UI.card, borderRadius:UI.radius, border:'1px solid '+UI.line, padding:'20px', marginBottom:'20px', boxShadow:UI.shadow, display:'flex', gap:'12px', alignItems:'flex-end', flexWrap:'wrap'}}>
           <div>
             <label style={{fontSize:'11px', fontWeight:700, color:UI.sub, textTransform:'uppercase', display:'block', marginBottom:'6px'}}>Artist</label>
-            <input type="text" placeholder="ex: The Motans" value={artistCautat} onChange={e => setArtistCautat(e.target.value)} onKeyDown={e => e.key==='Enter' && cautaArtist()} style={{...inp, width:'220px'}} />
+            <input type="text" placeholder="ex: Motans, Delia" value={artistCautat} onChange={e => setArtistCautat(e.target.value)} onKeyDown={e => e.key==='Enter' && cautaArtist()} style={{...inp, width:'220px'}} />
+          </div>
+          <div>
+            <label style={{fontSize:'11px', fontWeight:700, color:UI.sub, textTransform:'uppercase', display:'block', marginBottom:'6px'}}>Data (opțional)</label>
+            <div style={{width:'180px'}}><DatePicker value={dataArtist} onChange={v => setDataArtist(v)} placeholder="Orice dată" /></div>
           </div>
           <div>
             <label style={{fontSize:'11px', fontWeight:700, color:UI.sub, textTransform:'uppercase', display:'block', marginBottom:'6px'}}>Oraș (opțional, pt. zonă)</label>
@@ -272,81 +283,76 @@ export default function DisponibilitatePage() {
 
         {loadingArtist && <div style={{textAlign:'center', color:UI.sub, padding:'40px'}}>Se cauta calendarul artistului...</div>}
 
-        {mod === 'artist' && rezArtist && rezArtist.ok && rezArtist.gasit === false && (
-          <div style={{background:UI.card, borderRadius:UI.radius, border:'1px solid '+UI.line, padding:'24px', textAlign:'center', color:UI.sub}}>Nu am gasit un calendar pentru acest artist. Incearca alta scriere.</div>
-        )}
-        {mod === 'artist' && rezArtist && rezArtist.gasit && (() => {
-          const showuri = rezArtist.ocupate.filter((e: any) => e.tip === 'show')
-          const blocari = rezArtist.ocupate.filter((e: any) => e.tip === 'blocat')
-          const note = rezArtist.ocupate.filter((e: any) => e.tip === 'nota')
-          const showViitor = showuri.filter((e: any) => e.viitor)
-          const showTrecut = showuri.filter((e: any) => !e.viitor)
-          return (
-            <div style={{background:UI.card, borderRadius:UI.radius, border:'1px solid '+UI.line, padding:'24px', boxShadow:UI.shadow}}>
-              <div style={{fontSize:'20px', fontWeight:800, color:UI.ink, marginBottom:'4px'}}>{rezArtist.artist}</div>
-              <div style={{fontSize:'12px', color:UI.faint, marginBottom:'18px'}}>{showViitor.length} show-uri programate, {blocari.length} blocari, restul liber</div>
-              {oras && (rezArtist.inOrasViitor?.length > 0 || rezArtist.ultimaInZona) && (
-                <div style={{background:'#faf9f7', border:'1px solid '+UI.line, borderRadius:UI.radiusSm, padding:'14px', marginBottom:'18px'}}>
-                  <div style={{fontSize:'11px', fontWeight:800, color:UI.purple, textTransform:'uppercase', marginBottom:'8px'}}>In zona {oras}</div>
-                  {rezArtist.inOrasViitor?.map((e: any, i: number) => (
-                    <div key={i} style={{fontSize:'13px', color:'#c2410c', fontWeight:600, marginBottom:'4px'}}>deja programat: {lunaData(e.data)}, {e.titlu} ({e.km} km)</div>
-                  ))}
-                  {rezArtist.ultimaInZona && (
-                    <div style={{fontSize:'13px', color:UI.sub, marginTop:'4px'}}>ultima data in zona: {lunaData(rezArtist.ultimaInZona.data)}, {rezArtist.ultimaInZona.oras} ({rezArtist.ultimaInZona.km} km)</div>
+        {mod === 'artist' && rezArtist.length > 0 && (
+          <div style={{display:'flex', flexDirection:'column', gap:'16px'}}>
+            {rezArtist.map((ra: any, idx: number) => {
+              if (!ra.ok || ra.gasit === false) {
+                return <div key={idx} style={{background:UI.card, borderRadius:UI.radius, border:'1px solid '+UI.line, padding:'18px', color:UI.sub}}>Nu am gasit calendar pentru „{ra.cautat}".</div>
+              }
+              const showuri = ra.ocupate.filter((e: any) => e.tip === 'show')
+              const blocari = ra.ocupate.filter((e: any) => e.tip === 'blocat')
+              const note = ra.ocupate.filter((e: any) => e.tip === 'nota')
+              const showViitor = showuri.filter((e: any) => e.viitor)
+              const pd = ra.peData
+              return (
+                <div key={idx} style={{background:UI.card, borderRadius:UI.radius, border:'1px solid '+UI.line, padding:'24px', boxShadow:UI.shadow}}>
+                  <div style={{fontSize:'20px', fontWeight:800, color:UI.ink, marginBottom:'4px'}}>{ra.artist}</div>
+
+                  {/* daca e data specifica: status + context */}
+                  {pd ? (
+                    <>
+                      <div style={{marginTop:'10px', marginBottom:'14px', padding:'14px', borderRadius:UI.radiusSm, background: pd.liber ? '#f0fdf4' : '#fef2f2', border:'1.5px solid '+(pd.liber ? '#86efac' : '#fca5a5')}}>
+                        <div style={{fontSize:'15px', fontWeight:800, color: pd.liber ? UI.green : '#dc2626'}}>{pd.liber ? '✓ LIBER' : '✗ OCUPAT'} pe {lunaData(pd.data)}</div>
+                        {pd.evenimente.filter((e: any) => e.tip !== 'nota').map((e: any, i: number) => (
+                          <div key={i} style={{fontSize:'13px', color:'#7f1d1d', marginTop:'4px'}}>{e.titlu}</div>
+                        ))}
+                        {pd.evenimente.filter((e: any) => e.tip === 'nota').map((e: any, i: number) => (
+                          <div key={'n'+i} style={{fontSize:'12px', color:UI.faint, marginTop:'3px'}}>notă: {e.titlu}</div>
+                        ))}
+                      </div>
+                      {pd.context?.length > 0 && (
+                        <div style={{marginBottom:'8px'}}>
+                          <div style={{fontSize:'11px', fontWeight:800, color:UI.sub, textTransform:'uppercase', marginBottom:'6px'}}>Context ±3 zile</div>
+                          {pd.context.map((e: any, i: number) => (
+                            <div key={i} style={{display:'flex', gap:'10px', fontSize:'12px', padding:'3px 0', color: e.tip==='nota' ? UI.faint : UI.sub}}>
+                              <span style={{fontWeight:700, minWidth:'70px', color: e.tip==='show' ? UI.ink : (e.tip==='blocat' ? '#dc2626' : UI.faint)}}>{lunaData(e.data)}</span>
+                              <span>{e.tip==='nota' ? 'notă: ' : (e.tip==='blocat' ? 'blocat: ' : '')}{e.titlu}</span>
+                            </div>
+                          ))}
+                        </div>
+                      )}
+                    </>
+                  ) : (
+                    <div style={{fontSize:'12px', color:UI.faint, marginBottom:'14px'}}>{showViitor.length} show-uri programate, {blocari.length} blocari, restul liber</div>
+                  )}
+
+                  {/* zona oras */}
+                  {oras && (ra.inOrasViitor?.length > 0 || ra.ultimaInZona) && (
+                    <div style={{background:'#faf9f7', border:'1px solid '+UI.line, borderRadius:UI.radiusSm, padding:'12px', marginTop:'8px'}}>
+                      <div style={{fontSize:'11px', fontWeight:800, color:UI.purple, textTransform:'uppercase', marginBottom:'6px'}}>In zona {oras}</div>
+                      {ra.inOrasViitor?.map((e: any, i: number) => (
+                        <div key={i} style={{fontSize:'13px', color:'#c2410c', fontWeight:600, marginBottom:'3px'}}>deja programat: {lunaData(e.data)}, {e.titlu} ({e.km} km)</div>
+                      ))}
+                      {ra.ultimaInZona && <div style={{fontSize:'13px', color:UI.sub}}>ultima data in zona: {lunaData(ra.ultimaInZona.data)}, {ra.ultimaInZona.oras} ({ra.ultimaInZona.km} km)</div>}
+                    </div>
+                  )}
+
+                  {/* show-uri viitoare (doar cand nu e data specifica) */}
+                  {!pd && showViitor.length > 0 && (
+                    <div style={{marginTop:'12px'}}>
+                      <div style={{fontSize:'12px', fontWeight:800, color:UI.ink, marginBottom:'8px'}}>Show-uri programate ({showViitor.length})</div>
+                      {showViitor.map((e: any, i: number) => (
+                        <div key={i} style={{display:'flex', gap:'10px', fontSize:'13px', color:UI.sub, padding:'5px 0', borderBottom:'1px solid '+UI.line}}>
+                          <span style={{fontWeight:700, color:UI.ink, minWidth:'70px'}}>{lunaData(e.data)}</span><span>{e.titlu}</span>
+                        </div>
+                      ))}
+                    </div>
                   )}
                 </div>
-              )}
-              {showViitor.length > 0 && (
-                <div style={{marginBottom:'16px'}}>
-                  <div style={{fontSize:'12px', fontWeight:800, color:UI.ink, marginBottom:'8px'}}>Show-uri programate ({showViitor.length})</div>
-                  {showViitor.map((e: any, i: number) => (
-                    <div key={i} style={{display:'flex', gap:'10px', fontSize:'13px', color:UI.sub, padding:'5px 0', borderBottom:'1px solid '+UI.line}}>
-                      <span style={{fontWeight:700, color:UI.ink, minWidth:'70px'}}>{lunaData(e.data)}</span>
-                      <span>{e.titlu}</span>
-                    </div>
-                  ))}
-                </div>
-              )}
-              {blocari.length > 0 && (
-                <div style={{marginBottom:'16px'}}>
-                  <div style={{fontSize:'12px', fontWeight:800, color:'#dc2626', marginBottom:'8px'}}>Blocari ({blocari.length})</div>
-                  {blocari.map((e: any, i: number) => (
-                    <div key={i} style={{display:'flex', gap:'10px', fontSize:'13px', color:UI.sub, padding:'4px 0'}}>
-                      <span style={{fontWeight:700, minWidth:'70px'}}>{lunaData(e.data)}</span>
-                      <span>{e.titlu}</span>
-                    </div>
-                  ))}
-                </div>
-              )}
-              {note.length > 0 && (
-                <details style={{marginTop:'8px'}}>
-                  <summary style={{fontSize:'12px', fontWeight:700, color:UI.faint, cursor:'pointer'}}>Note si context ({note.length})</summary>
-                  <div style={{marginTop:'8px'}}>
-                    {note.map((e: any, i: number) => (
-                      <div key={i} style={{display:'flex', gap:'10px', fontSize:'12px', color:UI.faint, padding:'3px 0'}}>
-                        <span style={{minWidth:'70px'}}>{lunaData(e.data)}</span>
-                        <span>{e.titlu}</span>
-                      </div>
-                    ))}
-                  </div>
-                </details>
-              )}
-              {showTrecut.length > 0 && (
-                <details style={{marginTop:'8px'}}>
-                  <summary style={{fontSize:'12px', fontWeight:700, color:UI.faint, cursor:'pointer'}}>Show-uri trecute ({showTrecut.length})</summary>
-                  <div style={{marginTop:'8px'}}>
-                    {showTrecut.map((e: any, i: number) => (
-                      <div key={i} style={{display:'flex', gap:'10px', fontSize:'12px', color:UI.faint, padding:'3px 0'}}>
-                        <span style={{minWidth:'70px'}}>{lunaData(e.data)}</span>
-                        <span>{e.titlu}</span>
-                      </div>
-                    ))}
-                  </div>
-                </details>
-              )}
-            </div>
-          )
-        })()}
+              )
+            })}
+          </div>
+        )}
 
         {mod === 'data' && rez && (
           <>

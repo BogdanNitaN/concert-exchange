@@ -27,6 +27,7 @@ export async function GET(req: Request) {
     const origin = url.origin
     const artist = url.searchParams.get('artist')
     const oras = url.searchParams.get('oras') || ''
+    const dataQuery = url.searchParams.get('data') || ''
     if (!artist) return NextResponse.json({ ok: false, error: 'lipsa artist' }, { status: 400 })
 
     const cal = getCal()
@@ -87,10 +88,26 @@ export async function GET(req: Request) {
       }
     }
 
+    let peData: any = null
+    if (dataQuery) {
+      const evPeData = ocupate.filter((e: any) => e.data === dataQuery)
+      // context: +/- 3 zile in jurul datei
+      const dObj = new Date(dataQuery + 'T12:00:00')
+      const dMin = new Date(dObj); dMin.setDate(dMin.getDate() - 3)
+      const dMax = new Date(dObj); dMax.setDate(dMax.getDate() + 3)
+      const iso = (d: Date) => d.toISOString().slice(0, 10)
+      const contextZile = ocupate.filter((e: any) => e.data >= iso(dMin) && e.data <= iso(dMax) && e.data !== dataQuery)
+      peData = {
+        data: dataQuery,
+        liber: evPeData.filter((e: any) => e.tip !== 'nota').length === 0,
+        evenimente: evPeData,
+        context: contextZile.sort((a: any, b: any) => a.data.localeCompare(b.data))
+      }
+    }
     return NextResponse.json({
       ok: true, gasit: true, artist: numeGasit || artist,
       ocupate: ocupate.sort((a, b) => a.data.localeCompare(b.data)),
-      inOrasViitor, ultimaInZona
+      inOrasViitor, ultimaInZona, peData
     })
   } catch (e) {
     return NextResponse.json({ ok: false, error: String(e) }, { status: 500 })
