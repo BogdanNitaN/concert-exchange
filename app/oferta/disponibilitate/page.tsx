@@ -67,6 +67,36 @@ export default function DisponibilitatePage() {
     setRezArtist(rezultate)
     setLoadingArtist(false)
   }
+  function liberiArtist() {
+    // cei liberi pe data cautata (doar cand data e pusa)
+    return rezArtist.filter((ra: any) => ra.ok && ra.gasit && ra.peData && ra.peData.liber)
+  }
+  function copiazaLiberi() {
+    const liberi = liberiArtist()
+    if (liberi.length === 0) return
+    const linii = liberi.map((ra: any) => '*' + ra.artist + '*')
+    const txt = (dataArtist ? 'Disponibili pe ' + lunaData(dataArtist) + (oras ? ', ' + oras : '') + ':\n\n' : '') + linii.join('\n')
+    navigator.clipboard.writeText(txt)
+  }
+  function trimiteLiberiInOferta() {
+    const liberi = liberiArtist()
+    if (liberi.length === 0) return
+    const linii_complete = liberi.map((ra: any) => {
+      const rd = ra.rosterData || {}
+      return {
+        artistNume: ra.artist,
+        formatSelectat: '', durata: rd.durata_default || '40 min',
+        tipPret: 'Standard', feeLista: rd.fee_standard || 0, fee: rd.fee_standard || 0,
+        leiKm: rd.lei_km || 0, useMarja: true, cazare: rd.cazare || '', persoane: rd.nr_persoane || 0,
+        bileteAvion: rd.bilete_avion || 0, restulRutier: false, tipMasa: 'diurna', zile: 1,
+        diurnaPerPers: 0, diurnaFixa: 0, cazareFixa: 0, useAlcool: false, alcool: 0,
+        useCag: false, cagProcent: 0, cagSuma: 0, cagMod: 'procent',
+      }
+    })
+    const oferta = { oras: oras || null, data_eveniment: dataArtist || null, linii_complete }
+    try { localStorage.setItem('oferta_edit', JSON.stringify(oferta)) } catch {}
+    window.location.href = '/oferta'
+  }
   function lunaData(iso: string): string {
     try { return new Date(iso + 'T12:00:00').toLocaleDateString('ro-RO', { day: 'numeric', month: 'short' }) } catch { return iso }
   }
@@ -354,6 +384,15 @@ export default function DisponibilitatePage() {
           </div>
         )}
 
+        {mod === 'artist' && dataArtist && liberiArtist().length > 0 && (
+          <div style={{position:'sticky', bottom:'20px', marginTop:'20px', background:UI.dark, borderRadius:UI.radius, padding:'16px 20px', boxShadow:'0 8px 30px rgba(0,0,0,0.25)', display:'flex', alignItems:'center', justifyContent:'space-between', gap:'12px', flexWrap:'wrap'}}>
+            <span style={{fontSize:'14px', fontWeight:700, color:'white'}}>{liberiArtist().length} disponibili pe {lunaData(dataArtist)}</span>
+            <div style={{display:'flex', gap:'8px', flexWrap:'wrap'}}>
+              <button onClick={copiazaLiberi} style={{padding:'10px 16px', background:'rgba(255,255,255,0.15)', color:'white', border:'none', borderRadius:'10px', fontSize:'13px', fontWeight:700, cursor:'pointer', fontFamily:F}}>Copiază</button>
+              <button onClick={trimiteLiberiInOferta} style={{display:'flex', alignItems:'center', gap:'6px', padding:'10px 16px', background:UI.green, color:'white', border:'none', borderRadius:'10px', fontSize:'13px', fontWeight:700, cursor:'pointer', fontFamily:F}}><Send size={14} /> Trimite în ofertă</button>
+            </div>
+          </div>
+        )}
         {mod === 'data' && rez && (
           <>
             {/* filtre gen */}

@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server'
 import { google } from 'googleapis'
 import { CALENDAR_TO_ROSTER, normNume, extragOrasDinTitlu } from '@/lib/calendar-mapping'
+import { createClient } from '@supabase/supabase-js'
 
 function getCal() {
   const o = new google.auth.OAuth2(
@@ -88,6 +89,14 @@ export async function GET(req: Request) {
       }
     }
 
+    // datele de roster (fee, transport, cazare) pt ofertare
+    let rosterData: any = null
+    try {
+      const sb = createClient(process.env.NEXT_PUBLIC_SUPABASE_URL!, process.env.SUPABASE_SECRET_KEY!, { auth: { autoRefreshToken: false, persistSession: false } })
+      const { data: rd } = await sb.from('oferta_artisti').select('*').ilike('nume', numeGasit || artist).maybeSingle()
+      rosterData = rd || null
+    } catch {}
+
     let peData: any = null
     if (dataQuery) {
       const evPeData = ocupate.filter((e: any) => e.data === dataQuery)
@@ -107,7 +116,7 @@ export async function GET(req: Request) {
     return NextResponse.json({
       ok: true, gasit: true, artist: numeGasit || artist,
       ocupate: ocupate.sort((a, b) => a.data.localeCompare(b.data)),
-      inOrasViitor, ultimaInZona, peData
+      inOrasViitor, ultimaInZona, peData, rosterData
     })
   } catch (e) {
     return NextResponse.json({ ok: false, error: String(e) }, { status: 500 })
