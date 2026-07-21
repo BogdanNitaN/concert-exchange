@@ -1148,9 +1148,9 @@ export const ARTISTS_DATA = [
     "feeMin": 0,
     "feeMax": 0,
     "tier": "A+",
-    "cazare": "la cerere",
-    "nrBileteAvion": 0,
-    "costPerKm": 0
+    "cazare": "6 dbl matrimoniale (min 4*)",
+    "nrBileteAvion": 1,
+    "costPerKm": 4.5
   , "setType": "vocal"},
   {
     "id": 89,
@@ -1200,9 +1200,9 @@ export const ARTISTS_DATA = [
     "feeMin": 0,
     "feeMax": 0,
     "tier": "A+",
-    "cazare": "la cerere",
-    "nrBileteAvion": 0,
-    "costPerKm": 0
+    "cazare": "4 sng matrimoniale + 2 dbl twin",
+    "nrBileteAvion": 1,
+    "costPerKm": 4.5
   , "setType": "vocal"},
   {
     "id": 93,
