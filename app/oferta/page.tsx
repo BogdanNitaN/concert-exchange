@@ -390,6 +390,9 @@ export default function OfertaPage() {
     }))
   }
 
+  function setToateMasa(tip: 'alacarte' | 'diurna') {
+    setLinii(prev => prev.map(l => ({ ...l, tipMasa: tip, diurnaPerPers: tip === 'diurna' && !l.diurnaPerPers ? 180 : l.diurnaPerPers })))
+  }
   function updateLinie(key: string, patch: Partial<Linie>) {
     setLinii(prev => prev.map(l => l.key === key ? { ...l, ...patch } : l))
   }
@@ -868,6 +871,14 @@ export default function OfertaPage() {
           )}
         </div>
 
+        {/* buton global masa (2+ artisti) */}
+        {linii.length >= 2 && (
+          <div style={{display:'flex', alignItems:'center', gap:'10px', marginBottom:'14px', flexWrap:'wrap'}}>
+            <span style={{fontSize:'12px', fontWeight:700, color:UI.sub}}>Toți pe:</span>
+            <button onClick={() => setToateMasa('alacarte')} style={{padding:'7px 14px', fontSize:'12px', fontWeight:700, borderRadius:'8px', border:'1.5px solid '+UI.line, background:'white', color:UI.ink, cursor:'pointer', fontFamily:F}}>a la carte</button>
+            <button onClick={() => setToateMasa('diurna')} style={{padding:'7px 14px', fontSize:'12px', fontWeight:700, borderRadius:'8px', border:'1.5px solid '+UI.line, background:'white', color:UI.ink, cursor:'pointer', fontFamily:F}}>diurnă</button>
+          </div>
+        )}
         {/* carduri artisti */}
         {linii.map(l => {
           const c = calcLinie(l)
