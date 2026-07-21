@@ -57,16 +57,27 @@ export async function GET(req: Request) {
       calendarId: calArtist.id!, timeMin: min.toISOString(), timeMax: max.toISOString(),
       singleEvents: true, orderBy: 'startTime', maxResults: 300
     })
+    // cuvinte-cheie din numele artistului (ex "irina", "rimes") pt a distinge artist vs echipa
+    const cuvinteArtist = (numeGasit || artist).toLowerCase().replace(/[^a-z0-9\u00e0-\u017f ]/gi, '').split(/\s+/).filter(w => w.length >= 3 && !['the','and','feat'].includes(w))
+    const despreArtist = (titlu: string) => {
+      const t = titlu.toLowerCase()
+      return cuvinteArtist.some(w => t.includes(w))
+    }
     const evenimente = (ev.data.items || []).map(e => {
       const start = (e.start?.date || e.start?.dateTime || '').slice(0, 10)
       const titlu = e.summary || ''
       const descriere = e.description || ''
       const orasEv = extragOrasDinTitlu(titlu)
-      // clasific: blocat (indisponibil), show (concert real), nota (context)
-      let tip: 'show' | 'blocat' | 'nota' = 'nota'
-      if (/blocat/i.test(titlu)) tip = 'blocat'
-      else if (/^\s*\((P|C)/i.test(titlu) || !!orasEv) tip = 'show'
-      return { titlu, descriere, data: start, oras: orasEv, created: e.created || null, tip }
+      const desprEl = despreArtist(titlu)
+      const areMarcajConcert = /^\s*\((P|C)/i.test(titlu) || !!orasEv
+      const areCuvantBlocaj = /vacan|concediu|liber|off|indisponibil|blocat|nu se ia|zi liber|pauza/i.test(titlu)
+      // clasific: show, indisponibil (ea nu poate), echipa (alt membru), nota (context)
+      let tip: 'show' | 'indisponibil' | 'echipa' | 'nota' = 'nota'
+      if (desprEl && areCuvantBlocaj) tip = 'indisponibil'
+      else if (desprEl && areMarcajConcert) tip = 'show'
+      else if (!desprEl && (areMarcajConcert || areCuvantBlocaj)) tip = 'echipa'
+      else if (desprEl && !areMarcajConcert && !areCuvantBlocaj) tip = 'nota'
+      return { titlu, descriere, data: start, oras: orasEv, created: e.created || null, tip, despreArtist: desprEl }
     }).filter(e => e.data)
 
     const azi = new Date(); azi.setHours(0, 0, 0, 0)
@@ -107,9 +118,16 @@ export async function GET(req: Request) {
       const dMax = new Date(dObj); dMax.setDate(dMax.getDate() + 3)
       const iso = (d: Date) => d.toISOString().slice(0, 10)
       const contextZile = ocupate.filter((e: any) => e.data >= iso(dMin) && e.data <= iso(dMax) && e.data !== dataQuery)
+      const blocante = evPeData.filter((e: any) => e.tip === 'show' || e.tip === 'indisponibil')
+      const neclare = evPeData.filter((e: any) => e.tip === 'echipa' || e.tip === 'nota')
+      // status: ocupat daca are show/indisponibil; verifica daca doar echipa/note; liber daca nimic
+      let status: 'liber' | 'ocupat' | 'verifica' = 'liber'
+      if (blocante.length > 0) status = 'ocupat'
+      else if (neclare.length > 0) status = 'verifica'
       peData = {
         data: dataQuery,
-        liber: evPeData.filter((e: any) => e.tip !== 'nota').length === 0,
+        liber: blocante.length === 0,
+        status,
         evenimente: evPeData,
         context: contextZile.sort((a: any, b: any) => a.data.localeCompare(b.data))
       }

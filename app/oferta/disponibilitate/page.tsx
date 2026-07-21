@@ -112,6 +112,14 @@ export default function DisponibilitatePage() {
     arataToast('Se trimite în ofertă...')
     setTimeout(() => { window.location.href = '/oferta' }, 500)
   }
+  function badgeCol(tip: string): string {
+    const m: Record<string,string> = { show: '#2563eb', indisponibil: '#dc2626', echipa: '#78716c', nota: '#a8a29e', blocat: '#dc2626' }
+    return m[tip] || '#a8a29e'
+  }
+  function badgeLabel(tip: string): string {
+    const m: Record<string,string> = { show: 'concert', indisponibil: 'indisponibil', echipa: 'echipă', nota: 'notă', blocat: 'blocat' }
+    return m[tip] || tip
+  }
   function lunaData(iso: string): string {
     try { return new Date(iso + 'T12:00:00').toLocaleDateString('ro-RO', { day: 'numeric', month: 'short' }) } catch { return iso }
   }
@@ -347,33 +355,37 @@ export default function DisponibilitatePage() {
                   {/* daca e data specifica: status + context */}
                   {pd ? (
                     <>
-                      <div style={{marginTop:'10px', marginBottom:'14px', padding:'14px', borderRadius:UI.radiusSm, background: pd.liber ? '#f0fdf4' : '#fef2f2', border:'1.5px solid '+(pd.liber ? '#86efac' : '#fca5a5')}}>
-                        <div style={{fontSize:'15px', fontWeight:800, color: pd.liber ? UI.green : '#dc2626'}}>{pd.liber ? '✓ LIBER' : '✗ OCUPAT'} pe {lunaData(pd.data)}</div>
-                        {pd.evenimente.filter((e: any) => e.tip !== 'nota').map((e: any, i: number) => (
-                          <div key={i} style={{marginTop:'4px'}}>
-                            <div style={{fontSize:'13px', color:'#7f1d1d'}}>{e.titlu}</div>
-                            {e.descriere && <div style={{fontSize:'11px', color:UI.faint}}>{e.descriere.slice(0,80)}</div>}
-                            {e.created && <div style={{fontSize:'10px', color:UI.faint}}>pus: {dataCreare(e.created)}</div>}
-                          </div>
-                        ))}
-                        {pd.evenimente.filter((e: any) => e.tip === 'nota').map((e: any, i: number) => (
-                          <div key={'n'+i} style={{marginTop:'3px'}}>
-                            <div style={{fontSize:'12px', color:UI.faint}}>notă: {e.titlu}</div>
-                            {e.descriere && <div style={{fontSize:'11px', color:UI.faint}}>{e.descriere.slice(0,80)}</div>}
-                            {e.created && <div style={{fontSize:'10px', color:UI.faint}}>pus: {dataCreare(e.created)}</div>}
+                      {(() => {
+                        const st: string = pd.status || (pd.liber ? 'liber' : 'ocupat')
+                        const cfgMap: Record<string, any> = { liber: { bg:'#f0fdf4', bd:'#86efac', col:UI.green, txt:'✓ LIBER' }, ocupat: { bg:'#fef2f2', bd:'#fca5a5', col:'#dc2626', txt:'✗ OCUPAT' }, verifica: { bg:'#fffbeb', bd:'#fcd34d', col:'#b45309', txt:'⚠ VERIFICĂ' } }
+                        const cfg = cfgMap[st] || cfgMap.ocupat
+                        return (
+                      <div style={{marginTop:'10px', marginBottom:'14px', padding:'14px', borderRadius:UI.radiusSm, background: cfg.bg, border:'1.5px solid '+cfg.bd}}>
+                        <div style={{fontSize:'15px', fontWeight:800, color: cfg.col, marginBottom: pd.evenimente.length ? '8px' : '0'}}>{cfg.txt} pe {lunaData(pd.data)}</div>
+                        {pd.evenimente.map((e: any, i: number) => (
+                          <div key={i} style={{marginTop:'6px'}}>
+                            <div style={{display:'flex', alignItems:'center', gap:'6px'}}>
+                              <span style={{fontSize:'9px', fontWeight:800, textTransform:'uppercase', padding:'2px 6px', borderRadius:'5px', color:'white', background: badgeCol(e.tip)}}>{badgeLabel(e.tip)}</span>
+                              <span style={{fontSize:'13px', color:UI.ink}}>{e.titlu}</span>
+                            </div>
+                            {e.descriere && <div style={{fontSize:'11px', color:UI.faint, marginLeft:'2px'}}>{e.descriere.slice(0,80)}</div>}
+                            {e.created && <div style={{fontSize:'10px', color:UI.faint, marginLeft:'2px'}}>pus: {dataCreare(e.created)}</div>}
                           </div>
                         ))}
                       </div>
+                        )
+                      })()}
                       {pd.context?.length > 0 && (
                         <div style={{marginBottom:'8px'}}>
                           <div style={{fontSize:'11px', fontWeight:800, color:UI.sub, textTransform:'uppercase', marginBottom:'6px'}}>Context ±3 zile</div>
                           {pd.context.map((e: any, i: number) => (
-                            <div key={i} style={{padding:'3px 0', color: e.tip==='nota' ? UI.faint : UI.sub}}>
-                              <div style={{display:'flex', gap:'10px', fontSize:'12px'}}>
-                                <span style={{fontWeight:700, minWidth:'70px', color: e.tip==='show' ? UI.ink : (e.tip==='blocat' ? '#dc2626' : UI.faint)}}>{lunaData(e.data)}</span>
-                                <span>{e.tip==='nota' ? 'notă: ' : (e.tip==='blocat' ? 'blocat: ' : '')}{e.titlu}</span>
+                            <div key={i} style={{padding:'4px 0'}}>
+                              <div style={{display:'flex', alignItems:'center', gap:'8px', fontSize:'12px'}}>
+                                <span style={{fontWeight:700, minWidth:'56px', color:UI.sub}}>{lunaData(e.data)}</span>
+                                <span style={{fontSize:'8px', fontWeight:800, textTransform:'uppercase', padding:'2px 5px', borderRadius:'4px', color:'white', background: badgeCol(e.tip)}}>{badgeLabel(e.tip)}</span>
+                                <span style={{color:UI.sub}}>{e.titlu}</span>
                               </div>
-                              {(e.descriere || e.created) && <div style={{fontSize:'10px', color:UI.faint, marginLeft:'80px'}}>{e.descriere ? e.descriere.slice(0,70) : ''}{e.descriere && e.created ? ' · ' : ''}{e.created ? 'pus ' + dataCreare(e.created) : ''}</div>}
+                              {(e.descriere || e.created) && <div style={{fontSize:'10px', color:UI.faint, marginLeft:'64px'}}>{e.descriere ? e.descriere.slice(0,70) : ''}{e.descriere && e.created ? ' · ' : ''}{e.created ? 'pus ' + dataCreare(e.created) : ''}</div>}
                             </div>
                           ))}
                         </div>
