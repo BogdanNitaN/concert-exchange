@@ -50,10 +50,11 @@ export default function DisponibilitatePage() {
   const [artistCautat, setArtistCautat] = useState('')
   const [rezArtist, setRezArtist] = useState<any[]>([])
   const [dataArtist, setDataArtist] = useState('')
+  const [bifatiArtist, setBifatiArtist] = useState<Set<string>>(new Set())
   const [loadingArtist, setLoadingArtist] = useState(false)
   async function cautaArtist() {
     if (!artistCautat.trim()) return
-    setLoadingArtist(true); setRezArtist([])
+    setLoadingArtist(true); setRezArtist([]); setBifatiArtist(new Set())
     const nume = artistCautat.split(',').map(n => n.trim()).filter(Boolean)
     const rezultate: any[] = []
     for (const n of nume) {
@@ -71,15 +72,24 @@ export default function DisponibilitatePage() {
     // cei liberi pe data cautata (doar cand data e pusa)
     return rezArtist.filter((ra: any) => ra.ok && ra.gasit && ra.peData && ra.peData.liber)
   }
-  function copiazaLiberi() {
+  function liberiBifati() {
+    // liberi + bifati (daca nimic bifat, ii ia pe toti liberii)
     const liberi = liberiArtist()
+    if (bifatiArtist.size === 0) return liberi
+    return liberi.filter((ra: any) => bifatiArtist.has(ra.artist))
+  }
+  function toggleBifaArtist(nume: string) {
+    setBifatiArtist(prev => { const n = new Set(prev); n.has(nume) ? n.delete(nume) : n.add(nume); return n })
+  }
+  function copiazaLiberi() {
+    const liberi = liberiBifati()
     if (liberi.length === 0) return
     const linii = liberi.map((ra: any) => '*' + ra.artist + '*')
     const txt = (dataArtist ? 'Disponibili pe ' + lunaData(dataArtist) + (oras ? ', ' + oras : '') + ':\n\n' : '') + linii.join('\n')
     navigator.clipboard.writeText(txt)
   }
   function trimiteLiberiInOferta() {
-    const liberi = liberiArtist()
+    const liberi = liberiBifati()
     if (liberi.length === 0) return
     const linii_complete = liberi.map((ra: any) => {
       const rd = ra.rosterData || {}
@@ -88,8 +98,8 @@ export default function DisponibilitatePage() {
         formatSelectat: '', durata: rd.durata_default || '40 min',
         tipPret: 'Standard', feeLista: rd.fee_standard || 0, fee: rd.fee_standard || 0,
         leiKm: rd.lei_km || 0, useMarja: true, cazare: rd.cazare || '', persoane: rd.nr_persoane || 0,
-        bileteAvion: rd.bilete_avion || 0, restulRutier: false, tipMasa: 'diurna', zile: 1,
-        diurnaPerPers: 0, diurnaFixa: 0, cazareFixa: 0, useAlcool: false, alcool: 0,
+        bileteAvion: rd.bilete_avion || 0, restulRutier: true, tipMasa: 'alacarte', zile: 1,
+        diurnaPerPers: 180, diurnaFixa: rd.diurna_fixa || 0, cazareFixa: rd.cazare_fixa || 0, useAlcool: false, alcool: rd.alcool_default || 0,
         useCag: false, cagProcent: 0, cagSuma: 0, cagMod: 'procent',
       }
     })
@@ -233,8 +243,8 @@ export default function DisponibilitatePage() {
         formatSelectat: '', durata: '40 min',
         tipPret: 'Standard', feeLista: rd.fee_standard || 0, fee: rd.fee_standard || 0,
         leiKm: rd.lei_km || 0, useMarja: true, cazare: rd.cazare || '', persoane: rd.nr_persoane || 0,
-        bileteAvion: rd.bilete_avion || 0, restulRutier: false, tipMasa: 'diurna', zile: 1,
-        diurnaPerPers: 0, diurnaFixa: 0, cazareFixa: 0, useAlcool: false, alcool: 0,
+        bileteAvion: rd.bilete_avion || 0, restulRutier: true, tipMasa: 'alacarte', zile: 1,
+        diurnaPerPers: 180, diurnaFixa: rd.diurna_fixa || 0, cazareFixa: rd.cazare_fixa || 0, useAlcool: false, alcool: rd.alcool_default || 0,
         useCag: false, cagProcent: 0, cagSuma: 0, cagMod: 'procent',
       }
     })
@@ -334,19 +344,30 @@ export default function DisponibilitatePage() {
                       <div style={{marginTop:'10px', marginBottom:'14px', padding:'14px', borderRadius:UI.radiusSm, background: pd.liber ? '#f0fdf4' : '#fef2f2', border:'1.5px solid '+(pd.liber ? '#86efac' : '#fca5a5')}}>
                         <div style={{fontSize:'15px', fontWeight:800, color: pd.liber ? UI.green : '#dc2626'}}>{pd.liber ? '✓ LIBER' : '✗ OCUPAT'} pe {lunaData(pd.data)}</div>
                         {pd.evenimente.filter((e: any) => e.tip !== 'nota').map((e: any, i: number) => (
-                          <div key={i} style={{fontSize:'13px', color:'#7f1d1d', marginTop:'4px'}}>{e.titlu}</div>
+                          <div key={i} style={{marginTop:'4px'}}>
+                            <div style={{fontSize:'13px', color:'#7f1d1d'}}>{e.titlu}</div>
+                            {e.descriere && <div style={{fontSize:'11px', color:UI.faint}}>{e.descriere.slice(0,80)}</div>}
+                            {e.created && <div style={{fontSize:'10px', color:UI.faint}}>pus: {dataCreare(e.created)}</div>}
+                          </div>
                         ))}
                         {pd.evenimente.filter((e: any) => e.tip === 'nota').map((e: any, i: number) => (
-                          <div key={'n'+i} style={{fontSize:'12px', color:UI.faint, marginTop:'3px'}}>notă: {e.titlu}</div>
+                          <div key={'n'+i} style={{marginTop:'3px'}}>
+                            <div style={{fontSize:'12px', color:UI.faint}}>notă: {e.titlu}</div>
+                            {e.descriere && <div style={{fontSize:'11px', color:UI.faint}}>{e.descriere.slice(0,80)}</div>}
+                            {e.created && <div style={{fontSize:'10px', color:UI.faint}}>pus: {dataCreare(e.created)}</div>}
+                          </div>
                         ))}
                       </div>
                       {pd.context?.length > 0 && (
                         <div style={{marginBottom:'8px'}}>
                           <div style={{fontSize:'11px', fontWeight:800, color:UI.sub, textTransform:'uppercase', marginBottom:'6px'}}>Context ±3 zile</div>
                           {pd.context.map((e: any, i: number) => (
-                            <div key={i} style={{display:'flex', gap:'10px', fontSize:'12px', padding:'3px 0', color: e.tip==='nota' ? UI.faint : UI.sub}}>
-                              <span style={{fontWeight:700, minWidth:'70px', color: e.tip==='show' ? UI.ink : (e.tip==='blocat' ? '#dc2626' : UI.faint)}}>{lunaData(e.data)}</span>
-                              <span>{e.tip==='nota' ? 'notă: ' : (e.tip==='blocat' ? 'blocat: ' : '')}{e.titlu}</span>
+                            <div key={i} style={{padding:'3px 0', color: e.tip==='nota' ? UI.faint : UI.sub}}>
+                              <div style={{display:'flex', gap:'10px', fontSize:'12px'}}>
+                                <span style={{fontWeight:700, minWidth:'70px', color: e.tip==='show' ? UI.ink : (e.tip==='blocat' ? '#dc2626' : UI.faint)}}>{lunaData(e.data)}</span>
+                                <span>{e.tip==='nota' ? 'notă: ' : (e.tip==='blocat' ? 'blocat: ' : '')}{e.titlu}</span>
+                              </div>
+                              {(e.descriere || e.created) && <div style={{fontSize:'10px', color:UI.faint, marginLeft:'80px'}}>{e.descriere ? e.descriere.slice(0,70) : ''}{e.descriere && e.created ? ' · ' : ''}{e.created ? 'pus ' + dataCreare(e.created) : ''}</div>}
                             </div>
                           ))}
                         </div>
@@ -372,8 +393,11 @@ export default function DisponibilitatePage() {
                     <div style={{marginTop:'12px'}}>
                       <div style={{fontSize:'12px', fontWeight:800, color:UI.ink, marginBottom:'8px'}}>Show-uri programate ({showViitor.length})</div>
                       {showViitor.map((e: any, i: number) => (
-                        <div key={i} style={{display:'flex', gap:'10px', fontSize:'13px', color:UI.sub, padding:'5px 0', borderBottom:'1px solid '+UI.line}}>
-                          <span style={{fontWeight:700, color:UI.ink, minWidth:'70px'}}>{lunaData(e.data)}</span><span>{e.titlu}</span>
+                        <div key={i} style={{padding:'5px 0', borderBottom:'1px solid '+UI.line}}>
+                          <div style={{display:'flex', gap:'10px', fontSize:'13px', color:UI.sub}}>
+                            <span style={{fontWeight:700, color:UI.ink, minWidth:'70px'}}>{lunaData(e.data)}</span><span>{e.titlu}</span>
+                          </div>
+                          {(e.descriere || e.created) && <div style={{fontSize:'10px', color:UI.faint, marginLeft:'80px'}}>{e.descriere ? e.descriere.slice(0,70) : ''}{e.descriere && e.created ? ' · ' : ''}{e.created ? 'pus ' + dataCreare(e.created) : ''}</div>}
                         </div>
                       ))}
                     </div>

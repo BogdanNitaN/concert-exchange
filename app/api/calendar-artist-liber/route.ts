@@ -60,12 +60,13 @@ export async function GET(req: Request) {
     const evenimente = (ev.data.items || []).map(e => {
       const start = (e.start?.date || e.start?.dateTime || '').slice(0, 10)
       const titlu = e.summary || ''
+      const descriere = e.description || ''
       const orasEv = extragOrasDinTitlu(titlu)
       // clasific: blocat (indisponibil), show (concert real), nota (context)
       let tip: 'show' | 'blocat' | 'nota' = 'nota'
       if (/blocat/i.test(titlu)) tip = 'blocat'
       else if (/^\s*\((P|C)/i.test(titlu) || !!orasEv) tip = 'show'
-      return { titlu, data: start, oras: orasEv, created: e.created || null, tip }
+      return { titlu, descriere, data: start, oras: orasEv, created: e.created || null, tip }
     }).filter(e => e.data)
 
     const azi = new Date(); azi.setHours(0, 0, 0, 0)
