@@ -898,7 +898,7 @@ export default function OfertaPage() {
                 <div>
                   <label style={label}>Tip preț</label>
                   <select value={l.tipPret} onChange={e => updateLinie(l.key, { tipPret: e.target.value })} style={inputStyle}>
-                    <option>Standard</option><option>Bal</option><option>Privat</option><option>Corporate</option><option>Revelion</option>
+                    <option>Standard</option><option>Bal</option><option>Privat</option><option>Corporate</option><option>Revelion</option><option>Diaspora</option>
                   </select>
                 </div>
                 <div><label style={label}>Preț listă (€)</label>
