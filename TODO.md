@@ -25,6 +25,7 @@
 8. Sistem complet preturi per tip eveniment (formate per tip)
 9. Smart booking — alerte artist-client (dupa ce exista baza de clienti)
 10. Cleanup: fisierul corupt pusave-images.mjssave-images.mjs
+11. Bucuresti + Ilfov: scoate automat transport si cazare la artistii locali
 
 ## SCHEMA propusa pt sistem client (piesa 1)
 - Tabela clienti: id, nume, telefon, email, tip (intermediar/direct), created_at
