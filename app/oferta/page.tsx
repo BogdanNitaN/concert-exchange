@@ -1,4 +1,5 @@
 'use client'
+import Link from 'next/link'
 
 import { useState, useEffect } from 'react'
 import { jsPDF } from 'jspdf'
@@ -795,11 +796,11 @@ export default function OfertaPage() {
             <div style={{fontSize:'13px', color:'#a8a29e', fontWeight:500, marginTop:'2px'}}>Generator deviz intern</div>
           </div>
           <div style={{display:'flex', gap: isMobile ? '8px' : '10px', alignItems:'center', flexWrap:'wrap', justifyContent: isMobile ? 'flex-start' : 'flex-end'}}>
-            <a href="/oferta/disponibilitate" style={{display:'flex', alignItems:'center', gap:'6px', fontSize:'13px', color:'#1c1917', fontWeight:700, background:'white', border:'1.5px solid #ececec', borderRadius:'10px', padding:'9px 14px', cursor:'pointer', fontFamily:F, textDecoration:'none'}}><CalendarSearch size={15} strokeWidth={2.2} /> Calendar</a>
-            <a href="/oferta/istoric" style={{display:'flex', alignItems:'center', gap:'6px', fontSize:'13px', color:'#1c1917', fontWeight:700, background:'white', border:'1.5px solid #ececec', borderRadius:'10px', padding:'9px 14px', cursor:'pointer', fontFamily:F, textDecoration:'none'}}><History size={15} strokeWidth={2.2} /> Istoric</a>
-            <a href="/oferta/roster" style={{display:'flex', alignItems:'center', gap:'6px', fontSize:'13px', color:'#1c1917', fontWeight:700, background:'white', border:'1.5px solid #ececec', borderRadius:'10px', padding:'9px 14px', cursor:'pointer', fontFamily:F, textDecoration:'none'}}><Users size={15} strokeWidth={2.2} /> Roster</a>
+            <Link href="/oferta/disponibilitate" style={{display:'flex', alignItems:'center', gap:'6px', fontSize:'13px', color:'#1c1917', fontWeight:700, background:'white', border:'1.5px solid #ececec', borderRadius:'10px', padding:'9px 14px', cursor:'pointer', fontFamily:F, textDecoration:'none'}}><CalendarSearch size={15} strokeWidth={2.2} /> Calendar</Link>
+            <Link href="/oferta/istoric" style={{display:'flex', alignItems:'center', gap:'6px', fontSize:'13px', color:'#1c1917', fontWeight:700, background:'white', border:'1.5px solid #ececec', borderRadius:'10px', padding:'9px 14px', cursor:'pointer', fontFamily:F, textDecoration:'none'}}><History size={15} strokeWidth={2.2} /> Istoric</Link>
+            <Link href="/oferta/roster" style={{display:'flex', alignItems:'center', gap:'6px', fontSize:'13px', color:'#1c1917', fontWeight:700, background:'white', border:'1.5px solid #ececec', borderRadius:'10px', padding:'9px 14px', cursor:'pointer', fontFamily:F, textDecoration:'none'}}><Users size={15} strokeWidth={2.2} /> Roster</Link>
             <button onClick={() => setShowAddArtist(true)} style={{display:'flex', alignItems:'center', gap:'6px', fontSize:'13px', color:'#1c1917', fontWeight:700, background:'white', border:'1.5px solid #ececec', borderRadius:'10px', padding:'9px 14px', cursor:'pointer', fontFamily:F}}><UserPlus size={15} strokeWidth={2.2} /> Artist</button>
-            {userRole === 'oferta_admin' && <a href="/oferta/admin" style={{display:'flex', alignItems:'center', gap:'6px', fontSize:'13px', color:'#1c1917', fontWeight:700, background:'white', border:'1.5px solid #ececec', borderRadius:'10px', padding:'9px 14px', cursor:'pointer', fontFamily:F, textDecoration:'none'}}><Shield size={15} strokeWidth={2.2} /> Admin</a>}
+            {userRole === 'oferta_admin' && <Link href="/oferta/admin" style={{display:'flex', alignItems:'center', gap:'6px', fontSize:'13px', color:'#1c1917', fontWeight:700, background:'white', border:'1.5px solid #ececec', borderRadius:'10px', padding:'9px 14px', cursor:'pointer', fontFamily:F, textDecoration:'none'}}><Shield size={15} strokeWidth={2.2} /> Admin</Link>}
             <button onClick={faLogout} title="Log out" style={{display:'flex', alignItems:'center', gap:'6px', fontSize:'13px', color:'#a8a29e', fontWeight:700, background:'none', border:'1.5px solid #e7e5e4', borderRadius:'10px', padding:'9px 12px', cursor:'pointer', fontFamily:F}}><LogOut size={15} strokeWidth={2.2} /></button>
           </div>
         </div>
