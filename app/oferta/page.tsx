@@ -1155,7 +1155,7 @@ export default function OfertaPage() {
                 </div>
               </div>
               <div style={{fontSize:'11px', color:'#a8a29e', marginTop:'-4px'}}>Poza se caută automat pe Chartex după nume.</div>
-              <button onClick={salveazaArtistNou} disabled={savingArtist} style={{marginTop:'6px', padding:'13px', background:UI.purple, color:'white', border:'none', borderRadius:UI.radiusSm, fontSize:'14px', fontWeight:700, cursor: savingArtist ? 'wait' : 'pointer', fontFamily:F, opacity: savingArtist ? 0.6 : 1, boxShadow:'0 1px 3px rgba(0,0,0,0.3)'}}>
+              <button onClick={salveazaArtistNou} disabled={savingArtist} style={{marginTop:'6px', padding:'14px', background:UI.green, color:'white', border:'none', borderRadius:UI.radiusSm, fontSize:'14px', fontWeight:700, cursor: savingArtist ? 'wait' : 'pointer', fontFamily:F, opacity: savingArtist ? 0.6 : 1, boxShadow:'0 2px 8px rgba(5,150,105,0.3)'}}>
                 {savingArtist ? 'Se salvează...' : 'Salvează artist'}
               </button>
             </div>
