@@ -27,6 +27,7 @@
 10. Cleanup: fisierul corupt pusave-images.mjssave-images.mjs
 11. Bucuresti + Ilfov: scoate automat transport si cazare la artistii locali
 12. Mod LANDED pe linie (fee cu transport inclus, ex The Motans Sibiu 12000 landed) — dezactiveaza calcul transport pe km, raman doar diurna/masa/cazare
+14. Asistent AI conversational (RO) — input text SI voce, limbaj natural fuzzy ("caut artist liber pe data de", "ce ar merge pe", "recomanda", "da-mi liberi", "fa-mi oferta"). Sa inteleaga comenzi vagi, sa raspunda in romana, sa lege interogari -> disponibilitate -> oferta. Comanda vocala + conversatie.
 13. Avertizare avion la landed: cand linia e landed + distanta cere zbor (>300km, ex Iasi) -> atentionare ca biletul de avion nu e estimat, verifica daca fee-ul acopera zborul (informativ, nu blocheaza)
 
 ## SCHEMA propusa pt sistem client (piesa 1)
