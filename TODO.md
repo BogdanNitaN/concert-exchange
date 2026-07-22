@@ -30,6 +30,9 @@
 14. Asistent AI conversational (RO) — input text SI voce, limbaj natural fuzzy ("caut artist liber pe data de", "ce ar merge pe", "recomanda", "da-mi liberi", "fa-mi oferta"). Sa inteleaga comenzi vagi, sa raspunda in romana, sa lege interogari -> disponibilitate -> oferta. Comanda vocala + conversatie.
 13. Avertizare avion la landed: cand linia e landed + distanta cere zbor (>300km, ex Iasi) -> atentionare ca biletul de avion nu e estimat, verifica daca fee-ul acopera zborul (informativ, nu blocheaza)
 
+## NOTA sursa date clienti
+- Baza de clienti se poate popula din fisele de eveniment existente (au deja: detalii eveniment, contacte, intermediari, clienti). Nu construim de la zero — importam din fise.
+
 ## SCHEMA propusa pt sistem client (piesa 1)
 - Tabela clienti: id, nume, telefon, email, tip (intermediar/direct), created_at
 - Tabela cereri_disponibilitate (jurnal): id, client_id, artisti[], oras, data_ceruta, fee-uri, created_at
