@@ -80,6 +80,7 @@ interface Linie {
   artist: Artist
   formatSelectat: string
   durata: string
+  dateOptiuni?: string
   tipPret: string
   feeLista: number
   fee: number
@@ -246,7 +247,7 @@ export default function OfertaPage() {
               const art = arts.find((a: Artist) => a.nume === lc.artistNume) || { nume: lc.artistNume, fee_standard: lc.fee, lei_km: lc.leiKm, cazare: lc.cazare, nr_persoane: lc.persoane, bilete_avion: lc.bileteAvion, alcool_default: 0, categorie: '', tip: lc.tip }
               return {
                 key: lc.artistNume + '-' + Date.now() + '-' + i,
-                artist: art, formatSelectat: lc.formatSelectat || '', durata: lc.durata || '',
+                artist: art, formatSelectat: lc.formatSelectat || '', durata: lc.durata || '', dateOptiuni: lc.dateOptiuni || '',
                 tipPret: lc.tipPret, feeLista: lc.feeLista, fee: lc.fee, leiKm: lc.leiKm,
                 useMarja: lc.useMarja, cazare: lc.cazare, persoane: lc.persoane, bileteAvion: lc.bileteAvion,
                 tipMasa: lc.tipMasa, zile: lc.zile, diurnaPerPers: lc.diurnaPerPers, diurnaFixa: lc.diurnaFixa || 0, cazareFixa: lc.cazareFixa || 0,
@@ -442,6 +443,7 @@ export default function OfertaPage() {
     for (const l of linii.filter(x => x.includeExport)) {
       const c = calcLinie(l)
       out.push('*' + l.artist.nume.toUpperCase() + '*')
+      if (l.dateOptiuni) out.push('Date posibile: ' + l.dateOptiuni + ' (un pret pentru oricare)')
 
       if (institutiePublica) {
         // format oficial in lei
@@ -888,6 +890,8 @@ export default function OfertaPage() {
                 <div style={{display:'flex', alignItems:'center', gap:'10px'}}>
                   <input type="checkbox" checked={l.includeExport} onChange={e => updateLinie(l.key, { includeExport: e.target.checked })} style={{width:'18px', height:'18px', accentColor:'#059669'}} />
                   <span style={{fontSize:'18px', fontWeight:800}}>{l.artist.nume}</span>
+                  {l.dateOptiuni && <span style={{fontSize:'11px', fontWeight:600, color:'#7c3aed', marginLeft:'8px'}}>date: {l.dateOptiuni}</span>}
+                  {l.dateOptiuni && <span style={{fontSize:'11px', fontWeight:600, color:'#7c3aed', marginLeft:'8px'}}>date: {l.dateOptiuni}</span>}
                   <span style={{fontSize:'9px', fontWeight:800, padding:'2px 6px', borderRadius:'4px', background: l.artist.tip === 'intermediere' ? '#f3efff' : '#f3efff', color: l.artist.tip === 'intermediere' ? '#1c1917' : '#1c1917'}}>{l.artist.tip === 'intermediere' ? 'EXTERN' : 'FWD'}</span>
                   <input value={l.durata} onChange={e => updateLinie(l.key, { durata: e.target.value })} placeholder="40 min"
                     style={{marginLeft:'8px', padding:'4px 10px', borderRadius:'8px', border:'1.5px solid #0891b2', color:'#0891b2', fontSize:'12px', fontWeight:700, fontFamily:F, background:'white', width:'90px'}} />

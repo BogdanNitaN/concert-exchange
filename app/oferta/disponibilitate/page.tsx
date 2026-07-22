@@ -50,6 +50,11 @@ export default function DisponibilitatePage() {
   const [dataStart, setDataStart] = useState('')
   const [dataEnd, setDataEnd] = useState('')
   const [ziuaDeschisa, setZiuaDeschisa] = useState<string>('')
+  const [zileSelectate, setZileSelectate] = useState<Set<string>>(new Set())
+  function toggleZiSelectata(artist: string, data: string) {
+    const k = artist + '|' + data
+    setZileSelectate(prev => { const n = new Set(prev); n.has(k) ? n.delete(k) : n.add(k); return n })
+  }
   const [ocupateDeschise, setOcupateDeschise] = useState<Set<number>>(new Set())
   const [showExpandat, setShowExpandat] = useState<Set<number>>(new Set())
   function toggleShow(idx: number) { setShowExpandat(prev => { const n = new Set(prev); n.has(idx) ? n.delete(idx) : n.add(idx); return n }) }
@@ -127,6 +132,58 @@ export default function DisponibilitatePage() {
       }
     })
     const oferta = { oras: oras || null, data_eveniment: dataArtist || null, linii_complete }
+    try { localStorage.setItem('oferta_edit', JSON.stringify(oferta)) } catch {}
+    arataToast('Se trimite în ofertă...')
+    setTimeout(() => { window.location.href = '/oferta' }, 500)
+  }
+  // helper: lista {artist, data, rosterData} din zilele bifate in perioada
+  function zileSelectateLista() {
+    const rez: any[] = []
+    zileSelectate.forEach((k: string) => {
+      const [artist, data] = k.split('|')
+      const ra = rezArtist.find((r: any) => r.artist === artist)
+      rez.push({ artist, data, rosterData: ra?.rosterData || {} })
+    })
+    return rez.sort((a, b) => a.artist.localeCompare(b.artist) || a.data.localeCompare(b.data))
+  }
+  function copiazaPerioada() {
+    const lista = zileSelectateLista()
+    if (lista.length === 0) return
+    // grupez pe artist
+    const peArtist: Record<string, string[]> = {}
+    lista.forEach((z: any) => { (peArtist[z.artist] = peArtist[z.artist] || []).push(lunaData(z.data)) })
+    const txt = Object.entries(peArtist).map(([a, zile]) => '*' + a + '*: ' + zile.join(', ')).join('\n')
+    navigator.clipboard.writeText(txt)
+    setCopiat(true); setTimeout(() => setCopiat(false), 1800)
+  }
+  function trimitePerioadaInOferta() {
+    const lista = zileSelectateLista()
+    if (lista.length === 0) return
+    // grupez pe artist: O SINGURA linie per artist, cu toate zilele lui ca optiuni (un pret pt oricare)
+    const peArtist: Record<string, any> = {}
+    lista.forEach((z: any) => {
+      if (!peArtist[z.artist]) peArtist[z.artist] = { artist: z.artist, rosterData: z.rosterData, zile: [] }
+      peArtist[z.artist].zile.push(z.data)
+    })
+    const grupuri = Object.values(peArtist)
+    // toate selectiile pe o singura data? -> data globala
+    const dateUnice = Array.from(new Set(lista.map((z: any) => z.data)))
+    const dataGlobala = dateUnice.length === 1 ? dateUnice[0] : null
+    const linii_complete = grupuri.map((g: any) => {
+      const rd = g.rosterData || {}
+      const zileText = g.zile.map((d: string) => lunaData(d)).join(', ')
+      return {
+        artistNume: g.artist,
+        dateOptiuni: g.zile.length > 1 ? zileText : '',
+        formatSelectat: '', durata: rd.durata_default || '40 min',
+        tipPret: 'Standard', feeLista: rd.fee_standard || 0, fee: rd.fee_standard || 0,
+        leiKm: rd.lei_km || 0, useMarja: true, cazare: rd.cazare || '', persoane: rd.nr_persoane || 0,
+        bileteAvion: rd.bilete_avion || 0, restulRutier: true, tipMasa: 'alacarte', zile: 1,
+        diurnaPerPers: 180, diurnaFixa: rd.diurna_fixa || 0, cazareFixa: rd.cazare_fixa || 0, useAlcool: false, alcool: rd.alcool_default || 0,
+        useCag: false, cagProcent: 0, cagSuma: 0, cagMod: 'procent',
+      }
+    })
+    const oferta = { oras: oras || null, data_eveniment: dataGlobala, linii_complete }
     try { localStorage.setItem('oferta_edit', JSON.stringify(oferta)) } catch {}
     arataToast('Se trimite în ofertă...')
     setTimeout(() => { window.location.href = '/oferta' }, 500)
@@ -219,7 +276,7 @@ export default function DisponibilitatePage() {
       </div>
     )
   }
-  function renderMiniCalendar(perioada: any[], idx: number) {
+  function renderMiniCalendar(perioada: any[], idx: number, artist: string) {
     if (!perioada || perioada.length === 0) return null
     const culoare: Record<string, string> = { liber: '#86efac', ocupat: '#fca5a5', verifica: '#d8b4fe' }
     const culoareText: Record<string, string> = { liber: '#166534', ocupat: '#991b1b', verifica: '#6b21a8' }
@@ -257,10 +314,13 @@ export default function DisponibilitatePage() {
             const sel = ziuaDeschisa === z.data
             const wk = eWeekend(z.data)
             const wkLiber = wk && z.status === 'liber'
+            const bifat = zileSelectate.has(artist + '|' + z.data)
+            const eLibera = z.status === 'liber'
             return (
-              <button key={z.data} onClick={() => setZiuaDeschisa(sel ? '' : z.data)} title={z.data + (wk ? ' (weekend)' : '')}
-                style={{position:'relative', aspectRatio:'1', border: sel ? '2px solid '+UI.ink : (wkLiber ? '2px solid #16a34a' : '1px solid rgba(0,0,0,0.06)'), borderRadius:'7px', background: wkLiber ? '#22c55e' : (culoare[z.status] || '#e7e5e4'), color: wkLiber ? 'white' : (culoareText[z.status] || UI.sub), fontSize:'11px', fontWeight: wkLiber ? 800 : 700, cursor:'pointer', fontFamily:F, display:'flex', alignItems:'center', justifyContent:'center', padding:0, boxShadow: wkLiber ? '0 2px 6px rgba(34,197,94,0.4)' : 'none'}}>
+              <button key={z.data} onClick={() => { setZiuaDeschisa(sel ? '' : z.data); if (eLibera) toggleZiSelectata(artist, z.data) }} title={z.data + (wk ? ' (weekend)' : '') + (eLibera ? ' - click pt selectare' : '')}
+                style={{position:'relative', aspectRatio:'1', border: bifat ? '2.5px solid '+UI.ink : (sel ? '2px solid '+UI.ink : (wkLiber ? '2px solid #16a34a' : '1px solid rgba(0,0,0,0.06)')), borderRadius:'7px', background: wkLiber ? '#22c55e' : (culoare[z.status] || '#e7e5e4'), color: wkLiber ? 'white' : (culoareText[z.status] || UI.sub), fontSize:'11px', fontWeight: wkLiber ? 800 : 700, cursor:'pointer', fontFamily:F, display:'flex', alignItems:'center', justifyContent:'center', padding:0, boxShadow: bifat ? '0 0 0 2px white, 0 0 0 4px '+UI.ink : (wkLiber ? '0 2px 6px rgba(34,197,94,0.4)' : 'none')}}>
                 {ziLuna(z.data)}
+                {bifat && <span style={{position:'absolute', top:'-6px', right:'-6px', width:'16px', height:'16px', borderRadius:'50%', background:UI.ink, color:'white', fontSize:'10px', fontWeight:800, display:'flex', alignItems:'center', justifyContent:'center'}}>✓</span>}
               </button>
             )
           })}
@@ -596,7 +656,7 @@ export default function DisponibilitatePage() {
 
                   {/* mod perioada: mini-calendar colorat */}
                   {mod === 'perioada' ? (
-                    renderMiniCalendar(ra.perioada, idx)
+                    renderMiniCalendar(ra.perioada, idx, ra.artist)
                   ) : pd ? (
                     pd2 ? (
                       <div style={{display:'grid', gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr', gap:'12px', marginTop:'6px'}}>
@@ -663,6 +723,16 @@ export default function DisponibilitatePage() {
               <button onClick={() => liberiBifati().length === liberiArtist().length ? deselecteazaToti() : selecteazaTotiLiberi()} style={{padding:'10px 16px', background:'rgba(255,255,255,0.15)', color:'white', border:'none', borderRadius:'10px', fontSize:'13px', fontWeight:700, cursor:'pointer', fontFamily:F}}>{liberiBifati().length === liberiArtist().length ? 'Deselectează' : 'Toți'}</button>
               <button onClick={copiazaLiberi} style={{padding:'10px 16px', background: copiat ? UI.green : 'rgba(255,255,255,0.15)', color:'white', border:'none', borderRadius:'10px', fontSize:'13px', fontWeight:700, cursor:'pointer', fontFamily:F, transition:'background 0.2s'}}>{copiat ? '✓ Copiat' : 'Copiază'}</button>
               <button onClick={trimiteLiberiInOferta} style={{display:'flex', alignItems:'center', gap:'6px', padding:'10px 16px', background:UI.green, color:'white', border:'none', borderRadius:'10px', fontSize:'13px', fontWeight:700, cursor:'pointer', fontFamily:F}}><Send size={14} /> Trimite în ofertă</button>
+            </div>
+          </div>
+        )}
+        {mod === 'perioada' && zileSelectate.size > 0 && (
+          <div style={{position:'sticky', bottom:'20px', marginTop:'20px', background:UI.dark, borderRadius:UI.radius, padding:'16px 20px', boxShadow:'0 8px 30px rgba(0,0,0,0.25)', display:'flex', alignItems:'center', justifyContent:'space-between', gap:'12px', flexWrap:'wrap'}}>
+            <span style={{fontSize:'14px', fontWeight:700, color:'white'}}>{zileSelectate.size} {zileSelectate.size === 1 ? 'zi selectată' : 'zile selectate'}</span>
+            <div style={{display:'flex', gap:'8px', flexWrap:'wrap'}}>
+              <button onClick={() => setZileSelectate(new Set())} style={{padding:'10px 16px', background:'rgba(255,255,255,0.15)', color:'white', border:'none', borderRadius:'10px', fontSize:'13px', fontWeight:700, cursor:'pointer', fontFamily:F}}>Golește</button>
+              <button onClick={copiazaPerioada} style={{padding:'10px 16px', background: copiat ? UI.green : 'rgba(255,255,255,0.15)', color:'white', border:'none', borderRadius:'10px', fontSize:'13px', fontWeight:700, cursor:'pointer', fontFamily:F, transition:'background 0.2s'}}>{copiat ? '✓ Copiat' : 'Copiază'}</button>
+              <button onClick={trimitePerioadaInOferta} style={{display:'flex', alignItems:'center', gap:'6px', padding:'10px 16px', background:UI.green, color:'white', border:'none', borderRadius:'10px', fontSize:'13px', fontWeight:700, cursor:'pointer', fontFamily:F}}><Send size={14} /> Trimite în ofertă</button>
             </div>
           </div>
         )}
