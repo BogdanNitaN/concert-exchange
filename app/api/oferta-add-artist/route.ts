@@ -38,6 +38,7 @@ export async function POST(req: Request) {
       durata_default: b.durata || '40 min',
       transport_moneda: b.transportMoneda || 'lei',
       diurna_fixa: b.diurnaFixa ? Number(b.diurnaFixa) : null,
+      oras_rezidenta: (b.orasRezidenta && b.orasRezidenta.trim()) ? b.orasRezidenta.trim() : 'Bucuresti',
       formate: (b.variante && b.variante.length > 0) ? b.variante.filter((v: any) => v.nume || v.fee).map((v: any) => ({
         nume: v.nume || 'Variantă',
         fee: Number(v.fee) || 0,

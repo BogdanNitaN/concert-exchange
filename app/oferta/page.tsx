@@ -189,7 +189,7 @@ export default function OfertaPage() {
   const [codOferta, setCodOferta] = useState(() => 'GIGX-' + new Date().getFullYear() + '-' + String(Math.floor(Math.random()*9000)+1000))
   const [adaosProcent, setAdaosProcent] = useState(1)
   const [showAddArtist, setShowAddArtist] = useState(false)
-  const [newArtist, setNewArtist] = useState<any>({ nume: '', categorie: 'pop', tip: 'propriu', durata: '40 min', fee: '', leiKm: '', transportMoneda: 'lei', cazare: '', bileteAvion: '', alcool: '', diurnaFixa: '', variante: [] as {nume:string,fee:string,durata:string}[] })
+  const [newArtist, setNewArtist] = useState<any>({ nume: '', categorie: 'pop', tip: 'propriu', durata: '40 min', fee: '', leiKm: '', transportMoneda: 'lei', cazare: '', bileteAvion: '', alcool: '', diurnaFixa: '', orasRezidenta: '', variante: [] as {nume:string,fee:string,durata:string}[] })
   const [savingArtist, setSavingArtist] = useState(false)
   const [conflicte, setConflicte] = useState<Record<string, {titlu: string, created: string | null}[]>>({})
   function resetOferta() {
@@ -1144,6 +1144,11 @@ export default function OfertaPage() {
               <div>
                 <label style={{fontSize:'11px', fontWeight:700, color:'#78716c', textTransform:'uppercase', display:'block', marginBottom:'4px'}}>Cazare (persoanele se calculează automat)</label>
                 <input value={newArtist.cazare} onChange={e => setNewArtist({...newArtist, cazare: e.target.value})} placeholder="ex: 2 sng + 3 dbl" style={{width:'100%', padding:'10px 12px', borderRadius:'8px', border:'1.5px solid #e7e5e4', fontSize:'14px', fontFamily:F, boxSizing:'border-box'}} />
+              </div>
+              <div>
+                <label style={{fontSize:'11px', fontWeight:700, color:'#78716c', textTransform:'uppercase', display:'block', marginBottom:'4px'}}>Oraș reședință</label>
+                <input value={newArtist.orasRezidenta} onChange={e => setNewArtist({...newArtist, orasRezidenta: e.target.value})} placeholder="București" style={{width:'100%', padding:'10px 12px', borderRadius:'8px', border:'1.5px solid #e7e5e4', fontSize:'14px', fontFamily:F, boxSizing:'border-box'}} />
+                <div style={{fontSize:'10px', color:'#a8a29e', marginTop:'2px'}}>Gol = București. Buc/Ilfov = fără transport/cazare la evenimente locale.</div>
               </div>
               <div style={{border:'1px solid #e7e5e4', borderRadius:'10px', padding:'12px', background:'#f3efff'}}>
                 <div style={{display:'flex', justifyContent:'space-between', alignItems:'center', marginBottom:'8px'}}>
