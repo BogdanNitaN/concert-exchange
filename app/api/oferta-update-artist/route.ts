@@ -36,6 +36,7 @@ export async function PATCH(req: Request) {
     if (b.observatii !== undefined) updates.observatii = b.observatii
     if (b.formate !== undefined) updates.formate = b.formate
     if (b.format_show !== undefined) updates.format_show = b.format_show
+    if (b.oras_rezidenta !== undefined) updates.oras_rezidenta = b.oras_rezidenta
     const { error } = await supabase.from('oferta_artisti').update(updates).eq('nume', b.nume_original)
     if (error) return NextResponse.json({ ok: false, error: error.message }, { status: 400 })
     return NextResponse.json({ ok: true })

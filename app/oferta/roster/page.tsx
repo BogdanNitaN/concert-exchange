@@ -27,7 +27,7 @@ interface Artist {
   id: number; nume: string; fee_standard: number; lei_km: number; transport_moneda?: string
   cazare: string; nr_persoane: number; bilete_avion: number; alcool_default: number
   categorie: string; tip: string; set_type?: string; durata_default?: string
-  diurna_fixa?: number | null; cazare_fixa?: number | null; observatii?: string; format_show?: string; formate?: Format[] | null
+  diurna_fixa?: number | null; cazare_fixa?: number | null; observatii?: string; format_show?: string; formate?: Format[] | null; oras_rezidenta?: string
 }
 
 function useIsMobile() {
@@ -294,6 +294,7 @@ export default function RosterPage() {
                   <input value={edit.durata_default || ''} onChange={e => setEdit({...edit, durata_default: e.target.value})} placeholder="40 min" style={inp} />
                 </div>
                 <div><label style={lbl}>Diurnă fixă (lei)</label><input type="number" value={edit.diurna_fixa || ''} onFocus={e => e.target.select()} onChange={e => setEdit({...edit, diurna_fixa: e.target.value ? Number(e.target.value) : null})} placeholder="opțional" style={inp} /></div>
+                <div><label style={lbl}>Oraș reședință</label><input value={edit.oras_rezidenta || ''} onChange={e => setEdit({...edit, oras_rezidenta: e.target.value})} placeholder="București" style={inp} /><div style={{fontSize:'10px', color:'#a8a29e', marginTop:'2px'}}>Buc/Ilfov = fără transport/cazare la evenimente locale</div></div>
                 <div><label style={lbl}>Cazare fixă (lei)</label><input type="number" value={edit.cazare_fixa || ''} onFocus={e => e.target.select()} onChange={e => setEdit({...edit, cazare_fixa: e.target.value ? Number(e.target.value) : null})} placeholder="opțional" style={inp} /></div>
               </div>
               <div><label style={lbl}>Cazare (persoane auto)</label><input value={edit.cazare} onChange={e => setEdit({...edit, cazare: e.target.value})} style={inp} /></div>
