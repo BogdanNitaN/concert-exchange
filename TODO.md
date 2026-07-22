@@ -13,6 +13,10 @@
 - Perioade indisponibile expandabile
 - Fereastra dinamica (interogare in trecut pt istoric)
 - Paralelizare cautare (3x viteza), culoarea verifica mov
+- Neurodesign complet /oferta (card curat, badge EXTERN/FWD distinct, oferta verde dominanta, TOTAL onorarii dominant)
+- Neurodesign istoric = tablou de bord (status badge-uri colorate, sume dominante, mov redus)
+- Neurodesign roster (badge FWD verde, fee vizibil) + modal artist (buton verde)
+- Neurodesign disponibilitate (toggle activ vizibil, butoane cu umbra, tooltips pe moduri)
 
 ## DE FACUT (in ordine)
 1. Sistem client + jurnal — baza clienti, atasare la interogarea de disponibilitate (avertizare pt clienti noi), jurnal cereri
@@ -27,8 +31,9 @@
 10. Cleanup: fisierul corupt pusave-images.mjssave-images.mjs
 11. Bucuresti + Ilfov: scoate automat transport si cazare la artistii locali
 12. Mod LANDED pe linie (fee cu transport inclus, ex The Motans Sibiu 12000 landed) — dezactiveaza calcul transport pe km, raman doar diurna/masa/cazare
-14. Asistent AI conversational (RO) — input text SI voce, limbaj natural fuzzy ("caut artist liber pe data de", "ce ar merge pe", "recomanda", "da-mi liberi", "fa-mi oferta"). Sa inteleaga comenzi vagi, sa raspunda in romana, sa lege interogari -> disponibilitate -> oferta. Comanda vocala + conversatie.
 13. Avertizare avion la landed: cand linia e landed + distanta cere zbor (>300km, ex Iasi) -> atentionare ca biletul de avion nu e estimat, verifica daca fee-ul acopera zborul (informativ, nu blocheaza)
+14. Asistent AI conversational (RO) — input text SI voce, limbaj natural fuzzy ("caut artist liber pe data de", "ce ar merge pe", "recomanda", "da-mi liberi", "fa-mi oferta"). Sa inteleaga comenzi vagi, sa raspunda in romana, sa lege interogari -> disponibilitate -> oferta. Comanda vocala + conversatie.
+15. /prom BUG: cardurile de selectie artisti (cu poze) se blocheaza sus unde scrii manual nume, nu merg jos in zona de selectie. De reparat scroll/pozitionare.
 
 ## NOTA sursa date clienti
 - Baza de clienti se poate popula din fisele de eveniment existente (au deja: detalii eveniment, contacte, intermediari, clienti). Nu construim de la zero — importam din fise.
