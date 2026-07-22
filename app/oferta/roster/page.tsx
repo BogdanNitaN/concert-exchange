@@ -200,10 +200,15 @@ export default function RosterPage() {
       <div style={{maxWidth:'760px', margin:'0 auto'}}>
         <div style={{display:'flex', justifyContent:'space-between', alignItems:'center', marginBottom:'20px'}}>
           <div>
-            <div style={{fontSize:'26px', fontWeight:800, letterSpacing:'-0.5px', color:UI.ink}}>GIG<span style={{color:UI.green}}>x</span></div>
+            <a href="/oferta" title="Înapoi la ofertă" style={{fontSize:'26px', fontWeight:800, letterSpacing:'-0.5px', color:UI.ink, textDecoration:'none', cursor:'pointer'}}>GIG<span style={{color:UI.green}}>x</span></a>
             <div style={{fontSize:'13px', color:UI.faint, fontWeight:500, marginTop:'2px'}}>Roster · {artists.length} artiști</div>
           </div>
-          <a href="/oferta" style={{display:'flex', alignItems:'center', gap:'7px', fontSize:'13px', color:'white', fontWeight:700, textDecoration:'none', background:UI.dark, padding:'11px 18px', borderRadius:UI.radiusSm, boxShadow:UI.shadowBtn}}>Deviz</a>
+          <div style={{display:'flex', gap:'8px', flexWrap:'wrap'}}>
+            <a href="/oferta" style={{fontSize:'13px', fontWeight:700, color:UI.sub, textDecoration:'none', padding:'8px 14px', borderRadius:'10px', border:'1.5px solid '+UI.line, background:'white'}}>Deviz</a>
+            <a href="/oferta/disponibilitate" style={{fontSize:'13px', fontWeight:700, color:UI.sub, textDecoration:'none', padding:'8px 14px', borderRadius:'10px', border:'1.5px solid '+UI.line, background:'white'}}>Calendar</a>
+            <a href="/oferta/istoric" style={{fontSize:'13px', fontWeight:700, color:UI.sub, textDecoration:'none', padding:'8px 14px', borderRadius:'10px', border:'1.5px solid '+UI.line, background:'white'}}>Istoric</a>
+            <span style={{fontSize:'13px', fontWeight:700, color:'white', padding:'8px 14px', borderRadius:'10px', background:UI.green}}>Roster</span>
+          </div>
         </div>
 
         <input value={search} onChange={e => setSearch(e.target.value)} placeholder="Caută artist..." style={{...inp, marginBottom:'14px', padding:'12px 14px', fontSize:'14px'}} />

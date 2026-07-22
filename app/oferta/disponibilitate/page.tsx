@@ -546,7 +546,15 @@ export default function DisponibilitatePage() {
   return (
     <div style={{minHeight:'100vh', background:bg, fontFamily:F, padding: isMobile ? '20px 14px' : '40px 20px'}}>
       <div style={{maxWidth:'980px', margin:'0 auto'}}>
-        <a href="/oferta" style={{display:'inline-flex', alignItems:'center', gap:'6px', fontSize:'13px', color:UI.sub, textDecoration:'none', marginBottom:'20px'}}><ArrowLeft size={15} /> Înapoi la ofertă</a>
+        <div style={{display:'flex', justifyContent:'space-between', alignItems:'center', marginBottom:'20px', flexWrap:'wrap', gap:'10px'}}>
+          <a href="/oferta" title="Înapoi la ofertă" style={{fontSize:'24px', fontWeight:800, letterSpacing:'-0.5px', color:UI.ink, textDecoration:'none'}}>GIG<span style={{color:UI.green}}>x</span></a>
+          <div style={{display:'flex', gap:'8px', flexWrap:'wrap'}}>
+            <a href="/oferta" style={{fontSize:'13px', fontWeight:700, color:UI.sub, textDecoration:'none', padding:'8px 14px', borderRadius:'10px', border:'1.5px solid '+UI.line, background:'white'}}>Deviz</a>
+            <span style={{fontSize:'13px', fontWeight:700, color:'white', padding:'8px 14px', borderRadius:'10px', background:UI.green}}>Calendar</span>
+            <a href="/oferta/istoric" style={{fontSize:'13px', fontWeight:700, color:UI.sub, textDecoration:'none', padding:'8px 14px', borderRadius:'10px', border:'1.5px solid '+UI.line, background:'white'}}>Istoric</a>
+            <a href="/oferta/roster" style={{fontSize:'13px', fontWeight:700, color:UI.sub, textDecoration:'none', padding:'8px 14px', borderRadius:'10px', border:'1.5px solid '+UI.line, background:'white'}}>Roster</a>
+          </div>
+        </div>
         <div style={{display:'flex', alignItems:'center', gap:'10px', marginBottom:'24px'}}>
           <CalendarSearch size={26} strokeWidth={2.2} color={UI.purple} />
           <div>
