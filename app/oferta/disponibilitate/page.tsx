@@ -46,7 +46,14 @@ export default function DisponibilitatePage() {
   const [bifati, setBifati] = useState<Set<string>>(new Set())
   const [analize, setAnalize] = useState<Record<string, any>>({})
   const [analizand, setAnalizand] = useState<Set<string>>(new Set())
-  const [mod, setMod] = useState<'data' | 'artist'>('data')
+  const [mod, setMod] = useState<'data' | 'artist' | 'perioada'>('data')
+  const [dataStart, setDataStart] = useState('')
+  const [dataEnd, setDataEnd] = useState('')
+  const [ziuaDeschisa, setZiuaDeschisa] = useState<string>('')
+  const [ocupateDeschise, setOcupateDeschise] = useState<Set<number>>(new Set())
+  const [showExpandat, setShowExpandat] = useState<Set<number>>(new Set())
+  function toggleShow(idx: number) { setShowExpandat(prev => { const n = new Set(prev); n.has(idx) ? n.delete(idx) : n.add(idx); return n }) }
+  function toggleOcupate(idx: number) { setOcupateDeschise(prev => { const n = new Set(prev); n.has(idx) ? n.delete(idx) : n.add(idx); return n }) }
   const [artistCautat, setArtistCautat] = useState('')
   const [rezArtist, setRezArtist] = useState<any[]>([])
   const [dataArtist, setDataArtist] = useState('')
@@ -65,7 +72,7 @@ export default function DisponibilitatePage() {
     // paralelizez: toti artistii deodata (nu secvential) - mult mai rapid la multi
     const rezultate = await Promise.all(nume.map(async (n) => {
       try {
-        const q = '/api/calendar-artist-liber?artist=' + encodeURIComponent(n) + (oras ? '&oras=' + encodeURIComponent(oras) : '') + (dataArtist ? '&data=' + dataArtist : '') + (dataArtist2 ? '&data2=' + dataArtist2 : '')
+        const q = '/api/calendar-artist-liber?artist=' + encodeURIComponent(n) + (oras ? '&oras=' + encodeURIComponent(oras) : '') + (dataArtist ? '&data=' + dataArtist : '') + (dataArtist2 ? '&data2=' + dataArtist2 : '') + (mod === 'perioada' && dataStart ? '&dataStart=' + dataStart : '') + (mod === 'perioada' && dataEnd ? '&dataEnd=' + dataEnd : '')
         const r = await fetch(q)
         const d = await r.json()
         return { cautat: n, ...d }
@@ -207,6 +214,103 @@ export default function DisponibilitatePage() {
             <div style={{fontSize:'11px', fontWeight:800, color:UI.sub, textTransform:'uppercase', marginBottom:'6px'}}>Alte zile ±3</div>
             {(contextExpandat.has(idx) ? restContext : restContext.slice(0, 2)).map(linieCtx)}
             {restContext.length > 2 && <button onClick={() => toggleContext(idx)} style={{marginTop:'4px', padding:'4px 0', background:'none', border:'none', color:UI.purple, fontSize:'12px', fontWeight:700, cursor:'pointer', fontFamily:F}}>{contextExpandat.has(idx) ? 'Arată mai puțin' : '+ ' + (restContext.length - 2) + ' zile'}</button>}
+          </div>
+        )}
+      </div>
+    )
+  }
+  function renderMiniCalendar(perioada: any[], idx: number) {
+    if (!perioada || perioada.length === 0) return null
+    const culoare: Record<string, string> = { liber: '#86efac', ocupat: '#fca5a5', verifica: '#d8b4fe' }
+    const culoareText: Record<string, string> = { liber: '#166534', ocupat: '#991b1b', verifica: '#6b21a8' }
+    const nrLibere = perioada.filter((z: any) => z.status === 'liber').length
+    // ferestre de zile libere consecutive (pentru turnee)
+    const ferestre: any[] = []
+    let curent: any[] = []
+    perioada.forEach((z: any) => {
+      if (z.status === 'liber') curent.push(z)
+      else { if (curent.length >= 2) ferestre.push([...curent]); curent = [] }
+    })
+    if (curent.length >= 2) ferestre.push([...curent])
+    ferestre.sort((a, b) => b.length - a.length)
+    // zile ocupate (pentru lista expandabila)
+    const zileOcup = perioada.filter((z: any) => z.status !== 'liber')
+    // grupez pe saptamani: aliniez prima zi dupa ziua saptamanii (Luni=0)
+    const primaZi = new Date(perioada[0].data + 'T12:00:00')
+    let offset = primaZi.getDay() - 1; if (offset < 0) offset = 6 // Luni=0..Duminica=6
+    const celule: any[] = []
+    for (let i = 0; i < offset; i++) celule.push(null)
+    perioada.forEach((z: any) => celule.push(z))
+    const ziLuna = (iso: string) => parseInt(iso.slice(8, 10), 10)
+    const zileSapt = ['L', 'M', 'Mi', 'J', 'V', 'S', 'D']
+    const ziDetaliu = ziuaDeschisa && perioada.find((z: any) => z.data === ziuaDeschisa && z.data.slice(0,7) === ziuaDeschisa.slice(0,7))
+    return (
+      <div style={{marginTop:'10px'}}>
+        <div style={{display:'flex', alignItems:'center', gap:'10px', marginBottom:'8px'}}>
+          <span style={{fontSize:'13px', fontWeight:800, color:UI.green}}>{nrLibere} zile libere</span>
+          <span style={{fontSize:'12px', color:UI.faint}}>din {perioada.length} în perioadă</span>
+        </div>
+        <div style={{display:'grid', gridTemplateColumns:'repeat(7, 1fr)', gap:'4px', maxWidth:'320px'}}>
+          {zileSapt.map((zs, i) => <div key={'h'+i} style={{fontSize:'9px', fontWeight:700, color:UI.faint, textAlign:'center', paddingBottom:'2px'}}>{zs}</div>)}
+          {celule.map((z: any, i: number) => {
+            if (!z) return <div key={'e'+i} />
+            const sel = ziuaDeschisa === z.data
+            const wk = eWeekend(z.data)
+            const wkLiber = wk && z.status === 'liber'
+            return (
+              <button key={z.data} onClick={() => setZiuaDeschisa(sel ? '' : z.data)} title={z.data + (wk ? ' (weekend)' : '')}
+                style={{position:'relative', aspectRatio:'1', border: sel ? '2px solid '+UI.ink : (wkLiber ? '2px solid #16a34a' : '1px solid rgba(0,0,0,0.06)'), borderRadius:'7px', background: wkLiber ? '#22c55e' : (culoare[z.status] || '#e7e5e4'), color: wkLiber ? 'white' : (culoareText[z.status] || UI.sub), fontSize:'11px', fontWeight: wkLiber ? 800 : 700, cursor:'pointer', fontFamily:F, display:'flex', alignItems:'center', justifyContent:'center', padding:0, boxShadow: wkLiber ? '0 2px 6px rgba(34,197,94,0.4)' : 'none'}}>
+                {ziLuna(z.data)}
+              </button>
+            )
+          })}
+        </div>
+        <div style={{display:'flex', gap:'12px', marginTop:'8px', fontSize:'10px', color:UI.sub}}>
+          <span><span style={{display:'inline-block', width:'10px', height:'10px', borderRadius:'3px', background:'#86efac', marginRight:'4px', verticalAlign:'middle'}} />liber</span>
+          <span><span style={{display:'inline-block', width:'10px', height:'10px', borderRadius:'3px', background:'#fca5a5', marginRight:'4px', verticalAlign:'middle'}} />ocupat</span>
+          <span><span style={{display:'inline-block', width:'10px', height:'10px', borderRadius:'3px', background:'#d8b4fe', marginRight:'4px', verticalAlign:'middle'}} />verifică</span>
+        </div>
+        {ferestre.length > 0 && (
+          <div style={{marginTop:'10px'}}>
+            <div style={{fontSize:'10px', fontWeight:800, color:UI.green, textTransform:'uppercase', marginBottom:'5px'}}>Ferestre libere consecutive</div>
+            <div style={{display:'flex', flexWrap:'wrap', gap:'6px'}}>
+              {ferestre.slice(0, 5).map((f: any, i: number) => (
+                <span key={i} style={{fontSize:'12px', fontWeight:700, color:'#166534', background:'#f0fdf4', border:'1px solid #86efac', borderRadius:'7px', padding:'4px 9px'}}>{f.length} zile: {lunaData(f[0].data)} - {lunaData(f[f.length-1].data)}</span>
+              ))}
+            </div>
+          </div>
+        )}
+        {zileOcup.length > 0 && (
+          <div style={{marginTop:'10px'}}>
+            <button onClick={() => toggleOcupate(idx)} style={{background:'none', border:'none', color:UI.purple, fontSize:'12px', fontWeight:700, cursor:'pointer', fontFamily:F, padding:0}}>{ocupateDeschise.has(idx) ? 'Ascunde' : 'Vezi'} zilele ocupate ({zileOcup.length})</button>
+            {ocupateDeschise.has(idx) && (
+              <div style={{marginTop:'6px'}}>
+                {zileOcup.map((z: any, i: number) => (
+                  <div key={i} style={{padding:'5px 0', borderBottom:'1px solid '+UI.line}}>
+                    <div style={{display:'flex', alignItems:'center', gap:'8px', fontSize:'12px'}}>
+                      <span style={{fontWeight:700, minWidth:'56px', color: eWeekend(z.data) ? '#ea580c' : UI.sub}}>{lunaData(z.data)}{eWeekend(z.data) ? ' ·wk' : ''}</span>
+                      {z.evenimente.map((e: any, j: number) => (
+                        <span key={j} style={{display:'inline-flex', alignItems:'center', gap:'5px'}}>
+                          <span style={{fontSize:'8px', fontWeight:800, textTransform:'uppercase', padding:'2px 5px', borderRadius:'4px', color:'white', background: badgeCol(e.tip)}}>{badgeLabel(e.tip)}</span>
+                          <span style={{color:UI.sub}}>{e.titlu}</span>
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        )}
+        {ziDetaliu && (
+          <div style={{marginTop:'10px', padding:'12px', background:'#faf9f7', borderRadius:UI.radiusSm, border:'1px solid '+UI.line}}>
+            <div style={{fontSize:'12px', fontWeight:800, color:UI.ink, marginBottom:'6px'}}>{lunaData(ziDetaliu.data)}{eWeekend(ziDetaliu.data) ? ' (weekend)' : ''}</div>
+            {ziDetaliu.evenimente.length === 0 ? <div style={{fontSize:'12px', color:UI.green, fontWeight:700}}>✓ liber</div> : ziDetaliu.evenimente.map((e: any, i: number) => (
+              <div key={i} style={{display:'flex', alignItems:'center', gap:'6px', marginTop:'3px'}}>
+                <span style={{fontSize:'8px', fontWeight:800, textTransform:'uppercase', padding:'2px 5px', borderRadius:'4px', color:'white', background: badgeCol(e.tip)}}>{badgeLabel(e.tip)}</span>
+                <span style={{fontSize:'12px', color:UI.sub}}>{e.titlu}</span>
+              </div>
+            ))}
           </div>
         )}
       </div>
@@ -393,6 +497,7 @@ export default function DisponibilitatePage() {
         <div style={{display:'flex', gap:'0', marginBottom:'16px', background:'#eceef2', borderRadius:UI.radiusSm, padding:'4px', width:'fit-content'}}>
           <button onClick={() => setMod('data')} style={{padding:'8px 18px', border:'none', borderRadius:'8px', fontSize:'13px', fontWeight:700, cursor:'pointer', fontFamily:F, background: mod==='data'?'white':'transparent', color: mod==='data'?UI.ink:UI.sub, boxShadow: mod==='data'?'0 1px 3px rgba(0,0,0,0.1)':'none'}}>După dată</button>
           <button onClick={() => setMod('artist')} style={{padding:'8px 18px', border:'none', borderRadius:'8px', fontSize:'13px', fontWeight:700, cursor:'pointer', fontFamily:F, background: mod==='artist'?'white':'transparent', color: mod==='artist'?UI.ink:UI.sub, boxShadow: mod==='artist'?'0 1px 3px rgba(0,0,0,0.1)':'none'}}>După artist</button>
+          <button onClick={() => setMod('perioada')} style={{padding:'8px 18px', border:'none', borderRadius:'8px', fontSize:'13px', fontWeight:700, cursor:'pointer', fontFamily:F, background: mod==='perioada'?'white':'transparent', color: mod==='perioada'?UI.ink:UI.sub, boxShadow: mod==='perioada'?'0 1px 3px rgba(0,0,0,0.1)':'none'}}>Perioadă</button>
         </div>
 
         {mod === 'data' ? (
@@ -414,12 +519,12 @@ export default function DisponibilitatePage() {
             <input type="text" placeholder="ex: Motans, Delia" value={artistCautat} onChange={e => setArtistCautat(e.target.value)} onKeyDown={e => e.key==='Enter' && cautaArtist()} style={{...inp, width:'220px'}} />
           </div>
           <div>
-            <label style={{fontSize:'11px', fontWeight:700, color:UI.sub, textTransform:'uppercase', display:'block', marginBottom:'6px'}}>Data (opțional)</label>
-            <div style={{width:'220px'}}><DatePicker value={dataArtist} onChange={v => setDataArtist(v)} placeholder="Orice dată" /></div>
+            <label style={{fontSize:'11px', fontWeight:700, color:UI.sub, textTransform:'uppercase', display:'block', marginBottom:'6px'}}>{mod === 'perioada' ? 'De la' : 'Data (opțional)'}</label>
+            <div style={{width:'220px'}}><DatePicker value={mod === 'perioada' ? dataStart : dataArtist} onChange={v => mod === 'perioada' ? setDataStart(v) : setDataArtist(v)} placeholder={mod === 'perioada' ? 'Început' : 'Orice dată'} /></div>
           </div>
           <div>
-            <label style={{fontSize:'11px', fontWeight:700, color:UI.sub, textTransform:'uppercase', display:'block', marginBottom:'6px'}}>Data 2 (opțional)</label>
-            <div style={{width:'220px'}}><DatePicker value={dataArtist2} onChange={v => setDataArtist2(v)} placeholder="A doua dată" /></div>
+            <label style={{fontSize:'11px', fontWeight:700, color:UI.sub, textTransform:'uppercase', display:'block', marginBottom:'6px'}}>{mod === 'perioada' ? 'Până la' : 'Data 2 (opțional)'}</label>
+            <div style={{width:'220px'}}><DatePicker value={mod === 'perioada' ? dataEnd : dataArtist2} onChange={v => mod === 'perioada' ? setDataEnd(v) : setDataArtist2(v)} placeholder={mod === 'perioada' ? 'Sfârșit' : 'A doua dată'} /></div>
           </div>
           <div>
             <label style={{fontSize:'11px', fontWeight:700, color:UI.sub, textTransform:'uppercase', display:'block', marginBottom:'6px'}}>Oraș (opțional, pt. zonă)</label>
@@ -433,8 +538,35 @@ export default function DisponibilitatePage() {
 
         {loadingArtist && <div style={{textAlign:'center', color:UI.sub, padding:'40px'}}>Se cauta calendarul artistului...</div>}
 
-        {mod === 'artist' && rezArtist.length > 0 && (
+        {(mod === 'artist' || mod === 'perioada') && rezArtist.length > 0 && (
           <div style={{display:'flex', flexDirection:'column', gap:'16px'}}>
+            {mod === 'perioada' && (() => {
+              const cuP = rezArtist.filter((ra: any) => ra.ok && ra.gasit && ra.perioada?.length)
+              if (cuP.length < 2) return null
+              // zile unde TOTI sunt liberi
+              const toateZilele = cuP[0].perioada.map((z: any) => z.data)
+              const comune = toateZilele.filter((data: string) => cuP.every((ra: any) => { const zi = ra.perioada.find((z: any) => z.data === data); return zi && zi.status === 'liber' }))
+              if (comune.length === 0) return <div style={{background:'#fef2f2', border:'1px solid #fca5a5', borderRadius:UI.radiusSm, padding:'12px 16px', fontSize:'13px', color:'#991b1b', fontWeight:600}}>Nicio zi în care toți {cuP.length} artiștii să fie liberi în perioadă.</div>
+              // grupez comunele in ferestre
+              const fer: any[] = []; let cur: string[] = []
+              comune.forEach((d: string, i: number) => {
+                if (i === 0) { cur = [d]; return }
+                const prev = new Date(comune[i-1] + 'T12:00:00'); const now = new Date(d + 'T12:00:00')
+                if (Math.round((now.getTime() - prev.getTime())/86400000) === 1) cur.push(d)
+                else { fer.push([...cur]); cur = [d] }
+              })
+              if (cur.length) fer.push(cur)
+              return (
+                <div style={{background:'#f0fdf4', border:'1.5px solid #86efac', borderRadius:UI.radiusSm, padding:'14px 16px'}}>
+                  <div style={{fontSize:'12px', fontWeight:800, color:'#166534', textTransform:'uppercase', marginBottom:'8px'}}>Zile când toți {cuP.length} sunt liberi ({comune.length})</div>
+                  <div style={{display:'flex', flexWrap:'wrap', gap:'6px'}}>
+                    {fer.map((f: string[], i: number) => (
+                      <span key={i} style={{fontSize:'13px', fontWeight:700, color:'#166534', background:'white', border:'1px solid #86efac', borderRadius:'7px', padding:'5px 10px'}}>{f.length === 1 ? lunaData(f[0]) : lunaData(f[0]) + ' - ' + lunaData(f[f.length-1]) + ' (' + f.length + ' zile)'}</span>
+                    ))}
+                  </div>
+                </div>
+              )
+            })()}
             {[...rezArtist].sort((a: any, b: any) => {
               if (!dataArtist) return 0
               const rank = (r: any) => { if (!r.peData) return 3; if (r.peData.status === 'liber') return 0; if (r.peData.status === 'verifica') return 1; return 2 }
@@ -462,8 +594,10 @@ export default function DisponibilitatePage() {
                     <div style={{fontSize:'12px', color:UI.faint, marginBottom:'10px'}}>{ra.zileLibere} zile libere din {ra.totalZile} până la final de an</div>
                   )}
 
-                  {/* daca e data specifica: status + context (1 sau 2 date side-by-side) */}
-                  {pd ? (
+                  {/* mod perioada: mini-calendar colorat */}
+                  {mod === 'perioada' ? (
+                    renderMiniCalendar(ra.perioada, idx)
+                  ) : pd ? (
                     pd2 ? (
                       <div style={{display:'grid', gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr', gap:'12px', marginTop:'6px'}}>
                         <div>{renderStatusCard(pd, idx, 'd1')}</div>
@@ -503,7 +637,7 @@ export default function DisponibilitatePage() {
                   {!pd && showViitor.length > 0 && (
                     <div style={{marginTop:'12px'}}>
                       <div style={{fontSize:'12px', fontWeight:800, color:UI.ink, marginBottom:'8px'}}>Show-uri programate ({showViitor.length})</div>
-                      {showViitor.map((e: any, i: number) => (
+                      {(showExpandat.has(idx) ? showViitor : showViitor.slice(0, 4)).map((e: any, i: number) => (
                         <div key={i} style={{padding:'5px 0', borderBottom:'1px solid '+UI.line}}>
                           <div style={{display:'flex', gap:'10px', fontSize:'13px', color:UI.sub}}>
                             <span style={{fontWeight:700, color:UI.ink, minWidth:'90px'}}>{afiseazaInterval(e)}</span><span>{e.titlu}</span>
@@ -511,6 +645,9 @@ export default function DisponibilitatePage() {
                           {(e.descriere || e.created) && <div style={{fontSize:'10px', color:UI.faint, marginLeft:'80px'}}>{e.descriere ? e.descriere.slice(0,70) : ''}{e.descriere && e.created ? ' · ' : ''}{e.created ? 'pus ' + dataCreare(e.created) : ''}</div>}
                         </div>
                       ))}
+                      {showViitor.length > 4 && (
+                        <button onClick={() => toggleShow(idx)} style={{marginTop:'6px', padding:'4px 0', background:'none', border:'none', color:UI.purple, fontSize:'12px', fontWeight:700, cursor:'pointer', fontFamily:F}}>{showExpandat.has(idx) ? 'Arată mai puțin' : '+ ' + (showViitor.length - 4) + ' show-uri'}</button>
+                      )}
                     </div>
                   )}
                 </div>

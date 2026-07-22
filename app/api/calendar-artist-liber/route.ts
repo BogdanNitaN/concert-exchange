@@ -31,6 +31,8 @@ export async function GET(req: Request) {
     const oras = url.searchParams.get('oras') || ''
     const dataQuery = url.searchParams.get('data') || ''
     const dataQuery2 = url.searchParams.get('data2') || ''
+    const dataStart = url.searchParams.get('dataStart') || ''
+    const dataEnd = url.searchParams.get('dataEnd') || ''
     if (!artist) return NextResponse.json({ ok: false, error: 'lipsa artist' }, { status: 400 })
 
     const cal = getCal()
@@ -143,6 +145,23 @@ export async function GET(req: Request) {
     }
     const peData = calcPeData(dataQuery)
     const peData2 = calcPeData(dataQuery2)
+    // perioada: status pentru fiecare zi din interval (max 62 zile)
+    let perioada: any[] = []
+    if (dataStart && dataEnd && dataEnd >= dataStart) {
+      const zile: string[] = []
+      const dCur = new Date(dataStart + 'T12:00:00')
+      const dFin = new Date(dataEnd + 'T12:00:00')
+      let safety = 0
+      while (dCur <= dFin && safety < 62) {
+        zile.push(dCur.toISOString().slice(0, 10))
+        dCur.setDate(dCur.getDate() + 1)
+        safety++
+      }
+      perioada = zile.map(z => {
+        const pd = calcPeData(z)
+        return { data: z, status: pd?.status || 'liber', liber: pd?.liber ?? true, evenimente: pd?.evenimente || [] }
+      })
+    }
     // numar zile libere viitoare (de azi pana final an) - fara show/indisponibil
     const aziISO = new Date().toISOString().slice(0, 10)
     const finalAn = new Date(new Date().getFullYear(), 11, 31).toISOString().slice(0, 10)
@@ -156,7 +175,7 @@ export async function GET(req: Request) {
     return NextResponse.json({
       ok: true, gasit: true, artist: numeGasit || artist,
       ocupate: ocupate.sort((a, b) => a.data.localeCompare(b.data)),
-      inOrasViitor, ultimaInZona, peData, peData2, rosterData,
+      inOrasViitor, ultimaInZona, peData, peData2, perioada, rosterData,
       zileLibere, zileOcupate: zileOcupateSet.size, totalZile
     })
   } catch (e) {
