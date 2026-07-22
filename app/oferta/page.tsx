@@ -443,7 +443,7 @@ export default function OfertaPage() {
     for (const l of linii.filter(x => x.includeExport)) {
       const c = calcLinie(l)
       out.push('*' + l.artist.nume.toUpperCase() + '*')
-      if (l.dateOptiuni) out.push('Date posibile: ' + l.dateOptiuni + ' (un pret pentru oricare)')
+      if (l.dateOptiuni) out.push('Date posibile: ' + l.dateOptiuni)
 
       if (institutiePublica) {
         // format oficial in lei
@@ -663,6 +663,7 @@ export default function OfertaPage() {
       doc.setFont('helvetica', 'bold'); doc.setFontSize(13); doc.setTextColor(28,25,23)
       doc.text(noDia(l.artist.nume.toUpperCase()), textX, y + 4)
       let ly = y + 10
+      if (l.dateOptiuni) { doc.setFont('helvetica', 'italic'); doc.setFontSize(9); doc.setTextColor(124,58,237); doc.text(noDia('Date posibile: ' + l.dateOptiuni), textX, ly); doc.setTextColor(60,60,60); doc.setFont('helvetica','normal'); ly += 5 }
 
       doc.setFont('helvetica', 'normal'); doc.setFontSize(9.5); doc.setTextColor(60,60,60)
       const rows: string[] = []
