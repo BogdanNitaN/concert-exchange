@@ -61,15 +61,15 @@ export default function DisponibilitatePage() {
     if (!artistCautat.trim()) return
     setLoadingArtist(true); setRezArtist([]); setBifatiArtist(new Set())
     const nume = artistCautat.split(',').map(n => n.trim()).filter(Boolean)
-    const rezultate: any[] = []
-    for (const n of nume) {
+    // paralelizez: toti artistii deodata (nu secvential) - mult mai rapid la multi
+    const rezultate = await Promise.all(nume.map(async (n) => {
       try {
         const q = '/api/calendar-artist-liber?artist=' + encodeURIComponent(n) + (oras ? '&oras=' + encodeURIComponent(oras) : '') + (dataArtist ? '&data=' + dataArtist : '')
         const r = await fetch(q)
         const d = await r.json()
-        rezultate.push({ cautat: n, ...d })
-      } catch { rezultate.push({ cautat: n, ok: false }) }
-    }
+        return { cautat: n, ...d }
+      } catch { return { cautat: n, ok: false } }
+    }))
     setRezArtist(rezultate)
     // bifez automat toti liberii pe data cautata
     if (dataArtist) {
