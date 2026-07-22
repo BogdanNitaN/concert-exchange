@@ -47,20 +47,32 @@ export async function GET(req: Request) {
         const despreArtist = (titlu: string) => { const t = titlu.toLowerCase(); return cuvinteArtist.some((w: string) => t.includes(w)) }
         const evenimente = (ev.data.items || []).map(e => {
           const titlu = e.summary || '(fara titlu)'
-          const desprEl = despreArtist(titlu)
-          const areMarcajConcert = /^\s*\((P|C)/i.test(titlu)
-          const areCuvantBlocaj = /vacan|concediu|liber|off|indisponibil|blocat|nu se ia|pauza/i.test(titlu)
+          const tl = titlu.toLowerCase()
+          let desprEl = despreArtist(titlu)
+          if (cuvinteArtist.length && new RegExp('f[ăa]r[ăa]\\s+(' + cuvinteArtist.map((w: string) => w.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')).join('|') + ')').test(tl)) desprEl = false
+          const marcaj = /^\s*\((P|C)/i.test(titlu)
+          const blocaj = /vacan|concediu|liber|off|indisponibil|blocat|nu se ia|pauza/i.test(tl)
+          const adminUsor = /\bpr\b|promo|meeting|\bmeet\b|outfit|team|zi de na|nastere|naștere/i.test(tl)
+          const ocupaZi = /filmare|repetiț|repetit|\brep\b|studio|sesiune/i.test(tl)
+          const pending = /pending/i.test(tl)
+          const eveniment = /turneu|festival|concert|\bshow\b|live|gal[ăa]|spectacol|zboruri/i.test(tl)
+          const prezenta = /invitat|1 pies|feat/i.test(tl)
           let tip: string = 'nota'
-          if (desprEl && areCuvantBlocaj) tip = 'indisponibil'
-          else if (desprEl && areMarcajConcert) tip = 'show'
-          else if (!desprEl && (areMarcajConcert || areCuvantBlocaj)) tip = 'echipa'
+          if (desprEl && marcaj && !ocupaZi) tip = blocaj ? 'indisponibil' : 'show'
+          else if (pending) tip = 'verifica'
+          else if (desprEl && ocupaZi) tip = 'indisponibil'
+          else if (adminUsor) tip = 'nota'
+          else if (desprEl && blocaj) tip = 'indisponibil'
+          else if ((desprEl && eveniment) || (eveniment && prezenta)) tip = 'show'
+          else if (marcaj && !desprEl) tip = 'echipa'
+          else if (blocaj && !desprEl) tip = 'echipa'
           return { titlu, descriere: e.description || '', allDay: !!e.start?.date, created: e.created || null, tip }
         })
         const blocante = evenimente.filter((e: any) => e.tip === 'show' || e.tip === 'indisponibil')
-        const echipaEv = evenimente.filter((e: any) => e.tip === 'echipa')
+        const deVerificat = evenimente.filter((e: any) => e.tip === 'echipa' || e.tip === 'verifica')
         let status: string = 'liber'
         if (blocante.length > 0) status = 'ocupat'
-        else if (echipaEv.length > 0) status = 'verifica'
+        else if (deVerificat.length > 0) status = 'verifica'
         return { artist, calendar: c.summary, calendarId: c.id, gen: rd?.categorie || 'altele', rosterData: rd, liber: blocante.length === 0, status, evenimente }
       } catch {
         return { artist, calendar: c.summary, calendarId: c.id, gen: rd?.categorie || 'altele', rosterData: rd, liber: null, eroare: true, evenimente: [] }

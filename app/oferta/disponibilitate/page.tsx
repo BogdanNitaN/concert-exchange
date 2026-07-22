@@ -404,7 +404,7 @@ export default function DisponibilitatePage() {
                     <>
                       {(() => {
                         const st: string = pd.status || (pd.liber ? 'liber' : 'ocupat')
-                        const cfgMap: Record<string, any> = { liber: { bg:'#f0fdf4', bd:'#86efac', col:UI.green, txt:'✓ LIBER' }, ocupat: { bg:'#fef2f2', bd:'#fca5a5', col:'#dc2626', txt:'✗ OCUPAT' }, verifica: { bg:'#fffbeb', bd:'#fcd34d', col:'#b45309', txt:'⚠ VERIFICĂ' } }
+                        const cfgMap: Record<string, any> = { liber: { bg:'#f0fdf4', bd:'#86efac', col:UI.green, txt:'✓ LIBER' }, ocupat: { bg:'#fef2f2', bd:'#fca5a5', col:'#dc2626', txt:'✗ OCUPAT' }, verifica: { bg:'#f0fdfa', bd:'#5eead4', col:'#0f766e', txt:'○ VERIFICĂ' } }
                         const cfg = cfgMap[st] || cfgMap.ocupat
                         return (
                       <div style={{marginTop:'10px', marginBottom:'14px', padding:'14px', borderRadius:UI.radiusSm, background: cfg.bg, border:'1.5px solid '+cfg.bd}}>

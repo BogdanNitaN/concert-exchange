@@ -71,14 +71,26 @@ export async function GET(req: Request) {
       const titlu = e.summary || ''
       const descriere = e.description || ''
       const orasEv = extragOrasDinTitlu(titlu)
-      const desprEl = despreArtist(titlu)
-      const areMarcajConcert = /^\s*\((P|C)/i.test(titlu) || !!orasEv
-      const areCuvantBlocaj = /vacan|concediu|liber|off|indisponibil|blocat|nu se ia|zi liber|pauza/i.test(titlu)
-      let tip: 'show' | 'indisponibil' | 'echipa' | 'nota' = 'nota'
-      if (desprEl && areCuvantBlocaj) tip = 'indisponibil'
-      else if (desprEl && areMarcajConcert) tip = 'show'
-      else if (!desprEl && (areMarcajConcert || areCuvantBlocaj)) tip = 'echipa'
-      else if (desprEl && !areMarcajConcert && !areCuvantBlocaj) tip = 'nota'
+      let desprEl = despreArtist(titlu)
+      // exceptie: "fara/fără [artist]" = nu e despre el
+      const tl = titlu.toLowerCase()
+      if (cuvinteArtist.length && new RegExp('f[ăa]r[ăa]\\s+(' + cuvinteArtist.map((w: string) => w.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')).join('|') + ')').test(tl)) desprEl = false
+      const marcaj = /^\s*\((P|C)/i.test(titlu) || !!orasEv
+      const blocaj = /vacan|concediu|liber|off|indisponibil|blocat|nu se ia|pauza/i.test(tl)
+      const adminUsor = /\bpr\b|promo|meeting|\bmeet\b|outfit|team|zi de na|nastere|naștere/i.test(tl)
+      const ocupaZi = /filmare|repetiț|repetit|\brep\b|studio|sesiune/i.test(tl)
+      const pending = /pending/i.test(tl)
+      const eveniment = /turneu|festival|concert|\bshow\b|live|gal[ăa]|spectacol|zboruri/i.test(tl)
+      const prezenta = /invitat|1 pies|feat/i.test(tl)
+      let tip: 'show' | 'indisponibil' | 'echipa' | 'nota' | 'verifica' = 'nota'
+      if (desprEl && marcaj && !ocupaZi) tip = blocaj ? 'indisponibil' : 'show'
+      else if (pending) tip = 'verifica'
+      else if (desprEl && ocupaZi) tip = 'indisponibil'
+      else if (adminUsor) tip = 'nota'
+      else if (desprEl && blocaj) tip = 'indisponibil'
+      else if ((desprEl && eveniment) || (eveniment && prezenta)) tip = 'show'
+      else if (marcaj && !desprEl) tip = 'echipa'
+      else if (blocaj && !desprEl) tip = 'echipa'
       // expandez intervalul: o intrare pentru fiecare zi intre start si end
       const zile: string[] = [start]
       if (e.start?.date && endRaw && endRaw > start) {
@@ -134,11 +146,11 @@ export async function GET(req: Request) {
       const iso = (d: Date) => d.toISOString().slice(0, 10)
       const contextZile = ocupate.filter((e: any) => e.data >= iso(dMin) && e.data <= iso(dMax) && e.data !== dataQuery)
       const blocante = evPeData.filter((e: any) => e.tip === 'show' || e.tip === 'indisponibil')
-      const echipaEv = evPeData.filter((e: any) => e.tip === 'echipa')
-      // status: ocupat daca show/indisponibil; verifica DOAR daca echipa (poate afecta); liber daca doar note
+      const deVerificat = evPeData.filter((e: any) => e.tip === 'echipa' || e.tip === 'verifica')
+      // status: ocupat daca show/indisponibil; verifica daca echipa/pending; liber daca doar note
       let status: 'liber' | 'ocupat' | 'verifica' = 'liber'
       if (blocante.length > 0) status = 'ocupat'
-      else if (echipaEv.length > 0) status = 'verifica'
+      else if (deVerificat.length > 0) status = 'verifica'
       peData = {
         data: dataQuery,
         liber: blocante.length === 0,
