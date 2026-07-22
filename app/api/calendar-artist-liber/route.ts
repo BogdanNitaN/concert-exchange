@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server'
+import { clasificaEveniment } from '@/lib/clasificare'
 import { google } from 'googleapis'
 import { CALENDAR_TO_ROSTER, normNume, extragOrasDinTitlu } from '@/lib/calendar-mapping'
 import { createClient } from '@supabase/supabase-js'
@@ -72,26 +73,8 @@ export async function GET(req: Request) {
       const titlu = e.summary || ''
       const descriere = e.description || ''
       const orasEv = extragOrasDinTitlu(titlu)
-      let desprEl = despreArtist(titlu)
-      // exceptie: "fara/fără [artist]" = nu e despre el
-      const tl = titlu.toLowerCase()
-      if (cuvinteArtist.length && new RegExp('f[ăa]r[ăa]\\s+(' + cuvinteArtist.map((w: string) => w.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')).join('|') + ')').test(tl)) desprEl = false
-      const marcaj = /^\s*\((P|C)/i.test(titlu) || !!orasEv
-      const blocaj = /vacan|concediu|liber|off|indisponibil|blocat|nu se ia|pauza/i.test(tl)
-      const adminUsor = /\bpr\b|promo|meeting|\bmeet\b|outfit|team|zi de na|nastere|naștere/i.test(tl)
-      const ocupaZi = /filmare|repetiț|repetit|\brep\b|studio|sesiune/i.test(tl)
-      const pending = /pending/i.test(tl)
-      const eveniment = /turneu|festival|concert|\bshow\b|live|gal[ăa]|spectacol|zboruri/i.test(tl)
-      const prezenta = /invitat|1 pies|feat/i.test(tl)
-      let tip: 'show' | 'indisponibil' | 'echipa' | 'nota' | 'verifica' = 'nota'
-      if (desprEl && marcaj && !ocupaZi) tip = blocaj ? 'indisponibil' : 'show'
-      else if (pending) tip = 'verifica'
-      else if (desprEl && ocupaZi) tip = 'indisponibil'
-      else if (adminUsor) tip = 'nota'
-      else if (desprEl && blocaj) tip = 'indisponibil'
-      else if ((desprEl && eveniment) || (eveniment && prezenta)) tip = 'show'
-      else if (marcaj && !desprEl) tip = 'echipa'
-      else if (blocaj && !desprEl) tip = 'echipa'
+      const tip = clasificaEveniment(titlu, cuvinteArtist, orasEv)
+      const desprEl = despreArtist(titlu)
       // expandez intervalul: o intrare pentru fiecare zi intre start si end
       const zile: string[] = [start]
       if (e.start?.date && endRaw && endRaw > start) {
