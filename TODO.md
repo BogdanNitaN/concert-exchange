@@ -35,6 +35,17 @@
 14. Asistent AI conversational (RO) — input text SI voce, limbaj natural fuzzy ("caut artist liber pe data de", "ce ar merge pe", "recomanda", "da-mi liberi", "fa-mi oferta"). Sa inteleaga comenzi vagi, sa raspunda in romana, sa lege interogari -> disponibilitate -> oferta. Comanda vocala + conversatie.
 15. /prom BUG: cardurile de selectie artisti (cu poze) se blocheaza sus unde scrii manual nume, nu merg jos in zona de selectie. De reparat scroll/pozitionare.
 
+## URMATORUL (prioritar) — Distanta/transport PER ARTIST din resedinta lui
+Acum: fromCity e GLOBAL (default Bucuresti), km e UN singur state pt toata oferta. Gresit cand artistii sunt din orase diferite (ex eu, Bogdan, resedinta Iasi, dar imi calcula Buc-Buc).
+DE FACUT (varianta A, agreata): fiecare artist pleaca din oras_rezidenta al lui. Distanta calculata per linie (l.km din resedinta artistului -> toCity), NU global.
+- Refactor: km global -> l.km per linie in calcLinie (atinge transport, marja, zbor >300km)
+- La adaugare artist in oferta SAU la schimbarea toCity: recalculez l.km pt fiecare linie din resedinta lui
+- Artist fara resedinta = Bucuresti default (deja rezolvat)
+- fromCity global devine inutil (sau ramane fallback)
+- Regula local (Buc/Ilfov) devine automata: artist Buc + eveniment Buc/Ilfov = distanta 0 = transport 0 (nu mai e exceptie separata)
+- ATENTIE: e refactor mare, atinge inima calculului. Testat temeinic sa nu strice calculele existente.
+- Deja FACUT: camp oras_rezidenta in roster + modal adauga artist + API-uri (salveaza corect). Ramane doar calculul distantei per artist.
+
 ## NOTA sursa date clienti
 - Baza de clienti se poate popula din fisele de eveniment existente (au deja: detalii eveniment, contacte, intermediari, clienti). Nu construim de la zero — importam din fise.
 
