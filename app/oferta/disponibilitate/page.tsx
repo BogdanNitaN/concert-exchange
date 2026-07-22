@@ -557,9 +557,9 @@ export default function DisponibilitatePage() {
 
         {/* toggle mod cautare */}
         <div style={{display:'flex', gap:'0', marginBottom:'16px', background:'#eceef2', borderRadius:UI.radiusSm, padding:'4px', width:'fit-content'}}>
-          <button onClick={() => setMod('data')} style={{padding:'8px 18px', border:'none', borderRadius:'8px', fontSize:'13px', fontWeight:700, cursor:'pointer', fontFamily:F, background: mod==='data'?'white':'transparent', color: mod==='data'?UI.ink:UI.sub, boxShadow: mod==='data'?'0 1px 3px rgba(0,0,0,0.1)':'none'}}>După dată</button>
-          <button onClick={() => setMod('artist')} style={{padding:'8px 18px', border:'none', borderRadius:'8px', fontSize:'13px', fontWeight:700, cursor:'pointer', fontFamily:F, background: mod==='artist'?'white':'transparent', color: mod==='artist'?UI.ink:UI.sub, boxShadow: mod==='artist'?'0 1px 3px rgba(0,0,0,0.1)':'none'}}>După artist</button>
-          <button onClick={() => setMod('perioada')} style={{padding:'8px 18px', border:'none', borderRadius:'8px', fontSize:'13px', fontWeight:700, cursor:'pointer', fontFamily:F, background: mod==='perioada'?'white':'transparent', color: mod==='perioada'?UI.ink:UI.sub, boxShadow: mod==='perioada'?'0 1px 3px rgba(0,0,0,0.1)':'none'}}>Perioadă</button>
+          <button onClick={() => setMod('data')} style={{padding:'8px 18px', border:'none', borderRadius:'8px', fontSize:'13px', fontWeight:700, cursor:'pointer', fontFamily:F, background: mod==='data'?'white':'transparent', color: mod==='data'?UI.green:UI.sub, boxShadow: mod==='data'?'0 2px 8px rgba(5,150,105,0.15)':'none', borderBottom: mod==='data'?'2px solid '+UI.green:'2px solid transparent'}}>După dată</button>
+          <button onClick={() => setMod('artist')} style={{padding:'8px 18px', border:'none', borderRadius:'8px', fontSize:'13px', fontWeight:700, cursor:'pointer', fontFamily:F, background: mod==='artist'?'white':'transparent', color: mod==='artist'?UI.green:UI.sub, boxShadow: mod==='artist'?'0 2px 8px rgba(5,150,105,0.15)':'none', borderBottom: mod==='artist'?'2px solid '+UI.green:'2px solid transparent'}}>După artist</button>
+          <button onClick={() => setMod('perioada')} style={{padding:'8px 18px', border:'none', borderRadius:'8px', fontSize:'13px', fontWeight:700, cursor:'pointer', fontFamily:F, background: mod==='perioada'?'white':'transparent', color: mod==='perioada'?UI.green:UI.sub, boxShadow: mod==='perioada'?'0 2px 8px rgba(5,150,105,0.15)':'none', borderBottom: mod==='perioada'?'2px solid '+UI.green:'2px solid transparent'}}>Perioadă</button>
         </div>
 
         {mod === 'data' ? (
@@ -572,7 +572,7 @@ export default function DisponibilitatePage() {
             <label style={{fontSize:'11px', fontWeight:700, color:UI.sub, textTransform:'uppercase', display:'block', marginBottom:'6px'}}>Oraș (opțional, pt. calcul)</label>
             <input type="text" placeholder="ex: Cluj-Napoca" value={oras} onChange={e => setOras(e.target.value)} style={inp} />
           </div>
-          <button onClick={cauta} disabled={!data || loading} style={{padding:'11px 24px', background:UI.green, color:'white', border:'none', borderRadius:UI.radiusSm, fontSize:'14px', fontWeight:700, cursor: (!data||loading) ? 'wait' : 'pointer', fontFamily:F, opacity:(!data||loading)?0.6:1}}>{loading ? 'Se verifică...' : 'Verifică'}</button>
+          <button onClick={cauta} disabled={!data || loading} style={{padding:'11px 28px', background:UI.green, color:'white', border:'none', borderRadius:UI.radiusSm, fontSize:'14px', fontWeight:700, cursor: (!data||loading) ? 'wait' : 'pointer', fontFamily:F, opacity:(!data||loading)?0.6:1, boxShadow:'0 2px 8px rgba(5,150,105,0.3)'}}>{loading ? 'Se verifică...' : 'Verifică'}</button>
         </div>
         ) : (
         <div style={{background:UI.card, borderRadius:UI.radius, border:'1px solid '+UI.line, padding:'20px', marginBottom:'20px', boxShadow:UI.shadow, display:'flex', gap:'12px', alignItems:'flex-end', flexWrap:'wrap'}}>
@@ -592,7 +592,7 @@ export default function DisponibilitatePage() {
             <label style={{fontSize:'11px', fontWeight:700, color:UI.sub, textTransform:'uppercase', display:'block', marginBottom:'6px'}}>Oraș (opțional, pt. zonă)</label>
             <input type="text" placeholder="ex: Oradea" value={oras} onChange={e => setOras(e.target.value)} style={inp} />
           </div>
-          <button onClick={cautaArtist} disabled={!artistCautat || loadingArtist} style={{padding:'11px 24px', background:UI.purple, color:'white', border:'none', borderRadius:UI.radiusSm, fontSize:'14px', fontWeight:700, cursor: (!artistCautat||loadingArtist) ? 'wait' : 'pointer', fontFamily:F, opacity:(!artistCautat||loadingArtist)?0.6:1}}>{loadingArtist ? 'Se caută...' : 'Caută'}</button>
+          <button onClick={cautaArtist} disabled={!artistCautat || loadingArtist} style={{padding:'11px 28px', background:UI.purple, color:'white', border:'none', borderRadius:UI.radiusSm, fontSize:'14px', fontWeight:700, cursor: (!artistCautat||loadingArtist) ? 'wait' : 'pointer', fontFamily:F, opacity:(!artistCautat||loadingArtist)?0.6:1, boxShadow:'0 2px 8px rgba(124,58,237,0.3)'}}>{loadingArtist ? 'Se caută...' : 'Caută'}</button>
         </div>
         )}
 
