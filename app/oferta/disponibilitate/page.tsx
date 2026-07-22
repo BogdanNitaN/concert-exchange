@@ -58,6 +58,8 @@ export default function DisponibilitatePage() {
   const [ocupateDeschise, setOcupateDeschise] = useState<Set<number>>(new Set())
   const [showExpandat, setShowExpandat] = useState<Set<number>>(new Set())
   function toggleShow(idx: number) { setShowExpandat(prev => { const n = new Set(prev); n.has(idx) ? n.delete(idx) : n.add(idx); return n }) }
+  const [indispExpandat, setIndispExpandat] = useState<Set<number>>(new Set())
+  function toggleIndisp(idx: number) { setIndispExpandat(prev => { const n = new Set(prev); n.has(idx) ? n.delete(idx) : n.add(idx); return n }) }
   function toggleOcupate(idx: number) { setOcupateDeschise(prev => { const n = new Set(prev); n.has(idx) ? n.delete(idx) : n.add(idx); return n }) }
   const [artistCautat, setArtistCautat] = useState('')
   const [rezArtist, setRezArtist] = useState<any[]>([])
@@ -684,7 +686,7 @@ export default function DisponibilitatePage() {
                   {!pd && indispViitor.length > 0 && (
                     <div style={{marginTop:'12px'}}>
                       <div style={{fontSize:'12px', fontWeight:800, color:'#dc2626', marginBottom:'8px'}}>Perioade indisponibile ({indispViitor.length})</div>
-                      {indispViitor.map((e: any, i: number) => (
+                      {(indispExpandat.has(idx) ? indispViitor : indispViitor.slice(0, 3)).map((e: any, i: number) => (
                         <div key={i} style={{padding:'5px 0', borderBottom:'1px solid '+UI.line}}>
                           <div style={{display:'flex', alignItems:'center', gap:'8px', fontSize:'13px'}}>
                             <span style={{fontSize:'8px', fontWeight:800, textTransform:'uppercase', padding:'2px 5px', borderRadius:'4px', color:'white', background: badgeCol(e.tip)}}>{badgeLabel(e.tip)}</span>
@@ -692,6 +694,9 @@ export default function DisponibilitatePage() {
                           </div>
                         </div>
                       ))}
+                      {indispViitor.length > 3 && (
+                        <button onClick={() => toggleIndisp(idx)} style={{marginTop:'6px', padding:'4px 0', background:'none', border:'none', color:UI.purple, fontSize:'12px', fontWeight:700, cursor:'pointer', fontFamily:F}}>{indispExpandat.has(idx) ? 'Arată mai puțin' : '+ ' + (indispViitor.length - 3) + ' perioade'}</button>
+                      )}
                     </div>
                   )}
                   {!pd && showViitor.length > 0 && (

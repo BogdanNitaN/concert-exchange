@@ -55,8 +55,11 @@ export async function GET(req: Request) {
     if (!calArtist) return NextResponse.json({ ok: true, gasit: false })
 
     const acum = new Date()
-    const min = new Date(acum.getFullYear(), acum.getMonth() - 3, 1)
-    const max = new Date(acum.getFullYear(), 11, 31, 23, 59, 59)
+    let min = new Date(acum.getFullYear(), acum.getMonth() - 3, 1)
+    let max = new Date(acum.getFullYear(), 11, 31, 23, 59, 59)
+    // daca se cere perioada in trecut/viitor, extind fereastra de interogare
+    if (dataStart) { const ds = new Date(dataStart + 'T00:00:00'); if (ds < min) min = ds }
+    if (dataEnd) { const de = new Date(dataEnd + 'T23:59:59'); if (de > max) max = de }
     const ev = await cal.events.list({
       calendarId: calArtist.id!, timeMin: min.toISOString(), timeMax: max.toISOString(),
       singleEvents: true, orderBy: 'startTime', maxResults: 300
