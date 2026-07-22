@@ -205,11 +205,11 @@ export default function IstoricPage() {
             <a href="/oferta" title="Înapoi la ofertă" style={{fontSize:'26px', fontWeight:800, letterSpacing:'-0.5px', color:UI.ink, textDecoration:'none', cursor:'pointer'}}>GIG<span style={{color:UI.green}}>x</span></a>
             <div style={{fontSize:'13px', color:UI.faint, fontWeight:500, marginTop:'2px'}}>Istoric oferte</div>
           </div>
-          <div style={{display:'flex', gap:'8px', flexWrap:'wrap'}}>
-            <a href="/oferta" style={{fontSize:'13px', fontWeight:700, color:UI.sub, textDecoration:'none', padding:'8px 14px', borderRadius:'10px', border:'1.5px solid '+UI.line, background:'white'}}>Deviz</a>
-            <a href="/oferta/disponibilitate" style={{fontSize:'13px', fontWeight:700, color:UI.sub, textDecoration:'none', padding:'8px 14px', borderRadius:'10px', border:'1.5px solid '+UI.line, background:'white'}}>Calendar</a>
-            <span style={{fontSize:'13px', fontWeight:700, color:'white', padding:'8px 14px', borderRadius:'10px', background:UI.green}}>Istoric</span>
-            <a href="/oferta/roster" style={{fontSize:'13px', fontWeight:700, color:UI.sub, textDecoration:'none', padding:'8px 14px', borderRadius:'10px', border:'1.5px solid '+UI.line, background:'white'}}>Roster</a>
+          <div style={{display:'flex', gap:'10px', alignItems:'center', flexWrap:'wrap'}}>
+            <a href="/oferta" style={{fontSize:'13px', color:'#1c1917', fontWeight:700, background:'white', border:'1.5px solid #ececec', borderRadius:'10px', padding:'9px 14px', textDecoration:'none'}}>Deviz</a>
+            <a href="/oferta/disponibilitate" style={{fontSize:'13px', color:'#1c1917', fontWeight:700, background:'white', border:'1.5px solid #ececec', borderRadius:'10px', padding:'9px 14px', textDecoration:'none'}}>Calendar</a>
+            <span style={{fontSize:'13px', color:'white', fontWeight:700, background:'#1c1917', border:'1.5px solid #1c1917', borderRadius:'10px', padding:'9px 14px'}}>Istoric</span>
+            <a href="/oferta/roster" style={{fontSize:'13px', color:'#1c1917', fontWeight:700, background:'white', border:'1.5px solid #ececec', borderRadius:'10px', padding:'9px 14px', textDecoration:'none'}}>Roster</a>
           </div>
         </div>
 

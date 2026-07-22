@@ -203,11 +203,11 @@ export default function RosterPage() {
             <a href="/oferta" title="Înapoi la ofertă" style={{fontSize:'26px', fontWeight:800, letterSpacing:'-0.5px', color:UI.ink, textDecoration:'none', cursor:'pointer'}}>GIG<span style={{color:UI.green}}>x</span></a>
             <div style={{fontSize:'13px', color:UI.faint, fontWeight:500, marginTop:'2px'}}>Roster · {artists.length} artiști</div>
           </div>
-          <div style={{display:'flex', gap:'8px', flexWrap:'wrap'}}>
-            <a href="/oferta" style={{fontSize:'13px', fontWeight:700, color:UI.sub, textDecoration:'none', padding:'8px 14px', borderRadius:'10px', border:'1.5px solid '+UI.line, background:'white'}}>Deviz</a>
-            <a href="/oferta/disponibilitate" style={{fontSize:'13px', fontWeight:700, color:UI.sub, textDecoration:'none', padding:'8px 14px', borderRadius:'10px', border:'1.5px solid '+UI.line, background:'white'}}>Calendar</a>
-            <a href="/oferta/istoric" style={{fontSize:'13px', fontWeight:700, color:UI.sub, textDecoration:'none', padding:'8px 14px', borderRadius:'10px', border:'1.5px solid '+UI.line, background:'white'}}>Istoric</a>
-            <span style={{fontSize:'13px', fontWeight:700, color:'white', padding:'8px 14px', borderRadius:'10px', background:UI.green}}>Roster</span>
+          <div style={{display:'flex', gap:'10px', alignItems:'center', flexWrap:'wrap'}}>
+            <a href="/oferta" style={{fontSize:'13px', color:'#1c1917', fontWeight:700, background:'white', border:'1.5px solid #ececec', borderRadius:'10px', padding:'9px 14px', textDecoration:'none'}}>Deviz</a>
+            <a href="/oferta/disponibilitate" style={{fontSize:'13px', color:'#1c1917', fontWeight:700, background:'white', border:'1.5px solid #ececec', borderRadius:'10px', padding:'9px 14px', textDecoration:'none'}}>Calendar</a>
+            <a href="/oferta/istoric" style={{fontSize:'13px', color:'#1c1917', fontWeight:700, background:'white', border:'1.5px solid #ececec', borderRadius:'10px', padding:'9px 14px', textDecoration:'none'}}>Istoric</a>
+            <span style={{fontSize:'13px', color:'white', fontWeight:700, background:'#1c1917', border:'1.5px solid #1c1917', borderRadius:'10px', padding:'9px 14px'}}>Roster</span>
           </div>
         </div>
 
