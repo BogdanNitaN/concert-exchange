@@ -182,9 +182,9 @@ export default function RosterPage() {
       style={{display:'flex', justifyContent:'space-between', alignItems:'center', padding:'14px 18px', background:UI.card, borderRadius:UI.radiusSm, border:'1px solid '+UI.line, boxShadow:UI.shadow, cursor:'pointer', marginBottom:'8px', transition:'all 0.15s'}}>
       <div>
         <div style={{fontSize:'14px', fontWeight:700, display:'flex', alignItems:'center', gap:'8px'}}>{a.nume}
-          <span style={{fontSize:'8px', fontWeight:800, padding:'2px 6px', borderRadius:'4px', background: a.tip === 'intermediere' ? '#faf5ff' : '#f0fdf4', color: a.tip === 'intermediere' ? '#7c3aed' : '#7c3aed'}}>{a.tip === 'intermediere' ? 'EXTERN' : 'FWD'}</span>
+          <span style={{fontSize:'8px', fontWeight:800, padding:'2px 6px', borderRadius:'4px', background: a.tip === 'intermediere' ? '#faf5ff' : '#f0fdf4', color: a.tip === 'intermediere' ? '#7c3aed' : '#059669'}}>{a.tip === 'intermediere' ? 'EXTERN' : 'FWD'}</span>
         </div>
-        <div style={{fontSize:'12px', color:'#78716c', marginTop:'2px'}}>{a.durata_default || '40 min'} · {a.fee_standard}€{a.diurna_fixa ? ' · diurnă ' + a.diurna_fixa : ''}</div>
+        <div style={{fontSize:'12px', color:'#78716c', marginTop:'2px'}}>{a.durata_default || '40 min'} · <strong style={{color:'#059669', fontSize:'13px'}}>{a.fee_standard}€</strong>{a.diurna_fixa ? ' · diurnă ' + a.diurna_fixa : ''}</div>
       </div>
       <span style={{fontSize:'11px', color:'#a8a29e'}}>editează →</span>
     </div>
