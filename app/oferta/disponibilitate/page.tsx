@@ -50,6 +50,7 @@ export default function DisponibilitatePage() {
   const [artistCautat, setArtistCautat] = useState('')
   const [rezArtist, setRezArtist] = useState<any[]>([])
   const [dataArtist, setDataArtist] = useState('')
+  const [dataArtist2, setDataArtist2] = useState('')
   const [bifatiArtist, setBifatiArtist] = useState<Set<string>>(new Set())
   const [toast, setToast] = useState('')
   const [copiat, setCopiat] = useState(false)
@@ -64,7 +65,7 @@ export default function DisponibilitatePage() {
     // paralelizez: toti artistii deodata (nu secvential) - mult mai rapid la multi
     const rezultate = await Promise.all(nume.map(async (n) => {
       try {
-        const q = '/api/calendar-artist-liber?artist=' + encodeURIComponent(n) + (oras ? '&oras=' + encodeURIComponent(oras) : '') + (dataArtist ? '&data=' + dataArtist : '')
+        const q = '/api/calendar-artist-liber?artist=' + encodeURIComponent(n) + (oras ? '&oras=' + encodeURIComponent(oras) : '') + (dataArtist ? '&data=' + dataArtist : '') + (dataArtist2 ? '&data2=' + dataArtist2 : '')
         const r = await fetch(q)
         const d = await r.json()
         return { cautat: n, ...d }
@@ -153,6 +154,63 @@ export default function DisponibilitatePage() {
   }
   function eWeekend(iso: string): boolean {
     try { const z = new Date(iso + 'T12:00:00').getDay(); return z === 0 || z === 5 || z === 6 } catch { return false }
+  }
+  function ziRelativa(dataIso: string, offset: number): string {
+    const d = new Date(dataIso + 'T12:00:00'); d.setDate(d.getDate() + offset); return d.toISOString().slice(0, 10)
+  }
+  function renderStatusCard(pd: any, idx: number, keySuffix: string) {
+    if (!pd) return null
+    const st: string = pd.status || (pd.liber ? 'liber' : 'ocupat')
+    const cfgMap: Record<string, any> = { liber: { bg:'#f0fdf4', bd:'#86efac', col:UI.green, txt:'✓ LIBER' }, ocupat: { bg:'#fef2f2', bd:'#fca5a5', col:'#dc2626', txt:'✗ OCUPAT' }, verifica: { bg:'#faf5ff', bd:'#d8b4fe', col:'#7c3aed', txt:'○ VERIFICĂ' } }
+    const cfg = cfgMap[st] || cfgMap.ocupat
+    // context logistic: ziua -1 (de unde vine), +1 (unde merge)
+    const ziMinus = ziRelativa(pd.data, -1), ziPlus = ziRelativa(pd.data, 1)
+    const evMinus = (pd.context || []).filter((e: any) => e.data === ziMinus)
+    const evPlus = (pd.context || []).filter((e: any) => e.data === ziPlus)
+    const restContext = (pd.context || []).filter((e: any) => e.data !== ziMinus && e.data !== ziPlus)
+    const expKey = keySuffix + '-' + idx
+    const linieCtx = (e: any, i: number) => (
+      <div key={i} style={{padding:'3px 0'}}>
+        <div style={{display:'flex', alignItems:'center', gap:'8px', fontSize:'12px'}}>
+          <span style={{fontWeight:700, minWidth:'56px', color: eWeekend(e.data) ? '#ea580c' : UI.sub}}>{lunaData(e.data)}{eWeekend(e.data) ? ' ·wk' : ''}</span>
+          <span style={{fontSize:'8px', fontWeight:800, textTransform:'uppercase', padding:'2px 5px', borderRadius:'4px', color:'white', background: badgeCol(e.tip)}}>{badgeLabel(e.tip)}</span>
+          <span style={{color:UI.sub}}>{e.titlu}</span>
+        </div>
+        {(e.descriere || e.created) && <div style={{fontSize:'10px', color:UI.faint, marginLeft:'64px'}}>{e.descriere ? e.descriere.slice(0,70) : ''}{e.descriere && e.created ? ' · ' : ''}{e.created ? 'pus ' + dataCreare(e.created) : ''}</div>}
+      </div>
+    )
+    return (
+      <div>
+        <div style={{marginTop:'10px', marginBottom:'10px', padding:'14px', borderRadius:UI.radiusSm, background: cfg.bg, border:'1.5px solid '+cfg.bd}}>
+          <div style={{fontSize:'15px', fontWeight:800, color: cfg.col, marginBottom: pd.evenimente.length ? '8px' : '0'}}>{cfg.txt} pe {lunaData(pd.data)}{eWeekend(pd.data) ? ' (weekend)' : ''}</div>
+          {pd.evenimente.map((e: any, i: number) => (
+            <div key={i} style={{marginTop:'6px'}}>
+              <div style={{display:'flex', alignItems:'center', gap:'6px'}}>
+                <span style={{fontSize:'9px', fontWeight:800, textTransform:'uppercase', padding:'2px 6px', borderRadius:'5px', color:'white', background: badgeCol(e.tip)}}>{badgeLabel(e.tip)}</span>
+                <span style={{fontSize:'13px', color:UI.ink}}>{e.titlu}</span>
+              </div>
+              {e.descriere && <div style={{fontSize:'11px', color:UI.faint, marginLeft:'2px'}}>{e.descriere.slice(0,80)}</div>}
+              {e.created && <div style={{fontSize:'10px', color:UI.faint, marginLeft:'2px'}}>pus: {dataCreare(e.created)}</div>}
+            </div>
+          ))}
+        </div>
+        {/* logistica: ziua dinainte / ziua dupa */}
+        {(evMinus.length > 0 || evPlus.length > 0) && (
+          <div style={{marginBottom:'8px', padding:'10px 12px', background:'#f8fafc', borderRadius:UI.radiusSm, border:'1px solid '+UI.line}}>
+            <div style={{fontSize:'10px', fontWeight:800, color:UI.purple, textTransform:'uppercase', marginBottom:'6px'}}>Logistică (de unde vine / unde merge)</div>
+            {evMinus.length > 0 && <div style={{marginBottom:'4px'}}><span style={{fontSize:'11px', fontWeight:700, color:UI.sub}}>← ziua dinainte:</span>{evMinus.map(linieCtx)}</div>}
+            {evPlus.length > 0 && <div><span style={{fontSize:'11px', fontWeight:700, color:UI.sub}}>→ ziua după:</span>{evPlus.map(linieCtx)}</div>}
+          </div>
+        )}
+        {restContext.length > 0 && (
+          <div style={{marginBottom:'8px'}}>
+            <div style={{fontSize:'11px', fontWeight:800, color:UI.sub, textTransform:'uppercase', marginBottom:'6px'}}>Alte zile ±3</div>
+            {(contextExpandat.has(idx) ? restContext : restContext.slice(0, 2)).map(linieCtx)}
+            {restContext.length > 2 && <button onClick={() => toggleContext(idx)} style={{marginTop:'4px', padding:'4px 0', background:'none', border:'none', color:UI.purple, fontSize:'12px', fontWeight:700, cursor:'pointer', fontFamily:F}}>{contextExpandat.has(idx) ? 'Arată mai puțin' : '+ ' + (restContext.length - 2) + ' zile'}</button>}
+          </div>
+        )}
+      </div>
+    )
   }
   function lunaData(iso: string): string {
     try { return new Date(iso + 'T12:00:00').toLocaleDateString('ro-RO', { day: 'numeric', month: 'short' }) } catch { return iso }
@@ -360,6 +418,10 @@ export default function DisponibilitatePage() {
             <div style={{width:'220px'}}><DatePicker value={dataArtist} onChange={v => setDataArtist(v)} placeholder="Orice dată" /></div>
           </div>
           <div>
+            <label style={{fontSize:'11px', fontWeight:700, color:UI.sub, textTransform:'uppercase', display:'block', marginBottom:'6px'}}>Data 2 (opțional)</label>
+            <div style={{width:'220px'}}><DatePicker value={dataArtist2} onChange={v => setDataArtist2(v)} placeholder="A doua dată" /></div>
+          </div>
+          <div>
             <label style={{fontSize:'11px', fontWeight:700, color:UI.sub, textTransform:'uppercase', display:'block', marginBottom:'6px'}}>Oraș (opțional, pt. zonă)</label>
             <input type="text" placeholder="ex: Oradea" value={oras} onChange={e => setOras(e.target.value)} style={inp} />
           </div>
@@ -387,6 +449,7 @@ export default function DisponibilitatePage() {
               // perioade indisponibile viitoare (vacante, off), grupate ca intervale
               const indispViitor = grupeazaIntervale(ra.ocupate.filter((e: any) => e.tip === 'indisponibil' && e.viitor))
               const pd = ra.peData
+              const pd2 = ra.peData2
               return (
                 <div key={idx} style={{background:UI.card, borderRadius:UI.radius, border:'1px solid '+UI.line, padding:'24px', boxShadow:UI.shadow}}>
                   <div style={{display:'flex', alignItems:'center', gap:'10px', marginBottom:'4px'}}>
@@ -399,48 +462,16 @@ export default function DisponibilitatePage() {
                     <div style={{fontSize:'12px', color:UI.faint, marginBottom:'10px'}}>{ra.zileLibere} zile libere din {ra.totalZile} până la final de an</div>
                   )}
 
-                  {/* daca e data specifica: status + context */}
+                  {/* daca e data specifica: status + context (1 sau 2 date side-by-side) */}
                   {pd ? (
-                    <>
-                      {(() => {
-                        const st: string = pd.status || (pd.liber ? 'liber' : 'ocupat')
-                        const cfgMap: Record<string, any> = { liber: { bg:'#f0fdf4', bd:'#86efac', col:UI.green, txt:'✓ LIBER' }, ocupat: { bg:'#fef2f2', bd:'#fca5a5', col:'#dc2626', txt:'✗ OCUPAT' }, verifica: { bg:'#f0fdfa', bd:'#5eead4', col:'#0f766e', txt:'○ VERIFICĂ' } }
-                        const cfg = cfgMap[st] || cfgMap.ocupat
-                        return (
-                      <div style={{marginTop:'10px', marginBottom:'14px', padding:'14px', borderRadius:UI.radiusSm, background: cfg.bg, border:'1.5px solid '+cfg.bd}}>
-                        <div style={{fontSize:'15px', fontWeight:800, color: cfg.col, marginBottom: pd.evenimente.length ? '8px' : '0'}}>{cfg.txt} pe {lunaData(pd.data)}{eWeekend(pd.data) ? ' (weekend)' : ''}</div>
-                        {pd.evenimente.map((e: any, i: number) => (
-                          <div key={i} style={{marginTop:'6px'}}>
-                            <div style={{display:'flex', alignItems:'center', gap:'6px'}}>
-                              <span style={{fontSize:'9px', fontWeight:800, textTransform:'uppercase', padding:'2px 6px', borderRadius:'5px', color:'white', background: badgeCol(e.tip)}}>{badgeLabel(e.tip)}</span>
-                              <span style={{fontSize:'13px', color:UI.ink}}>{e.titlu}</span>
-                            </div>
-                            {e.descriere && <div style={{fontSize:'11px', color:UI.faint, marginLeft:'2px'}}>{e.descriere.slice(0,80)}</div>}
-                            {e.created && <div style={{fontSize:'10px', color:UI.faint, marginLeft:'2px'}}>pus: {dataCreare(e.created)}</div>}
-                          </div>
-                        ))}
+                    pd2 ? (
+                      <div style={{display:'grid', gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr', gap:'12px', marginTop:'6px'}}>
+                        <div>{renderStatusCard(pd, idx, 'd1')}</div>
+                        <div>{renderStatusCard(pd2, idx, 'd2')}</div>
                       </div>
-                        )
-                      })()}
-                      {pd.context?.length > 0 && (
-                        <div style={{marginBottom:'8px'}}>
-                          <div style={{fontSize:'11px', fontWeight:800, color:UI.sub, textTransform:'uppercase', marginBottom:'6px'}}>Context ±3 zile</div>
-                          {(contextExpandat.has(idx) ? pd.context : pd.context.slice(0, 2)).map((e: any, i: number) => (
-                            <div key={i} style={{padding:'4px 0'}}>
-                              <div style={{display:'flex', alignItems:'center', gap:'8px', fontSize:'12px'}}>
-                                <span style={{fontWeight:700, minWidth:'56px', color: eWeekend(e.data) ? '#ea580c' : UI.sub}}>{lunaData(e.data)}{eWeekend(e.data) ? ' ·wk' : ''}</span>
-                                <span style={{fontSize:'8px', fontWeight:800, textTransform:'uppercase', padding:'2px 5px', borderRadius:'4px', color:'white', background: badgeCol(e.tip)}}>{badgeLabel(e.tip)}</span>
-                                <span style={{color:UI.sub}}>{e.titlu}</span>
-                              </div>
-                              {(e.descriere || e.created) && <div style={{fontSize:'10px', color:UI.faint, marginLeft:'64px'}}>{e.descriere ? e.descriere.slice(0,70) : ''}{e.descriere && e.created ? ' · ' : ''}{e.created ? 'pus ' + dataCreare(e.created) : ''}</div>}
-                            </div>
-                          ))}
-                          {pd.context.length > 2 && (
-                            <button onClick={() => toggleContext(idx)} style={{marginTop:'4px', padding:'4px 0', background:'none', border:'none', color:UI.purple, fontSize:'12px', fontWeight:700, cursor:'pointer', fontFamily:F}}>{contextExpandat.has(idx) ? 'Arată mai puțin' : '+ ' + (pd.context.length - 2) + ' mai multe zile'}</button>
-                          )}
-                        </div>
-                      )}
-                    </>
+                    ) : (
+                      renderStatusCard(pd, idx, 'd1')
+                    )
                   ) : (
                     <div style={{fontSize:'12px', color:UI.faint, marginBottom:'14px'}}>{showViitor.length} show-uri programate, {indispViitor.length} perioade indisponibile, restul liber</div>
                   )}
@@ -525,7 +556,7 @@ export default function DisponibilitatePage() {
                       const a = analize[l.artist]
                       return (
                       <div key={l.artist} style={{marginBottom:'6px'}}>
-                      <div style={{display:'flex', alignItems:'center', gap:'10px', background:UI.card, borderRadius:'10px', border:'1px solid '+(bifati.has(l.artist)?UI.green:UI.greenSoft), borderLeft:'3px solid '+UI.green, padding:'10px 14px'}}>
+                      <div style={{display:'flex', alignItems:'center', gap:'10px', background:UI.card, borderRadius:'10px', borderTop:'1px solid '+(bifati.has(l.artist)?UI.green:UI.greenSoft), borderRight:'1px solid '+(bifati.has(l.artist)?UI.green:UI.greenSoft), borderBottom:'1px solid '+(bifati.has(l.artist)?UI.green:UI.greenSoft), borderLeft:'3px solid '+UI.green, padding:'10px 14px'}}>
                         <input type="checkbox" checked={bifati.has(l.artist)} onChange={() => toggleBifat(l.artist)} style={{width:'16px', height:'16px', accentColor:UI.green, cursor:'pointer'}} />
                         <span style={{fontSize:'14px', fontWeight:600, color:UI.ink, flex:1}}>{l.artist}</span>
                         {oras && <button onClick={() => analizeaza(l)} disabled={analizand.has(l.artist)} style={{fontSize:'11px', fontWeight:700, padding:'4px 10px', borderRadius:'7px', border:'1.5px solid '+UI.line, background:a?UI.purple:'white', color:a?'white':UI.sub, cursor:'pointer', fontFamily:F}}>{analizand.has(l.artist) ? '...' : a ? 'Ascunde' : 'Analizează'}</button>}

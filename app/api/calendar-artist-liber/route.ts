@@ -29,6 +29,7 @@ export async function GET(req: Request) {
     const artist = url.searchParams.get('artist')
     const oras = url.searchParams.get('oras') || ''
     const dataQuery = url.searchParams.get('data') || ''
+    const dataQuery2 = url.searchParams.get('data2') || ''
     if (!artist) return NextResponse.json({ ok: false, error: 'lipsa artist' }, { status: 400 })
 
     const cal = getCal()
@@ -136,29 +137,29 @@ export async function GET(req: Request) {
       rosterData = rd || null
     } catch {}
 
-    let peData: any = null
-    if (dataQuery) {
-      const evPeData = ocupate.filter((e: any) => e.data === dataQuery)
-      // context: +/- 3 zile in jurul datei
-      const dObj = new Date(dataQuery + 'T12:00:00')
+    const calcPeData = (dq: string) => {
+      if (!dq) return null
+      const evPeData = ocupate.filter((e: any) => e.data === dq)
+      const dObj = new Date(dq + 'T12:00:00')
       const dMin = new Date(dObj); dMin.setDate(dMin.getDate() - 3)
       const dMax = new Date(dObj); dMax.setDate(dMax.getDate() + 3)
       const iso = (d: Date) => d.toISOString().slice(0, 10)
-      const contextZile = ocupate.filter((e: any) => e.data >= iso(dMin) && e.data <= iso(dMax) && e.data !== dataQuery)
+      const contextZile = ocupate.filter((e: any) => e.data >= iso(dMin) && e.data <= iso(dMax) && e.data !== dq)
       const blocante = evPeData.filter((e: any) => e.tip === 'show' || e.tip === 'indisponibil')
       const deVerificat = evPeData.filter((e: any) => e.tip === 'echipa' || e.tip === 'verifica')
-      // status: ocupat daca show/indisponibil; verifica daca echipa/pending; liber daca doar note
       let status: 'liber' | 'ocupat' | 'verifica' = 'liber'
       if (blocante.length > 0) status = 'ocupat'
       else if (deVerificat.length > 0) status = 'verifica'
-      peData = {
-        data: dataQuery,
+      return {
+        data: dq,
         liber: blocante.length === 0,
         status,
         evenimente: evPeData,
         context: contextZile.sort((a: any, b: any) => a.data.localeCompare(b.data))
       }
     }
+    const peData = calcPeData(dataQuery)
+    const peData2 = calcPeData(dataQuery2)
     // numar zile libere viitoare (de azi pana final an) - fara show/indisponibil
     const aziISO = new Date().toISOString().slice(0, 10)
     const finalAn = new Date(new Date().getFullYear(), 11, 31).toISOString().slice(0, 10)
@@ -172,7 +173,7 @@ export async function GET(req: Request) {
     return NextResponse.json({
       ok: true, gasit: true, artist: numeGasit || artist,
       ocupate: ocupate.sort((a, b) => a.data.localeCompare(b.data)),
-      inOrasViitor, ultimaInZona, peData, rosterData,
+      inOrasViitor, ultimaInZona, peData, peData2, rosterData,
       zileLibere, zileOcupate: zileOcupateSet.size, totalZile
     })
   } catch (e) {
