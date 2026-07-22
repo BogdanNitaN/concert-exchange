@@ -26,6 +26,8 @@
 9. Smart booking — alerte artist-client (dupa ce exista baza de clienti)
 10. Cleanup: fisierul corupt pusave-images.mjssave-images.mjs
 11. Bucuresti + Ilfov: scoate automat transport si cazare la artistii locali
+12. Mod LANDED pe linie (fee cu transport inclus, ex The Motans Sibiu 12000 landed) — dezactiveaza calcul transport pe km, raman doar diurna/masa/cazare
+13. Avertizare avion la landed: cand linia e landed + distanta cere zbor (>300km, ex Iasi) -> atentionare ca biletul de avion nu e estimat, verifica daca fee-ul acopera zborul (informativ, nu blocheaza)
 
 ## SCHEMA propusa pt sistem client (piesa 1)
 - Tabela clienti: id, nume, telefon, email, tip (intermediar/direct), created_at

@@ -892,10 +892,7 @@ export default function OfertaPage() {
                   <input type="checkbox" checked={l.includeExport} onChange={e => updateLinie(l.key, { includeExport: e.target.checked })} style={{width:'18px', height:'18px', accentColor:'#059669'}} />
                   <span style={{fontSize:'18px', fontWeight:800}}>{l.artist.nume}</span>
                   {l.dateOptiuni && <span style={{fontSize:'11px', fontWeight:600, color:'#7c3aed', marginLeft:'8px'}}>date: {l.dateOptiuni}</span>}
-                  {l.dateOptiuni && <span style={{fontSize:'11px', fontWeight:600, color:'#7c3aed', marginLeft:'8px'}}>date: {l.dateOptiuni}</span>}
-                  <span style={{fontSize:'9px', fontWeight:800, padding:'2px 6px', borderRadius:'4px', background: l.artist.tip === 'intermediere' ? '#f3efff' : '#f3efff', color: l.artist.tip === 'intermediere' ? '#1c1917' : '#1c1917'}}>{l.artist.tip === 'intermediere' ? 'EXTERN' : 'FWD'}</span>
-                  <input value={l.durata} onChange={e => updateLinie(l.key, { durata: e.target.value })} placeholder="40 min"
-                    style={{marginLeft:'8px', padding:'4px 10px', borderRadius:'8px', border:'1.5px solid #0891b2', color:'#0891b2', fontSize:'12px', fontWeight:700, fontFamily:F, background:'white', width:'90px'}} />
+                  <span style={{fontSize:'9px', fontWeight:800, padding:'2px 6px', borderRadius:'4px', background: l.artist.tip === 'intermediere' ? '#f3efff' : '#ecfdf5', color: l.artist.tip === 'intermediere' ? '#7c3aed' : '#059669'}}>{l.artist.tip === 'intermediere' ? 'EXTERN' : 'FWD'}</span>
                   {l.artist.formate && l.artist.formate.length > 1 && (
                     <select value={l.formatSelectat} onChange={e => schimbaFormat(l.key, e.target.value)}
                       style={{marginLeft:'10px', padding:'6px 12px', borderRadius:UI.radiusSm, border:'1.5px solid '+UI.purple, color:UI.purple, fontSize:'12px', fontWeight:700, fontFamily:F, cursor:'pointer', background:UI.purpleSoft}}>
@@ -923,10 +920,12 @@ export default function OfertaPage() {
                 </div>
                 <div><label style={label}>Preț listă (€)</label>
                   <input type="number" value={l.feeLista || ''} onFocus={e => e.target.select()} onChange={e => updateLinie(l.key, { feeLista: Number(e.target.value) })} style={{...inputStyle, color:'#a8a29e'}} /></div>
-                <div><label style={label}>Ofertă (€)</label>
-                  <input type="number" value={l.fee || ''} onFocus={e => e.target.select()} onChange={e => updateLinie(l.key, { fee: Number(e.target.value) })} style={{...inputStyle, fontWeight:800, fontSize:'15px', color:UI.ink}} /></div>
+                <div><label style={{...label, color:UI.green}}>Ofertă (€)</label>
+                  <input type="number" value={l.fee || ''} onFocus={e => e.target.select()} onChange={e => updateLinie(l.key, { fee: Number(e.target.value) })} style={{...inputStyle, fontWeight:800, fontSize:'17px', color:UI.green, borderColor:'#86efac', background:'#f0fdf4'}} /></div>
                 <div><label style={label}>Lei/km</label>
                   <input type="number" step="0.1" value={l.leiKm || ''} onFocus={e => e.target.select()} onChange={e => updateLinie(l.key, { leiKm: Number(e.target.value) })} style={inputStyle} /></div>
+                <div><label style={label}>Durată</label>
+                  <input value={l.durata} onChange={e => updateLinie(l.key, { durata: e.target.value })} placeholder="40 min" style={inputStyle} /></div>
               </div>
 
               <div style={{display:'flex', gap:'16px', flexWrap:'wrap', marginBottom:'12px', alignItems:'center'}}>
@@ -1034,6 +1033,18 @@ export default function OfertaPage() {
               {destinatar === 'intermediar' && <div style={{fontSize:'12px', color:'#a8a29e', marginTop:'8px'}}>Sumă fără mențiune de comision</div>}
             </div>
 
+            {/* TOTAL OFERTA - dominant */}
+            {(() => {
+              const activi = linii.filter(x => x.includeExport)
+              const totalFee = activi.reduce((s, l) => s + (l.fee || 0), 0)
+              const nrArt = activi.length
+              return (
+                <div style={{marginBottom:'16px', padding:'16px 18px', borderRadius:UI.radiusSm, background:'rgba(5,150,105,0.12)', border:'1px solid rgba(5,150,105,0.3)', display:'flex', alignItems:'baseline', justifyContent:'space-between', flexWrap:'wrap', gap:'8px'}}>
+                  <span style={{fontSize:'12px', fontWeight:700, color:'rgba(255,255,255,0.7)', textTransform:'uppercase', letterSpacing:'0.5px'}}>Total onorarii{nrArt > 1 ? ' (' + nrArt + ' artiști)' : ''}</span>
+                  <span style={{fontSize:'28px', fontWeight:800, color:'#6ee7b7', lineHeight:1}}>{totalFee.toLocaleString('ro-RO')} € <span style={{fontSize:'14px', fontWeight:600, color:'rgba(255,255,255,0.5)'}}>+ TVA</span></span>
+                </div>
+              )
+            })()}
             {/* BUTOANE EXPORT - blocate pana selectezi destinatar */}
             <div style={{display:'flex', gap:'8px', flexWrap:'wrap', opacity: destinatar ? 1 : 0.4, pointerEvents: destinatar ? 'auto' : 'none'}}>
               <button onClick={() => { navigator.clipboard.writeText(genText()); salveazaOferta(); arataToast('Deviz copiat și ofertă salvată') }}
