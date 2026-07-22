@@ -296,20 +296,20 @@ export default function IstoricPage() {
                   <div style={{textAlign:'right'}}>
                     <div style={{fontSize:'11px', color:'#78716c'}}>{new Date(o.created_at).toLocaleDateString('ro-RO')} {new Date(o.created_at).toLocaleTimeString('ro-RO', {hour:'2-digit',minute:'2-digit'})}</div>
                     <select value={o.status} onChange={e => updateStatus(o.cod, e.target.value)}
-                      style={{marginTop:'4px', padding:'3px 8px', borderRadius:'6px', border:'1.5px solid ' + (STATUS_COLOR[o.status] || '#e7e5e4'), color: STATUS_COLOR[o.status] || '#1c1917', fontSize:'11px', fontWeight:700, fontFamily:F, cursor:'pointer', background:'white'}}>
+                      style={{marginTop:'4px', padding:'5px 12px', borderRadius:'8px', border:'none', color:'white', fontSize:'11px', fontWeight:800, fontFamily:F, cursor:'pointer', background: STATUS_COLOR[o.status] || '#a8a29e', textTransform:'uppercase', letterSpacing:'0.3px', boxShadow:'0 1px 3px rgba(0,0,0,0.15)'}}>
                       {STATUSURI.map(s => <option key={s} value={s}>{s}</option>)}
                     </select>
                   </div>
                 </div>
                 <div style={{fontSize:'13px', color:'#57534e', marginBottom:'10px'}}>
                   {(o.artisti || []).map(a => a.nume).join(', ')}
-                  {o.institutie_publica && <span style={{marginLeft:'8px', fontSize:'10px', fontWeight:700, color:'#7c3aed'}}>INST. PUBLICĂ</span>}
+                  {o.institutie_publica && <span style={{marginLeft:'8px', fontSize:'10px', fontWeight:800, color:UI.sub, background:'#f5f5f4', padding:'2px 7px', borderRadius:'5px'}}>INST. PUBLICĂ</span>}
                 </div>
-                <div style={{display:'flex', gap:'20px', fontSize:'13px', paddingTop:'10px', borderTop:'1px solid #f5f5f4', alignItems:'center', flexWrap:'wrap'}}>
-                  <span>Fee: <strong>{o.total_fee_eur.toLocaleString('ro-RO')} €</strong></span>
-                  {o.total_discount_eur > 0 && <span style={{color:'#7c3aed'}}>Discount: <strong>{o.total_discount_eur.toLocaleString('ro-RO')} €</strong></span>}
-                  {o.total_cag_eur > 0 && <span style={{color:'#7c3aed'}}>CAG: <strong>{o.total_cag_eur.toLocaleString('ro-RO')} €</strong></span>}
-                  {o.suma_finala != null && <span style={{color:'#7c3aed', fontWeight:700}}>Închis: {o.suma_finala.toLocaleString('ro-RO')} €</span>}
+                <div style={{display:'flex', gap:'20px', fontSize:'13px', paddingTop:'10px', borderTop:'1px solid #f5f5f4', alignItems:'baseline', flexWrap:'wrap'}}>
+                  <span style={{color:UI.sub}}>Fee: <strong style={{fontSize:'16px', color: o.suma_finala != null ? UI.sub : '#059669', fontWeight:800}}>{o.total_fee_eur.toLocaleString('ro-RO')} €</strong></span>
+                  {o.suma_finala != null && <span style={{color:'#059669', fontWeight:700}}>Închis: <strong style={{fontSize:'18px', fontWeight:800}}>{o.suma_finala.toLocaleString('ro-RO')} €</strong></span>}
+                  {o.total_discount_eur > 0 && <span style={{color:UI.faint, fontSize:'12px'}}>Discount: {o.total_discount_eur.toLocaleString('ro-RO')} €</span>}
+                  {o.total_cag_eur > 0 && <span style={{color:UI.faint, fontSize:'12px'}}>CAG: {o.total_cag_eur.toLocaleString('ro-RO')} €</span>}
                   <button onClick={() => setExpandat(expandat === o.cod ? null : o.cod)}
                     style={{marginLeft:'auto', padding:'6px 14px', background:'#f5f5f4', color:'#1c1917', border:'none', borderRadius:'8px', fontSize:'12px', fontWeight:700, cursor:'pointer', fontFamily:F}}>
                     {expandat === o.cod ? 'Ascunde' : 'Detalii'}
@@ -356,7 +356,7 @@ export default function IstoricPage() {
                         </div>
                       </div>
                       {o.suma_finala != null && o.suma_finala !== o.total_fee_eur && (
-                        <div style={{fontSize:'12px', marginTop:'8px', fontWeight:700, color: o.suma_finala < o.total_fee_eur ? '#dc2626' : '#7c3aed'}}>
+                        <div style={{fontSize:'12px', marginTop:'8px', fontWeight:700, color: o.suma_finala < o.total_fee_eur ? '#dc2626' : '#059669'}}>
                           {o.suma_finala < o.total_fee_eur ? 'Scădere' : 'Creștere'}: {Math.abs(o.total_fee_eur - o.suma_finala).toLocaleString('ro-RO')} € față de ofertă
                         </div>
                       )}
