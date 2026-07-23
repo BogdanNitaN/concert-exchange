@@ -369,9 +369,12 @@ export default function DisponibilitatePage() {
           <div style={{marginTop:'10px', padding:'12px', background:'#faf9f7', borderRadius:UI.radiusSm, border:'1px solid '+UI.line}}>
             <div style={{fontSize:'12px', fontWeight:800, color:UI.ink, marginBottom:'6px'}}>{lunaData(ziDetaliu.data)}{eWeekend(ziDetaliu.data) ? ' (weekend)' : ''}</div>
             {ziDetaliu.evenimente.length === 0 ? <div style={{fontSize:'12px', color:UI.green, fontWeight:700}}>✓ liber</div> : ziDetaliu.evenimente.map((e: any, i: number) => (
-              <div key={i} style={{display:'flex', alignItems:'center', gap:'6px', marginTop:'3px'}}>
-                <span style={{fontSize:'8px', fontWeight:800, textTransform:'uppercase', padding:'2px 5px', borderRadius:'4px', color:'white', background: badgeCol(e.tip)}}>{badgeLabel(e.tip)}</span>
-                <span style={{fontSize:'12px', color:UI.sub}}>{e.titlu}</span>
+              <div key={i} style={{marginTop:'5px'}}>
+                <div style={{display:'flex', alignItems:'center', gap:'6px'}}>
+                  <span style={{fontSize:'8px', fontWeight:800, textTransform:'uppercase', padding:'2px 5px', borderRadius:'4px', color:'white', background: badgeCol(e.tip)}}>{badgeLabel(e.tip)}</span>
+                  <span style={{fontSize:'12px', color:UI.sub}}>{e.titlu}</span>
+                </div>
+                {(e.descriere || e.created) && <div style={{fontSize:'10px', color:UI.faint, marginTop:'2px', marginLeft:'2px'}}>{e.descriere ? e.descriere.slice(0,70) : ''}{e.descriere && e.created ? ' · ' : ''}{e.created ? 'pus ' + dataCreare(e.created) : ''}</div>}
               </div>
             ))}
           </div>
