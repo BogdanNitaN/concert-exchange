@@ -241,7 +241,7 @@ export default function DisponibilitatePage() {
         <div style={{display:'flex', alignItems:'center', gap:'8px', fontSize:'12px'}}>
           <span style={{fontWeight:700, minWidth:'56px', color: eWeekend(e.data) ? '#ea580c' : UI.sub}}>{lunaData(e.data)}{eWeekend(e.data) ? ' ·wk' : ''}</span>
           <span style={{fontSize:'8px', fontWeight:800, textTransform:'uppercase', padding:'2px 5px', borderRadius:'4px', color:'white', background: badgeCol(e.tip)}}>{badgeLabel(e.tip)}</span>
-          <span style={{color:UI.sub}}>{e.titlu}</span>
+          <span style={{color:UI.sub}}>{e.titlu}</span>{e.prin && <span style={{fontSize:'9px', fontWeight:800, color:'#7c3aed', background:'#faf5ff', border:'1px solid #d8b4fe', borderRadius:'4px', padding:'1px 5px', marginLeft:'5px', whiteSpace:'nowrap'}}>prin {e.prin}</span>}
         </div>
         {(e.descriere || e.created) && <div style={{fontSize:'10px', color:UI.faint, marginLeft:'64px'}}>{e.descriere ? e.descriere.slice(0,70) : ''}{e.descriere && e.created ? ' · ' : ''}{e.created ? 'pus ' + dataCreare(e.created) : ''}</div>}
       </div>
@@ -254,7 +254,7 @@ export default function DisponibilitatePage() {
             <div key={i} style={{marginTop:'6px'}}>
               <div style={{display:'flex', alignItems:'center', gap:'6px'}}>
                 <span style={{fontSize:'9px', fontWeight:800, textTransform:'uppercase', padding:'2px 6px', borderRadius:'5px', color:'white', background: badgeCol(e.tip)}}>{badgeLabel(e.tip)}</span>
-                <span style={{fontSize:'13px', color:UI.ink}}>{e.titlu}</span>
+                <span style={{fontSize:'13px', color:UI.ink}}>{e.titlu}</span>{e.prin && <span style={{fontSize:'9px', fontWeight:800, color:'#7c3aed', background:'#faf5ff', border:'1px solid #d8b4fe', borderRadius:'4px', padding:'1px 5px', marginLeft:'5px', whiteSpace:'nowrap'}}>prin {e.prin}</span>}
               </div>
               {e.descriere && <div style={{fontSize:'11px', color:UI.faint, marginLeft:'2px'}}>{e.descriere.slice(0,80)}</div>}
               {e.created && <div style={{fontSize:'10px', color:UI.faint, marginLeft:'2px'}}>pus: {dataCreare(e.created)}</div>}
@@ -355,7 +355,7 @@ export default function DisponibilitatePage() {
                       {z.evenimente.map((e: any, j: number) => (
                         <span key={j} style={{display:'inline-flex', alignItems:'center', gap:'5px'}}>
                           <span style={{fontSize:'8px', fontWeight:800, textTransform:'uppercase', padding:'2px 5px', borderRadius:'4px', color:'white', background: badgeCol(e.tip)}}>{badgeLabel(e.tip)}</span>
-                          <span style={{color:UI.sub}}>{e.titlu}</span>
+                          <span style={{color:UI.sub}}>{e.titlu}</span>{e.prin && <span style={{fontSize:'9px', fontWeight:800, color:'#7c3aed', background:'#faf5ff', border:'1px solid #d8b4fe', borderRadius:'4px', padding:'1px 5px', marginLeft:'5px', whiteSpace:'nowrap'}}>prin {e.prin}</span>}{e.prin && <span style={{fontSize:'9px', fontWeight:800, color:'#7c3aed', background:'#faf5ff', border:'1px solid #d8b4fe', borderRadius:'4px', padding:'1px 5px', marginLeft:'5px', whiteSpace:'nowrap'}}>prin {e.prin}</span>}
                         </span>
                       ))}
                     </div>
@@ -372,7 +372,7 @@ export default function DisponibilitatePage() {
               <div key={i} style={{marginTop:'5px'}}>
                 <div style={{display:'flex', alignItems:'center', gap:'6px'}}>
                   <span style={{fontSize:'8px', fontWeight:800, textTransform:'uppercase', padding:'2px 5px', borderRadius:'4px', color:'white', background: badgeCol(e.tip)}}>{badgeLabel(e.tip)}</span>
-                  <span style={{fontSize:'12px', color:UI.sub}}>{e.titlu}</span>
+                  <span style={{fontSize:'12px', color:UI.sub}}>{e.titlu}</span>{e.prin && <span style={{fontSize:'9px', fontWeight:800, color:'#7c3aed', background:'#faf5ff', border:'1px solid #d8b4fe', borderRadius:'4px', padding:'1px 5px', marginLeft:'5px', whiteSpace:'nowrap'}}>prin {e.prin}</span>}
                 </div>
                 {(e.descriere || e.created) && <div style={{fontSize:'10px', color:UI.faint, marginTop:'2px', marginLeft:'2px'}}>{e.descriere ? e.descriere.slice(0,70) : ''}{e.descriere && e.created ? ' · ' : ''}{e.created ? 'pus ' + dataCreare(e.created) : ''}</div>}
               </div>
@@ -702,7 +702,7 @@ export default function DisponibilitatePage() {
                         <div key={i} style={{padding:'5px 0', borderBottom:'1px solid '+UI.line}}>
                           <div style={{display:'flex', alignItems:'center', gap:'8px', fontSize:'13px'}}>
                             <span style={{fontSize:'8px', fontWeight:800, textTransform:'uppercase', padding:'2px 5px', borderRadius:'4px', color:'white', background: badgeCol(e.tip)}}>{badgeLabel(e.tip)}</span>
-                            <span style={{fontWeight:700, color:UI.ink}}>{afiseazaInterval(e)}</span><span style={{color:UI.sub}}>{e.titlu}</span>
+                            <span style={{fontWeight:700, color:UI.ink}}>{afiseazaInterval(e)}</span><span style={{color:UI.sub}}>{e.titlu}</span>{e.prin && <span style={{fontSize:'9px', fontWeight:800, color:'#7c3aed', background:'#faf5ff', border:'1px solid #d8b4fe', borderRadius:'4px', padding:'1px 5px', marginLeft:'5px', whiteSpace:'nowrap'}}>prin {e.prin}</span>}
                           </div>
                         </div>
                       ))}
@@ -717,7 +717,7 @@ export default function DisponibilitatePage() {
                       {(showExpandat.has(idx) ? showViitor : showViitor.slice(0, 4)).map((e: any, i: number) => (
                         <div key={i} style={{padding:'5px 0', borderBottom:'1px solid '+UI.line}}>
                           <div style={{display:'flex', gap:'10px', fontSize:'13px', color:UI.sub}}>
-                            <span style={{fontWeight:700, color:UI.ink, minWidth:'90px'}}>{afiseazaInterval(e)}</span><span>{e.titlu}</span>
+                            <span style={{fontWeight:700, color:UI.ink, minWidth:'90px'}}>{afiseazaInterval(e)}</span><span>{e.titlu}</span>{e.prin && <span style={{fontSize:'9px', fontWeight:800, color:'#7c3aed', background:'#faf5ff', border:'1px solid #d8b4fe', borderRadius:'4px', padding:'1px 5px', marginLeft:'5px', whiteSpace:'nowrap'}}>prin {e.prin}</span>}
                           </div>
                           {(e.descriere || e.created) && <div style={{fontSize:'10px', color:UI.faint, marginLeft:'80px'}}>{e.descriere ? e.descriere.slice(0,70) : ''}{e.descriere && e.created ? ' · ' : ''}{e.created ? 'pus ' + dataCreare(e.created) : ''}</div>}
                         </div>

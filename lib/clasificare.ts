@@ -33,3 +33,14 @@ export function clasificaEveniment(titlu: string, cuv: string[], orasEv?: string
   else if (blocaj && !desprEl) tip = 'echipa'
   return tip
 }
+
+// Artisti legati: daca unul e ocupat, celalalt devine indisponibil
+// (membru comun in formatie - ex Puya e in La Familia)
+const LEGATURI: Record<string, string[]> = {
+  'puya': ['La Familia'],
+  'la familia': ['Puya'],
+}
+export function artistiLegati(nume: string): string[] {
+  const k = (nume || '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').trim()
+  return LEGATURI[k] || []
+}

@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server'
-import { clasificaEveniment } from '@/lib/clasificare'
+import { artistiLegati, clasificaEveniment } from '@/lib/clasificare'
 import { google } from 'googleapis'
 import { CALENDAR_TO_ROSTER, normNume, extragOrasDinTitlu } from '@/lib/calendar-mapping'
 import { createClient } from '@supabase/supabase-js'
@@ -97,7 +97,40 @@ export async function GET(req: Request) {
     })
 
     const azi = new Date(); azi.setHours(0, 0, 0, 0)
-    const ocupate = evenimente.map(e => ({ ...e, viitor: new Date(e.data + 'T12:00:00') >= azi }))
+    let ocupate = evenimente.map(e => ({ ...e, viitor: new Date(e.data + 'T12:00:00') >= azi }))
+    // artisti legati (membru comun in formatie): aduc si evenimentele lor blocante
+    const legati = artistiLegati(numeGasit || artist)
+    for (const numeLegat of legati) {
+      const normLegat = normNume(numeLegat)
+      const calLegat = candidati.find(x => x.norm === normLegat)?.cal
+      if (!calLegat) continue
+      const evL = await cal.events.list({
+        calendarId: calLegat.id!, timeMin: min.toISOString(), timeMax: max.toISOString(),
+        singleEvents: true, orderBy: 'startTime', maxResults: 300
+      })
+      const cuvinteLegat = numeLegat.toLowerCase().replace(/[^a-z0-9\u00e0-\u017f ]/gi, '').split(/\s+/).filter(w => w.length >= 3 && !['the','and','feat'].includes(w))
+      const evenimenteLegat = (evL.data.items || []).flatMap(e => {
+        const start = (e.start?.date || e.start?.dateTime || '').slice(0, 10)
+        if (!start) return []
+        const endRaw = (e.end?.date || e.end?.dateTime || '').slice(0, 10)
+        const titlu = e.summary || ''
+        const orasEv = extragOrasDinTitlu(titlu)
+        const tip = clasificaEveniment(titlu, cuvinteLegat, orasEv)
+        if (tip !== 'show' && tip !== 'indisponibil') return []
+        const zile: string[] = [start]
+        if (e.start?.date && endRaw && endRaw > start) {
+          let d = new Date(start + 'T12:00:00')
+          while (true) {
+            d.setDate(d.getDate() + 1)
+            const ds = d.toISOString().slice(0, 10)
+            if (ds >= endRaw) break
+            zile.push(ds)
+          }
+        }
+        return zile.map(z => ({ titlu, descriere: e.description || '', data: z, oras: orasEv, created: e.created || null, tip, despreArtist: true, prin: numeLegat, viitor: new Date(z + 'T12:00:00') >= azi }))
+      })
+      ocupate = [...ocupate, ...evenimenteLegat]
+    }
 
     let inOrasViitor: any[] = []
     let ultimaInZona: any = null
