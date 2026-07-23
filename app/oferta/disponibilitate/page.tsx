@@ -824,7 +824,7 @@ export default function DisponibilitatePage() {
                     <div style={{fontSize:'14px', fontWeight:700, color:UI.ink}}>{r.artist}</div>
                     {r.evenimente.map((e, i) => (
                       <div key={i} style={{marginTop:'3px'}}>
-                        <div style={{fontSize:'12px', color:UI.sub}}>{e.titlu}{e.descriere ? ' · ' + e.descriere.slice(0,80) : ''}</div>
+                        <div style={{fontSize:'12px', color:UI.sub}}>{e.titlu}{(e as any).prin && <span style={{fontSize:'9px', fontWeight:800, color:'#7c3aed', background:'#faf5ff', border:'1px solid #d8b4fe', borderRadius:'4px', padding:'1px 5px', marginLeft:'5px', whiteSpace:'nowrap'}}>prin {(e as any).prin}</span>}{e.descriere ? ' · ' + e.descriere.slice(0,80) : ''}</div>
                         {(e as any).created && <div style={{fontSize:'10px', color:UI.faint, marginTop:'1px'}}>pus în agendă: {dataCreare((e as any).created)}</div>}
                       </div>
                     ))}

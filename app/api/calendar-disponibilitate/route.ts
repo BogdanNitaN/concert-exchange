@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server'
-import { clasificaEveniment } from '@/lib/clasificare'
+import { artistiLegati, clasificaEveniment } from '@/lib/clasificare'
 import { google } from 'googleapis'
 import { CALENDAR_TO_ROSTER, CALENDAR_EXCLUSE, normNume, ARTISTI_INACTIVI } from '@/lib/calendar-mapping'
 import { createClient } from '@supabase/supabase-js'
@@ -75,6 +75,18 @@ export async function GET(req: Request) {
     }
     const inactiviNorm = ARTISTI_INACTIVI.map(normNume)
     const dedup = Array.from(perArtist.values()).filter((r: any) => !inactiviNorm.includes(normNume(r.artist)))
+    // artisti legati (membru comun): daca unul e ocupat, il marchez si pe celalalt
+    for (const r of dedup) {
+      if (r.liber !== true) continue
+      const legati = artistiLegati(r.artist)
+      for (const numeLegat of legati) {
+        const sursa = dedup.find((x: any) => normNume(x.artist) === normNume(numeLegat))
+        if (sursa && sursa.liber === false && (sursa.evenimente || []).length > 0) {
+          r.liber = false
+          r.evenimente = (sursa.evenimente || []).map((e: any) => ({ ...e, prin: sursa.artist }))
+        }
+      }
+    }
     const liberi = dedup.filter(r => r.liber === true).sort((a,b) => a.artist.localeCompare(b.artist))
     const ocupati = dedup.filter(r => r.liber === false).sort((a,b) => a.artist.localeCompare(b.artist))
     const erori = dedup.filter(r => r.liber === null)
