@@ -254,7 +254,7 @@ export default function OfertaPage() {
                 useMarja: lc.useMarja, cazare: lc.cazare, persoane: lc.persoane, bileteAvion: lc.bileteAvion,
                 tipMasa: lc.tipMasa, zile: lc.zile, diurnaPerPers: lc.diurnaPerPers, diurnaFixa: lc.diurnaFixa || 0, cazareFixa: lc.cazareFixa || 0,
                 useAlcool: lc.useAlcool, alcool: lc.alcool,
-                useCag: lc.useCag, cagProcent: lc.cagProcent, cagSuma: lc.cagSuma, cagMod: lc.cagMod,
+                useCag: lc.useCag, cagProcent: lc.cagProcent || 10, cagSuma: lc.cagSuma || 0, cagMod: lc.cagMod || 'procent',
                 includeExport: true,
               }
             })
@@ -491,7 +491,7 @@ export default function OfertaPage() {
         out.push(parts.join(' || '))
         if (destinatar === 'client' && c.discount > 0) out.push('SALVEZI: ' + c.discount + ' EUR' + (c.savingLei > 0 ? ' (aprox ' + c.savingLei.toLocaleString('ro-RO') + ' lei)' : ''))
         if (destinatar === 'intermediar' && c.discount > 0) out.push('SALVEZI: ' + c.discount + ' EUR' + (c.savingLei > 0 ? ' (aprox ' + c.savingLei.toLocaleString('ro-RO') + ' lei)' : ''))
-        if (destinatar === 'intermediar' && l.useCag && l.cagMod === 'procent') out.push('CAG ' + l.cagProcent + '% din fee')
+        if (destinatar === 'intermediar' && l.useCag && l.cagMod === 'procent' && l.cagProcent > 0) out.push('CAG ' + l.cagProcent + '% din fee')
       }
       out.push('')
     }
