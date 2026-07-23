@@ -256,6 +256,7 @@ export default function DisponibilitatePage() {
                 <span style={{fontSize:'9px', fontWeight:800, textTransform:'uppercase', padding:'2px 6px', borderRadius:'5px', color:'white', background: badgeCol(e.tip)}}>{badgeLabel(e.tip)}</span>
                 <span style={{fontSize:'13px', color:UI.ink}}>{e.titlu}</span>{e.prin && <span style={{fontSize:'9px', fontWeight:800, color:'#7c3aed', background:'#faf5ff', border:'1px solid #d8b4fe', borderRadius:'4px', padding:'1px 5px', marginLeft:'5px', whiteSpace:'nowrap'}}>prin {e.prin}</span>}
               </div>
+              {e.interval && <div style={{fontSize:'11px', color:UI.sub, marginLeft:'2px', fontWeight:600}}>{lunaData(e.interval.start)} - {lunaData(e.interval.end)} · {e.interval.zile} zile</div>}
               {e.descriere && <div style={{fontSize:'11px', color:UI.faint, marginLeft:'2px'}}>{e.descriere.slice(0,80)}</div>}
               {e.created && <div style={{fontSize:'10px', color:UI.faint, marginLeft:'2px'}}>pus: {dataCreare(e.created)}</div>}
             </div>
