@@ -465,8 +465,7 @@ export default function OfertaPage() {
         if (c.transportLei > 0) out.push('Transport: ' + c.transportLei.toLocaleString('ro-RO') + ' lei + TVA')
         if (c.transportEur > 0) out.push('Transport: ' + c.transportEur.toLocaleString('ro-RO') + ' EUR + TVA' + (c.transportEurInLei > 0 ? ' (aprox ' + c.transportEurInLei.toLocaleString('ro-RO') + ' lei)' : ''))
         if (!c.local) out.push(l.cazareFixa > 0 ? 'Cazare: ' + l.cazareFixa.toLocaleString('ro-RO') + ' lei' : 'Cazare: ' + l.cazare)
-        if (c.diurnaTotal > 0) out.push('Diurna: ' + c.diurnaTotal.toLocaleString('ro-RO') + ' lei + TVA')
-        else if (c.local && l.tipMasa === 'alacarte' && l.diurnaFixa === 0) out.push('Diurna: ' + (l.persoane * l.diurnaPerPers * (l.zile || 1)).toLocaleString('ro-RO') + ' lei + TVA')
+        if (!c.local && c.diurnaTotal > 0) out.push('Diurna: ' + c.diurnaTotal.toLocaleString('ro-RO') + ' lei + TVA')
         if (!c.local && l.tipMasa === 'alacarte' && l.diurnaFixa === 0 && l.cazareFixa === 0) out.push('Masa: a la carte ' + l.persoane + ' pers (pranz, cina) + mic dejun la hotel')
         if (c.alcoolTotal > 0) out.push('Protocol: ' + c.alcoolTotal.toLocaleString('ro-RO') + ' lei + TVA')
         // echivalent euro defalcat
@@ -483,8 +482,7 @@ export default function OfertaPage() {
           parts.push(av)
         }
         if (!c.local) parts.push(l.cazareFixa > 0 ? 'cazare ' + l.cazareFixa.toLocaleString('ro-RO') + ' lei' : 'cazare ' + l.cazare)
-        if (c.diurnaTotal > 0) parts.push('diurna ' + c.diurnaTotal.toLocaleString('ro-RO') + ' lei + TVA')
-        else if (c.local && l.tipMasa === 'alacarte' && l.diurnaFixa === 0) parts.push('diurna ' + (l.persoane * l.diurnaPerPers * (l.zile || 1)).toLocaleString('ro-RO') + ' lei + TVA')
+        if (!c.local && c.diurnaTotal > 0) parts.push('diurna ' + c.diurnaTotal.toLocaleString('ro-RO') + ' lei + TVA')
         if (!c.local && l.tipMasa === 'alacarte' && l.diurnaFixa === 0 && l.cazareFixa === 0) parts.push('masa a la carte ' + l.persoane + ' pers (pranz, cina) + mic dejun la hotel')
         if (c.alcoolTotal > 0) parts.push('protocol ' + c.alcoolTotal.toLocaleString('ro-RO') + ' lei + TVA')
         if (l.durata) parts.push('durata: ' + l.durata)
@@ -695,8 +693,7 @@ export default function OfertaPage() {
         rows.push(av)
       }
       if (!c.local) rows.push(l.cazareFixa > 0 ? 'Cazare: ' + l.cazareFixa.toLocaleString('ro-RO') + ' lei' : 'Cazare: ' + l.cazare + ' (' + l.persoane + ' persoane)')
-      if (c.diurnaTotal > 0) rows.push('Diurna: ' + c.diurnaTotal.toLocaleString('ro-RO') + ' lei + TVA')
-      else if (c.local && l.tipMasa === 'alacarte' && l.diurnaFixa === 0) rows.push('Diurna: ' + (l.persoane * l.diurnaPerPers * (l.zile || 1)).toLocaleString('ro-RO') + ' lei + TVA')
+      if (!c.local && c.diurnaTotal > 0) rows.push('Diurna: ' + c.diurnaTotal.toLocaleString('ro-RO') + ' lei + TVA')
       if (!c.local && l.tipMasa === 'alacarte' && l.diurnaFixa === 0 && l.cazareFixa === 0) rows.push('Masa: a la carte ' + l.persoane + ' pers (pranz, cina) + mic dejun la hotel')
       if (c.alcoolTotal > 0) rows.push('Protocol: ' + c.alcoolTotal.toLocaleString('ro-RO') + ' lei + TVA')
       if (l.durata) rows.push('Durata: ' + l.durata)
@@ -946,7 +943,7 @@ export default function OfertaPage() {
 
               <div style={{display:'flex', gap:'16px', flexWrap:'wrap', marginBottom:'12px', alignItems:'center'}}>
                 {c.local ? (
-                  <span style={{display:'inline-flex', alignItems:'center', gap:'6px', fontSize:'12px', fontWeight:700, color:'#57534e', background:'#f5f5f4', border:'1px solid #e7e5e4', borderRadius:'8px', padding:'6px 12px'}}>📍 Eveniment local București/Ilfov · fără transport și cazare</span>
+                  <span style={{display:'inline-flex', alignItems:'center', gap:'6px', fontSize:'12px', fontWeight:700, color:'#57534e', background:'#f5f5f4', border:'1px solid #e7e5e4', borderRadius:'8px', padding:'6px 12px'}}>📍 Eveniment local București/Ilfov · fără transport, cazare, diurnă</span>
                 ) : (
                 <label style={{display:'flex', alignItems:'center', gap:'6px', fontSize:'13px', cursor:'pointer'}}>
                   <input type="checkbox" checked={l.useMarja} onChange={e => updateLinie(l.key, { useMarja: e.target.checked })} style={{width:'16px', height:'16px', accentColor:'#059669'}} />
