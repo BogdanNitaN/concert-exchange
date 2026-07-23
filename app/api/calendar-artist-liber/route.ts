@@ -158,9 +158,25 @@ export async function GET(req: Request) {
       rosterData = rd || null
     } catch {}
 
+    // pentru un eveniment, gasesc intervalul continuu de zile cu acelasi titlu
+    const intervalEveniment = (titlu: string, data: string) => {
+      const zileTitlu = ocupate.filter((e: any) => e.titlu === titlu).map((e: any) => e.data).sort()
+      if (zileTitlu.length <= 1) return null
+      const zi = (d: string) => new Date(d + 'T12:00:00').getTime()
+      let start = data, end = data
+      for (let i = zileTitlu.indexOf(data) - 1; i >= 0; i--) {
+        if (Math.round((zi(start) - zi(zileTitlu[i])) / 86400000) === 1) start = zileTitlu[i]
+        else break
+      }
+      for (let i = zileTitlu.indexOf(data) + 1; i < zileTitlu.length; i++) {
+        if (Math.round((zi(zileTitlu[i]) - zi(end)) / 86400000) === 1) end = zileTitlu[i]
+        else break
+      }
+      return start === end ? null : { start, end, zile: Math.round((zi(end) - zi(start)) / 86400000) + 1 }
+    }
     const calcPeData = (dq: string) => {
       if (!dq) return null
-      const evPeData = ocupate.filter((e: any) => e.data === dq)
+      const evPeData = ocupate.filter((e: any) => e.data === dq).map((e: any) => ({ ...e, interval: intervalEveniment(e.titlu, e.data) }))
       const dObj = new Date(dq + 'T12:00:00')
       const dMin = new Date(dObj); dMin.setDate(dMin.getDate() - 3)
       const dMax = new Date(dObj); dMax.setDate(dMax.getDate() + 3)
