@@ -1,4 +1,5 @@
 'use client'
+import { persoaneDinCazare } from '@/lib/persoane'
 import Link from 'next/link'
 
 import { useState, useEffect } from 'react'
@@ -994,7 +995,7 @@ export default function OfertaPage() {
               ) : (
               <div style={{marginBottom:'12px'}}>
                 <label style={label}>Cazare</label>
-                <input value={l.cazare} onChange={e => updateLinie(l.key, { cazare: e.target.value })} style={inputStyle} />
+                <input value={l.cazare} onChange={e => updateLinie(l.key, { cazare: e.target.value, persoane: persoaneDinCazare(e.target.value) })} style={inputStyle} />
                 <div style={{fontSize:'12px', color:'#78716c', marginTop:'4px'}}>Protocol: {l.persoane} persoane{km !== null && km > 300 && l.bileteAvion > 0 ? ' · ' + l.bileteAvion + (l.bileteAvion === 1 ? ' bilet avion' : ' bilete avion') : ''}</div>
               </div>
               )}
