@@ -251,7 +251,7 @@ export default function OfertaPage() {
                 key: lc.artistNume + '-' + Date.now() + '-' + i,
                 artist: art, formatSelectat: lc.formatSelectat || '', durata: lc.durata || '', dateOptiuni: lc.dateOptiuni || '',
                 tipPret: lc.tipPret, feeLista: lc.feeLista, fee: lc.fee, leiKm: lc.leiKm,
-                useMarja: lc.useMarja, cazare: lc.cazare, persoane: lc.persoane, bileteAvion: lc.bileteAvion,
+                useMarja: lc.useMarja, cazare: lc.cazare, persoane: lc.persoane, bileteAvion: lc.bileteAvion, restulRutier: lc.restulRutier !== undefined ? lc.restulRutier : true,
                 tipMasa: lc.tipMasa, zile: lc.zile, diurnaPerPers: lc.diurnaPerPers, diurnaFixa: lc.diurnaFixa || 0, cazareFixa: lc.cazareFixa || 0,
                 useAlcool: lc.useAlcool, alcool: lc.alcool,
                 useCag: lc.useCag, cagProcent: lc.cagProcent || 10, cagSuma: lc.cagSuma || 0, cagMod: lc.cagMod || 'procent',
@@ -684,7 +684,7 @@ export default function OfertaPage() {
         rows.push('Onorariu: ' + c.feeLeiConv.toLocaleString('ro-RO') + ' lei + TVA')
         rows.push('(echivalent: ' + l.fee + ' EUR onorariu, curs ' + c.cursAdaos.toFixed(4) + ' lei/EUR)')
       } else {
-        rows.push(c.discount > 0 ? 'Onorariu: ' + l.feeLista + ' EUR -> ' + l.fee + ' EUR + TVA' : 'Onorariu: ' + l.fee + ' EUR + TVA')
+        if (c.discount === 0) rows.push('Onorariu: ' + l.fee + ' EUR + TVA')
       }
       if (c.transportLei > 0) rows.push('Transport: ' + l.leiKm + ' lei/km x ' + c.kmTotal + ' km = ' + c.transportLei.toLocaleString('ro-RO') + ' lei + TVA')
       if (c.transportEur > 0) rows.push('Transport: ' + l.leiKm + ' EUR/km x ' + c.kmTotal + ' km = ' + c.transportEur.toLocaleString('ro-RO') + ' EUR + TVA' + (c.transportEurInLei > 0 ? ' (aprox ' + c.transportEurInLei.toLocaleString('ro-RO') + ' lei)' : ''))
@@ -697,6 +697,21 @@ export default function OfertaPage() {
       if (!c.local && l.tipMasa === 'alacarte' && l.diurnaFixa === 0 && l.cazareFixa === 0) rows.push('Masa: a la carte ' + l.persoane + ' pers (pranz, cina) + mic dejun la hotel')
       if (c.alcoolTotal > 0) rows.push('Protocol: ' + c.alcoolTotal.toLocaleString('ro-RO') + ' lei + TVA')
       if (l.durata) rows.push('Durata: ' + l.durata)
+      if (!institutiePublica && c.discount > 0) {
+        const etich = 'Onorariu: '
+        const vechi = l.feeLista + ' EUR'
+        const nou = ' ' + l.fee + ' EUR + TVA'
+        doc.text(etich, textX, ly)
+        const xVechi = textX + doc.getTextWidth(etich)
+        doc.setTextColor(130,130,130)
+        doc.text(vechi, xVechi, ly)
+        const wVechi = doc.getTextWidth(vechi)
+        doc.setDrawColor(130,130,130); doc.setLineWidth(0.25)
+        doc.line(xVechi, ly - 0.9, xVechi + wVechi, ly - 0.9)
+        doc.setTextColor(60,60,60)
+        doc.text(nou, xVechi + wVechi, ly)
+        ly += 5
+      }
       for (const rr of rows) { doc.text(noDia(rr), textX, ly); ly += 5 }
 
       if (destinatar === 'client' && c.discount > 0) {
