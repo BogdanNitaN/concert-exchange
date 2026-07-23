@@ -473,7 +473,7 @@ export default function OfertaPage() {
       } else {
         // format comercial normal
         const parts: string[] = []
-        parts.push(l.fee + ' EUR + TVA')
+        parts.push(c.discount > 0 ? '~' + l.feeLista + ' EUR~ ' + l.fee + ' EUR + TVA' : l.fee + ' EUR + TVA')
         if (c.transportLei > 0) parts.push('transport ' + l.leiKm + ' lei/km x ' + c.kmTotal + ' km = ' + c.transportLei.toLocaleString('ro-RO') + ' lei + TVA')
         if (c.transportEur > 0) parts.push('transport ' + l.leiKm + ' EUR/km x ' + c.kmTotal + ' km = ' + c.transportEur.toLocaleString('ro-RO') + ' EUR + TVA' + (c.transportEurInLei > 0 ? ' (aprox ' + c.transportEurInLei.toLocaleString('ro-RO') + ' lei)' : ''))
         if (km !== null && km > 300 && l.bileteAvion > 0) {
@@ -684,7 +684,7 @@ export default function OfertaPage() {
         rows.push('Onorariu: ' + c.feeLeiConv.toLocaleString('ro-RO') + ' lei + TVA')
         rows.push('(echivalent: ' + l.fee + ' EUR onorariu, curs ' + c.cursAdaos.toFixed(4) + ' lei/EUR)')
       } else {
-        rows.push('Onorariu: ' + l.fee + ' EUR + TVA')
+        rows.push(c.discount > 0 ? 'Onorariu: ' + l.feeLista + ' EUR -> ' + l.fee + ' EUR + TVA' : 'Onorariu: ' + l.fee + ' EUR + TVA')
       }
       if (c.transportLei > 0) rows.push('Transport: ' + l.leiKm + ' lei/km x ' + c.kmTotal + ' km = ' + c.transportLei.toLocaleString('ro-RO') + ' lei + TVA')
       if (c.transportEur > 0) rows.push('Transport: ' + l.leiKm + ' EUR/km x ' + c.kmTotal + ' km = ' + c.transportEur.toLocaleString('ro-RO') + ' EUR + TVA' + (c.transportEurInLei > 0 ? ' (aprox ' + c.transportEurInLei.toLocaleString('ro-RO') + ' lei)' : ''))

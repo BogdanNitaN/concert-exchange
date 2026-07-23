@@ -46,6 +46,8 @@ DE FACUT (varianta A, agreata): fiecare artist pleaca din oras_rezidenta al lui.
 - ATENTIE: e refactor mare, atinge inima calculului. Testat temeinic sa nu strice calculele existente.
 - Deja FACUT: camp oras_rezidenta in roster + modal adauga artist + API-uri (salveaza corect). Ramane doar calculul distantei per artist.
 
+16. CAG editabil in modul procent — acum e plafon dur 1000 EUR (10% din 10000). Vreau: 1000 ca sugestie, dar sa pot pune 1200, 1500 etc. De clarificat: editez suma direct in modul procent (2 campuri legate) SAU scot plafonul si folosesc modul "EUR fix" cand vreau suma anume. Nota: CAG se calculeaza corect din fee-ul DUPA discount (12000 - 2000 = 10000, CAG 10% = 1000, net 9000).
+
 ## NOTA sursa date clienti
 - Baza de clienti se poate popula din fisele de eveniment existente (au deja: detalii eveniment, contacte, intermediari, clienti). Nu construim de la zero — importam din fise.
 
