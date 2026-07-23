@@ -950,6 +950,13 @@ export default function OfertaPage() {
                   Marjă transport
                 </label>
                 )}
+                {c.discount > 0 && (
+                  <span style={{display:'inline-flex', alignItems:'baseline', gap:'8px'}}>
+                    <span style={{fontSize:'14px', color:UI.faint, fontWeight:600, textDecoration:'line-through'}}>{l.feeLista.toLocaleString('ro-RO')} €</span>
+                    <span style={{fontSize:'12px', color:UI.faint}}>→</span>
+                    <span style={{fontSize:'17px', color:'#059669', fontWeight:800}}>{l.fee.toLocaleString('ro-RO')} €</span>
+                  </span>
+                )}
                 {c.discount > 0 && <span style={{fontSize:'12px', color:'#1c1917', fontWeight:700}}>Discount {c.discount} € · economie {c.savingLei.toLocaleString('ro-RO')} lei</span>}
               </div>
 
