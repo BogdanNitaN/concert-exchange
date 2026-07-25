@@ -1,6 +1,6 @@
-import { Sparkles, FileText, CalendarSearch, History, Users } from 'lucide-react'
 'use client'
 import Link from 'next/link'
+import { Sparkles, FileText, CalendarSearch, History, Users } from 'lucide-react'
 import { useState, useEffect, useMemo } from 'react'
 import { supabase } from '@/lib/supabase'
 
