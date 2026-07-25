@@ -402,6 +402,10 @@ export default function OfertaPage() {
     setLinii(prev => prev.map(l => l.key === key ? { ...l, ...patch } : l))
   }
   function removeLinie(key: string) {
+    const l = linii.find(x => x.key === key)
+    // confirm doar daca s-a completat ceva manual (discount, CAG, cazare schimbata)
+    const areDate = l && (l.feeLista > l.fee || l.useCag || l.useAlcool || (l.dateOptiuni && l.dateOptiuni.length > 0))
+    if (areDate && !confirm('Scoți ' + (l?.artist?.nume || 'artistul') + ' din ofertă? Se pierd datele completate pe el.')) return
     setLinii(prev => prev.filter(l => l.key !== key))
   }
 
