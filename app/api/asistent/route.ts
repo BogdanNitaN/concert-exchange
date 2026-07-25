@@ -340,7 +340,7 @@ export async function POST(req: Request) {
     const rm = await fetch(baseUrl + '/api/asistent-memorie', { cache: 'no-store' })
     const dm = await rm.json()
     if (dm.ok && dm.reguli?.length) {
-      reguliMemorie = '\n\nMEMORIE PERSISTENTA (reguli salvate de echipa - respecta-le):\n' + dm.reguli.map((r: any) => '- ' + r.regula).join('\n')
+      reguliMemorie = '\n\nMEMORIE PERSISTENTA (reguli salvate de echipa - respecta-le, dar aplica regulile LITERAL, exact cum sunt scrise: o regula despre majorate se aplica DOAR la majorate, nu la nunti/botezuri/alte evenimente. Nu extinde regulile prin analogie):\n' + dm.reguli.map((r: any) => '- ' + r.regula).join('\n')
     }
   } catch {}
 
