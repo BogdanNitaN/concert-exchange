@@ -443,45 +443,76 @@ REGULI STRICTE:
 Raspunde scurt: liste clare, fara introduceri lungi.` + reguliMemorie
 
   // bucla agentica: Claude poate chema unelte de mai multe ori
-  let convo = [...messages]
-  let inTok = 0, outTok = 0
-  for (let pas = 0; pas < 5; pas++) {
-    const resp = await fetch('https://api.anthropic.com/v1/messages', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'x-api-key': apiKey,
-        'anthropic-version': '2023-06-01',
-      },
-      body: JSON.stringify({
-        model: 'claude-sonnet-4-5-20250929',
-        max_tokens: 2000,
-        system,
-        tools: TOOLS,
-        messages: convo,
-      }),
-    })
-    const data = await resp.json()
-    inTok += data.usage?.input_tokens || 0
-    outTok += data.usage?.output_tokens || 0
-    if (data.error) return NextResponse.json({ error: data.error.message || 'eroare API' }, { status: 500 })
-
-    // daca Claude vrea unelte, le rulez si continui bucla
-    const toolUses = (data.content || []).filter((c: any) => c.type === 'tool_use')
-    if (toolUses.length === 0 || data.stop_reason !== 'tool_use') {
-      const text = (data.content || []).filter((c: any) => c.type === 'text').map((c: any) => c.text).join('\n')
-      const totalCostUSD = (inTok * 3 + outTok * 15) / 1000000
-      return NextResponse.json({ raspuns: text, cost: totalCostUSD })
+  // mesaj uman pentru fiecare unealta
+  function mesajUnealta(nume: string, input: any): string {
+    const oras = input?.oras ? ' pentru ' + input.oras : ''
+    switch (nume) {
+      case 'artisti_liberi_pe_data': return 'Verific artistii liberi pe ' + (input?.data || 'data ceruta') + '...'
+      case 'calendarul_artistului': return 'Verific calendarul lui ' + (input?.artist || 'artist') + '...'
+      case 'cauta_artisti_roster': return 'Caut in roster...'
+      case 'trending_muzica': return 'Verific trending TikTok...'
+      case 'tine_minte': return 'Salvez regula in memorie...'
+      case 'cauta_in_calendar': return 'Caut "' + (input?.text || '') + '" in toate calendarele...'
+      case 'raport_oferte': return 'Analizez ofertele generate...'
+      case 'creeaza_oferta': return 'Creez oferta draft...'
+      case 'calculeaza_deviz': return 'Calculez devizul' + oras + '...'
+      case 'calcul_landed': return 'Calculez landed' + oras + '...'
+      case 'top_spotify_roster': return 'Adun statisticile Spotify (dureaza cateva secunde)...'
+      default: return 'Lucrez...'
     }
-
-    convo.push({ role: 'assistant', content: data.content })
-    const results = []
-    for (const tu of toolUses) {
-      const rezultat = await ruleazaUnealta(tu.name, tu.input, baseUrl, tokenAuth)
-      results.push({ type: 'tool_result', tool_use_id: tu.id, content: rezultat })
-    }
-    convo.push({ role: 'user', content: results })
   }
 
-  return NextResponse.json({ raspuns: 'Nu am reusit sa termin analiza (prea multe apeluri). Incearca o intrebare mai simpla.' })
+  const encoder = new TextEncoder()
+  const stream = new ReadableStream({
+    async start(controller) {
+      const emit = (obj: any) => controller.enqueue(encoder.encode(JSON.stringify(obj) + '\n'))
+      try {
+        let convo = [...messages]
+        let inTok = 0, outTok = 0
+        for (let pas = 0; pas < 5; pas++) {
+          emit({ tip: 'status', text: pas === 0 ? 'Analizez intrebarea...' : 'Procesez rezultatele...' })
+          const resp = await fetch('https://api.anthropic.com/v1/messages', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'x-api-key': apiKey,
+              'anthropic-version': '2023-06-01',
+            },
+            body: JSON.stringify({
+              model: 'claude-sonnet-4-5-20250929',
+              max_tokens: 2000,
+              system,
+              tools: TOOLS,
+              messages: convo,
+            }),
+          })
+          const data = await resp.json()
+          inTok += data.usage?.input_tokens || 0
+          outTok += data.usage?.output_tokens || 0
+          if (data.error) { emit({ tip: 'final', error: data.error.message || 'eroare API' }); controller.close(); return }
+          const toolUses = (data.content || []).filter((c: any) => c.type === 'tool_use')
+          if (toolUses.length === 0 || data.stop_reason !== 'tool_use') {
+            const text = (data.content || []).filter((c: any) => c.type === 'text').map((c: any) => c.text).join('\n')
+            const totalCostUSD = (inTok * 3 + outTok * 15) / 1000000
+            emit({ tip: 'final', raspuns: text, cost: totalCostUSD })
+            controller.close(); return
+          }
+          convo.push({ role: 'assistant', content: data.content })
+          const results = []
+          for (const tu of toolUses) {
+            emit({ tip: 'status', text: mesajUnealta(tu.name, tu.input) })
+            const rezultat = await ruleazaUnealta(tu.name, tu.input, baseUrl, tokenAuth)
+            results.push({ type: 'tool_result', tool_use_id: tu.id, content: rezultat })
+          }
+          convo.push({ role: 'user', content: results })
+        }
+        emit({ tip: 'final', raspuns: 'Nu am reusit sa termin analiza (prea multe apeluri). Incearca o intrebare mai simpla.' })
+        controller.close()
+      } catch (e) {
+        emit({ tip: 'final', error: 'Eroare: ' + String(e) })
+        controller.close()
+      }
+    },
+  })
+  return new Response(stream, { headers: { 'Content-Type': 'application/x-ndjson', 'Cache-Control': 'no-cache' } })
 }

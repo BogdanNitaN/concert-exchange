@@ -41,6 +41,7 @@ export default function AsistentPage() {
   const [authed, setAuthed] = useState<boolean | null>(null)
   const [nrAzi, setNrAzi] = useState(0)
   const [costAzi, setCostAzi] = useState(0)
+  const [statusViu, setStatusViu] = useState('')
   const jos = useRef<HTMLDivElement>(null)
 
   useEffect(() => { jos.current?.scrollIntoView({ behavior: 'smooth' }) }, [mesaje, loading])
@@ -80,7 +81,30 @@ export default function AsistentPage() {
         method: 'POST', headers: { 'Content-Type': 'application/json', authorization: 'Bearer ' + token },
         body: JSON.stringify({ messages: noi.map(m => ({ role: m.role, content: m.text })) }),
       })
-      const d = await r.json()
+      let d: any = {}
+      const reader = r.body?.getReader()
+      if (reader) {
+        const decoder = new TextDecoder()
+        let buf = ''
+        while (true) {
+          const { done, value } = await reader.read()
+          if (done) break
+          buf += decoder.decode(value, { stream: true })
+          const linii = buf.split('\n')
+          buf = linii.pop() || ''
+          for (const linie of linii) {
+            if (!linie.trim()) continue
+            try {
+              const ev = JSON.parse(linie)
+              if (ev.tip === 'status') setStatusViu(ev.text)
+              if (ev.tip === 'final') d = ev
+            } catch {}
+          }
+        }
+      } else {
+        d = await r.json()
+      }
+      setStatusViu('')
       setMesaje(m => [...m, { role: 'assistant', text: d.raspuns || d.error || 'Eroare necunoscuta.' }])
       if (d.cost) {
         try {
@@ -154,7 +178,7 @@ export default function AsistentPage() {
         {loading && (
           <div style={{display:'flex', justifyContent:'flex-start', marginBottom:'12px'}}>
             <div style={{padding:'12px 16px', borderRadius:'14px', background:'white', border:'1px solid '+UI.line, fontSize:'14px', color:UI.faint}}>
-              Caut in calendar si roster...
+              {statusViu || 'Analizez intrebarea...'}
             </div>
           </div>
         )}
