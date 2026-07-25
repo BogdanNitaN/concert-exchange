@@ -90,8 +90,8 @@ export default function AsistentPage() {
 
   async function trimite() {
     const text = input.trim()
-    if (!text || loading) return
-    const noi: Msg[] = [...mesaje, { role: 'user', text }]
+    if ((!text && !imgAtasata) || loading) return
+    const noi: Msg[] = [...mesaje, { role: 'user', text: text || '(imagine atasata)', img: imgAtasata || undefined }]
     setMesaje(noi); setInput(''); setImgAtasata(null); setLoading(true)
     try {
       const azi = new Date().toISOString().slice(0, 10)
