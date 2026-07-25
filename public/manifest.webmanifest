@@ -1,7 +1,7 @@
 {
   "name": "GIGx",
   "short_name": "GIGx",
-  "start_url": "/",
+  "start_url": "/oferta",
   "display": "standalone",
   "background_color": "#F5F2EC",
   "theme_color": "#101014",
