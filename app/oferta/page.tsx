@@ -91,6 +91,7 @@ interface Linie {
   fee: number
   leiKm: number
   useMarja: boolean
+  landed: boolean
   cazare: string
   persoane: number
   bileteAvion: number
@@ -255,7 +256,7 @@ export default function OfertaPage() {
                 key: lc.artistNume + '-' + Date.now() + '-' + i,
                 artist: art, formatSelectat: lc.formatSelectat || '', durata: lc.durata || '', dateOptiuni: lc.dateOptiuni || '',
                 tipPret: lc.tipPret, feeLista: lc.feeLista, fee: lc.fee, leiKm: lc.leiKm,
-                useMarja: lc.useMarja, cazare: lc.cazare, persoane: lc.persoane, bileteAvion: lc.bileteAvion, restulRutier: lc.restulRutier !== undefined ? lc.restulRutier : true,
+                useMarja: lc.useMarja, landed: lc.landed || false, cazare: lc.cazare, persoane: lc.persoane, bileteAvion: lc.bileteAvion, restulRutier: lc.restulRutier !== undefined ? lc.restulRutier : true,
                 tipMasa: lc.tipMasa, zile: lc.zile, diurnaPerPers: lc.diurnaPerPers, diurnaFixa: lc.diurnaFixa || 0, cazareFixa: lc.cazareFixa || 0,
                 useAlcool: lc.useAlcool, alcool: lc.alcool,
                 useCag: lc.useCag, cagProcent: lc.cagProcent || 10, cagSuma: lc.cagSuma || 0, cagMod: lc.cagMod || 'procent',
@@ -368,6 +369,7 @@ export default function OfertaPage() {
       fee: fmt ? fmt.fee : a.fee_standard,
       leiKm: fmt ? fmt.leiKm : a.lei_km,
       useMarja: true,
+      landed: false,
       cazare: fmt ? fmt.cazare : a.cazare,
       persoane: fmt ? fmt.persoane : a.nr_persoane,
       bileteAvion: fmt ? fmt.bilete : (a.bilete_avion || 0),
@@ -463,8 +465,9 @@ export default function OfertaPage() {
         // format comercial normal
         const parts: string[] = []
         parts.push(c.discount > 0 ? '~' + l.feeLista + ' EUR~ ' + l.fee + ' EUR + TVA' : l.fee + ' EUR + TVA')
-        if (c.transportLei > 0) parts.push('transport ' + l.leiKm + ' lei/km x ' + c.kmTotal + ' km = ' + c.transportLei.toLocaleString('ro-RO') + ' lei + TVA')
-        if (c.transportEur > 0) parts.push('transport ' + l.leiKm + ' EUR/km x ' + c.kmTotal + ' km = ' + c.transportEur.toLocaleString('ro-RO') + ' EUR + TVA' + (c.transportEurInLei > 0 ? ' (aprox ' + c.transportEurInLei.toLocaleString('ro-RO') + ' lei)' : ''))
+        if (l.landed) parts.push('transport inclus')
+        if (!l.landed && c.transportLei > 0) parts.push('transport ' + l.leiKm + ' lei/km x ' + c.kmTotal + ' km = ' + c.transportLei.toLocaleString('ro-RO') + ' lei + TVA')
+        if (!l.landed && c.transportEur > 0) parts.push('transport ' + l.leiKm + ' EUR/km x ' + c.kmTotal + ' km = ' + c.transportEur.toLocaleString('ro-RO') + ' EUR + TVA' + (c.transportEurInLei > 0 ? ' (aprox ' + c.transportEurInLei.toLocaleString('ro-RO') + ' lei)' : ''))
         if (km !== null && km > 300 && l.bileteAvion > 0) {
           let av = l.bileteAvion + (l.bileteAvion === 1 ? ' bilet avion' : ' bilete avion')
           av += ' + transfer de asigurat'
@@ -517,7 +520,7 @@ export default function OfertaPage() {
             artistNume: l.artist.nume,
             formatSelectat: l.formatSelectat, durata: l.durata,
             tipPret: l.tipPret, feeLista: l.feeLista, fee: l.fee, leiKm: l.leiKm,
-            useMarja: l.useMarja, cazare: l.cazare, persoane: l.persoane, bileteAvion: l.bileteAvion, restulRutier: l.restulRutier,
+            useMarja: l.useMarja, landed: l.landed || false, cazare: l.cazare, persoane: l.persoane, bileteAvion: l.bileteAvion, restulRutier: l.restulRutier,
             tipMasa: l.tipMasa, zile: l.zile, diurnaPerPers: l.diurnaPerPers, diurnaFixa: l.diurnaFixa, cazareFixa: l.cazareFixa,
             useAlcool: l.useAlcool, alcool: l.alcool,
             useCag: l.useCag, cagProcent: l.cagProcent, cagSuma: l.cagSuma, cagMod: l.cagMod,
@@ -657,7 +660,8 @@ export default function OfertaPage() {
       } else {
         if (c.discount === 0) rows.push('Onorariu: ' + l.fee + ' EUR + TVA')
       }
-      if (c.transportLei > 0) rows.push('Transport: ' + l.leiKm + ' lei/km x ' + c.kmTotal + ' km = ' + c.transportLei.toLocaleString('ro-RO') + ' lei + TVA')
+      if (l.landed) rows.push('Transport: inclus in onorariu')
+      if (!l.landed && c.transportLei > 0) rows.push('Transport: ' + l.leiKm + ' lei/km x ' + c.kmTotal + ' km = ' + c.transportLei.toLocaleString('ro-RO') + ' lei + TVA')
       if (c.transportEur > 0) rows.push('Transport: ' + l.leiKm + ' EUR/km x ' + c.kmTotal + ' km = ' + c.transportEur.toLocaleString('ro-RO') + ' EUR + TVA' + (c.transportEurInLei > 0 ? ' (aprox ' + c.transportEurInLei.toLocaleString('ro-RO') + ' lei)' : ''))
       if (km !== null && km > 300 && l.bileteAvion > 0) {
         let av = 'Avion: ' + l.bileteAvion + (l.bileteAvion === 1 ? ' bilet' : ' bilete') + ' + transfer de asigurat'
@@ -924,10 +928,21 @@ export default function OfertaPage() {
                 {c.local ? (
                   <span style={{display:'inline-flex', alignItems:'center', gap:'6px', fontSize:'12px', fontWeight:700, color:'#57534e', background:'#f5f5f4', border:'1px solid #e7e5e4', borderRadius:'8px', padding:'6px 12px'}}>📍 Eveniment local București/Ilfov · fără transport, cazare, diurnă</span>
                 ) : (
+                <>
                 <label style={{display:'flex', alignItems:'center', gap:'6px', fontSize:'13px', cursor:'pointer'}}>
                   <input type="checkbox" checked={l.useMarja} onChange={e => updateLinie(l.key, { useMarja: e.target.checked })} style={{width:'16px', height:'16px', accentColor:'#059669'}} />
                   Marjă transport
                 </label>
+                <label style={{display:'flex', alignItems:'center', gap:'6px', fontSize:'13px', cursor:'pointer', color: l.landed ? '#0369a1' : undefined, fontWeight: l.landed ? 700 : undefined}}>
+                  <input type="checkbox" checked={l.landed} onChange={e => updateLinie(l.key, { landed: e.target.checked })} style={{width:'16px', height:'16px', accentColor:'#0369a1'}} />
+                  Landed (transport inclus)
+                </label>
+                {l.landed && c.feeNetLanded !== null && c.transportEurEchiv > 0 && (
+                  <span style={{display:'inline-flex', alignItems:'center', gap:'6px', fontSize:'12px', fontWeight:700, color:'#0369a1', background:'#e0f2fe', border:'1px solid #bae6fd', borderRadius:'8px', padding:'6px 12px'}}>
+                    intern: transport ~{c.transportEurEchiv} EUR scazut → net artist {c.feeNetLanded.toLocaleString('ro-RO')} EUR
+                  </span>
+                )}
+                </>
                 )}
                 {c.discount > 0 && (
                   <span style={{display:'inline-flex', alignItems:'baseline', gap:'8px'}}>

@@ -20,6 +20,7 @@ export type LinieCalc = {
   cagProcent: number
   cagSuma: number
   cagMod: 'procent' | 'suma'
+  landed?: boolean  // fee-ul introdus e suma landed (transport inclus); cazare/masa raman extra
 }
 
 export type ContextCalc = {
@@ -52,5 +53,8 @@ export function calcLinieOferta(l: LinieCalc, ctx: ContextCalc) {
   }
   const netGigx = l.fee - cag
   const feeLeiConv = eurRate ? Math.round(l.fee * (cursAdaos || eurRate)) : 0
-  return { kmTotal, transportLei, transportEur, transportEurInLei, transportEuro, diurnaTotal, alcoolTotal, discount, cursAdaos, savingLei, cag, netGigx, feeLeiConv, local }
+  // landed: transportul se scade din fee -> cat ramane net artistului
+  const transportEurEchiv = transportEuro ? transportEur : (eurRate && transportLei > 0 ? Math.round(transportLei / eurRate) : 0)
+  const feeNetLanded = l.landed ? l.fee - transportEurEchiv : null
+  return { kmTotal, transportLei, transportEur, transportEurInLei, transportEuro, diurnaTotal, alcoolTotal, discount, cursAdaos, savingLei, cag, netGigx, feeLeiConv, local, transportEurEchiv, feeNetLanded }
 }
