@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server'
 import { calcLinieOferta } from '@/lib/calc-oferta'
+import { areZborIntern } from '@/lib/zbor-intern'
 
 export const maxDuration = 60
 
@@ -103,6 +104,19 @@ const TOOLS = [
         cuCag: { type: 'boolean', description: 'Include CAG 10% (optional, implicit false)' },
       },
       required: ['artistNume', 'oras'],
+    },
+  },
+  {
+    name: 'calcul_landed',
+    description: 'Calcul invers pentru pret LANDED (tot inclus): din suma landed scade transportul real (km cu marja din resedinta artistului) si arata fee-ul net ramas artistului, comparat cu fee-ul lui standard din roster. Foloseste cand utilizatorul spune "am X euro landed pentru artistul Y la orasul Z" si vrea sa vada daca merita / ce marja ramane.',
+    input_schema: {
+      type: 'object',
+      properties: {
+        artistNume: { type: 'string', description: 'Numele artistului exact ca in roster' },
+        sumaLanded: { type: 'number', description: 'Suma totala landed in EUR (transport inclus)' },
+        oras: { type: 'string', description: 'Orasul evenimentului' },
+      },
+      required: ['artistNume', 'sumaLanded', 'oras'],
     },
   },
   {
@@ -253,10 +267,45 @@ async function ruleazaUnealta(nume: string, input: any, baseUrl: string): Promis
         artist: art.nume, fee, feeLista: input.feeLista || fee, oras: input.oras, plecareDin: fromCity,
         km, kmTotalCuMarja: c.kmTotal, local: c.local,
         transportLei: c.transportLei, transportEur: c.transportEur,
-        bileteAvion: art.bilete_avion || 0, necesitaZbor: km !== null && km > 300 && (art.bilete_avion || 0) > 0,
+        bileteAvion: art.bilete_avion || 0, necesitaZbor: km !== null && km > 300 && (art.bilete_avion || 0) > 0 && areZborIntern(input.oras),
         cazare: art.cazare || null, persoane: art.nr_persoane || 0,
         diurnaTotal: c.diurnaTotal, discount: c.discount, savingLei: c.savingLei,
         cag: c.cag, netGigx: c.netGigx, feeLeiConv: c.feeLeiConv, cursEur: eurRate,
+      })
+    }
+    if (nume === 'calcul_landed') {
+      const ra = await fetch(baseUrl + '/api/oferta-artist?q=' + encodeURIComponent(input.artistNume), { cache: 'no-store' })
+      const rd = await ra.json()
+      const art = (rd.artists || []).find((a: any) => a.nume.toLowerCase() === input.artistNume.toLowerCase()) || (rd.artists || [])[0]
+      if (!art) return JSON.stringify({ eroare: 'artistul nu exista in roster: ' + input.artistNume })
+      const fromCity = art.oras_rezidenta || 'Bucuresti'
+      let km: number | null = null
+      try {
+        const rk = await fetch(baseUrl + '/api/distance?to=' + encodeURIComponent(input.oras) + '&from=' + encodeURIComponent(fromCity), { cache: 'no-store' })
+        const dk = await rk.json()
+        if (dk?.km) km = dk.km
+      } catch {}
+      let eurRate: number | null = null
+      try {
+        const rc = await fetch(baseUrl + '/api/bnr-rate', { cache: 'no-store' })
+        const dc = await rc.json()
+        eurRate = dc?.rate || dc?.eur || null
+      } catch {}
+      const marjaProc = km !== null && km > 300 ? 0.065 : 0.115
+      const kmTotal = km !== null ? (km + Math.round(km * marjaProc)) * 2 : 0
+      const transportLei = kmTotal > 0 && (art.lei_km || 0) > 0 ? Math.round(kmTotal * art.lei_km / 10) * 10 : 0
+      const transportEur = eurRate && transportLei > 0 ? Math.round(transportLei / eurRate) : 0
+      const feeNet = input.sumaLanded - transportEur
+      const feeStandard = art.fee_standard || 0
+      const zborPosibil = km !== null && km > 300 && (art.bilete_avion || 0) > 0 && areZborIntern(input.oras)
+      return JSON.stringify({
+        artist: art.nume, sumaLanded: input.sumaLanded, oras: input.oras, plecareDin: fromCity,
+        km, kmTotalCuMarja: kmTotal, transportLei, transportEurEchiv: transportEur,
+        feeNetRamasArtistului: feeNet, feeStandardRoster: feeStandard,
+        diferentaFataDeStandard: feeNet - feeStandard,
+        zborPosibil, bileteAvion: art.bilete_avion || 0,
+        cazare: art.cazare || null, persoane: art.nr_persoane || 0, cursEur: eurRate,
+        nota: 'cazarea si masa NU sunt scazute - de negociat separat sau incluse in landed',
       })
     }
     if (nume === 'cauta_artisti_roster') {
@@ -315,6 +364,7 @@ FII CONSILIER, NU DOAR EXECUTANT:
 - Cand vezi un risc (data foarte ceruta, artist des blocat, distanta mare), semnaleaza-l scurt.
 - Cand intrebarea e ambigua, intreaba o singura clarificare scurta, nu ghici.
 - In cererile de oferta, formulari gen "club X", "la Y", numele dupa oras sunt de regula clubul sau locatia evenimentului, NU artisti. Ex: "motans club iasi nish" = artistul The Motans, orasul Iasi, locatia club Nish.
+- La uneltele cu parametrul oras (calculeaza_deviz, calcul_landed, creeaza_oferta): pentru distante foloseste ORASUL real, niciodata numele clubului/locatiei. Ex: "Nibiru Costinesti" = orasul Costinesti (clubul Nibiru e doar locatia). Daca primesti un nume de club/locatie fara oras sau necunoscut: intai cauta clubul in calendar cu cauta_in_calendar (evenimentele trecute contin orasul in titlu, ex \"NIBIRU Costinesti\") si extrage orasul de acolo. Doar daca nu-l gasesti nici in calendar, intreaba utilizatorul.
 - La liste lungi, ordoneaza util: FWD primii, apoi pret descrescator.
 - Cand se discuta un artist concret la o data concreta, verifica-i calendarul (ziua dinainte si de dupa) si comenteaza logistica: daca e in zona cu o zi inainte = avantaj (transport redus), daca are orase indepartate consecutive = risc logistic. Mentioneaza distantele doar cand conteaza.
 REGULI STRICTE:

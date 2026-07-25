@@ -6,6 +6,7 @@ import Link from 'next/link'
 import { createClient } from '@supabase/supabase-js'
 import { MessageCircle, Car, Hotel, Plane, ArrowRight, ChevronDown, ChevronUp, Calendar, MapPin, Users } from 'lucide-react'
 import { ARTISTS_DATA } from '@/lib/artists-data'
+import { ORASE_FARA_ZBOR } from '@/lib/zbor-intern'
 import TierLegendProm from '@/components/modules/shared/TierLegendProm'
 import ExpertModal from '@/components/modules/shared/ExpertModal'
 import DatePicker from '@/components/modules/shared/DatePicker'
@@ -433,7 +434,7 @@ export default function PromPage() {
     const km = kmReal !== undefined ? kmReal : null
     const isBucuresti = km === 0
     const cityLow = form.city.trim().toLowerCase()
-    const noFlightCity = ['bacau','bacău','sibiu'].includes(cityLow)
+    const noFlightCity = ORASE_FARA_ZBOR.includes(cityLow)
     return (
       <div style={{minHeight:'100vh', background:'#f5f5f7', fontFamily:F}}>
         <Nav />
