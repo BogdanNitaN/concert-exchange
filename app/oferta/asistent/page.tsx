@@ -43,6 +43,12 @@ export default function AsistentPage() {
   const [costAzi, setCostAzi] = useState(0)
   const [statusViu, setStatusViu] = useState('')
   const [imgAtasata, setImgAtasata] = useState<string | null>(null)
+  const [esteIngust, setEsteIngust] = useState(false)
+  useEffect(() => {
+    const f = () => setEsteIngust(window.innerWidth < 700)
+    f(); window.addEventListener('resize', f)
+    return () => window.removeEventListener('resize', f)
+  }, [])
   const jos = useRef<HTMLDivElement>(null)
 
   useEffect(() => { jos.current?.scrollIntoView({ behavior: 'smooth' }) }, [mesaje, loading])
@@ -180,11 +186,11 @@ export default function AsistentPage() {
         <Link href="/oferta" style={{display:'inline-flex', alignItems:'center', gap:'8px', fontSize:'20px', fontWeight:800, letterSpacing:'-0.5px', color:UI.ink, textDecoration:'none'}}><img src="/gigx-mark.png" width={24} height={24} alt="" style={{display:'block'}} /><span>GIG<span style={{color:UI.green}}>x</span></span></Link>
         <div style={{fontSize:'14px', fontWeight:700, color:UI.sub}}>Asistent</div>
         <div style={{marginLeft:'auto', display:'flex', gap:'14px', alignItems:'center'}}>
-          <span style={{fontSize:'11px', color:UI.faint}}>azi: {nrAzi} întrebări · ~{costAzi < 0.01 && costAzi > 0 ? '<0,01' : costAzi.toFixed(2).replace('.', ',')}$</span>
-          <Link href="/oferta" style={{fontSize:'13px', color:UI.sub, textDecoration:'none', fontWeight:600}}>Deviz</Link>
+          <span style={{fontSize:'11px', color:UI.faint, whiteSpace:'nowrap'}}>{esteIngust ? nrAzi + ' · ' : 'azi: ' + nrAzi + ' întrebări · ~'}{costAzi < 0.01 && costAzi > 0 ? '<0,01' : costAzi.toFixed(2).replace('.', ',')}$</span>
+          {!esteIngust && <><Link href="/oferta" style={{fontSize:'13px', color:UI.sub, textDecoration:'none', fontWeight:600}}>Deviz</Link>
           <Link href="/oferta/disponibilitate" style={{fontSize:'13px', color:UI.sub, textDecoration:'none', fontWeight:600}}>Calendar</Link>
           <Link href="/oferta/istoric" style={{fontSize:'13px', color:UI.sub, textDecoration:'none', fontWeight:600}}>Istoric</Link>
-          <Link href="/oferta/roster" style={{fontSize:'13px', color:UI.sub, textDecoration:'none', fontWeight:600}}>Roster</Link>
+          <Link href="/oferta/roster" style={{fontSize:'13px', color:UI.sub, textDecoration:'none', fontWeight:600}}>Roster</Link></>}
         </div>
       </div>
 

@@ -204,12 +204,12 @@ export default function RosterPage() {
             <Link href="/oferta" title="Înapoi la ofertă" style={{display:'inline-flex', alignItems:'center', gap:'8px', fontSize:'26px', fontWeight:800, letterSpacing:'-0.5px', color:UI.ink, textDecoration:'none', cursor:'pointer'}}><img src="/gigx-mark.png" width={24} height={24} alt="" style={{display:'block'}} /><span>GIG<span style={{color:UI.green}}>x</span></span></Link>
             <div style={{fontSize:'13px', color:UI.faint, fontWeight:500, marginTop:'2px'}}>Roster · {artists.length} artiști</div>
           </div>
-          <div style={{display:'flex', gap:'10px', alignItems:'center', flexWrap:'wrap'}}>
-            <Link href="/oferta/asistent" style={{fontSize:'13px', color:'white', fontWeight:700, background:'#1c1917', border:'1.5px solid #1c1917', borderRadius:'10px', padding:'9px 14px', textDecoration:'none'}}>Asistent</Link>
-            <Link href="/oferta" style={{fontSize:'13px', color:'#1c1917', fontWeight:700, background:'white', border:'1.5px solid #ececec', borderRadius:'10px', padding:'9px 14px', textDecoration:'none'}}>Deviz</Link>
-            <Link href="/oferta/disponibilitate" style={{fontSize:'13px', color:'#1c1917', fontWeight:700, background:'white', border:'1.5px solid #ececec', borderRadius:'10px', padding:'9px 14px', textDecoration:'none'}}>Calendar</Link>
-            <Link href="/oferta/istoric" style={{fontSize:'13px', color:'#1c1917', fontWeight:700, background:'white', border:'1.5px solid #ececec', borderRadius:'10px', padding:'9px 14px', textDecoration:'none'}}>Istoric</Link>
-            <span style={{fontSize:'13px', color:'white', fontWeight:700, background:'#1c1917', border:'1.5px solid #1c1917', borderRadius:'10px', padding:'9px 14px'}}>Roster</span>
+          <div style={{display:'flex', gap:'8px', alignItems:'center', flexWrap:'nowrap', overflowX:'auto', WebkitOverflowScrolling:'touch', maxWidth:'100%', paddingBottom:'2px'}}>
+            <Link href="/oferta/asistent" style={{fontSize:'13px', color:'white', fontWeight:700, background:'#1c1917', border:'1.5px solid #1c1917', borderRadius:'10px', padding:'8px 12px', textDecoration:'none', whiteSpace:'nowrap', flexShrink:0}}>Asistent</Link>
+            <Link href="/oferta" style={{fontSize:'13px', color:'#1c1917', fontWeight:700, background:'white', border:'1.5px solid #ececec', borderRadius:'10px', padding:'8px 12px', textDecoration:'none', whiteSpace:'nowrap', flexShrink:0}}>Deviz</Link>
+            <Link href="/oferta/disponibilitate" style={{fontSize:'13px', color:'#1c1917', fontWeight:700, background:'white', border:'1.5px solid #ececec', borderRadius:'10px', padding:'8px 12px', textDecoration:'none', whiteSpace:'nowrap', flexShrink:0}}>Calendar</Link>
+            <Link href="/oferta/istoric" style={{fontSize:'13px', color:'#1c1917', fontWeight:700, background:'white', border:'1.5px solid #ececec', borderRadius:'10px', padding:'8px 12px', textDecoration:'none', whiteSpace:'nowrap', flexShrink:0}}>Istoric</Link>
+            <span style={{fontSize:'13px', color:'white', fontWeight:700, background:'#1c1917', border:'1.5px solid #1c1917', borderRadius:'10px', padding:'8px 12px', whiteSpace:'nowrap', flexShrink:0}}>Roster</span>
           </div>
         </div>
 
