@@ -198,9 +198,9 @@ export default function IstoricPage() {
     )
   }
 
-  const totalFee = filtrate.reduce((s, o) => s + o.total_fee_eur, 0)
-  const totalDisc = filtrate.reduce((s, o) => s + o.total_discount_eur, 0)
-  const totalCag = filtrate.reduce((s, o) => s + o.total_cag_eur, 0)
+  const totalFee = filtrate.reduce((s, o) => s + (o.total_fee_eur || 0), 0)
+  const totalDisc = filtrate.reduce((s, o) => s + (o.total_discount_eur || 0), 0)
+  const totalCag = filtrate.reduce((s, o) => s + (o.total_cag_eur || 0), 0)
 
   return (
     <div style={{minHeight:'100vh', background:UI.bg, fontFamily:F, padding:'40px 20px', position:'relative'}}>
