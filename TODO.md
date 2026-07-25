@@ -32,7 +32,7 @@
 11. [FACUT] Bucuresti + Ilfov: transport/cazare 0 + masa pe diurna la artistii cu rezidenta Bucuresti (camp oras_rezidenta in roster)
 12. Mod LANDED pe linie (fee cu transport inclus, ex The Motans Sibiu 12000 landed) — dezactiveaza calcul transport pe km, raman doar diurna/masa/cazare
 13. Avertizare avion la landed: cand linia e landed + distanta cere zbor (>300km, ex Iasi) -> atentionare ca biletul de avion nu e estimat, verifica daca fee-ul acopera zborul (informativ, nu blocheaza)
-14. Asistent AI conversational (RO) — input text SI voce, limbaj natural fuzzy ("caut artist liber pe data de", "ce ar merge pe", "recomanda", "da-mi liberi", "fa-mi oferta"). Sa inteleaga comenzi vagi, sa raspunda in romana, sa lege interogari -> disponibilitate -> oferta. Comanda vocala + conversatie.
+14. [LIVRAT v1] Asistent AI intern (/oferta/asistent, protejat cu login): 10 unelte - disponibilitate pe data, roster, calendar artist cu logistica inainte/dupa, trending TikTok Chartex, memorie persistenta (tine minte -> Supabase), cautare globala calendar (festivaluri/cluburi/agenti cu stamp creare), raport oferte (exclude testele), creare oferte draft cu confirmare obligatorie, deviz complet (lib/calc-oferta comun cu generatorul), calcul landed invers. Counter zilnic + cost real per intrebare. RAMASE: ANTHROPIC_API_KEY in Vercel env pt gigx.ro, regenerare cheie Anthropic + Client Secret Google (ambele expuse in chat), fallback Google Places pt locatii negasite in calendar, voce (faza 2).
 15. /prom BUG: cardurile de selectie artisti (cu poze) se blocheaza sus unde scrii manual nume, nu merg jos in zona de selectie. De reparat scroll/pozitionare.
 
 ## URMATORUL (prioritar) — Distanta/transport PER ARTIST din resedinta lui
