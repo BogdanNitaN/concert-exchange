@@ -2,6 +2,7 @@
 import { useState, useRef, useEffect } from 'react'
 import Link from 'next/link'
 import { Send, Copy, Check } from 'lucide-react'
+import { supabase } from '@/lib/supabase'
 
 const F = 'Montserrat,sans-serif'
 const UI = {
@@ -12,14 +13,53 @@ const UI = {
 
 type Msg = { role: 'user' | 'assistant', text: string }
 
+// randare simpla: **bold** devine <strong>, restul text
+function fmt(text: string) {
+  // pe linii: titluri ## si ###, apoi bold inline
+  return text.split('\n').map((linie, li) => {
+    const h = linie.match(/^(#{2,3})\s+(.*)$/)
+    const continut = h ? h[2] : linie
+    const parti = continut.split(/(\*\*[^*]+\*\*)/g).map((p, i) => {
+      if (p.startsWith('**') && p.endsWith('**')) return <strong key={i}>{p.slice(2, -2)}</strong>
+      return <span key={i}>{p}</span>
+    })
+    if (h) return <div key={li} style={{fontWeight:800, fontSize:'15px', marginTop: li > 0 ? '10px' : 0, marginBottom:'2px'}}>{parti}</div>
+    if (linie.trim() === '---') return <div key={li} style={{borderTop:'1px solid #e7e5e4', margin:'8px 0'}} />
+    return <div key={li}>{parti}{'\u200b'}</div>
+  })
+}
+// text curat pentru copy (fara markdown)
+function curata(text: string) {
+  return text.replace(/\*\*/g, '').replace(/^#+\s*/gm, '').replace(/^---$/gm, '').replace(/\n{3,}/g, '\n\n')
+}
+
 export default function AsistentPage() {
   const [mesaje, setMesaje] = useState<Msg[]>([])
   const [input, setInput] = useState('')
   const [loading, setLoading] = useState(false)
   const [copiat, setCopiat] = useState<number | null>(null)
+  const [authed, setAuthed] = useState<boolean | null>(null)
+  const [nrAzi, setNrAzi] = useState(0)
+  const [costAzi, setCostAzi] = useState(0)
   const jos = useRef<HTMLDivElement>(null)
 
   useEffect(() => { jos.current?.scrollIntoView({ behavior: 'smooth' }) }, [mesaje, loading])
+
+  useEffect(() => {
+    supabase.auth.getSession().then(({ data }) => {
+      const user = data.session?.user
+      const role = user?.user_metadata?.role
+      const blocat = user?.user_metadata?.blocat
+      if (user && (role === 'oferta_admin' || role === 'oferta_user') && !blocat) setAuthed(true)
+      else { setAuthed(false); window.location.href = '/oferta' }
+    })
+    try {
+      const azi = new Date().toISOString().slice(0, 10)
+      const salvat = JSON.parse(localStorage.getItem('asistent_counter') || '{}')
+      setNrAzi(salvat.zi === azi ? salvat.nr : 0)
+      setCostAzi(salvat.zi === azi ? (salvat.cost || 0) : 0)
+    } catch {}
+  }, [])
 
   async function trimite() {
     const text = input.trim()
@@ -27,12 +67,28 @@ export default function AsistentPage() {
     const noi: Msg[] = [...mesaje, { role: 'user', text }]
     setMesaje(noi); setInput(''); setLoading(true)
     try {
+      const azi = new Date().toISOString().slice(0, 10)
+      const salvat = JSON.parse(localStorage.getItem('asistent_counter') || '{}')
+      const nr = (salvat.zi === azi ? salvat.nr : 0) + 1
+      localStorage.setItem('asistent_counter', JSON.stringify({ zi: azi, nr, cost: salvat.zi === azi ? (salvat.cost || 0) : 0 }))
+      setNrAzi(nr)
+    } catch {}
+    try {
       const r = await fetch('/api/asistent', {
         method: 'POST', headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ messages: noi.map(m => ({ role: m.role, content: m.text })) }),
       })
       const d = await r.json()
       setMesaje(m => [...m, { role: 'assistant', text: d.raspuns || d.error || 'Eroare necunoscuta.' }])
+      if (d.cost) {
+        try {
+          const azi = new Date().toISOString().slice(0, 10)
+          const salvat = JSON.parse(localStorage.getItem('asistent_counter') || '{}')
+          const cost = (salvat.zi === azi ? (salvat.cost || 0) : 0) + d.cost
+          localStorage.setItem('asistent_counter', JSON.stringify({ zi: azi, nr: salvat.nr || 0, cost }))
+          setCostAzi(cost)
+        } catch {}
+      }
     } catch {
       setMesaje(m => [...m, { role: 'assistant', text: 'Eroare de retea. Incearca din nou.' }])
     }
@@ -45,12 +101,16 @@ export default function AsistentPage() {
     'Artisti hip-hop sub 5000 EUR',
   ]
 
+  if (authed === null) return <div style={{minHeight:'100vh', display:'flex', alignItems:'center', justifyContent:'center', fontFamily:F, color:'#78716c'}}>Verificare acces...</div>
+  if (authed === false) return null
+
   return (
     <div style={{minHeight:'100vh', background:'linear-gradient(160deg, #eceef2 0%, #e8eaf0 45%, #dde1ea 100%)', fontFamily:F, display:'flex', flexDirection:'column'}}>
       <div style={{padding:'16px 20px', display:'flex', alignItems:'center', gap:'16px', borderBottom:'1px solid '+UI.line, background:'rgba(255,255,255,0.7)', backdropFilter:'blur(8px)', position:'sticky', top:0, zIndex:10}}>
         <Link href="/oferta" style={{fontSize:'20px', fontWeight:800, letterSpacing:'-0.5px', color:UI.ink, textDecoration:'none'}}>GIG<span style={{color:UI.green}}>x</span></Link>
         <div style={{fontSize:'14px', fontWeight:700, color:UI.sub}}>Asistent</div>
-        <div style={{marginLeft:'auto', display:'flex', gap:'14px'}}>
+        <div style={{marginLeft:'auto', display:'flex', gap:'14px', alignItems:'center'}}>
+          <span style={{fontSize:'11px', color:UI.faint}}>azi: {nrAzi} întrebări · ~{costAzi < 0.01 && costAzi > 0 ? '<0,01' : costAzi.toFixed(2).replace('.', ',')}$</span>
           <Link href="/oferta" style={{fontSize:'13px', color:UI.sub, textDecoration:'none', fontWeight:600}}>Oferta</Link>
           <Link href="/oferta/disponibilitate" style={{fontSize:'13px', color:UI.sub, textDecoration:'none', fontWeight:600}}>Disponibilitate</Link>
         </div>
@@ -78,9 +138,9 @@ export default function AsistentPage() {
               background: m.role === 'user' ? UI.dark : 'white',
               color: m.role === 'user' ? 'white' : UI.ink,
               border: m.role === 'user' ? 'none' : '1px solid '+UI.line,
-            }}>{m.text}</div>
+            }}>{m.role === 'assistant' ? fmt(m.text) : m.text}</div>
             {m.role === 'assistant' && (
-              <button onClick={() => { navigator.clipboard.writeText(m.text); setCopiat(i); setTimeout(() => setCopiat(null), 1500) }}
+              <button onClick={() => { navigator.clipboard.writeText(curata(m.text)); setCopiat(i); setTimeout(() => setCopiat(null), 1500) }}
                 style={{marginTop:'4px', padding:'4px 8px', background:'none', border:'none', cursor:'pointer', color: copiat === i ? UI.green : UI.faint, display:'flex', alignItems:'center', gap:'4px', fontSize:'11px', fontFamily:F}}>
                 {copiat === i ? <Check size={13} /> : <Copy size={13} />}{copiat === i ? 'Copiat' : 'Copiază'}
               </button>

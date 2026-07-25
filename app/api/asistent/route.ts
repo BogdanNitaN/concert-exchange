@@ -39,6 +39,17 @@ const TOOLS = [
     },
   },
   {
+    name: 'tine_minte',
+    description: 'Salveaza o regula permanenta in memoria asistentului, valabila in toate conversatiile viitoare. Foloseste DOAR cand utilizatorul cere explicit (tine minte, retine, de acum incolo). Nu salva din proprie initiativa.',
+    input_schema: {
+      type: 'object',
+      properties: {
+        regula: { type: 'string', description: 'Regula de salvat, scurt si clar' },
+      },
+      required: ['regula'],
+    },
+  },
+  {
     name: 'cauta_artisti_roster',
     description: 'Returneaza artistii din roster cu fee, categorie muzicala, oras de resedinta, numar persoane, tip (propriu FWD sau intermediere). Fara parametru returneaza toti. Foloseste pentru intrebari despre preturi, genuri, cati artisti, ce artisti avem.',
     input_schema: {
@@ -90,6 +101,14 @@ async function ruleazaUnealta(nume: string, input: any, baseUrl: string): Promis
       }))
       return JSON.stringify({ trending_tiktok_ro: rez })
     }
+    if (nume === 'tine_minte') {
+      const r = await fetch(baseUrl + '/api/asistent-memorie', {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ regula: input.regula }),
+      })
+      const d = await r.json()
+      return JSON.stringify(d.ok ? { salvat: true, regula: input.regula } : { eroare: 'nu s-a salvat' })
+    }
     if (nume === 'cauta_artisti_roster') {
       const r = await fetch(baseUrl + '/api/oferta-artist' + (input.cauta ? '?q=' + encodeURIComponent(input.cauta) : ''), { cache: 'no-store' })
       const d = await r.json()
@@ -117,6 +136,15 @@ export async function POST(req: Request) {
   const url = new URL(req.url)
   const baseUrl = url.origin
 
+  let reguliMemorie = ''
+  try {
+    const rm = await fetch(baseUrl + '/api/asistent-memorie', { cache: 'no-store' })
+    const dm = await rm.json()
+    if (dm.ok && dm.reguli?.length) {
+      reguliMemorie = '\n\nMEMORIE PERSISTENTA (reguli salvate de echipa - respecta-le):\n' + dm.reguli.map((r: any) => '- ' + r.regula).join('\n')
+    }
+  } catch {}
+
   const system = `Esti asistentul intern al Forward Agency (agentie de booking artistic din Romania, una din cele mai mari din SE Europa, 1600+ evenimente pe an).
 Raspunzi in romana, concis si la obiect, pentru Bogdan (managing partner) si echipa.
 Ai acces la calendar (disponibilitati artisti) si roster (preturi, categorii).
@@ -138,12 +166,16 @@ FII CONSILIER, NU DOAR EXECUTANT:
 - La liste lungi, ordoneaza util: FWD primii, apoi pret descrescator.
 - Cand se discuta un artist concret la o data concreta, verifica-i calendarul (ziua dinainte si de dupa) si comenteaza logistica: daca e in zona cu o zi inainte = avantaj (transport redus), daca are orase indepartate consecutive = risc logistic. Mentioneaza distantele doar cand conteaza.
 REGULI STRICTE:
-- Preturile si datele le iei EXCLUSIV din unelte, in conversatia curenta. Nu cita niciodata un pret din memorie sau dintr-un mesaj anterior fara sa-l reverifici daca exista dubii.
+- ORICE cifra (fee, numar persoane, data) o citezi EXACT din rezultatul unei unelte chemate in conversatia curenta. Zero exceptii.
+- Daca un artist e mentionat din nou dupa mai multe mesaje, RE-CHEAMA unealta inainte sa-i citezi fee-ul. Nu te baza pe ce ai spus anterior in conversatie.
+- Daca o unealta nu returneaza o informatie, spui "nu am gasit in date" - nu estimezi, nu aproximezi, nu completezi din cunostinte generale.
+- Cand citezi un fee, mentioneaza-l exact cum e in date (6500, nu "aproximativ 6000-7000").
 - NU poti crea oferte, bloca date sau modifica nimic - doar citesti si consiliezi. Nu promite si nu sugera actiuni pe care nu le poti face (ex "blochez pentru oferta", "verific cu echipa", "revin cu raspuns"). Tu nu poti verifica nimic in afara uneltelor si nu poti comunica cu nimeni. In schimb, indruma concret: "poti face oferta din gigx.ro/oferta", "intreaba echipa despre blocare".
-Raspunde scurt: liste clare, fara introduceri lungi.`
+Raspunde scurt: liste clare, fara introduceri lungi.` + reguliMemorie
 
   // bucla agentica: Claude poate chema unelte de mai multe ori
   let convo = [...messages]
+  let inTok = 0, outTok = 0
   for (let pas = 0; pas < 5; pas++) {
     const resp = await fetch('https://api.anthropic.com/v1/messages', {
       method: 'POST',
@@ -161,13 +193,16 @@ Raspunde scurt: liste clare, fara introduceri lungi.`
       }),
     })
     const data = await resp.json()
+    inTok += data.usage?.input_tokens || 0
+    outTok += data.usage?.output_tokens || 0
     if (data.error) return NextResponse.json({ error: data.error.message || 'eroare API' }, { status: 500 })
 
     // daca Claude vrea unelte, le rulez si continui bucla
     const toolUses = (data.content || []).filter((c: any) => c.type === 'tool_use')
     if (toolUses.length === 0 || data.stop_reason !== 'tool_use') {
       const text = (data.content || []).filter((c: any) => c.type === 'text').map((c: any) => c.text).join('\n')
-      return NextResponse.json({ raspuns: text })
+      const totalCostUSD = (inTok * 3 + outTok * 15) / 1000000
+      return NextResponse.json({ raspuns: text, cost: totalCostUSD })
     }
 
     convo.push({ role: 'assistant', content: data.content })
