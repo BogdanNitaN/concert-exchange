@@ -5,6 +5,11 @@ export const metadata: Metadata = {
   title: 'GIGx',
   description: 'We book the artists behind the moments people remember.',
   metadataBase: new URL('https://gigx.ro'),
+  manifest: '/manifest.webmanifest',
+  icons: {
+    icon: '/favicon.ico',
+    apple: '/apple-touch-icon.png',
+  },
   openGraph: {
     title: 'GIGx',
     description: 'We book the artists behind the moments people remember.',
