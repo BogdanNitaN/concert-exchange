@@ -11,7 +11,7 @@ const UI = {
   green: '#059669', radiusSm: '10px',
 }
 
-type Msg = { role: 'user' | 'assistant', text: string }
+type Msg = { role: 'user' | 'assistant', text: string, img?: string }
 
 // randare simpla: **bold** devine <strong>, restul text
 function fmt(text: string) {
@@ -42,6 +42,7 @@ export default function AsistentPage() {
   const [nrAzi, setNrAzi] = useState(0)
   const [costAzi, setCostAzi] = useState(0)
   const [statusViu, setStatusViu] = useState('')
+  const [imgAtasata, setImgAtasata] = useState<string | null>(null)
   const jos = useRef<HTMLDivElement>(null)
 
   useEffect(() => { jos.current?.scrollIntoView({ behavior: 'smooth' }) }, [mesaje, loading])
@@ -62,11 +63,17 @@ export default function AsistentPage() {
     } catch {}
   }, [])
 
+  function citesteImagine(f: File) {
+    const r = new FileReader()
+    r.onload = () => setImgAtasata(String(r.result))
+    r.readAsDataURL(f)
+  }
+
   async function trimite() {
     const text = input.trim()
     if (!text || loading) return
     const noi: Msg[] = [...mesaje, { role: 'user', text }]
-    setMesaje(noi); setInput(''); setLoading(true)
+    setMesaje(noi); setInput(''); setImgAtasata(null); setLoading(true)
     try {
       const azi = new Date().toISOString().slice(0, 10)
       const salvat = JSON.parse(localStorage.getItem('asistent_counter') || '{}')
@@ -79,7 +86,17 @@ export default function AsistentPage() {
       const token = sess.data.session?.access_token || ''
       const r = await fetch('/api/asistent', {
         method: 'POST', headers: { 'Content-Type': 'application/json', authorization: 'Bearer ' + token },
-        body: JSON.stringify({ messages: noi.map(m => ({ role: m.role, content: m.text })) }),
+        body: JSON.stringify({ messages: noi.map(m => {
+          if (m.role === 'user' && m.img) {
+            const [meta, data] = m.img.split(',')
+            const mediaType = (meta.match(/data:([^;]+)/) || [])[1] || 'image/png'
+            return { role: m.role, content: [
+              { type: 'image', source: { type: 'base64', media_type: mediaType, data } },
+              { type: 'text', text: m.text },
+            ] }
+          }
+          return { role: m.role, content: m.text }
+        }) }),
       })
       let d: any = {}
       const reader = r.body?.getReader()
@@ -166,7 +183,7 @@ export default function AsistentPage() {
               background: m.role === 'user' ? UI.dark : 'white',
               color: m.role === 'user' ? 'white' : UI.ink,
               border: m.role === 'user' ? 'none' : '1px solid '+UI.line,
-            }}>{m.role === 'assistant' ? fmt(m.text) : m.text}</div>
+            }}>{m.img && <img src={m.img} style={{maxWidth:'200px', borderRadius:'8px', display:'block', marginBottom:'6px'}} />}{m.role === 'assistant' ? fmt(m.text) : m.text}</div>
             {m.role === 'assistant' && (
               <button onClick={() => { navigator.clipboard.writeText(curata(m.text)); setCopiat(i); setTimeout(() => setCopiat(null), 1500) }}
                 style={{marginTop:'4px', padding:'4px 8px', background:'none', border:'none', cursor:'pointer', color: copiat === i ? UI.green : UI.faint, display:'flex', alignItems:'center', gap:'4px', fontSize:'11px', fontFamily:F}}>
@@ -187,15 +204,19 @@ export default function AsistentPage() {
 
       <div style={{position:'fixed', bottom:0, left:0, right:0, background:'rgba(255,255,255,0.9)', backdropFilter:'blur(8px)', borderTop:'1px solid '+UI.line, padding:'14px 16px'}}>
         <div style={{maxWidth:'760px', margin:'0 auto', display:'flex', gap:'10px'}}>
+          <label style={{padding:'13px 14px', background:'white', border:'1.5px solid '+UI.lineStrong, borderRadius:UI.radiusSm, cursor:'pointer', fontSize:'16px', display:'flex', alignItems:'center'}}>
+            📎
+            <input type="file" accept="image/*" style={{display:'none'}} onChange={e => { const f = e.target.files?.[0]; if (f) citesteImagine(f); e.target.value = '' }} />
+          </label>
           <input
             value={input}
             onChange={e => setInput(e.target.value)}
             onKeyDown={e => { if (e.key === 'Enter') trimite() }}
-            placeholder="Scrie o intrebare..."
+            placeholder={imgAtasata ? 'Adauga context pentru imagine (optional)...' : 'Scrie o intrebare...'}
             style={{flex:1, padding:'13px 16px', borderRadius:UI.radiusSm, border:'1.5px solid '+UI.lineStrong, fontSize:'14px', fontFamily:F, outline:'none', background:'white'}}
           />
-          <button onClick={trimite} disabled={loading || !input.trim()}
-            style={{padding:'13px 20px', background: loading || !input.trim() ? '#e7e5e4' : UI.dark, color: loading || !input.trim() ? UI.faint : 'white', border:'none', borderRadius:UI.radiusSm, cursor: loading || !input.trim() ? 'not-allowed' : 'pointer', display:'flex', alignItems:'center', gap:'6px', fontSize:'14px', fontWeight:700, fontFamily:F}}>
+          <button onClick={trimite} disabled={loading || (!input.trim() && !imgAtasata)}
+            style={{padding:'13px 20px', background: loading || (!input.trim() && !imgAtasata) ? '#e7e5e4' : UI.dark, color: loading || (!input.trim() && !imgAtasata) ? UI.faint : 'white', border:'none', borderRadius:UI.radiusSm, cursor: loading || (!input.trim() && !imgAtasata) ? 'not-allowed' : 'pointer', display:'flex', alignItems:'center', gap:'6px', fontSize:'14px', fontWeight:700, fontFamily:F}}>
             <Send size={15} />
           </button>
         </div>
