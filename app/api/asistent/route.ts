@@ -90,6 +90,7 @@ const TOOLS = [
         dataEveniment: { type: 'string', description: 'Data evenimentului YYYY-MM-DD (optional)' },
         client: { type: 'string', description: 'Numele clientului (optional)' },
         mentiuni: { type: 'string', description: 'Mentiuni: landed/transport inclus, camere, masa, etc (optional)' },
+        esteTest: { type: 'boolean', description: 'Marcheaza oferta ca test - se sterge automat zilnic la 18:00 si 23:59 (optional, implicit false)' },
       },
       required: ['artistNume', 'fee', 'oras'],
     },
@@ -230,7 +231,7 @@ async function ruleazaUnealta(nume: string, input: any, baseUrl: string, tokenAu
         useAlcool: false, alcool: 0, useCag: false, cagProcent: 10, cagSuma: 0, cagMod: 'procent',
       }
       const oferta = {
-        cod, status: 'draft-asistent', client: input.client || null, oras: input.oras,
+        cod, status: 'draft-asistent', test: !!input.esteTest, client: input.client || null, oras: input.oras,
         data_eveniment: input.dataEveniment || null, nota: input.mentiuni || null,
         artisti: [{ nume: art.nume, fee: input.fee, feeLista: input.feeLista || input.fee, tipPret: 'Standard', tip: art.tip, format: '' }],
         linii_complete: [linie],
