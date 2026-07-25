@@ -108,7 +108,7 @@ interface Linie {
   includeExport: boolean
 }
 
-const LUNI = ['ianuarie','februarie','martie','aprilie','mai','iunie','iulie','august','septembrie','octombrie','noiembrie','decembrie']
+const LUNI = ['Ianuarie','Februarie','Martie','Aprilie','Mai','Iunie','Iulie','August','Septembrie','Octombrie','Noiembrie','Decembrie']
 function formatData(v: string): string {
   if (!v) return ''
   // acccepta YYYY-MM-DD sau DD.MM.YYYY

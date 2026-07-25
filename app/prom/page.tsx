@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect, useMemo, useRef } from 'react'
+import { formatDataRo } from '@/lib/format-data'
 import Link from 'next/link'
 import { createClient } from '@supabase/supabase-js'
 import { MessageCircle, Car, Hotel, Plane, ArrowRight, ChevronDown, ChevronUp, Calendar, MapPin, Users } from 'lucide-react'
@@ -263,7 +264,7 @@ export default function PromPage() {
       'Cerere ' + (EVENT_LABEL[form.organizer_type] || 'bal de absolvire') + ' — GIGx', '',
       'Organizator: ' + form.organizer_type + ' - ' + form.institution_name,
       'Oras: ' + form.city,
-      'Data: ' + form.event_date + (form.event_date_alternative ? ' (alternativ ' + form.event_date_alternative + ')' : ''),
+      'Data: ' + formatDataRo(form.event_date) + (form.event_date_alternative ? ' (alternativ ' + formatDataRo(form.event_date_alternative) + ')' : ''),
       'Buget: ' + (form.budget_range || 'nespecificat'),
       'Artisti: ' + (artistNames.length ? artistNames.join(', ') : 'nespecificat'), '',
       'Contact: ' + form.organizer_name,
@@ -457,7 +458,7 @@ export default function PromPage() {
                 <div style={{...labelStyle, display:'flex', alignItems:'center', gap:'4px'}}>
                   <Calendar size={10} strokeWidth={2} /> Data
                 </div>
-                <div style={{fontSize:'14px', fontWeight:700, color:'#1c1917'}}>{form.event_date}</div>
+                <div style={{fontSize:'14px', fontWeight:700, color:'#1c1917'}}>{formatDataRo(form.event_date)}</div>
               </div>
               <div>
                 <div style={{...labelStyle, display:'flex', alignItems:'center', gap:'4px'}}>

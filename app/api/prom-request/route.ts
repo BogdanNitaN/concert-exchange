@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server'
+import { formatDataRo } from '@/lib/format-data'
 import { Resend } from 'resend'
 
 const resend = new Resend(process.env.RESEND_API_KEY)
@@ -53,8 +54,8 @@ export async function POST(req: Request) {
           <h2 style="font-size:18px; margin:0 0 16px;">${d.institution_name || ''} — ${d.city || ''}</h2>
           <table style="width:100%; font-size:14px; line-height:1.8;">
             <tr><td style="color:#78716c; width:160px;">Tip organizator</td><td style="font-weight:600;">${d.organizer_type || '-'}</td></tr>
-            <tr><td style="color:#78716c;">Data balului</td><td style="font-weight:600;">${d.event_date || '-'}</td></tr>
-            <tr><td style="color:#78716c;">Data alternativa</td><td>${d.event_date_alternative || '-'}</td></tr>
+            <tr><td style="color:#78716c;">Data balului</td><td style="font-weight:600;">${formatDataRo(d.event_date) || '-'}</td></tr>
+            <tr><td style="color:#78716c;">Data alternativa</td><td>${formatDataRo(d.event_date_alternative) || '-'}</td></tr>
             <tr><td style="color:#78716c;">Buget estimat</td><td style="font-weight:600;">${d.budget_range || '-'}</td></tr>
             <tr><td style="color:#78716c;">Artisti doriti</td><td style="font-weight:700; color:#059669;">${artists}</td></tr>
           </table>
