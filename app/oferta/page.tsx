@@ -1,4 +1,5 @@
 'use client'
+import { deseneazaHeaderForward, deseneazaFooterForward } from '@/lib/pdf-forward'
 import { persoaneDinCazare } from '@/lib/persoane'
 import Link from 'next/link'
 
@@ -600,35 +601,11 @@ export default function OfertaPage() {
       } catch { return null }
     }
 
-    // === HEADER degradeu turcoaz cu diagonala ===
-    const steps = 80
-    for (let i = 0; i < steps; i++) {
-      const t = i / steps
-      const r = Math.round(180 + (100 - 180) * t)  // b4->64
-      const g = Math.round(247 + (210 - 247) * t)   // f7->d2
-      const b = Math.round(249 + (244 - 249) * t)    // f9->f4
-      doc.setFillColor(r, g, b)
-      doc.rect((W / steps) * i, 0, W / steps + 0.5, 38, 'F')
-    }
-    // diagonala: triunghi alb decupat jos-dreapta (forma interesanta)
-    doc.setFillColor(255, 255, 255)
-    doc.triangle(W, 30, W, 42, W - 60, 42, 'F')
-    doc.triangle(0, 38, 0, 44, 70, 44, 'F')
-
-    // logo Forward dreapta
+    // === HEADER Forward (lib comun) ===
     const logo = await toCompressedLogo('/forward-logo.png')
-    if (logo) doc.addImage(logo, 'PNG', W - M - 34, 8, 34, 21)
+    deseneazaHeaderForward(doc, W, M, logo)
 
-    // text header stanga
-    doc.setTextColor(255, 255, 255)
-    doc.setFont('helvetica', 'bold'); doc.setFontSize(16)
-    doc.text('FORWARD AGENCY', M, 16)
-    doc.setFont('helvetica', 'normal'); doc.setFontSize(9)
-    doc.setFontSize(7.5)
-    doc.setFontSize(7.5)
-    doc.setTextColor(10, 50, 65)
-    doc.text('Your #1 Artist Booking & Advising Agency', M, 22)
-    doc.setTextColor(255, 255, 255)
+
 
     y = 52
 
@@ -733,32 +710,8 @@ export default function OfertaPage() {
     const valid = doc.splitTextToSize('Oferta valabila 48 de ore de la momentul emiterii. Preturile nu includ TVA.', W - 2*M - 2)
     doc.text(valid, M, y)
 
-    // === FOOTER cu ambii contacte ===
-    const fy = 258
-    doc.setDrawColor(129, 212, 242); doc.setLineWidth(0.8)
-    doc.line(M, fy, W - M, fy)
-    doc.setLineWidth(0.2)
-    // Bogdan - stanga
-    doc.setFont('helvetica', 'bold'); doc.setFontSize(9.5); doc.setTextColor(28,25,23)
-    doc.text('Bogdan Nita', M, fy + 6)
-    doc.setFont('helvetica', 'normal'); doc.setFontSize(8); doc.setTextColor(80,80,80)
-    doc.text('Managing Partner, Artist Booking & Advisor', M, fy + 10.5)
-    doc.text('+40 751 144 109  ·  bogdan@forward.ro', M, fy + 14.5)
-    // Alexandra - dreapta
-    doc.setFont('helvetica', 'bold'); doc.setFontSize(9.5); doc.setTextColor(28,25,23)
-    doc.text('Alexandra Stefan', W/2 + 10, fy + 6)
-    doc.setFont('helvetica', 'normal'); doc.setFontSize(8); doc.setTextColor(80,80,80)
-    doc.text('Assistant Contracting, Logistics & Booking Support', W/2 + 10, fy + 10.5)
-    doc.text('alexandra.stefan@forward.ro', W/2 + 10, fy + 14.5)
-    // linia + generat + GIGx jos
-    const now = new Date()
-    doc.setFontSize(7.5); doc.setTextColor(150,150,150)
-    doc.text('Generat: ' + now.toLocaleDateString('ro-RO') + ' ' + now.toLocaleTimeString('ro-RO', {hour:'2-digit',minute:'2-digit'}), M, fy + 24)
-    doc.setFont('helvetica', 'bold'); doc.setFontSize(9)
-    const gx = W - M - 20
-    doc.setTextColor(28,25,23); doc.text('powered by GIG', gx, fy + 24)
-    const gw = doc.getTextWidth('powered by GIG')
-    doc.setTextColor(5,150,105); doc.text('x', gx + gw, fy + 24)
+    // === FOOTER Forward (lib comun) ===
+    deseneazaFooterForward(doc, W, M)
 
     const filename = ([numeClient, toCity, locatie].filter(Boolean).join('-') || 'oferta').toLowerCase().replace(/\s+/g,'-').replace(/[^a-z0-9-]/g,'') + '.pdf'
     const isMobile = typeof window !== 'undefined' && window.innerWidth < 768
