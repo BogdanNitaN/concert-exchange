@@ -46,7 +46,7 @@ DE FACUT (varianta A, agreata): fiecare artist pleaca din oras_rezidenta al lui.
 - ATENTIE: e refactor mare, atinge inima calculului. Testat temeinic sa nu strice calculele existente.
 - Deja FACUT: camp oras_rezidenta in roster + modal adauga artist + API-uri (salveaza corect). Ramane doar calculul distantei per artist.
 
-16. CAG editabil in modul procent — acum e plafon dur 1000 EUR (10% din 10000). Vreau: 1000 ca sugestie, dar sa pot pune 1200, 1500 etc. De clarificat: editez suma direct in modul procent (2 campuri legate) SAU scot plafonul si folosesc modul "EUR fix" cand vreau suma anume. Nota: CAG se calculeaza corect din fee-ul DUPA discount (12000 - 2000 = 10000, CAG 10% = 1000, net 9000).
+16. [REZOLVAT] CAG: default 10%, editabil procentul, plafon 1000 in modul procent, iar peste 1000 se foloseste modul 'EUR fix' (suma directa). Bogdan a confirmat ca e ok asa.
 
 17. Montserrat in PDF (consistenta brand) - acum PDF-ul e pe Helvetica, interfata web e deja Montserrat. Necesita: woff->ttf (fontkit), ttf->base64, inregistrare in jsPDF, inlocuire helvetica peste tot, test diacritice. Efort mare, castig cosmetic. @fontsource/montserrat instalat (are doar woff/woff2, nu ttf).
 
