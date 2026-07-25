@@ -320,8 +320,13 @@ export default function IstoricPage() {
                   {o.suma_finala != null && <span style={{color:'#059669', fontWeight:700}}>Închis: <strong style={{fontSize:'18px', fontWeight:800}}>{o.suma_finala.toLocaleString('ro-RO')} €</strong></span>}
                   {o.total_discount_eur > 0 && <span style={{color:UI.faint, fontSize:'12px'}}>Discount: {o.total_discount_eur.toLocaleString('ro-RO')} €</span>}
                   {o.total_cag_eur > 0 && <span style={{color:UI.faint, fontSize:'12px'}}>CAG: {o.total_cag_eur.toLocaleString('ro-RO')} €</span>}
+                  <div style={{marginLeft:'auto', display:'flex', gap:'8px', alignItems:'center', flexWrap:'wrap'}}>
+                  <button onClick={() => toggleTest(o.cod, !o.test)}
+                    style={{padding:'6px 12px', background: o.test ? '#fde047' : 'transparent', color: o.test ? '#713f12' : '#d6d3d1', border:'1.5px dashed '+(o.test ? '#fde047' : '#e7e5e4'), borderRadius:'8px', fontSize:'11px', fontWeight:700, cursor:'pointer', fontFamily:F}}>
+                    {o.test ? '✓ test' : 'test'}
+                  </button>
                   <button onClick={() => setExpandat(expandat === o.cod ? null : o.cod)}
-                    style={{marginLeft:'auto', padding:'6px 14px', background:'#f5f5f4', color:'#1c1917', border:'none', borderRadius:'8px', fontSize:'12px', fontWeight:700, cursor:'pointer', fontFamily:F}}>
+                    style={{padding:'6px 14px', background:'#f5f5f4', color:'#1c1917', border:'none', borderRadius:'8px', fontSize:'12px', fontWeight:700, cursor:'pointer', fontFamily:F}}>
                     {expandat === o.cod ? 'Ascunde' : 'Detalii'}
                   </button>
                   <button onClick={() => { try { localStorage.setItem('oferta_edit', JSON.stringify(o)) } catch {}; window.location.href = '/oferta' }}
@@ -332,10 +337,7 @@ export default function IstoricPage() {
                     style={{padding:'6px 14px', background:'#fef2f2', color:'#dc2626', border:'1.5px solid #fecaca', borderRadius:'8px', fontSize:'12px', fontWeight:700, cursor:'pointer', fontFamily:F}}>
                     Șterge
                   </button>
-                  <button onClick={() => toggleTest(o.cod, !o.test)}
-                    style={{padding:'6px 14px', background: o.test ? '#fde047' : 'white', color: o.test ? '#713f12' : '#a8a29e', border:'1.5px solid '+(o.test ? '#fde047' : '#e7e5e4'), borderRadius:'8px', fontSize:'12px', fontWeight:700, cursor:'pointer', fontFamily:F}}>
-                    {o.test ? '✓ test' : 'test'}
-                  </button>
+                  </div>
                 </div>
 
                 {expandat === o.cod && (
