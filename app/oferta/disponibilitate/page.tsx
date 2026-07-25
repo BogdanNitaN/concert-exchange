@@ -3,7 +3,7 @@ import { deseneazaHeaderForward, deseneazaFooterForward } from '@/lib/pdf-forwar
 import Link from 'next/link'
 import { useState, useEffect } from 'react'
 import { supabase } from '@/lib/supabase'
-import { CalendarSearch, ArrowLeft, Check, X, Send } from 'lucide-react'
+import { CalendarSearch, ArrowLeft, Check, X, Send, FileText, History, Sparkles, Users } from 'lucide-react'
 import DatePicker from '@/components/modules/shared/DatePicker'
 const F = 'Montserrat,sans-serif'
 const UI = {
@@ -566,11 +566,11 @@ export default function DisponibilitatePage() {
         <div style={{display:'flex', justifyContent:'space-between', alignItems:'center', marginBottom:'20px', flexWrap:'wrap', gap:'10px'}}>
           <Link href="/oferta" title="Înapoi la ofertă" style={{display:'inline-flex', alignItems:'center', gap:'8px', fontSize:'24px', fontWeight:800, letterSpacing:'-0.5px', color:UI.ink, textDecoration:'none'}}><img src="/gigx-mark.png" width={24} height={24} alt="" style={{display:'block'}} /><span>GIG<span style={{color:UI.green}}>x</span></span></Link>
           <div style={{display:'flex', gap:'8px', alignItems:'center', flexWrap:'nowrap', overflowX:'auto', WebkitOverflowScrolling:'touch', maxWidth:'100%', paddingBottom:'2px'}}>
-            <Link href="/oferta/asistent" style={{fontSize:'13px', color:'white', fontWeight:700, background:'#1c1917', border:'1.5px solid #1c1917', borderRadius:'10px', padding:'8px 12px', textDecoration:'none', whiteSpace:'nowrap', flexShrink:0}}>Asistent</Link>
-            <Link href="/oferta" style={{fontSize:'13px', color:'#1c1917', fontWeight:700, background:'white', border:'1.5px solid #ececec', borderRadius:'10px', padding:'8px 12px', textDecoration:'none', whiteSpace:'nowrap', flexShrink:0}}>Deviz</Link>
-            <span style={{fontSize:'13px', color:'white', fontWeight:700, background:'#1c1917', border:'1.5px solid #1c1917', borderRadius:'10px', padding:'8px 12px', whiteSpace:'nowrap', flexShrink:0}}>Calendar</span>
-            <Link href="/oferta/istoric" style={{fontSize:'13px', color:'#1c1917', fontWeight:700, background:'white', border:'1.5px solid #ececec', borderRadius:'10px', padding:'8px 12px', textDecoration:'none', whiteSpace:'nowrap', flexShrink:0}}>Istoric</Link>
-            <Link href="/oferta/roster" style={{fontSize:'13px', color:'#1c1917', fontWeight:700, background:'white', border:'1.5px solid #ececec', borderRadius:'10px', padding:'8px 12px', textDecoration:'none', whiteSpace:'nowrap', flexShrink:0}}>Roster</Link>
+            <Link href="/oferta/asistent" style={{fontSize:'13px', color:'white', fontWeight:700, background:'#1c1917', border:'1.5px solid #1c1917', borderRadius:'10px', padding:'8px 12px', textDecoration:'none', whiteSpace:'nowrap', flexShrink:0}}><span style={{display:'inline-flex', alignItems:'center', gap:'6px'}}><Sparkles size={15} strokeWidth={2.2} /> Asistent</span></Link>
+            <Link href="/oferta" style={{fontSize:'13px', color:'#1c1917', fontWeight:700, background:'white', border:'1.5px solid #ececec', borderRadius:'10px', padding:'8px 12px', textDecoration:'none', whiteSpace:'nowrap', flexShrink:0}}><span style={{display:'inline-flex', alignItems:'center', gap:'6px'}}><FileText size={15} strokeWidth={2.2} /> Deviz</span></Link>
+            <span style={{fontSize:'13px', color:'white', fontWeight:700, background:'#1c1917', border:'1.5px solid #1c1917', borderRadius:'10px', padding:'8px 12px', whiteSpace:'nowrap', flexShrink:0}}><span style={{display:'inline-flex', alignItems:'center', gap:'6px'}}><CalendarSearch size={15} strokeWidth={2.2} /> Calendar</span></span>
+            <Link href="/oferta/istoric" style={{fontSize:'13px', color:'#1c1917', fontWeight:700, background:'white', border:'1.5px solid #ececec', borderRadius:'10px', padding:'8px 12px', textDecoration:'none', whiteSpace:'nowrap', flexShrink:0}}><span style={{display:'inline-flex', alignItems:'center', gap:'6px'}}><History size={15} strokeWidth={2.2} /> Istoric</span></Link>
+            <Link href="/oferta/roster" style={{fontSize:'13px', color:'#1c1917', fontWeight:700, background:'white', border:'1.5px solid #ececec', borderRadius:'10px', padding:'8px 12px', textDecoration:'none', whiteSpace:'nowrap', flexShrink:0}}><span style={{display:'inline-flex', alignItems:'center', gap:'6px'}}><Users size={15} strokeWidth={2.2} /> Roster</span></Link>
           </div>
         </div>
         <div style={{display:'flex', alignItems:'center', gap:'10px', marginBottom:'24px'}}>
