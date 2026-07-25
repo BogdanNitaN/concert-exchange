@@ -305,10 +305,6 @@ export default function IstoricPage() {
                   </div>
                   <div style={{textAlign:'right'}}>
                     <div style={{fontSize:'11px', color:'#78716c'}}>{new Date(o.created_at).toLocaleDateString('ro-RO')} {new Date(o.created_at).toLocaleTimeString('ro-RO', {hour:'2-digit',minute:'2-digit'})}</div>
-                    <label style={{display:'inline-flex', alignItems:'center', gap:'5px', fontSize:'11px', fontWeight:700, color: o.test ? '#a16207' : '#a8a29e', cursor:'pointer', marginTop:'4px'}}>
-                      <input type="checkbox" checked={!!o.test} onChange={e => toggleTest(o.cod, e.target.checked)} style={{width:'14px', height:'14px', accentColor:'#eab308', cursor:'pointer'}} />
-                      test
-                    </label>
                     <select value={o.status} onChange={e => updateStatus(o.cod, e.target.value)}
                       style={{marginTop:'4px', padding:'5px 12px', borderRadius:'8px', border:'none', color:'white', fontSize:'11px', fontWeight:800, fontFamily:F, cursor:'pointer', background: STATUS_COLOR[o.status] || '#a8a29e', textTransform:'uppercase', letterSpacing:'0.3px', boxShadow:'0 1px 3px rgba(0,0,0,0.15)'}}>
                       {STATUSURI.map(s => <option key={s} value={s}>{s}</option>)}
@@ -335,6 +331,10 @@ export default function IstoricPage() {
                   <button onClick={() => stergeOferta(o.cod)}
                     style={{padding:'6px 14px', background:'#fef2f2', color:'#dc2626', border:'1.5px solid #fecaca', borderRadius:'8px', fontSize:'12px', fontWeight:700, cursor:'pointer', fontFamily:F}}>
                     Șterge
+                  </button>
+                  <button onClick={() => toggleTest(o.cod, !o.test)}
+                    style={{padding:'6px 14px', background: o.test ? '#fde047' : 'white', color: o.test ? '#713f12' : '#a8a29e', border:'1.5px solid '+(o.test ? '#fde047' : '#e7e5e4'), borderRadius:'8px', fontSize:'12px', fontWeight:700, cursor:'pointer', fontFamily:F}}>
+                    {o.test ? '✓ test' : 'test'}
                   </button>
                 </div>
 
