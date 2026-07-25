@@ -232,6 +232,7 @@ async function ruleazaUnealta(nume: string, input: any, baseUrl: string, tokenAu
       }
       const oferta = {
         cod, status: 'draft-asistent', test: !!input.esteTest, client: input.client || null, oras: input.oras,
+        total_fee_eur: input.fee, total_discount_eur: (input.feeLista && input.feeLista > input.fee) ? input.feeLista - input.fee : 0, total_cag_eur: 0,
         data_eveniment: input.dataEveniment || null, nota: input.mentiuni || null,
         artisti: [{ nume: art.nume, fee: input.fee, feeLista: input.feeLista || input.fee, tipPret: 'Standard', tip: art.tip, format: '' }],
         linii_complete: [linie],

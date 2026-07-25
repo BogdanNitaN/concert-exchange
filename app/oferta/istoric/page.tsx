@@ -320,7 +320,7 @@ export default function IstoricPage() {
                   {o.institutie_publica && <span style={{marginLeft:'8px', fontSize:'10px', fontWeight:800, color:UI.sub, background:'#f5f5f4', padding:'2px 7px', borderRadius:'5px'}}>INST. PUBLICĂ</span>}
                 </div>
                 <div style={{display:'flex', gap:'20px', fontSize:'13px', paddingTop:'10px', borderTop:'1px solid #f5f5f4', alignItems:'baseline', flexWrap:'wrap'}}>
-                  <span style={{color:UI.sub}}>Fee: <strong style={{fontSize:'16px', color: o.suma_finala != null ? UI.sub : '#059669', fontWeight:800}}>{o.total_fee_eur.toLocaleString('ro-RO')} €</strong></span>
+                  <span style={{color:UI.sub}}>Fee: <strong style={{fontSize:'16px', color: o.suma_finala != null ? UI.sub : '#059669', fontWeight:800}}>{(o.total_fee_eur || 0).toLocaleString('ro-RO')} €</strong></span>
                   {o.suma_finala != null && <span style={{color:'#059669', fontWeight:700}}>Închis: <strong style={{fontSize:'18px', fontWeight:800}}>{o.suma_finala.toLocaleString('ro-RO')} €</strong></span>}
                   {o.total_discount_eur > 0 && <span style={{color:UI.faint, fontSize:'12px'}}>Discount: {o.total_discount_eur.toLocaleString('ro-RO')} €</span>}
                   {o.total_cag_eur > 0 && <span style={{color:UI.faint, fontSize:'12px'}}>CAG: {o.total_cag_eur.toLocaleString('ro-RO')} €</span>}
@@ -371,7 +371,7 @@ export default function IstoricPage() {
                       </div>
                       {o.suma_finala != null && o.suma_finala !== o.total_fee_eur && (
                         <div style={{fontSize:'12px', marginTop:'8px', fontWeight:700, color: o.suma_finala < o.total_fee_eur ? '#dc2626' : '#059669'}}>
-                          {o.suma_finala < o.total_fee_eur ? 'Scădere' : 'Creștere'}: {Math.abs(o.total_fee_eur - o.suma_finala).toLocaleString('ro-RO')} € față de ofertă
+                          {o.suma_finala < o.total_fee_eur ? 'Scădere' : 'Creștere'}: {Math.abs((o.total_fee_eur || 0) - (o.suma_finala || 0)).toLocaleString('ro-RO')} € față de ofertă
                         </div>
                       )}
                     </div>
