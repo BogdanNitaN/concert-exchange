@@ -64,8 +64,27 @@ export default function AsistentPage() {
   }, [])
 
   function citesteImagine(f: File) {
+    // redimensionez + convertesc la JPEG (rezolva HEIC, poze mari de telefon, cost)
     const r = new FileReader()
-    r.onload = () => setImgAtasata(String(r.result))
+    r.onload = () => {
+      const img = new Image()
+      img.onload = () => {
+        const MAX = 1400
+        let w = img.width, h = img.height
+        if (w > MAX || h > MAX) {
+          const scala = Math.min(MAX / w, MAX / h)
+          w = Math.round(w * scala); h = Math.round(h * scala)
+        }
+        const cv = document.createElement('canvas')
+        cv.width = w; cv.height = h
+        const ctx = cv.getContext('2d')
+        if (!ctx) { setImgAtasata(String(r.result)); return }
+        ctx.drawImage(img, 0, 0, w, h)
+        setImgAtasata(cv.toDataURL('image/jpeg', 0.85))
+      }
+      img.onerror = () => setImgAtasata(String(r.result))
+      img.src = String(r.result)
+    }
     r.readAsDataURL(f)
   }
 
