@@ -566,6 +566,7 @@ export default function DisponibilitatePage() {
         <div style={{display:'flex', justifyContent:'space-between', alignItems:'center', marginBottom:'20px', flexWrap:'wrap', gap:'10px'}}>
           <Link href="/oferta" title="Înapoi la ofertă" style={{fontSize:'24px', fontWeight:800, letterSpacing:'-0.5px', color:UI.ink, textDecoration:'none'}}>GIG<span style={{color:UI.green}}>x</span></Link>
           <div style={{display:'flex', gap:'10px', alignItems:'center', flexWrap:'wrap'}}>
+            <Link href="/oferta/asistent" style={{fontSize:'13px', color:'white', fontWeight:700, background:'#1c1917', border:'1.5px solid #1c1917', borderRadius:'10px', padding:'9px 14px', textDecoration:'none'}}>Asistent</Link>
             <Link href="/oferta" style={{fontSize:'13px', color:'#1c1917', fontWeight:700, background:'white', border:'1.5px solid #ececec', borderRadius:'10px', padding:'9px 14px', textDecoration:'none'}}>Deviz</Link>
             <span style={{fontSize:'13px', color:'white', fontWeight:700, background:'#1c1917', border:'1.5px solid #1c1917', borderRadius:'10px', padding:'9px 14px'}}>Calendar</span>
             <Link href="/oferta/istoric" style={{fontSize:'13px', color:'#1c1917', fontWeight:700, background:'white', border:'1.5px solid #ececec', borderRadius:'10px', padding:'9px 14px', textDecoration:'none'}}>Istoric</Link>

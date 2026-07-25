@@ -111,8 +111,10 @@ export default function AsistentPage() {
         <div style={{fontSize:'14px', fontWeight:700, color:UI.sub}}>Asistent</div>
         <div style={{marginLeft:'auto', display:'flex', gap:'14px', alignItems:'center'}}>
           <span style={{fontSize:'11px', color:UI.faint}}>azi: {nrAzi} întrebări · ~{costAzi < 0.01 && costAzi > 0 ? '<0,01' : costAzi.toFixed(2).replace('.', ',')}$</span>
-          <Link href="/oferta" style={{fontSize:'13px', color:UI.sub, textDecoration:'none', fontWeight:600}}>Oferta</Link>
-          <Link href="/oferta/disponibilitate" style={{fontSize:'13px', color:UI.sub, textDecoration:'none', fontWeight:600}}>Disponibilitate</Link>
+          <Link href="/oferta" style={{fontSize:'13px', color:UI.sub, textDecoration:'none', fontWeight:600}}>Deviz</Link>
+          <Link href="/oferta/disponibilitate" style={{fontSize:'13px', color:UI.sub, textDecoration:'none', fontWeight:600}}>Calendar</Link>
+          <Link href="/oferta/istoric" style={{fontSize:'13px', color:UI.sub, textDecoration:'none', fontWeight:600}}>Istoric</Link>
+          <Link href="/oferta/roster" style={{fontSize:'13px', color:UI.sub, textDecoration:'none', fontWeight:600}}>Roster</Link>
         </div>
       </div>
 

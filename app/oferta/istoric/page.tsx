@@ -212,6 +212,7 @@ export default function IstoricPage() {
             <div style={{fontSize:'13px', color:UI.faint, fontWeight:500, marginTop:'2px'}}>Istoric oferte</div>
           </div>
           <div style={{display:'flex', gap:'10px', alignItems:'center', flexWrap:'wrap'}}>
+            <Link href="/oferta/asistent" style={{fontSize:'13px', color:'white', fontWeight:700, background:'#1c1917', border:'1.5px solid #1c1917', borderRadius:'10px', padding:'9px 14px', textDecoration:'none'}}>Asistent</Link>
             <Link href="/oferta" style={{fontSize:'13px', color:'#1c1917', fontWeight:700, background:'white', border:'1.5px solid #ececec', borderRadius:'10px', padding:'9px 14px', textDecoration:'none'}}>Deviz</Link>
             <Link href="/oferta/disponibilitate" style={{fontSize:'13px', color:'#1c1917', fontWeight:700, background:'white', border:'1.5px solid #ececec', borderRadius:'10px', padding:'9px 14px', textDecoration:'none'}}>Calendar</Link>
             <span style={{fontSize:'13px', color:'white', fontWeight:700, background:'#1c1917', border:'1.5px solid #1c1917', borderRadius:'10px', padding:'9px 14px'}}>Istoric</span>

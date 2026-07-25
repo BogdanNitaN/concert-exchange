@@ -9,7 +9,7 @@ import { jsPDF } from 'jspdf'
 import DatePicker from '@/components/modules/shared/DatePicker'
 import { supabase } from '@/lib/supabase'
 import { useRouter } from 'next/navigation'
-import { UserPlus, Users, History, LogOut, Copy, MessageCircle, Mail, FileDown, Calendar, Shield, CalendarSearch } from 'lucide-react'
+import { UserPlus, Users, History, LogOut, Copy, MessageCircle, Mail, FileDown, Calendar, Shield, CalendarSearch, Sparkles } from 'lucide-react'
 
 const F = 'Montserrat,sans-serif'
 // Design tokens premium
@@ -770,6 +770,7 @@ export default function OfertaPage() {
             <div style={{fontSize:'13px', color:'#a8a29e', fontWeight:500, marginTop:'2px'}}>Generator deviz intern</div>
           </div>
           <div style={{display:'flex', gap: isMobile ? '8px' : '10px', alignItems:'center', flexWrap:'wrap', justifyContent: isMobile ? 'flex-start' : 'flex-end'}}>
+            <Link href="/oferta/asistent" style={{display:'flex', alignItems:'center', gap:'6px', fontSize:'13px', color:'white', fontWeight:700, background:'#1c1917', border:'1.5px solid #1c1917', borderRadius:'10px', padding:'9px 14px', cursor:'pointer', fontFamily:F, textDecoration:'none'}}><Sparkles size={15} strokeWidth={2.2} /> Asistent</Link>
             <Link href="/oferta/disponibilitate" style={{display:'flex', alignItems:'center', gap:'6px', fontSize:'13px', color:'#1c1917', fontWeight:700, background:'white', border:'1.5px solid #ececec', borderRadius:'10px', padding:'9px 14px', cursor:'pointer', fontFamily:F, textDecoration:'none'}}><CalendarSearch size={15} strokeWidth={2.2} /> Calendar</Link>
             <Link href="/oferta/istoric" style={{display:'flex', alignItems:'center', gap:'6px', fontSize:'13px', color:'#1c1917', fontWeight:700, background:'white', border:'1.5px solid #ececec', borderRadius:'10px', padding:'9px 14px', cursor:'pointer', fontFamily:F, textDecoration:'none'}}><History size={15} strokeWidth={2.2} /> Istoric</Link>
             <Link href="/oferta/roster" style={{display:'flex', alignItems:'center', gap:'6px', fontSize:'13px', color:'#1c1917', fontWeight:700, background:'white', border:'1.5px solid #ececec', borderRadius:'10px', padding:'9px 14px', cursor:'pointer', fontFamily:F, textDecoration:'none'}}><Users size={15} strokeWidth={2.2} /> Roster</Link>
