@@ -120,6 +120,17 @@ const TOOLS = [
     },
   },
   {
+    name: 'top_spotify_roster',
+    description: 'Construieste topul artistilor din rosterul nostru dupa statistici reale Spotify/social (Chartex): streams, followers, ascultatori lunari, TikTok. Foloseste pentru intrebari gen: topul artistilor trap dupa Spotify, cine e cel mai ascultat din roster, compara artisti dupa streamuri. Filtreaza optional pe gen muzical.',
+    input_schema: {
+      type: 'object',
+      properties: {
+        gen: { type: 'string', description: 'Genul muzical pentru filtrare (ex: trap, pop, rock) - optional, fara filtru = tot rosterul' },
+        artisti: { type: 'array', items: { type: 'string' }, description: 'Lista specifica de artisti de comparat (optional, alternativa la gen)' },
+      },
+    },
+  },
+  {
     name: 'cauta_artisti_roster',
     description: 'Returneaza artistii din roster cu fee, categorie muzicala, oras de resedinta, numar persoane, tip (propriu FWD sau intermediere). Fara parametru returneaza toti. Foloseste pentru intrebari despre preturi, genuri, cati artisti, ce artisti avem.',
     input_schema: {
@@ -307,6 +318,37 @@ async function ruleazaUnealta(nume: string, input: any, baseUrl: string): Promis
         cazare: art.cazare || null, persoane: art.nr_persoane || 0, cursEur: eurRate,
         nota: 'cazarea si masa NU sunt scazute - de negociat separat sau incluse in landed',
       })
+    }
+    if (nume === 'top_spotify_roster') {
+      const ra = await fetch(baseUrl + '/api/oferta-artist', { cache: 'no-store' })
+      const rd = await ra.json()
+      let artisti = rd.artists || []
+      if (input.gen) {
+        const g = input.gen.toLowerCase()
+        artisti = artisti.filter((a: any) => (a.gen || '').toLowerCase().includes(g))
+      }
+      if (input.artisti && input.artisti.length) {
+        const cautati = input.artisti.map((n: string) => n.toLowerCase())
+        artisti = artisti.filter((a: any) => cautati.some((c: string) => a.nume.toLowerCase().includes(c)))
+      }
+      artisti = artisti.slice(0, 15)
+      const statistici = await Promise.all(artisti.map(async (a: any) => {
+        try {
+          const rc = await fetch(baseUrl + '/api/chartex?action=artist_full&artist=' + encodeURIComponent(a.nume), { cache: 'no-store' })
+          const dc = await rc.json()
+          return {
+            artist: a.nume, gen: a.gen || null, fee: a.fee_standard || null,
+            spotifyStreams: dc.spotifyStreams || 0,
+            spotifyMonthlyListeners: dc.spotifyMonthlyListeners || 0,
+            spotifyFollowers: dc.spotifyFollowers || 0,
+            tiktokFollowers: dc.tiktokFollowers || 0,
+            youtubeViews: dc.youtubeViews || 0,
+            hypeStatus: dc.hypeStatus || null,
+          }
+        } catch { return { artist: a.nume, gen: a.gen || null, fee: a.fee_standard || null, eroare: 'fara date' } }
+      }))
+      statistici.sort((a: any, b: any) => (b.spotifyMonthlyListeners || b.spotifyStreams || 0) - (a.spotifyMonthlyListeners || a.spotifyStreams || 0))
+      return JSON.stringify({ total: statistici.length, criteriu: 'spotify monthly listeners (fallback streams)', top: statistici })
     }
     if (nume === 'cauta_artisti_roster') {
       const r = await fetch(baseUrl + '/api/oferta-artist' + (input.cauta ? '?q=' + encodeURIComponent(input.cauta) : ''), { cache: 'no-store' })
