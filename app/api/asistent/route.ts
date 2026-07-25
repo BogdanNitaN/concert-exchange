@@ -50,6 +50,28 @@ const TOOLS = [
     },
   },
   {
+    name: 'cauta_in_calendar',
+    description: 'Cauta un text (nume festival, club, oras, eveniment) in TOATE calendarele artistilor si returneaza cine are evenimente care contin acel text, cu date. Foloseste pentru intrebari gen: cine canta la festivalul X, ce artisti avem la clubul Y, ce evenimente avem in orasul Z. Cautarea acopera anul trecut si urmatorul.',
+    input_schema: {
+      type: 'object',
+      properties: {
+        text: { type: 'string', description: 'Textul cautat (minim 3 caractere), ex: young, nish, bacau' },
+      },
+      required: ['text'],
+    },
+  },
+  {
+    name: 'raport_oferte',
+    description: 'Returneaza ofertele generate/salvate in sistem intr-o perioada: cod, client, oras, data eveniment, artisti cu fee-uri, status. Foloseste pentru rapoarte: cate oferte am dat, ce valoare totala, ce artisti am ofertat cel mai des, oferte pe saptamana/luna/an.',
+    input_schema: {
+      type: 'object',
+      properties: {
+        dataStart: { type: 'string', description: 'Inceputul perioadei YYYY-MM-DD (optional)' },
+        dataEnd: { type: 'string', description: 'Sfarsitul perioadei YYYY-MM-DD (optional)' },
+      },
+    },
+  },
+  {
     name: 'cauta_artisti_roster',
     description: 'Returneaza artistii din roster cu fee, categorie muzicala, oras de resedinta, numar persoane, tip (propriu FWD sau intermediere). Fara parametru returneaza toti. Foloseste pentru intrebari despre preturi, genuri, cati artisti, ce artisti avem.',
     input_schema: {
@@ -109,6 +131,25 @@ async function ruleazaUnealta(nume: string, input: any, baseUrl: string): Promis
       const d = await r.json()
       return JSON.stringify(d.ok ? { salvat: true, regula: input.regula } : { eroare: 'nu s-a salvat' })
     }
+    if (nume === 'cauta_in_calendar') {
+      const r = await fetch(baseUrl + '/api/calendar-cauta?text=' + encodeURIComponent(input.text), { cache: 'no-store' })
+      const d = await r.json()
+      if (!d.ok) return JSON.stringify({ eroare: d.error || 'eroare cautare' })
+      return JSON.stringify({ cautat: d.cautat, gasite: d.gasite, evenimente: (d.evenimente || []).slice(0, 40) })
+    }
+    if (nume === 'raport_oferte') {
+      const r = await fetch(baseUrl + '/api/oferta-save', { cache: 'no-store' })
+      const d = await r.json()
+      let lista = d.oferte || d.data || []
+      if (input.dataStart) lista = lista.filter((o: any) => (o.created_at || '').slice(0, 10) >= input.dataStart)
+      if (input.dataEnd) lista = lista.filter((o: any) => (o.created_at || '').slice(0, 10) <= input.dataEnd)
+      const rez = lista.slice(0, 100).map((o: any) => ({
+        cod: o.cod, client: o.client || o.nume_client || null, oras: o.oras || null,
+        dataEveniment: o.data_eveniment || null, creata: (o.created_at || '').slice(0, 10),
+        status: o.status || null, artisti: o.artisti || null,
+      }))
+      return JSON.stringify({ total: rez.length, oferte: rez })
+    }
     if (nume === 'cauta_artisti_roster') {
       const r = await fetch(baseUrl + '/api/oferta-artist' + (input.cauta ? '?q=' + encodeURIComponent(input.cauta) : ''), { cache: 'no-store' })
       const d = await r.json()
@@ -157,6 +198,7 @@ LOGICA DE BUSINESS (aplic-o in judecati):
 - Transport: artistii pleaca de regula din orasul de resedinta (majoritatea Bucuresti). Peste 300 km se ia in calcul zbor pentru artistii cu bilete_avion > 0.
 - Eveniment in Bucuresti/Ilfov cu artist rezident in Bucuresti = fara transport/cazare/diurna (local).
 - Pe 15 august (Sf. Maria), 1 Mai, Revelion, weekendurile de vara = cerere mare, artistii se ocupa repede.
+- In descrierea evenimentelor din calendar, echipa noteaza adesea agentul care a adaugat evenimentul (nume sau initiale). Pentru intrebari gen "ce a pus agentul X", cauta numele agentului cu cauta_in_calendar si filtreaza dupa campul "adaugat" (data crearii) pentru perioada ceruta.
 
 FII CONSILIER, NU DOAR EXECUTANT:
 - Cand un artist cerut e ocupat, propune automat 2-3 alternative din acelasi gen si buget similar, alegand cu prioritate artisti FWD liberi.
