@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server'
+import { createClient } from '@supabase/supabase-js'
 import { calcLinieOferta } from '@/lib/calc-oferta'
 import { areZborIntern } from '@/lib/zbor-intern'
 
@@ -332,9 +333,17 @@ async function ruleazaUnealta(nume: string, input: any, baseUrl: string): Promis
         artisti = artisti.filter((a: any) => cautati.some((c: string) => a.nume.toLowerCase().includes(c)))
       }
       artisti = artisti.slice(0, 15)
+      // spotify_id-urile din artist_images (potrivire pe nume)
+      const supa = createClient(process.env.NEXT_PUBLIC_SUPABASE_URL!, process.env.SUPABASE_SECRET_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!)
+      const { data: imgs } = await supa.from('artist_images').select('spotify_id, name')
+      const idByName: Record<string, string> = {}
+      for (const row of (imgs || [])) {
+        if (row.name && row.spotify_id) idByName[row.name.toLowerCase().trim()] = String(row.spotify_id).split('-')[0]
+      }
       const statistici = await Promise.all(artisti.map(async (a: any) => {
         try {
-          const rc = await fetch(baseUrl + '/api/chartex?action=artist_full&artist=' + encodeURIComponent(a.nume), { cache: 'no-store' })
+          const sid = idByName[a.nume.toLowerCase().trim()] || ''
+          const rc = await fetch(baseUrl + '/api/chartex?action=artist_full&artist=' + encodeURIComponent(a.nume) + (sid ? '&spotify_id=' + encodeURIComponent(sid) : ''), { cache: 'no-store' })
           const dc = await rc.json()
           return {
             artist: a.nume, gen: a.gen || null, fee: a.fee_standard || null,
