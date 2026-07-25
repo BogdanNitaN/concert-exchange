@@ -733,6 +733,7 @@ export default function OfertaPage() {
     return (
       <div style={{minHeight:'100vh', background:'#f3efff', display:'flex', alignItems:'center', justifyContent:'center', fontFamily:F, padding:'20px'}}>
         <div style={{background:'white', padding:'40px', borderRadius:'16px', border:'2px solid #e7e5e4', width:'340px'}}>
+          <img src="/gigx-mark.png" width={34} height={34} alt="" style={{display:'block', margin:'0 auto 10px'}} />
           <div style={{fontSize:'22px', fontWeight:800, marginBottom:'6px'}}>GIG<span style={{color:'#059669'}}>x</span></div>
           <div style={{fontSize:'13px', color:'#78716c', marginBottom:'20px'}}>Autentificare</div>
           <input type="text" placeholder="Utilizator" value={loginEmail} autoComplete="username"
@@ -770,7 +771,10 @@ export default function OfertaPage() {
       <div style={{maxWidth:'1080px', margin:'0 auto', position:'relative', zIndex:1}}>
         <div style={{display:'flex', justifyContent:'space-between', alignItems:'center', marginBottom:'24px', position:'sticky', top:'12px', zIndex:50, background:'rgba(255,255,255,0.7)', backdropFilter:'blur(16px)', WebkitBackdropFilter:'blur(16px)', border:'1px solid rgba(255,255,255,0.5)', borderRadius:'16px', padding:'12px 18px', boxShadow:'0 8px 32px rgba(0,0,0,0.06), inset 0 1px 0 rgba(255,255,255,0.5)'}}>
           <div>
-            <div onClick={resetOferta} title="Ofertă nouă" style={{fontSize:'27px', fontWeight:800, letterSpacing:'-1px', color:UI.ink, cursor:'pointer'}}>GIG<span style={{color:'#059669'}}>x</span></div>
+            <div onClick={resetOferta} title="Ofertă nouă" style={{display:'flex', alignItems:'center', gap:'9px', cursor:'pointer'}}>
+              <img src="/gigx-mark.png" width={26} height={26} alt="" style={{display:'block'}} />
+              <span style={{fontSize:'27px', fontWeight:800, letterSpacing:'-1px', color:UI.ink}}>GIG<span style={{color:'#059669'}}>x</span></span>
+            </div>
             <div style={{fontSize:'13px', color:'#a8a29e', fontWeight:500, marginTop:'2px'}}>Generator deviz intern</div>
           </div>
           <div style={{display:'flex', gap: isMobile ? '8px' : '10px', alignItems:'center', flexWrap:'wrap', justifyContent: isMobile ? 'flex-start' : 'flex-end'}}>

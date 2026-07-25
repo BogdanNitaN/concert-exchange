@@ -177,7 +177,7 @@ export default function AsistentPage() {
   return (
     <div style={{minHeight:'100vh', background:'linear-gradient(160deg, #eceef2 0%, #e8eaf0 45%, #dde1ea 100%)', fontFamily:F, display:'flex', flexDirection:'column'}}>
       <div style={{padding:'16px 20px', display:'flex', alignItems:'center', gap:'16px', borderBottom:'1px solid '+UI.line, background:'rgba(255,255,255,0.7)', backdropFilter:'blur(8px)', position:'sticky', top:0, zIndex:10}}>
-        <Link href="/oferta" style={{fontSize:'20px', fontWeight:800, letterSpacing:'-0.5px', color:UI.ink, textDecoration:'none'}}>GIG<span style={{color:UI.green}}>x</span></Link>
+        <Link href="/oferta" style={{display:'inline-flex', alignItems:'center', gap:'8px', fontSize:'20px', fontWeight:800, letterSpacing:'-0.5px', color:UI.ink, textDecoration:'none'}}><img src="/gigx-mark.png" width={24} height={24} alt="" style={{display:'block'}} /><span>GIG<span style={{color:UI.green}}>x</span></span></Link>
         <div style={{fontSize:'14px', fontWeight:700, color:UI.sub}}>Asistent</div>
         <div style={{marginLeft:'auto', display:'flex', gap:'14px', alignItems:'center'}}>
           <span style={{fontSize:'11px', color:UI.faint}}>azi: {nrAzi} întrebări · ~{costAzi < 0.01 && costAzi > 0 ? '<0,01' : costAzi.toFixed(2).replace('.', ',')}$</span>

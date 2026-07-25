@@ -201,7 +201,7 @@ export default function RosterPage() {
       <div style={{maxWidth:'760px', margin:'0 auto'}}>
         <div style={{display:'flex', justifyContent:'space-between', alignItems:'center', marginBottom:'20px'}}>
           <div>
-            <Link href="/oferta" title="Înapoi la ofertă" style={{fontSize:'26px', fontWeight:800, letterSpacing:'-0.5px', color:UI.ink, textDecoration:'none', cursor:'pointer'}}>GIG<span style={{color:UI.green}}>x</span></Link>
+            <Link href="/oferta" title="Înapoi la ofertă" style={{display:'inline-flex', alignItems:'center', gap:'8px', fontSize:'26px', fontWeight:800, letterSpacing:'-0.5px', color:UI.ink, textDecoration:'none', cursor:'pointer'}}><img src="/gigx-mark.png" width={24} height={24} alt="" style={{display:'block'}} /><span>GIG<span style={{color:UI.green}}>x</span></span></Link>
             <div style={{fontSize:'13px', color:UI.faint, fontWeight:500, marginTop:'2px'}}>Roster · {artists.length} artiști</div>
           </div>
           <div style={{display:'flex', gap:'10px', alignItems:'center', flexWrap:'wrap'}}>

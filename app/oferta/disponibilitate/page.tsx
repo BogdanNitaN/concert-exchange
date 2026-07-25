@@ -564,7 +564,7 @@ export default function DisponibilitatePage() {
     <div style={{minHeight:'100vh', background:bg, fontFamily:F, padding: isMobile ? '20px 14px' : '40px 20px'}}>
       <div style={{maxWidth:'980px', margin:'0 auto'}}>
         <div style={{display:'flex', justifyContent:'space-between', alignItems:'center', marginBottom:'20px', flexWrap:'wrap', gap:'10px'}}>
-          <Link href="/oferta" title="Înapoi la ofertă" style={{fontSize:'24px', fontWeight:800, letterSpacing:'-0.5px', color:UI.ink, textDecoration:'none'}}>GIG<span style={{color:UI.green}}>x</span></Link>
+          <Link href="/oferta" title="Înapoi la ofertă" style={{display:'inline-flex', alignItems:'center', gap:'8px', fontSize:'24px', fontWeight:800, letterSpacing:'-0.5px', color:UI.ink, textDecoration:'none'}}><img src="/gigx-mark.png" width={24} height={24} alt="" style={{display:'block'}} /><span>GIG<span style={{color:UI.green}}>x</span></span></Link>
           <div style={{display:'flex', gap:'10px', alignItems:'center', flexWrap:'wrap'}}>
             <Link href="/oferta/asistent" style={{fontSize:'13px', color:'white', fontWeight:700, background:'#1c1917', border:'1.5px solid #1c1917', borderRadius:'10px', padding:'9px 14px', textDecoration:'none'}}>Asistent</Link>
             <Link href="/oferta" style={{fontSize:'13px', color:'#1c1917', fontWeight:700, background:'white', border:'1.5px solid #ececec', borderRadius:'10px', padding:'9px 14px', textDecoration:'none'}}>Deviz</Link>
