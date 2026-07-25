@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
 import { calcLinieOferta } from '@/lib/calc-oferta'
 import { areZborIntern } from '@/lib/zbor-intern'
+import { ARTISTS_DATA } from '@/lib/artists-data'
 
 export const maxDuration = 60
 
@@ -326,7 +327,16 @@ async function ruleazaUnealta(nume: string, input: any, baseUrl: string): Promis
       let artisti = rd.artists || []
       if (input.gen) {
         const g = input.gen.toLowerCase()
-        artisti = artisti.filter((a: any) => (a.gen || '').toLowerCase().includes(g))
+        const numeGen = new Set(
+          (ARTISTS_DATA as unknown as any[])
+            .filter((ad: any) => (ad.genres || []).some((x: string) => x.toLowerCase().includes(g)))
+            .map((ad: any) => ad.name.toLowerCase().trim())
+        )
+        artisti = artisti.filter((a: any) => {
+          const n = a.nume.toLowerCase().trim()
+          for (const ng of numeGen) { if (n.includes(ng) || ng.includes(n)) return true }
+          return false
+        })
       }
       if (input.artisti && input.artisti.length) {
         const cautati = input.artisti.map((n: string) => n.toLowerCase())
@@ -346,7 +356,7 @@ async function ruleazaUnealta(nume: string, input: any, baseUrl: string): Promis
           const rc = await fetch(baseUrl + '/api/chartex?action=artist_full&artist=' + encodeURIComponent(a.nume) + (sid ? '&spotify_id=' + encodeURIComponent(sid) : ''), { cache: 'no-store' })
           const dc = await rc.json()
           return {
-            artist: a.nume, gen: a.gen || null, fee: a.fee_standard || null,
+            artist: a.nume, fee: a.fee_standard || null,
             spotifyStreams: dc.spotifyStreams || 0,
             spotifyMonthlyListeners: dc.spotifyMonthlyListeners || 0,
             spotifyFollowers: dc.spotifyFollowers || 0,
@@ -354,7 +364,7 @@ async function ruleazaUnealta(nume: string, input: any, baseUrl: string): Promis
             youtubeViews: dc.youtubeViews || 0,
             hypeStatus: dc.hypeStatus || null,
           }
-        } catch { return { artist: a.nume, gen: a.gen || null, fee: a.fee_standard || null, eroare: 'fara date' } }
+        } catch { return { artist: a.nume, fee: a.fee_standard || null, eroare: 'fara date' } }
       }))
       statistici.sort((a: any, b: any) => (b.spotifyMonthlyListeners || b.spotifyStreams || 0) - (a.spotifyMonthlyListeners || a.spotifyStreams || 0))
       return JSON.stringify({ total: statistici.length, criteriu: 'spotify monthly listeners (fallback streams)', top: statistici })
