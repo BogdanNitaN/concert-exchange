@@ -16,6 +16,7 @@ const UI = {
 }
 
 interface Oferta {
+  test?: boolean
   cod: string
   client: string | null
   oras: string | null
@@ -119,6 +120,10 @@ export default function IstoricPage() {
     } catch {}
   }
 
+  async function toggleTest(cod: string, test: boolean) {
+    setOferte(prev => prev.map(o => o.cod === cod ? { ...o, test } : o))
+    try { await fetch('/api/oferta-save', { method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ cod, test }) }) } catch {}
+  }
   async function stergeOferta(cod: string) {
     if (!confirm('Sigur ștergi oferta ' + cod + '? Nu se poate reveni.')) return
     setOferte(prev => prev.filter(o => o.cod !== cod))
@@ -288,7 +293,7 @@ export default function IstoricPage() {
           <div style={{display:'flex', flexDirection:'column', gap:'12px'}}>
             {filtrate.length === 0 && <div style={{color:'#78716c', textAlign:'center', padding:'40px'}}>Nicio ofertă găsită</div>}
             {filtrate.map(o => (
-              <div key={o.cod} style={{background:UI.card, padding:'20px', borderRadius:UI.radius, border:'1px solid '+UI.line, boxShadow:UI.shadow}}>
+              <div key={o.cod} style={{background: o.test ? '#fefce8' : UI.card, padding:'20px', borderRadius:UI.radius, border:'1px solid '+(o.test ? '#fde047' : UI.line), boxShadow:UI.shadow}}>
                 <div style={{display:'flex', justifyContent:'space-between', alignItems:'flex-start', marginBottom:'10px'}}>
                   <div style={{display:'flex', gap:'10px', alignItems:'flex-start'}}>
                     <input type="checkbox" checked={selectate.has(o.cod)} onChange={() => toggleSelect(o.cod)} style={{width:'18px', height:'18px', marginTop:'2px', accentColor:'#dc2626', cursor:'pointer'}} />
@@ -299,6 +304,10 @@ export default function IstoricPage() {
                   </div>
                   <div style={{textAlign:'right'}}>
                     <div style={{fontSize:'11px', color:'#78716c'}}>{new Date(o.created_at).toLocaleDateString('ro-RO')} {new Date(o.created_at).toLocaleTimeString('ro-RO', {hour:'2-digit',minute:'2-digit'})}</div>
+                    <label style={{display:'inline-flex', alignItems:'center', gap:'5px', fontSize:'11px', fontWeight:700, color: o.test ? '#a16207' : '#a8a29e', cursor:'pointer', marginTop:'4px'}}>
+                      <input type="checkbox" checked={!!o.test} onChange={e => toggleTest(o.cod, e.target.checked)} style={{width:'14px', height:'14px', accentColor:'#eab308', cursor:'pointer'}} />
+                      test
+                    </label>
                     <select value={o.status} onChange={e => updateStatus(o.cod, e.target.value)}
                       style={{marginTop:'4px', padding:'5px 12px', borderRadius:'8px', border:'none', color:'white', fontSize:'11px', fontWeight:800, fontFamily:F, cursor:'pointer', background: STATUS_COLOR[o.status] || '#a8a29e', textTransform:'uppercase', letterSpacing:'0.3px', boxShadow:'0 1px 3px rgba(0,0,0,0.15)'}}>
                       {STATUSURI.map(s => <option key={s} value={s}>{s}</option>)}

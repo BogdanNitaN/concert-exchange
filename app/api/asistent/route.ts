@@ -68,6 +68,7 @@ const TOOLS = [
       properties: {
         dataStart: { type: 'string', description: 'Inceputul perioadei YYYY-MM-DD (optional)' },
         dataEnd: { type: 'string', description: 'Sfarsitul perioadei YYYY-MM-DD (optional)' },
+        includeTeste: { type: 'boolean', description: 'Include si ofertele marcate test (implicit false - testele sunt excluse din rapoarte)' },
       },
     },
   },
@@ -141,6 +142,8 @@ async function ruleazaUnealta(nume: string, input: any, baseUrl: string): Promis
       const r = await fetch(baseUrl + '/api/oferta-save', { cache: 'no-store' })
       const d = await r.json()
       let lista = d.oferte || d.data || []
+      const nrTeste = lista.filter((o: any) => o.test).length
+      if (!input.includeTeste) lista = lista.filter((o: any) => !o.test)
       if (input.dataStart) lista = lista.filter((o: any) => (o.created_at || '').slice(0, 10) >= input.dataStart)
       if (input.dataEnd) lista = lista.filter((o: any) => (o.created_at || '').slice(0, 10) <= input.dataEnd)
       const rez = lista.slice(0, 100).map((o: any) => ({
@@ -148,7 +151,7 @@ async function ruleazaUnealta(nume: string, input: any, baseUrl: string): Promis
         dataEveniment: o.data_eveniment || null, creata: (o.created_at || '').slice(0, 10),
         status: o.status || null, artisti: o.artisti || null,
       }))
-      return JSON.stringify({ total: rez.length, oferte: rez })
+      return JSON.stringify({ total: rez.length, oferteTestExcluse: input.includeTeste ? 0 : nrTeste, oferte: rez })
     }
     if (nume === 'cauta_artisti_roster') {
       const r = await fetch(baseUrl + '/api/oferta-artist' + (input.cauta ? '?q=' + encodeURIComponent(input.cauta) : ''), { cache: 'no-store' })
