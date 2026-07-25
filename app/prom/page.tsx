@@ -741,8 +741,8 @@ export default function PromPage() {
                 </select>
               </div>
               <div>
-                <div style={labelStyle}>Ai un artist în minte?</div>
-                <input style={inputStyle} placeholder="scrie numele, separate prin virgulă" value={form.other_artists} onChange={e => set('other_artists', e.target.value)} />
+                <div style={labelStyle}>Știi deja pe cine vrei? <span style={{fontWeight:400, color:'#a8a29e'}}>(opțional, poți alege și din catalog)</span></div>
+                <input style={inputStyle} placeholder="scrie numele, sau alege mai jos din catalog" value={form.other_artists} onChange={e => set('other_artists', e.target.value)} />
               </div>
             </div>
 
@@ -788,11 +788,20 @@ export default function PromPage() {
                 placeholder="ex: bal 300 persoane, sala X, vrem trap + DJ..." value={form.message} onChange={e => set('message', e.target.value)} />
             </div>
 
-            {selection.length === 0 && !form.other_artists.trim() ? (
-              <button onClick={() => { catalogRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' }) }}
-                style={{width:'100%', background:'#1c1917', color:'white', padding:'14px', borderRadius:'14px', border:'none', cursor:'pointer', fontSize:'14px', fontWeight:700, fontFamily:F, display:'flex', alignItems:'center', justifyContent:'center', gap:'8px'}}>
-                Alege artiștii ↓
-              </button>
+            {selection.length === 0 ? (
+              <>
+                <button onClick={() => { catalogRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' }) }}
+                  style={{width:'100%', background:'#1c1917', color:'white', padding:'16px', borderRadius:'14px', border:'none', cursor:'pointer', fontSize:'15px', fontWeight:700, fontFamily:F, display:'flex', alignItems:'center', justifyContent:'center', gap:'8px'}}>
+                  Alege artiștii din listă ↓
+                </button>
+                <div style={{fontSize:'12px', color:'#a8a29e', textAlign:'center', marginTop:'8px'}}>Completează formularul și alege până la {MAX_ARTISTS} artiști din listă.</div>
+                {form.other_artists.trim() && (
+                  <button onClick={() => { window.history.pushState({step:'summary'}, ''); setStep('summary'); setOpenArtistId(null); window.scrollTo({top:0}) }} disabled={!canContinue}
+                    style={{width:'100%', marginTop:'10px', background:'white', color: canContinue ? '#1c1917' : '#a8a29e', padding:'12px', borderRadius:'14px', border:'1.5px solid #e7e5e4', cursor: canContinue ? 'pointer' : 'not-allowed', fontSize:'13px', fontWeight:700, fontFamily:F}}>
+                    Continuă doar cu numele scris →
+                  </button>
+                )}
+              </>
             ) : (
               <button onClick={() => { window.history.pushState({step:'summary'}, ''); setStep('summary'); setOpenArtistId(selection[0]?.id ?? null); window.scrollTo({top:0}) }} disabled={!canContinue}
                 style={{width:'100%', background: canContinue ? '#1c1917' : '#e7e5e4', color: canContinue ? 'white' : '#a8a29e', padding:'14px', borderRadius:'14px', border:'none', cursor: canContinue ? 'pointer' : 'not-allowed', fontSize:'14px', fontWeight:700, fontFamily:F}}>
@@ -800,9 +809,6 @@ export default function PromPage() {
               </button>
             )}
 
-            <div style={{textAlign:'center', fontSize:'11px', color:'#a8a29e'}}>
-              Completează formularul și alege până la {MAX_ARTISTS} artiști din listă.
-            </div>
           </div>
         </div>
       </div>
