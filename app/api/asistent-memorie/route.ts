@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
+import { verificaAcces } from '@/lib/auth-asistent'
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -7,7 +8,9 @@ const supabase = createClient(
 )
 
 // GET: toate regulile active
-export async function GET() {
+export async function GET(req: Request) {
+  const acces = await verificaAcces(req)
+  if (!acces.ok) return NextResponse.json({ ok: false, error: 'Acces interzis' }, { status: 401 })
   const { data, error } = await supabase
     .from('asistent_memorie')
     .select('id, regula, created_at')
@@ -19,6 +22,8 @@ export async function GET() {
 
 // POST: adauga o regula
 export async function POST(req: Request) {
+  const acces = await verificaAcces(req)
+  if (!acces.ok) return NextResponse.json({ ok: false, error: 'Acces interzis' }, { status: 401 })
   const { regula } = await req.json()
   if (!regula || typeof regula !== 'string' || regula.trim().length < 3) {
     return NextResponse.json({ ok: false, error: 'regula invalida' }, { status: 400 })
@@ -30,6 +35,8 @@ export async function POST(req: Request) {
 
 // DELETE: dezactiveaza o regula dupa id
 export async function DELETE(req: Request) {
+  const acces = await verificaAcces(req)
+  if (!acces.ok) return NextResponse.json({ ok: false, error: 'Acces interzis' }, { status: 401 })
   const { searchParams } = new URL(req.url)
   const id = searchParams.get('id')
   if (!id) return NextResponse.json({ ok: false, error: 'lipsa id' }, { status: 400 })

@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
+import { verificaAcces } from '@/lib/auth-asistent'
 import { calcLinieOferta } from '@/lib/calc-oferta'
 import { areZborIntern } from '@/lib/zbor-intern'
 import { ARTISTS_DATA } from '@/lib/artists-data'
@@ -144,7 +145,7 @@ const TOOLS = [
   },
 ]
 
-async function ruleazaUnealta(nume: string, input: any, baseUrl: string): Promise<string> {
+async function ruleazaUnealta(nume: string, input: any, baseUrl: string, tokenAuth: string = ''): Promise<string> {
   try {
     if (nume === 'artisti_liberi_pe_data') {
       const r = await fetch(baseUrl + '/api/calendar-disponibilitate?data=' + encodeURIComponent(input.data), { cache: 'no-store' })
@@ -186,14 +187,14 @@ async function ruleazaUnealta(nume: string, input: any, baseUrl: string): Promis
     }
     if (nume === 'tine_minte') {
       const r = await fetch(baseUrl + '/api/asistent-memorie', {
-        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        method: 'POST', headers: { 'Content-Type': 'application/json', authorization: tokenAuth },
         body: JSON.stringify({ regula: input.regula }),
       })
       const d = await r.json()
       return JSON.stringify(d.ok ? { salvat: true, regula: input.regula } : { eroare: 'nu s-a salvat' })
     }
     if (nume === 'cauta_in_calendar') {
-      const r = await fetch(baseUrl + '/api/calendar-cauta?text=' + encodeURIComponent(input.text), { cache: 'no-store' })
+      const r = await fetch(baseUrl + '/api/calendar-cauta?text=' + encodeURIComponent(input.text), { cache: 'no-store', headers: { authorization: tokenAuth } })
       const d = await r.json()
       if (!d.ok) return JSON.stringify({ eroare: d.error || 'eroare cautare' })
       return JSON.stringify({ cautat: d.cautat, gasite: d.gasite, evenimente: (d.evenimente || []).slice(0, 40) })
@@ -385,6 +386,9 @@ async function ruleazaUnealta(nume: string, input: any, baseUrl: string): Promis
 }
 
 export async function POST(req: Request) {
+  const acces = await verificaAcces(req)
+  if (!acces.ok) return NextResponse.json({ error: 'Acces interzis: ' + acces.motiv }, { status: 401 })
+  const tokenAuth = req.headers.get('authorization') || ''
   const apiKey = process.env.ANTHROPIC_API_KEY
   if (!apiKey) return NextResponse.json({ error: 'ANTHROPIC_API_KEY lipseste din env' }, { status: 500 })
 
@@ -398,7 +402,7 @@ export async function POST(req: Request) {
 
   let reguliMemorie = ''
   try {
-    const rm = await fetch(baseUrl + '/api/asistent-memorie', { cache: 'no-store' })
+    const rm = await fetch(baseUrl + '/api/asistent-memorie', { cache: 'no-store', headers: { authorization: tokenAuth } })
     const dm = await rm.json()
     if (dm.ok && dm.reguli?.length) {
       reguliMemorie = '\n\nMEMORIE PERSISTENTA (reguli salvate de echipa - respecta-le, dar aplica regulile LITERAL, exact cum sunt scrise: o regula despre majorate se aplica DOAR la majorate, nu la nunti/botezuri/alte evenimente. Nu extinde regulile prin analogie):\n' + dm.reguli.map((r: any) => '- ' + r.regula).join('\n')
@@ -473,7 +477,7 @@ Raspunde scurt: liste clare, fara introduceri lungi.` + reguliMemorie
     convo.push({ role: 'assistant', content: data.content })
     const results = []
     for (const tu of toolUses) {
-      const rezultat = await ruleazaUnealta(tu.name, tu.input, baseUrl)
+      const rezultat = await ruleazaUnealta(tu.name, tu.input, baseUrl, tokenAuth)
       results.push({ type: 'tool_result', tool_use_id: tu.id, content: rezultat })
     }
     convo.push({ role: 'user', content: results })

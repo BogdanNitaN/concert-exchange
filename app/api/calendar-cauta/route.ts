@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server'
 import { google } from 'googleapis'
+import { verificaAcces } from '@/lib/auth-asistent'
 import { CALENDAR_TO_ROSTER, normNume, extragOrasDinTitlu } from '@/lib/calendar-mapping'
 
 export const maxDuration = 60
@@ -16,6 +17,8 @@ function getCalendarClient() {
 
 // Cauta un text in TOATE calendarele artistilor (titluri + descrieri evenimente)
 export async function GET(req: Request) {
+  const acces = await verificaAcces(req)
+  if (!acces.ok) return NextResponse.json({ ok: false, error: 'Acces interzis' }, { status: 401 })
   try {
     const url = new URL(req.url)
     const text = (url.searchParams.get('text') || '').trim()

@@ -74,8 +74,10 @@ export default function AsistentPage() {
       setNrAzi(nr)
     } catch {}
     try {
+      const sess = await supabase.auth.getSession()
+      const token = sess.data.session?.access_token || ''
       const r = await fetch('/api/asistent', {
-        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        method: 'POST', headers: { 'Content-Type': 'application/json', authorization: 'Bearer ' + token },
         body: JSON.stringify({ messages: noi.map(m => ({ role: m.role, content: m.text })) }),
       })
       const d = await r.json()
