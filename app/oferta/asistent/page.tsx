@@ -203,8 +203,15 @@ export default function AsistentPage() {
       </div>
 
       <div style={{position:'fixed', bottom:0, left:0, right:0, background:'rgba(255,255,255,0.9)', backdropFilter:'blur(8px)', borderTop:'1px solid '+UI.line, padding:'14px 16px'}}>
-        <div style={{maxWidth:'760px', margin:'0 auto', display:'flex', gap:'10px'}}>
-          <label style={{padding:'13px 14px', background:'white', border:'1.5px solid '+UI.lineStrong, borderRadius:UI.radiusSm, cursor:'pointer', fontSize:'16px', display:'flex', alignItems:'center'}}>
+        <div style={{maxWidth:'760px', margin:'0 auto', display:'flex', gap:'10px', position:'relative'}}>
+          {imgAtasata && (
+            <div style={{position:'absolute', bottom:'100%', left:0, marginBottom:'8px', background:'white', border:'1.5px solid '+UI.lineStrong, borderRadius:'12px', padding:'8px', display:'flex', alignItems:'center', gap:'8px', boxShadow:'0 4px 12px rgba(0,0,0,0.1)'}}>
+              <img src={imgAtasata} style={{height:'60px', borderRadius:'6px', display:'block'}} />
+              <span style={{fontSize:'12px', fontWeight:700, color:'#059669'}}>✓ Imagine atașată</span>
+              <button onClick={() => setImgAtasata(null)} style={{border:'none', background:'#fee2e2', color:'#dc2626', borderRadius:'6px', width:'24px', height:'24px', cursor:'pointer', fontWeight:800, fontSize:'13px'}}>×</button>
+            </div>
+          )}
+          <label style={{padding:'13px 14px', background: imgAtasata ? '#ecfdf5' : 'white', border:'1.5px solid '+(imgAtasata ? '#059669' : UI.lineStrong), borderRadius:UI.radiusSm, cursor:'pointer', fontSize:'16px', display:'flex', alignItems:'center'}}>
             📎
             <input type="file" accept="image/*" style={{display:'none'}} onChange={e => { const f = e.target.files?.[0]; if (f) citesteImagine(f); e.target.value = '' }} />
           </label>
