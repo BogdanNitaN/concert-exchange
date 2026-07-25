@@ -401,6 +401,9 @@ export default function OfertaPage() {
   function updateLinie(key: string, patch: Partial<Linie>) {
     setLinii(prev => prev.map(l => l.key === key ? { ...l, ...patch } : l))
   }
+  function setMasaToti(tip: 'diurna' | 'alacarte') {
+    setLinii(prev => prev.map(l => ({ ...l, tipMasa: tip })))
+  }
   function removeLinie(key: string) {
     const l = linii.find(x => x.key === key)
     // confirm doar daca s-a completat ceva manual (discount, CAG, cazare schimbata)
@@ -869,8 +872,18 @@ export default function OfertaPage() {
         {linii.length >= 2 && (
           <div style={{display:'flex', alignItems:'center', gap:'10px', marginBottom:'14px', flexWrap:'wrap'}}>
             <span style={{fontSize:'12px', fontWeight:700, color:UI.sub}}>Toți pe:</span>
-            <button onClick={() => setToateMasa('alacarte')} style={{padding:'7px 14px', fontSize:'12px', fontWeight:700, borderRadius:'8px', border:'1.5px solid '+UI.line, background:'white', color:UI.ink, cursor:'pointer', fontFamily:F}}>a la carte</button>
-            <button onClick={() => setToateMasa('diurna')} style={{padding:'7px 14px', fontSize:'12px', fontWeight:700, borderRadius:'8px', border:'1.5px solid '+UI.line, background:'white', color:UI.ink, cursor:'pointer', fontFamily:F}}>diurnă</button>
+            {(() => {
+              const totiDiurna = linii.every(l => l.tipMasa === 'diurna')
+              const totiAlacarte = linii.every(l => l.tipMasa === 'alacarte')
+              const mixt = !totiDiurna && !totiAlacarte
+              return (
+                <div style={{display:'inline-flex', alignItems:'center', borderRadius:'8px', border:'1.5px solid '+UI.lineStrong, overflow:'hidden'}}>
+                  <button onClick={() => setToateMasa('diurna')} style={{padding:'7px 14px', fontSize:'12px', fontWeight:700, border:'none', background: totiDiurna?UI.dark:'white', color: totiDiurna?'white':UI.faint, cursor:'pointer', fontFamily:F}}>diurnă</button>
+                  <button onClick={() => setToateMasa('alacarte')} style={{padding:'7px 14px', fontSize:'12px', fontWeight:700, border:'none', borderLeft:'1.5px solid '+UI.lineStrong, background: totiAlacarte?UI.dark:'white', color: totiAlacarte?'white':UI.faint, cursor:'pointer', fontFamily:F}}>a la carte</button>
+                </div>
+              )
+            })()}
+            {(() => { const mixt = !linii.every(l => l.tipMasa === 'diurna') && !linii.every(l => l.tipMasa === 'alacarte'); return mixt ? <span style={{fontSize:'11px', color:UI.faint}}>mixt</span> : null })()}
           </div>
         )}
         {/* carduri artisti */}
