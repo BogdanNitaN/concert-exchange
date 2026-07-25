@@ -656,7 +656,12 @@ export default function OfertaPage() {
     y += 6
 
     // === ARTISTI ===
-    const activi = linii.filter(l => l.includeExport)
+    const activi = [...linii.filter(l => l.includeExport)].sort((a, b) => {
+      const aFwd = a.artist.tip !== 'intermediere' ? 0 : 1
+      const bFwd = b.artist.tip !== 'intermediere' ? 0 : 1
+      if (aFwd !== bFwd) return aFwd - bFwd  // FWD primii
+      return b.fee - a.fee  // pret descrescator in fiecare grup
+    })
     for (const l of activi) {
       const c = calcLinie(l)
       if (y > 235) { doc.addPage(); y = 20 }

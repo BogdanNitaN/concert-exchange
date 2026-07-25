@@ -1,4 +1,5 @@
 'use client'
+import { deseneazaHeaderForward, deseneazaFooterForward } from '@/lib/pdf-forward'
 import Link from 'next/link'
 import { useState, useEffect } from 'react'
 import { supabase } from '@/lib/supabase'
@@ -491,22 +492,33 @@ export default function DisponibilitatePage() {
   async function exportaPdf() {
     const { default: jsPDF } = await import('jspdf')
     const doc = new jsPDF()
+    const W = 210, M = 18
     const noDia = (t: string) => t.normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/ș/g,'s').replace(/Ș/g,'S').replace(/ț/g,'t').replace(/Ț/g,'T').replace(/ă/g,'a').replace(/î/g,'i').replace(/â/g,'a')
-    let y = 20
-    doc.setFontSize(16); doc.setFont('helvetica','bold')
-    doc.text(noDia('Artisti disponibili' + (data ? ' pe ' + new Date(data).toLocaleDateString('ro-RO',{day:'numeric',month:'long',year:'numeric'}) : '') + (oras ? ' - ' + oras : '')), 20, y)
-    y += 12
+    // logo
+    let logo: string | null = null
+    try {
+      const resp = await fetch('/forward-logo.png')
+      const blob = await resp.blob()
+      logo = await new Promise<string>((res) => { const r = new FileReader(); r.onload = () => res(r.result as string); r.readAsDataURL(blob) })
+    } catch {}
+    deseneazaHeaderForward(doc, W, M, logo)
+    let y = 52
+    doc.setTextColor(28,25,23)
+    doc.setFontSize(15); doc.setFont('helvetica','bold')
+    doc.text(noDia('Artisti disponibili' + (data ? ' - ' + new Date(data).toLocaleDateString('ro-RO',{day:'numeric',month:'long',year:'numeric'}) : '') + (oras ? ' - ' + oras : '')), M, y)
+    y += 10
     const perGen: Record<string, string[]> = {}
     for (const b of bifatiLista) { (perGen[b.gen] = perGen[b.gen] || []).push(b.artist) }
-    doc.setFontSize(12)
     for (const g of GENURI) {
       if (!perGen[g.key]?.length) continue
-      doc.setFont('helvetica','bold'); doc.text(noDia(g.label + ':'), 20, y); y += 7
-      doc.setFont('helvetica','normal')
-      for (const a of perGen[g.key]) { doc.text(noDia('- ' + a), 25, y); y += 6 }
+      doc.setFontSize(11); doc.setFont('helvetica','bold'); doc.setTextColor(46,163,196)
+      doc.text(noDia(g.label), M, y); y += 6
+      doc.setFont('helvetica','normal'); doc.setFontSize(11); doc.setTextColor(28,25,23)
+      for (const a of perGen[g.key]) { doc.text(noDia('- ' + a), M + 4, y); y += 5.5 }
       y += 3
-      if (y > 275) { doc.addPage(); y = 20 }
+      if (y > 245) { doc.addPage(); y = 20 }
     }
+    deseneazaFooterForward(doc, W, M)
     doc.save('disponibilitate-' + (data || 'artisti') + '.pdf')
   }
 
