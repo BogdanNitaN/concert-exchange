@@ -118,6 +118,14 @@ export default function AsistentPage() {
         }) }),
       })
       let d: any = {}
+      if (!r.ok) {
+        let detaliu = ''
+        try { const je = await r.json(); detaliu = je.error || '' } catch {}
+        setStatusViu('')
+        setMesaje(m => [...m, { role: 'assistant', text: 'Eroare server (' + r.status + '): ' + (detaliu || 'cererea a fost respinsa - posibil imaginea e prea mare') }])
+        setLoading(false)
+        return
+      }
       const reader = r.body?.getReader()
       if (reader) {
         const decoder = new TextDecoder()
@@ -152,7 +160,7 @@ export default function AsistentPage() {
         } catch {}
       }
     } catch {
-      setMesaje(m => [...m, { role: 'assistant', text: 'Eroare de retea. Incearca din nou.' }])
+      setMesaje(m => [...m, { role: 'assistant', text: 'Eroare de retea sau cerere prea mare. Incearca din nou sau cu o imagine mai mica.' }])
     }
     setLoading(false)
   }
