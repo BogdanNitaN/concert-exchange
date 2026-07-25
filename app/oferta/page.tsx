@@ -1,5 +1,6 @@
 'use client'
 import { deseneazaHeaderForward, deseneazaFooterForward } from '@/lib/pdf-forward'
+import { calcLinieOferta } from '@/lib/calc-oferta'
 import { persoaneDinCazare } from '@/lib/persoane'
 import Link from 'next/link'
 
@@ -181,6 +182,7 @@ export default function OfertaPage() {
   const [locatie, setLocatie] = useState('')
   const [dataEveniment, setDataEveniment] = useState('')
   const [numeClient, setNumeClient] = useState('')
+  const [esteTest, setEsteTest] = useState(false)
   const [km, setKm] = useState<number | null>(null)
   const [loadingKm, setLoadingKm] = useState(false)
   const [eurRate, setEurRate] = useState<number | null>(null)
@@ -198,7 +200,7 @@ export default function OfertaPage() {
     const areDate = numeClient || toCity || dataEveniment || linii.length > 0 || locatie
     if (areDate && !confirm('Începi o ofertă nouă? Se șterge oferta curentă.')) return
     setLinii([]); setToCity(''); setDataEveniment(''); setNumeClient(''); setLocatie('')
-    setKm(null); setDestinatar(''); setUseAdaos(false); setInstitutiePublica(false)
+    setKm(null); setDestinatar(''); setUseAdaos(false); setInstitutiePublica(false); setEsteTest(false)
     setSearch(''); setFromCity('Bucuresti'); setAdaosProcent(1)
     setCodOferta('GIGX-' + new Date().getFullYear() + '-' + String(Math.floor(Math.random()*9000)+1000))
     window.scrollTo({ top: 0, behavior: 'smooth' })
@@ -435,29 +437,7 @@ export default function OfertaPage() {
     return LOCALITATI_IF.some(loc => orasEv === normOras(loc) || orasEv.includes(normOras(loc)))
   }
   function calcLinie(l: Linie) {
-    const local = esteLocalBucIlfov(l)
-    const marjaProc = km !== null && km > 300 ? 0.065 : 0.115
-    const kmTotal = km !== null ? (l.useMarja ? (km + Math.round(km * marjaProc)) * 2 : km * 2) : 0
-    const totiZboara = km !== null && km > 300 && !l.restulRutier
-    const transportEuro = l.artist.transport_moneda === 'euro'
-    const transportRaw = local ? 0 : ((kmTotal > 0 && l.leiKm > 0 && !totiZboara) ? kmTotal * l.leiKm : 0)
-    const transportLei = transportEuro ? 0 : Math.round(transportRaw / 10) * 10
-    const transportEur = transportEuro ? Math.round(transportRaw) : 0
-    const transportEurInLei = transportEuro && eurRate ? Math.round(transportEur * eurRate) : 0
-    const diurnaTotal = l.diurnaFixa > 0 ? l.diurnaFixa : (l.tipMasa === 'diurna' ? l.persoane * l.diurnaPerPers * l.zile : 0)
-    const alcoolTotal = l.useAlcool ? l.alcool : 0
-    const discount = l.feeLista > l.fee ? l.feeLista - l.fee : 0
-    const cursAdaos = eurRate ? eurRate * (1 + (useAdaos ? adaosProcent : 0) / 100) : 0
-    const savingLei = discount > 0 && eurRate ? Math.round(discount * eurRate) : 0
-    let cag = 0
-    
-    if (l.useCag) {
-      if (l.cagMod === 'suma') cag = l.cagSuma
-      else { cag = Math.round(l.fee * l.cagProcent / 100); if (cag > 1000) cag = 1000 }
-    }
-    const netGigx = l.fee - cag
-    const feeLeiConv = eurRate ? Math.round(l.fee * (cursAdaos || eurRate)) : 0
-    return { kmTotal, transportLei, transportEur, transportEurInLei, transportEuro, diurnaTotal, alcoolTotal, discount, cursAdaos, savingLei, cag, netGigx, feeLeiConv, local }
+    return calcLinieOferta(l, { km, eurRate, useAdaos, adaosProcent, local: esteLocalBucIlfov(l) })
   }
 
   function genText(): string {
@@ -530,6 +510,7 @@ export default function OfertaPage() {
           total_discount_eur: totalDiscount,
           total_cag_eur: totalCag,
           status: 'generata',
+          test: esteTest,
           from_city: fromCity,
           use_adaos: useAdaos,
           linii_complete: activi.map(l => ({
@@ -808,6 +789,12 @@ export default function OfertaPage() {
                 <Calendar size={13} strokeWidth={2.2} /> Data eveniment {!dataEveniment && <span style={{color:UI.attention, fontWeight:800}}>obligatoriu</span>}
               </label>
               <DatePicker value={dataEveniment} onChange={v => setDataEveniment(v)} placeholder="Alege data" /></div>
+          </div>
+          <div style={{marginBottom:'12px'}}>
+            <label style={{display:'inline-flex', alignItems:'center', gap:'8px', padding:'8px 14px', borderRadius:'10px', border:'1.5px solid '+(esteTest ? '#fde047' : UI.line), background: esteTest ? '#fefce8' : 'white', cursor:'pointer', fontSize:'13px', fontWeight:700, color: esteTest ? '#a16207' : UI.faint, fontFamily:F}}>
+              <input type="checkbox" checked={esteTest} onChange={e => setEsteTest(e.target.checked)} style={{width:'15px', height:'15px', accentColor:'#eab308', cursor:'pointer'}} />
+              Ofertă test
+            </label>
           </div>
           <div style={{display:'grid', gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr 1fr auto', gap:'12px', alignItems:'end'}}>
             <div><label style={label}>Oraș plecare</label>

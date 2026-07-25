@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server'
+import { calcLinieOferta } from '@/lib/calc-oferta'
 
 export const maxDuration = 60
 
@@ -70,6 +71,38 @@ const TOOLS = [
         dataEnd: { type: 'string', description: 'Sfarsitul perioadei YYYY-MM-DD (optional)' },
         includeTeste: { type: 'boolean', description: 'Include si ofertele marcate test (implicit false - testele sunt excluse din rapoarte)' },
       },
+    },
+  },
+  {
+    name: 'creeaza_oferta',
+    description: 'Creeaza si salveaza o oferta DRAFT in sistem (vizibila in Istoric, editabila in generator). Foloseste DOAR dupa ce utilizatorul a confirmat explicit rezumatul ofertei (intreaba intai: artist, fee, oras, data, client). Oferta se salveaza cu status draft-asistent si trebuie verificata de om inainte de trimitere.',
+    input_schema: {
+      type: 'object',
+      properties: {
+        artistNume: { type: 'string', description: 'Numele artistului exact ca in roster' },
+        fee: { type: 'number', description: 'Fee-ul ofertat in EUR' },
+        feeLista: { type: 'number', description: 'Fee-ul de lista daca e discount (optional, altfel egal cu fee)' },
+        oras: { type: 'string', description: 'Orasul evenimentului' },
+        dataEveniment: { type: 'string', description: 'Data evenimentului YYYY-MM-DD (optional)' },
+        client: { type: 'string', description: 'Numele clientului (optional)' },
+        mentiuni: { type: 'string', description: 'Mentiuni: landed/transport inclus, camere, masa, etc (optional)' },
+      },
+      required: ['artistNume', 'fee', 'oras'],
+    },
+  },
+  {
+    name: 'calculeaza_deviz',
+    description: 'Calculeaza devizul complet pentru un artist la un eveniment, cu ACEEASI logica ca generatorul de oferte: transport cu marja pe km, regula 300km/zbor, cazare, diurna/masa, discount, CAG. Foloseste cand se cere estimare de cost total, deviz, sau "cat ar costa X la orasul Y".',
+    input_schema: {
+      type: 'object',
+      properties: {
+        artistNume: { type: 'string', description: 'Numele artistului exact ca in roster' },
+        oras: { type: 'string', description: 'Orasul evenimentului' },
+        fee: { type: 'number', description: 'Fee-ul ofertat EUR (optional, implicit fee-ul standard din roster)' },
+        feeLista: { type: 'number', description: 'Fee-ul de lista daca e discount (optional)' },
+        cuCag: { type: 'boolean', description: 'Include CAG 10% (optional, implicit false)' },
+      },
+      required: ['artistNume', 'oras'],
     },
   },
   {
@@ -153,6 +186,79 @@ async function ruleazaUnealta(nume: string, input: any, baseUrl: string): Promis
       }))
       return JSON.stringify({ total: rez.length, oferteTestExcluse: input.includeTeste ? 0 : nrTeste, oferte: rez })
     }
+    if (nume === 'creeaza_oferta') {
+      // iau datele artistului din roster pt linia completa
+      const ra = await fetch(baseUrl + '/api/oferta-artist?q=' + encodeURIComponent(input.artistNume), { cache: 'no-store' })
+      const rd = await ra.json()
+      const art = (rd.artists || []).find((a: any) => a.nume.toLowerCase() === input.artistNume.toLowerCase()) || (rd.artists || [])[0]
+      if (!art) return JSON.stringify({ eroare: 'artistul nu exista in roster: ' + input.artistNume })
+      const cod = 'GIGX-' + new Date().getFullYear() + '-A' + String(Math.floor(Math.random() * 9000) + 1000)
+      const linie = {
+        artistNume: art.nume, formatSelectat: '', durata: art.durata_default || '40 min',
+        tipPret: 'Standard', feeLista: input.feeLista || input.fee, fee: input.fee,
+        leiKm: art.lei_km || 0, useMarja: true, cazare: art.cazare || '', persoane: art.nr_persoane || 0,
+        bileteAvion: art.bilete_avion || 0, restulRutier: true, tipMasa: 'alacarte', zile: 1,
+        diurnaPerPers: 180, diurnaFixa: art.diurna_fixa || 0, cazareFixa: art.cazare_fixa || 0,
+        useAlcool: false, alcool: 0, useCag: false, cagProcent: 10, cagSuma: 0, cagMod: 'procent',
+      }
+      const oferta = {
+        cod, status: 'draft-asistent', client: input.client || null, oras: input.oras,
+        data_eveniment: input.dataEveniment || null, nota: input.mentiuni || null,
+        artisti: [{ nume: art.nume, fee: input.fee, feeLista: input.feeLista || input.fee, tipPret: 'Standard', tip: art.tip, format: '' }],
+        linii_complete: [linie],
+      }
+      const sv = await fetch(baseUrl + '/api/oferta-save', {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(oferta),
+      })
+      const dsv = await sv.json()
+      if (!dsv.ok) return JSON.stringify({ eroare: 'nu s-a salvat oferta' })
+      return JSON.stringify({ salvat: true, cod, mesaj: 'Oferta draft salvata. O gasesti in Istoric (gigx.ro/oferta/istoric), o deschizi cu Editeaza, verifici si o trimiti.' })
+    }
+    if (nume === 'calculeaza_deviz') {
+      const ra = await fetch(baseUrl + '/api/oferta-artist?q=' + encodeURIComponent(input.artistNume), { cache: 'no-store' })
+      const rd = await ra.json()
+      const art = (rd.artists || []).find((a: any) => a.nume.toLowerCase() === input.artistNume.toLowerCase()) || (rd.artists || [])[0]
+      if (!art) return JSON.stringify({ eroare: 'artistul nu exista in roster: ' + input.artistNume })
+      // km din orasul de resedinta al artistului spre orasul evenimentului
+      const fromCity = art.oras_rezidenta || 'Bucuresti'
+      let km: number | null = null
+      try {
+        const rk = await fetch(baseUrl + '/api/distance?to=' + encodeURIComponent(input.oras) + '&from=' + encodeURIComponent(fromCity), { cache: 'no-store' })
+        const dk = await rk.json()
+        if (dk?.km) km = dk.km
+      } catch {}
+      // curs BNR
+      let eurRate: number | null = null
+      try {
+        const rc = await fetch(baseUrl + '/api/bnr-rate', { cache: 'no-store' })
+        const dc = await rc.json()
+        eurRate = dc?.rate || dc?.eur || null
+      } catch {}
+      // local: artist Bucuresti + eveniment Buc/Ilfov (aproximare pe nume oras)
+      const orasNorm = (input.oras || '').toLowerCase()
+      const local = (fromCity || '').toLowerCase().includes('bucuresti') && (orasNorm.includes('bucuresti') || orasNorm.includes('ilfov') || orasNorm.includes('otopeni') || orasNorm.includes('voluntari'))
+      const fee = input.fee || art.fee_standard || 0
+      const linie = {
+        artist: { transport_moneda: art.transport_moneda || null },
+        fee, feeLista: input.feeLista || fee,
+        leiKm: art.lei_km || 0, useMarja: true, persoane: art.nr_persoane || 0,
+        restulRutier: true, tipMasa: 'alacarte' as const, zile: 1,
+        diurnaPerPers: 180, diurnaFixa: art.diurna_fixa || 0, cazareFixa: art.cazare_fixa || 0,
+        useAlcool: false, alcool: 0,
+        useCag: !!input.cuCag, cagProcent: 10, cagSuma: 0, cagMod: 'procent' as const,
+      }
+      const c = calcLinieOferta(linie, { km, eurRate, useAdaos: false, adaosProcent: 1, local })
+      return JSON.stringify({
+        artist: art.nume, fee, feeLista: input.feeLista || fee, oras: input.oras, plecareDin: fromCity,
+        km, kmTotalCuMarja: c.kmTotal, local: c.local,
+        transportLei: c.transportLei, transportEur: c.transportEur,
+        bileteAvion: art.bilete_avion || 0, necesitaZbor: km !== null && km > 300 && (art.bilete_avion || 0) > 0,
+        cazare: art.cazare || null, persoane: art.nr_persoane || 0,
+        diurnaTotal: c.diurnaTotal, discount: c.discount, savingLei: c.savingLei,
+        cag: c.cag, netGigx: c.netGigx, feeLeiConv: c.feeLeiConv, cursEur: eurRate,
+      })
+    }
     if (nume === 'cauta_artisti_roster') {
       const r = await fetch(baseUrl + '/api/oferta-artist' + (input.cauta ? '?q=' + encodeURIComponent(input.cauta) : ''), { cache: 'no-store' })
       const d = await r.json()
@@ -208,6 +314,7 @@ FII CONSILIER, NU DOAR EXECUTANT:
 - Cand bugetul pare mic pentru cererea data, spune sincer si sugereaza optiuni realiste (alt artist, format redus).
 - Cand vezi un risc (data foarte ceruta, artist des blocat, distanta mare), semnaleaza-l scurt.
 - Cand intrebarea e ambigua, intreaba o singura clarificare scurta, nu ghici.
+- In cererile de oferta, formulari gen "club X", "la Y", numele dupa oras sunt de regula clubul sau locatia evenimentului, NU artisti. Ex: "motans club iasi nish" = artistul The Motans, orasul Iasi, locatia club Nish.
 - La liste lungi, ordoneaza util: FWD primii, apoi pret descrescator.
 - Cand se discuta un artist concret la o data concreta, verifica-i calendarul (ziua dinainte si de dupa) si comenteaza logistica: daca e in zona cu o zi inainte = avantaj (transport redus), daca are orase indepartate consecutive = risc logistic. Mentioneaza distantele doar cand conteaza.
 REGULI STRICTE:
@@ -215,7 +322,7 @@ REGULI STRICTE:
 - Daca un artist e mentionat din nou dupa mai multe mesaje, RE-CHEAMA unealta inainte sa-i citezi fee-ul. Nu te baza pe ce ai spus anterior in conversatie.
 - Daca o unealta nu returneaza o informatie, spui "nu am gasit in date" - nu estimezi, nu aproximezi, nu completezi din cunostinte generale.
 - Cand citezi un fee, mentioneaza-l exact cum e in date (6500, nu "aproximativ 6000-7000").
-- NU poti crea oferte, bloca date sau modifica nimic - doar citesti si consiliezi. Nu promite si nu sugera actiuni pe care nu le poti face (ex "blochez pentru oferta", "verific cu echipa", "revin cu raspuns"). Tu nu poti verifica nimic in afara uneltelor si nu poti comunica cu nimeni. In schimb, indruma concret: "poti face oferta din gigx.ro/oferta", "intreaba echipa despre blocare".
+- Poti crea oferte DRAFT cu unealta creeaza_oferta, dar OBLIGATORIU: inainte sa creezi o oferta, arata rezumatul complet (artist, fee, oras, data, client, mentiuni) si asteapta confirmarea explicita a utilizatorului (da/confirm). Nu crea niciodata fara confirmare. Ofertele draft trebuie verificate de om in generator inainte de trimitere. In rest, NU poti bloca date sau modifica nimic altceva - citesti si consiliezi. Nu promite si nu sugera actiuni pe care nu le poti face (ex "blochez pentru oferta", "verific cu echipa", "revin cu raspuns"). Tu nu poti verifica nimic in afara uneltelor si nu poti comunica cu nimeni. In schimb, indruma concret: "poti face oferta din gigx.ro/oferta", "intreaba echipa despre blocare".
 Raspunde scurt: liste clare, fara introduceri lungi.` + reguliMemorie
 
   // bucla agentica: Claude poate chema unelte de mai multe ori

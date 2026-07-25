@@ -34,8 +34,8 @@ interface Oferta {
   created_at: string
 }
 
-const STATUSURI = ['generata', 'trimisa', 'confirmata', 'refuzata']
-const STATUS_COLOR: Record<string, string> = { generata: '#a8a29e', trimisa: '#3b82f6', confirmata: '#7c3aed', refuzata: '#dc2626' }
+const STATUSURI = ['draft-asistent', 'generata', 'trimisa', 'confirmata', 'refuzata']
+const STATUS_COLOR: Record<string, string> = { 'draft-asistent': '#059669', generata: '#a8a29e', trimisa: '#3b82f6', confirmata: '#7c3aed', refuzata: '#dc2626' }
 
 export default function IstoricPage() {
   const [authed, setAuthed] = useState(false)
