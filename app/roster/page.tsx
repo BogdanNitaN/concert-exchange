@@ -36,8 +36,8 @@ function Card({ a, onTier }: { a: any, onTier: (r: string) => void }) {
       </div>
 
       <a href={'https://wa.me/40751144109?text=' + encodeURIComponent('Buna Bogdan, as vrea o oferta pentru un eveniment - catalog GIGx')} target="_blank"
-        style={{position:'fixed', bottom:'16px', left:'50%', transform:'translateX(-50%)', zIndex:200, padding:'14px 26px', background:UI.green, color:'white', borderRadius:'28px', fontSize:'13px', fontWeight:800, textDecoration:'none', boxShadow:'0 4px 20px rgba(5,150,105,0.4)', whiteSpace:'nowrap'}}>
-        Cere oferta pentru un eveniment
+        style={{position:'fixed', bottom:'18px', left:'50%', transform:'translateX(-50%)', zIndex:200, display:'flex', alignItems:'center', gap:'8px', padding:'12px 22px', background:'rgba(16,16,20,0.94)', backdropFilter:'blur(8px)', color:'#F5F2EC', borderRadius:'26px', fontSize:'12.5px', fontWeight:700, textDecoration:'none', boxShadow:'0 6px 24px rgba(16,16,20,0.28)', whiteSpace:'nowrap', letterSpacing:'0.01em'}}>
+        <span style={{width:'7px', height:'7px', borderRadius:'50%', background:UI.green, display:'inline-block'}} />Cere oferta pentru un eveniment
       </a>
     </div>
   )
@@ -160,14 +160,22 @@ export default function RosterPublic() {
           </>
         )}
 
-        <div style={{fontSize:'11px', color:UI.faint, marginTop:'32px', textAlign:'center', lineHeight:1.6}}>
+        <div style={{marginTop:'36px', padding:'22px 20px', background:'#101014', borderRadius:'18px', textAlign:'center'}}>
+          <div style={{fontSize:'15px', fontWeight:800, color:'#F5F2EC', letterSpacing:'-0.3px'}}>Nu ai gasit artistul potrivit?</div>
+          <div style={{fontSize:'12.5px', color:'#a8a29e', fontWeight:500, marginTop:'6px', lineHeight:1.5}}>Rosterul Forward e doar inceputul. Avem acces direct la orice artist roman sau international - spune-ne ce cauti si il aducem in oferta ta.</div>
+          <a href={'https://wa.me/40751144109?text=' + encodeURIComponent('Buna Bogdan, caut un artist care nu e in catalog - ')} target="_blank"
+            style={{display:'inline-block', marginTop:'14px', padding:'10px 20px', background:UI.green, color:'white', borderRadius:'10px', fontSize:'12px', fontWeight:700, textDecoration:'none'}}>
+            Spune-ne ce artist cauti
+          </a>
+        </div>
+        <div style={{fontSize:'11px', color:UI.faint, marginTop:'20px', textAlign:'center', lineHeight:1.6}}>
           Forward Agency · Bogdan Nita · bogdan@forward.ro · +40 751 144 109
         </div>
       </div>
 
       <a href={'https://wa.me/40751144109?text=' + encodeURIComponent('Buna Bogdan, as vrea o oferta pentru un eveniment - catalog GIGx')} target="_blank"
-        style={{position:'fixed', bottom:'16px', left:'50%', transform:'translateX(-50%)', zIndex:200, padding:'14px 26px', background:UI.green, color:'white', borderRadius:'28px', fontSize:'13px', fontWeight:800, textDecoration:'none', boxShadow:'0 4px 20px rgba(5,150,105,0.4)', whiteSpace:'nowrap'}}>
-        Cere oferta pentru un eveniment
+        style={{position:'fixed', bottom:'18px', left:'50%', transform:'translateX(-50%)', zIndex:200, display:'flex', alignItems:'center', gap:'8px', padding:'12px 22px', background:'rgba(16,16,20,0.94)', backdropFilter:'blur(8px)', color:'#F5F2EC', borderRadius:'26px', fontSize:'12.5px', fontWeight:700, textDecoration:'none', boxShadow:'0 6px 24px rgba(16,16,20,0.28)', whiteSpace:'nowrap', letterSpacing:'0.01em'}}>
+        <span style={{width:'7px', height:'7px', borderRadius:'50%', background:UI.green, display:'inline-block'}} />Cere oferta pentru un eveniment
       </a>
     </div>
   )

@@ -18,7 +18,7 @@ export async function GET() {
 
     const ordineTier: Record<string, number> = { 'A++': 0, 'Premium': 0, 'A+': 1, 'A': 2 }
     const artisti = (toti || [])
-      .filter(a => a.tip !== 'intermediere' && !ascunsi.has(a.nume) && !['gojira', 'puya & urban symphony orchestra'].includes((a.nume || '').toLowerCase().trim()) && !!imgMap[a.nume])
+      .filter(a => a.tip !== 'intermediere' && !ascunsi.has(a.nume) && !['gojira', 'puya & urban symphony orchestra', 'alternosfera'].includes((a.nume || '').toLowerCase().trim()))
       .map(a => {
         const meta = (ARTISTS_DATA as unknown as any[]).find(x => (x.name || '').toLowerCase() === (a.nume || '').toLowerCase())
         const GENURI: Record<string, string[]> = {
