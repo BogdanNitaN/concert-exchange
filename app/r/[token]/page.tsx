@@ -348,7 +348,7 @@ function ListaRoster({ artisti, audienta, token }: { artisti: any[], audienta: s
       <div style={{display:'flex', gap:'8px', marginBottom:'14px'}}>
       <button onClick={copiazaCatalog}
         style={{flex:2, padding:'13px', background: copiat === 'catalog' ? '#047857' : UI.ink, color:'white', border:'none', borderRadius:'11px', fontSize:'13px', fontWeight:800, cursor:'pointer', fontFamily:F, transition:'background 0.15s'}}>
-        {copiat === 'catalog' ? '✓ Copiat - gata de trimis' : (selectati.size ? 'Copiaza selectia (' + selectati.size + ')' : (gen ? 'Copiaza oferta ' + gen + ' (' + filtrati.length + ')' : 'Copiaza tot catalogul (' + filtrati.length + ')'))}
+        {copiat === 'catalog' ? '✓ Copiat - gata de trimis' : (selectati.size ? 'Copiaza selectia (' + selectati.size + ')' : (gen ? 'Copiaza oferta ' + gen : 'Copiaza tot catalogul'))}
       </button>
       <button onClick={descarcaPdf}
         style={{flex:1, padding:'13px', background:'white', color:UI.ink, border:'1.5px solid '+UI.line, borderRadius:'11px', fontSize:'13px', fontWeight:800, cursor:'pointer', fontFamily:F}}>
