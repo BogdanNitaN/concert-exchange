@@ -62,8 +62,9 @@ function CardArtist({ a, audienta, token, tabInitial }: { a: any, audienta: stri
   }
   function distribuie() {
     log('share')
-    if (navigator.share) navigator.share({ title: a.nume + ' - GIGx', url: window.location.href }).catch(() => {})
-    else { navigator.clipboard.writeText(window.location.href); alert('Link copiat') }
+    const txt = textOferta(a, audienta, tab)
+    if (navigator.share) navigator.share({ text: txt }).catch(() => {})
+    else { navigator.clipboard.writeText(txt); setCopiat(true); setTimeout(() => setCopiat(false), 2000) }
   }
 
   const statCards = a.stats ? [
@@ -146,7 +147,7 @@ function CardArtist({ a, audienta, token, tabInitial }: { a: any, audienta: stri
 
         {logi.length > 0 && (
           <div style={{marginTop:'14px', background:UI.bg, borderRadius:'14px', padding:'14px 16px'}}>
-            <div style={{fontSize:'10px', fontWeight:700, color:'#78716c', textTransform:'uppercase', letterSpacing:'0.06em', marginBottom:'10px'}}>Detalii</div>
+            <div style={{fontSize:'10px', fontWeight:700, color:'#78716c', textTransform:'uppercase', letterSpacing:'0.06em', marginBottom:'10px'}}>Detalii logistice</div>
             <div style={{display:'grid', gap:'7px'}}>
               {logi.map(([k, v]) => (
                 <div key={k} style={{display:'flex', justifyContent:'space-between', gap:'12px', fontSize:'13px'}}>
@@ -202,7 +203,7 @@ export default function ShareView() {
           <img src="/gigx-mark.png" width={24} height={24} alt="" style={{display:'block'}} />
           <span style={{fontSize:'20px', fontWeight:800, letterSpacing:'-0.5px', color:UI.ink}}>GIG<span style={{color:UI.green}}>x</span></span>
         </div>
-        {d && <span style={{fontSize:'11px', fontWeight:700, color:UI.sub, background:UI.bg, padding:'6px 12px', borderRadius:'20px'}}>valabil pana la {new Date(d.expiraLa).toLocaleDateString('ro-RO')}</span>}
+        {d && <span style={{fontSize:'12px', fontWeight:800, color:'white', background:UI.green, padding:'7px 14px', borderRadius:'20px', boxShadow:'0 1px 3px rgba(5,150,105,0.3)'}}>valabil pana la {new Date(d.expiraLa).toLocaleDateString('ro-RO')}</span>}
       </nav>
 
       <div style={{maxWidth:'720px', margin:'0 auto', padding:'24px 16px 44px'}}>
