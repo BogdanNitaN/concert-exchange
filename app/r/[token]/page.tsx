@@ -368,13 +368,15 @@ function ListaRoster({ artisti, audienta, token }: { artisti: any[], audienta: s
         </button>
       </div>
       {selectati.size > 0 && (
-        <a href={'https://wa.me/40751144109?text=' + encodeURIComponent('Buna Bogdan, te rog disponibilitatea pentru: ' + Array.from(selectati).join(', '))} target="_blank" onClick={() => log('cta-disponibilitate')}
-          style={{display:'block', textAlign:'center', padding:'13px', background:UI.green, color:'white', borderRadius:'11px', fontSize:'13px', fontWeight:800, textDecoration:'none', marginBottom:'12px', boxShadow:'0 2px 8px rgba(5,150,105,0.3)'}}>
-          Cere disponibilitate pe WhatsApp ({selectati.size} selectati)
-        </a>
+        <div style={{position:'fixed', bottom:0, left:0, right:0, zIndex:300, padding:'12px 16px calc(12px + env(safe-area-inset-bottom))', background:'rgba(255,255,255,0.96)', backdropFilter:'blur(10px)', borderTop:'1px solid '+UI.line}}>
+          <a href={'https://wa.me/40751144109?text=' + encodeURIComponent('Buna Bogdan, te rog disponibilitatea pentru: ' + Array.from(selectati).join(', '))} target="_blank" onClick={() => log('cta-disponibilitate')}
+            style={{display:'block', maxWidth:'688px', margin:'0 auto', textAlign:'center', padding:'14px', background:UI.green, color:'white', borderRadius:'12px', fontSize:'13.5px', fontWeight:800, textDecoration:'none', boxShadow:'0 4px 16px rgba(5,150,105,0.35)'}}>
+            Cere disponibilitate pe WhatsApp ({selectati.size} selectati)
+          </a>
+        </div>
       )}
 
-      <div style={{background:'white', border:'1px solid '+UI.line, borderRadius:'16px', overflow:'hidden'}}>
+      <div style={{background:'white', border:'1px solid '+UI.line, borderRadius:'16px', overflow:'hidden', marginBottom: selectati.size > 0 ? '90px' : '0'}}>
         {randuri.map((item: any, i: number) => {
           if (item._h) return (
             <div key={'h-' + item._h} style={{padding:'10px 14px', background:'#f5f5f7', borderTop: i > 0 ? '1px solid #f0f0ef' : 'none', fontSize:'11px', fontWeight:800, color:UI.sub, textTransform:'uppercase', letterSpacing:'0.08em'}}>{item._h} <span style={{color:UI.faint}}>· {item._n}</span></div>
