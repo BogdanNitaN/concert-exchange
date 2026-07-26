@@ -497,6 +497,9 @@ export default function ShareView() {
               style={{display:'inline-block', marginTop:'18px', padding:'12px 24px', background:UI.green, color:'white', borderRadius:'11px', fontSize:'13px', fontWeight:800, textDecoration:'none'}}>
               Cere un cod nou pe WhatsApp
             </a>
+            <a href="/rosterfwd" style={{display:'block', marginTop:'10px', color:'#a8a29e', fontSize:'12px', fontWeight:700, textDecoration:'underline'}}>
+              Am alt cod de acces
+            </a>
           </div>
         )}
         {!err && !d && <div style={{textAlign:'center', color:UI.faint, fontSize:'14px', padding:'50px'}}>Se incarca...</div>}
