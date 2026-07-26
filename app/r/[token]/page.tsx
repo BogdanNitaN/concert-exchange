@@ -144,7 +144,7 @@ function CardArtist({ a, audienta, token, tabInitial, destinatar }: { a: any, au
         {a.preturi && audienta !== 'b2b' && (
           <div style={{textAlign:'center', padding:'12px 0 4px'}}>
             <div style={{fontSize:'13px', color:UI.sub, fontWeight:600}}>Onorariu</div>
-            <div style={{fontSize:'31px', fontWeight:800, color:UI.ink, letterSpacing:'-1.5px', marginTop:'4px'}}>de la {fmtEur(a.preturi.deLa)}</div>
+            <div style={{fontSize:'31px', fontWeight:800, color:UI.ink, letterSpacing:'-1.5px', marginTop:'4px'}}>{fmtEur(a.preturi.deLa)}</div>
             <div style={{fontSize:'11px', color:UI.faint, fontWeight:600, marginTop:'8px'}}>Corporate · Private — la cerere</div>
           </div>
         )}
