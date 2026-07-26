@@ -46,17 +46,6 @@ export default function RosterPublic() {
   const [q, setQ] = useState('')
   const [gen, setGen] = useState('')
   const [tierExplicat, setTierExplicat] = useState('')
-  const [ascunsLegenda, setAscunsLegenda] = useState(false)
-  useEffect(() => {
-    let lastY = 0
-    const f = () => {
-      const y = window.scrollY
-      setAscunsLegenda(y > 150 && y > lastY)
-      lastY = y
-    }
-    window.addEventListener('scroll', f, { passive: true })
-    return () => window.removeEventListener('scroll', f)
-  }, [])
 
   useEffect(() => {
     fetch('/api/roster-public').then(r => r.json()).then(d => setArtisti(d.artisti || []))
@@ -104,7 +93,7 @@ export default function RosterPublic() {
         <span style={{fontSize:'13px', fontWeight:700, color:UI.sub, marginLeft:'6px'}}>Catalog Artisti Forward</span>
       </nav>
 
-      <div style={{display:'flex', alignItems:'center', justifyContent:'center', gap:'16px', padding:'10px 18px', background:'#101014', borderBottom:'1px solid #101014', flexWrap:'nowrap', overflowX:'auto', WebkitOverflowScrolling:'touch', whiteSpace:'nowrap', position:'sticky', top:'56px', zIndex:50, transform: ascunsLegenda ? 'translateY(-110%)' : 'none', opacity: ascunsLegenda ? 0 : 1, transition:'transform 0.25s, opacity 0.2s'}}>
+      <div style={{display:'flex', alignItems:'center', justifyContent:'center', gap:'16px', padding:'10px 18px', background:'#101014', borderBottom:'1px solid #101014', flexWrap:'nowrap', overflowX:'auto', WebkitOverflowScrolling:'touch', whiteSpace:'nowrap', position:'sticky', top:'56px', zIndex:50}}>
         <span style={{fontSize:'10px', color:'#78716c', fontWeight:700, textTransform:'uppercase', letterSpacing:'0.08em'}}>Tier</span>
         <span className="tier-legend-item" style={{fontSize:'11px', color:'#d6d3d1', fontWeight:600, display:'flex', alignItems:'center', gap:'6px', position:'relative', cursor:'help', flexShrink:0}}>
           <span style={{background:'#eacda3', fontSize:'10px', fontWeight:700, padding:'2px 8px', borderRadius:'6px', color:'#101014'}}>A++ · HEADLINER</span>
