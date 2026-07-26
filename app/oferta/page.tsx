@@ -632,7 +632,7 @@ export default function OfertaPage() {
     })
     for (const l of activi) {
       const c = calcLinie(l)
-      if (y > 235) { doc.addPage(); y = 20 }
+      if (y > 210) { deseneazaFooterForward(doc, W, M); doc.addPage(); deseneazaHeaderForward(doc, W, M, logo); y = 52 }
 
       // foto artist (stanga)
       const imgUrl = 'https://i.scdn.co/image/' // se ia din DB via prom-images
