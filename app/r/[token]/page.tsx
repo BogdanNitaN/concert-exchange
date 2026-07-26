@@ -481,9 +481,8 @@ export default function ShareView() {
         {d && (() => {
           const ms = new Date(d.expiraLa).getTime() - acum
           const p2 = (n: number) => String(n).padStart(2, '0')
-          const ramasTimp = ms <= 0 ? 'expirat' : ms < 86400000
-            ? p2(Math.floor(ms/3600000)) + ':' + p2(Math.floor((ms%3600000)/60000)) + ':' + p2(Math.floor((ms%3600000)%60000/1000))
-            : Math.floor(ms/86400000) + 'z ' + Math.floor((ms%86400000)/3600000) + 'h ' + Math.floor((ms%3600000)/60000) + 'min'
+          const ceas = p2(Math.floor((ms%86400000)/3600000)) + ':' + p2(Math.floor((ms%3600000)/60000)) + ':' + p2(Math.floor((ms%60000)/1000))
+          const ramasTimp = ms <= 0 ? 'expirat' : ms < 86400000 ? ceas : Math.floor(ms/86400000) + 'z ' + ceas
           return <span style={{fontSize:'12px', fontWeight:800, color:'white', background: ms < 86400000 ? '#d97706' : UI.green, padding:'7px 14px', borderRadius:'20px', boxShadow:'0 1px 3px rgba(0,0,0,0.15)', whiteSpace:'nowrap', fontVariantNumeric:'tabular-nums'}}>valabil inca {ramasTimp}</span>
         })()}
       </nav>
