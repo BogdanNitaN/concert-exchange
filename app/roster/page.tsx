@@ -4,17 +4,47 @@ import { useState, useEffect, useMemo } from 'react'
 const F = 'Montserrat, sans-serif'
 const UI = { bg:'#f5f5f7', ink:'#1c1917', sub:'#57534e', faint:'#a8a29e', line:'#e7e5e4', green:'#059669' }
 
-const TIER_MAP: Record<string, {label: string, color: string, tip: string}> = {
-  'A++': {label: 'HEADLINER', color: '#b8860b', tip: 'Top tier - vinde singur orice eveniment'},
-  'Premium': {label: 'HEADLINER', color: '#b8860b', tip: 'Top tier - vinde singur orice eveniment'},
-  'A+': {label: 'POWER DRAW', color: '#7c3aed', tip: 'Tractiune puternica - vanzari consistente'},
-  'A': {label: 'SOLID', color: '#44403c', tip: 'Atractie solida - fan base loial'},
+const TIER_MAP: Record<string, {label: string, color: string, text: string, tip: string, ord: number}> = {
+  'A++': {label: 'HEADLINER', color: '#eacda3', text: '#7c5e10', tip: 'Top tier - vinde singur orice eveniment', ord: 0},
+  'Premium': {label: 'HEADLINER', color: '#eacda3', text: '#7c5e10', tip: 'Top tier - vinde singur orice eveniment', ord: 0},
+  'A+': {label: 'POWER DRAW', color: '#7c3aed', text: 'white', tip: 'Tractiune puternica - vanzari consistente', ord: 1},
+  'A': {label: 'SOLID', color: '#44403c', text: 'white', tip: 'Atractie solida - fan base loial', ord: 2},
 }
+const TIERS = [
+  { range: 'A++', label: 'HEADLINER', color: '#eacda3', text: '#7c5e10', tip: 'Top tier - vinde singur orice eveniment' },
+  { range: 'A+', label: 'POWER DRAW', color: '#7c3aed', text: 'white', tip: 'Tractiune puternica - vanzari consistente' },
+  { range: 'A', label: 'SOLID', color: '#44403c', text: 'white', tip: 'Atractie solida - fan base loial' },
+]
+const ordTier = (t: string | null) => (t && TIER_MAP[t]) ? TIER_MAP[t].ord : 3
+const rangeTier = (t: string) => t === 'Premium' ? 'A++' : t
+
+function Card({ a, onTier }: { a: any, onTier: (r: string) => void }) {
+  const tier = a.tier ? TIER_MAP[a.tier] : null
+  return (
+    <div style={{background:'white', border:'1px solid '+UI.line, borderRadius:'16px', overflow:'hidden', boxShadow:'0 2px 8px rgba(0,0,0,0.04)'}}>
+      {a.poza
+        ? <img src={a.poza} alt={a.nume} loading="lazy" style={{width:'100%', aspectRatio:'1', objectFit:'cover', display:'block'}} />
+        : <div style={{width:'100%', aspectRatio:'1', background:UI.bg, display:'flex', alignItems:'center', justifyContent:'center', fontSize:'34px', fontWeight:800, color:UI.faint}}>{a.nume.charAt(0)}</div>}
+      <div style={{padding:'12px 13px 13px'}}>
+        <div style={{fontSize:'14px', fontWeight:800, color:UI.ink, letterSpacing:'-0.3px', lineHeight:1.2}}>{a.nume}</div>
+        {a.genuri.length > 0 && <div style={{fontSize:'11px', color:UI.faint, fontWeight:600, marginTop:'3px'}}>{a.genuri.slice(0, 2).join(' · ')}</div>}
+        {tier && <span title={tier.tip} onClick={() => onTier(rangeTier(a.tier))} style={{display:'inline-block', marginTop:'8px', fontSize:'9px', fontWeight:800, color:tier.text, background:tier.color, padding:'3px 8px', borderRadius:'5px', letterSpacing:'0.06em', cursor:'pointer'}}>{rangeTier(a.tier)} · {tier.label}</span>}
+        <a href={'https://wa.me/40751144109?text=' + encodeURIComponent('Buna Bogdan, as vrea o oferta pentru ' + a.nume + ' - catalog GIGx')} target="_blank"
+          style={{display:'block', textAlign:'center', marginTop:'10px', padding:'8px', background:UI.bg, color:UI.ink, borderRadius:'9px', fontSize:'11px', fontWeight:700, textDecoration:'none'}}>
+          Cere oferta
+        </a>
+      </div>
+    </div>
+  )
+}
+
+const GRID: any = { display:'grid', gridTemplateColumns:'repeat(auto-fill, minmax(160px, 1fr))', gap:'14px' }
 
 export default function RosterPublic() {
   const [artisti, setArtisti] = useState<any[]>([])
   const [q, setQ] = useState('')
   const [gen, setGen] = useState('')
+  const [tierExplicat, setTierExplicat] = useState('')
 
   useEffect(() => {
     fetch('/api/roster-public').then(r => r.json()).then(d => setArtisti(d.artisti || []))
@@ -26,12 +56,33 @@ export default function RosterPublic() {
     return Array.from(gs).sort()
   }, [artisti])
 
+  const cauta = q.trim().toLowerCase()
   const filtrati = useMemo(() => {
     let l = artisti
     if (gen) l = l.filter(a => a.genuri.includes(gen))
-    if (q.trim()) l = l.filter(a => a.nume.toLowerCase().includes(q.trim().toLowerCase()))
-    return l
-  }, [artisti, q, gen])
+    if (cauta) l = l.filter(a => a.nume.toLowerCase().includes(cauta))
+    return [...l].sort((a, b) => ordTier(a.tier) - ordTier(b.tier) || a.nume.localeCompare(b.nume))
+  }, [artisti, cauta, gen])
+
+  const eFiltrat = !!(gen || cauta)
+  const top = useMemo(() => artisti.filter(a => ordTier(a.tier) <= 1).sort((a, b) => ordTier(a.tier) - ordTier(b.tier) || a.nume.localeCompare(b.nume)), [artisti])
+  const topSet = useMemo(() => new Set(top.map(a => a.nume)), [top])
+  const peGenuri = useMemo(() => {
+    const m: Record<string, any[]> = {}
+    for (const a of artisti) {
+      if (topSet.has(a.nume)) continue
+      const g = a.genuri[0] || 'Alte genuri'
+      if (!m[g]) m[g] = []
+      m[g].push(a)
+    }
+    for (const g of Object.keys(m)) m[g].sort((a, b) => ordTier(a.tier) - ordTier(b.tier) || a.nume.localeCompare(b.nume))
+    return Object.entries(m).sort((x, y) => y[1].length - x[1].length)
+  }, [artisti, topSet])
+
+  const chip = (activ: boolean): any => ({
+    padding:'9px 15px', borderRadius:'20px', border:'1.5px solid '+(activ ? UI.ink : UI.line), cursor:'pointer',
+    fontFamily:F, fontSize:'12px', fontWeight:700, background: activ ? UI.ink : 'white', color: activ ? 'white' : UI.sub, whiteSpace:'nowrap', flexShrink:0,
+  })
 
   return (
     <div style={{minHeight:'100vh', background:UI.bg, fontFamily:F}}>
@@ -41,48 +92,57 @@ export default function RosterPublic() {
         <span style={{fontSize:'13px', fontWeight:700, color:UI.sub, marginLeft:'6px'}}>Catalog Artisti Forward</span>
       </nav>
 
+      <div style={{display:'flex', alignItems:'center', justifyContent:'center', gap:'16px', padding:'10px 18px', background:'#101014', borderBottom:'1px solid #101014', flexWrap:'wrap', position:'sticky', top:'56px', zIndex:50}}>
+        <span style={{fontSize:'10px', color:'#78716c', fontWeight:700, textTransform:'uppercase', letterSpacing:'0.08em'}}>Tier</span>
+        <span className="tier-legend-item" style={{fontSize:'11px', color:'#d6d3d1', fontWeight:600, display:'flex', alignItems:'center', gap:'6px', position:'relative', cursor:'help'}}>
+          <span style={{background:'#eacda3', fontSize:'10px', fontWeight:700, padding:'2px 8px', borderRadius:'6px', color:'#101014'}}>A++ · HEADLINER</span>
+          <span>10.000€+</span>
+          <span className="tier-legend-tooltip">Top tier — vinde singur orice eveniment</span>
+        </span>
+        <span className="tier-legend-item" style={{fontSize:'11px', color:'#d6d3d1', fontWeight:600, display:'flex', alignItems:'center', gap:'6px', position:'relative', cursor:'help'}}>
+          <span style={{background:'#7c3aed', fontSize:'10px', fontWeight:700, padding:'2px 8px', borderRadius:'6px', color:'white'}}>A+ · POWER DRAW</span>
+          <span>5.000–10.000€</span>
+          <span className="tier-legend-tooltip">Tracțiune puternică — vânzări consistente</span>
+        </span>
+        <span className="tier-legend-item" style={{fontSize:'11px', color:'#d6d3d1', fontWeight:600, display:'flex', alignItems:'center', gap:'6px', position:'relative', cursor:'help'}}>
+          <span style={{background:'#78716c', fontSize:'10px', fontWeight:700, padding:'2px 8px', borderRadius:'6px', color:'white'}}>A · SOLID</span>
+          <span>până la 5.000€</span>
+          <span className="tier-legend-tooltip">Atracție solidă — fan base loial</span>
+        </span>
+      </div>
+
       <div style={{maxWidth:'1080px', margin:'0 auto', padding:'26px 16px 50px'}}>
-        <div style={{display:'grid', gridTemplateColumns:'repeat(auto-fit, minmax(220px, 1fr))', gap:'10px', marginBottom:'22px'}}>
-          {[['HEADLINER', '#b8860b', 'Top tier - vinde singur orice eveniment'], ['POWER DRAW', '#7c3aed', 'Tractiune puternica - vanzari consistente'], ['SOLID', '#44403c', 'Atractie solida - fan base loial']].map(([l, c, t]) => (
-            <div key={l} style={{padding:'13px 15px', background:'white', border:'1px solid '+UI.line, borderRadius:'14px', position:'relative', overflow:'hidden'}}>
-              <div style={{position:'absolute', top:'12px', right:0, width:'3px', height:'calc(100% - 24px)', background:c, borderTopLeftRadius:'2px', borderBottomLeftRadius:'2px'}} />
-              <div style={{fontSize:'12px', fontWeight:800, color:c, letterSpacing:'0.05em'}}>{l}</div>
-              <div style={{fontSize:'11px', color:UI.sub, fontWeight:500, marginTop:'4px'}}>{t}</div>
-            </div>
-          ))}
+        <input value={q} onChange={e => setQ(e.target.value)} placeholder="Cauta artist..."
+          style={{width:'100%', boxSizing:'border-box', padding:'12px 16px', borderRadius:'12px', border:'1.5px solid '+UI.line, fontSize:'14px', fontFamily:F, outline:'none', background:'white', marginBottom:'12px'}} />
+        <div style={{display:'flex', gap:'8px', overflowX:'auto', WebkitOverflowScrolling:'touch', paddingBottom:'6px', marginBottom:'20px'}}>
+          <button onClick={() => setGen('')} style={chip(!gen)}>Toti</button>
+          {genuri.map(g => <button key={g} onClick={() => setGen(gen === g ? '' : g)} style={chip(gen === g)}>{g}</button>)}
         </div>
 
-        <div style={{display:'flex', gap:'10px', marginBottom:'18px', flexWrap:'wrap'}}>
-          <input value={q} onChange={e => setQ(e.target.value)} placeholder="Cauta artist..."
-            style={{flex:'1 1 220px', padding:'11px 15px', borderRadius:'11px', border:'1.5px solid '+UI.line, fontSize:'14px', fontFamily:F, outline:'none', background:'white'}} />
-          <select value={gen} onChange={e => setGen(e.target.value)}
-            style={{padding:'11px 14px', borderRadius:'11px', border:'1.5px solid '+UI.line, fontSize:'13px', fontFamily:F, fontWeight:600, background:'white', color:UI.ink, cursor:'pointer'}}>
-            <option value="">Toate genurile</option>
-            {genuri.map(g => <option key={g} value={g}>{g}</option>)}
-          </select>
-        </div>
-
-        <div style={{display:'grid', gridTemplateColumns:'repeat(auto-fill, minmax(160px, 1fr))', gap:'14px'}}>
-          {filtrati.map(a => {
-            const tier = a.tier ? TIER_MAP[a.tier] : null
-            return (
-              <div key={a.nume} style={{background:'white', border:'1px solid '+UI.line, borderRadius:'16px', overflow:'hidden', boxShadow:'0 2px 8px rgba(0,0,0,0.04)'}}>
-                {a.poza
-                  ? <img src={a.poza} alt={a.nume} loading="lazy" style={{width:'100%', aspectRatio:'1', objectFit:'cover', display:'block'}} />
-                  : <div style={{width:'100%', aspectRatio:'1', background:UI.bg, display:'flex', alignItems:'center', justifyContent:'center', fontSize:'34px', fontWeight:800, color:UI.faint}}>{a.nume.charAt(0)}</div>}
-                <div style={{padding:'12px 13px 13px'}}>
-                  <div style={{fontSize:'14px', fontWeight:800, color:UI.ink, letterSpacing:'-0.3px', lineHeight:1.2}}>{a.nume}</div>
-                  {a.genuri.length > 0 && <div style={{fontSize:'11px', color:UI.faint, fontWeight:600, marginTop:'3px'}}>{a.genuri.slice(0, 2).join(' · ')}</div>}
-                  {tier && <span title={tier.tip} style={{display:'inline-block', marginTop:'8px', fontSize:'9px', fontWeight:800, color:'white', background:tier.color, padding:'3px 8px', borderRadius:'5px', letterSpacing:'0.06em', cursor:'help'}}>{tier.label}</span>}
-                  <a href={'https://wa.me/40751144109?text=' + encodeURIComponent('Buna Bogdan, as vrea o oferta pentru ' + a.nume + ' - catalog GIGx')} target="_blank"
-                    style={{display:'block', textAlign:'center', marginTop:'10px', padding:'8px', background:UI.bg, color:UI.ink, borderRadius:'9px', fontSize:'11px', fontWeight:700, textDecoration:'none'}}>
-                    Cere oferta
-                  </a>
+        {eFiltrat ? (
+          <div style={GRID}>
+            {filtrati.map(a => <Card key={a.nume} a={a} onTier={r => { setTierExplicat(r); window.scrollTo({top: 0, behavior: 'smooth'}) }} />)}
+          </div>
+        ) : (
+          <>
+            {top.length > 0 && (
+              <div style={{marginBottom:'28px'}}>
+                <div style={{fontSize:'12px', fontWeight:800, color:UI.ink, textTransform:'uppercase', letterSpacing:'0.1em', marginBottom:'12px'}}>Top artisti</div>
+                <div style={GRID}>
+                  {top.map(a => <Card key={a.nume} a={a} onTier={r => { setTierExplicat(r); window.scrollTo({top: 0, behavior: 'smooth'}) }} />)}
                 </div>
               </div>
-            )
-          })}
-        </div>
+            )}
+            {peGenuri.map(([g, lista]) => (
+              <div key={g} style={{marginBottom:'28px'}}>
+                <div style={{fontSize:'12px', fontWeight:800, color:UI.sub, textTransform:'uppercase', letterSpacing:'0.1em', marginBottom:'12px'}}>{g}</div>
+                <div style={GRID}>
+                  {lista.map((a: any) => <Card key={a.nume} a={a} onTier={r => { setTierExplicat(r); window.scrollTo({top: 0, behavior: 'smooth'}) }} />)}
+                </div>
+              </div>
+            ))}
+          </>
+        )}
 
         <div style={{fontSize:'11px', color:UI.faint, marginTop:'32px', textAlign:'center', lineHeight:1.6}}>
           Forward Agency · Bogdan Nita · bogdan@forward.ro · +40 751 144 109
