@@ -23,19 +23,16 @@ const TAB_LABEL: Record<string, string> = { standard: 'Standard', revelion: 'Rev
 
 function textOferta(a: any, audienta: string, tab: string) {
   const lg = a.logistica || {}
-  let t = ''
+  let t = '*' + a.nume.toUpperCase() + '*' + '\n'
   if (a.preturi) {
     if (audienta === 'b2b') {
       const pret = tab === 'revelion' ? a.preturi.revelion : tab === 'prom' ? a.preturi.prom : a.preturi.standard
       const sufix = tab === 'revelion' ? ' (Revelion)' : tab === 'prom' ? ' (Baluri / Prom)' : ''
-      t += '*' + a.nume.toUpperCase() + ' - ' + fmtEur(pret) + ' + TVA' + sufix + '*' + '\n'
+      t += fmtEur(pret) + ' + TVA' + sufix + '\n'
     } else {
-      t += '*' + a.nume.toUpperCase() + ' - de la ' + fmtEur(a.preturi.deLa) + ' + TVA' + '*' + '\n'
+      t += 'de la ' + fmtEur(a.preturi.deLa) + ' + TVA' + '\n'
     }
-  } else {
-    t += a.nume.toUpperCase() + '\n'
   }
-  if (a.genuri.length) t += a.genuri.join(' / ') + '\n'
   t += 'Corporate / Private - la cerere' + '\n' + '\n'
   const ll: string[] = []
   if (lg.persoane) ll.push('- Persoane in deplasare: ' + lg.persoane)
@@ -45,7 +42,7 @@ function textOferta(a: any, audienta: string, tab: string) {
   if (lg.bileteAvion) ll.push('- Bilete avion: ' + lg.bileteAvion + ' (distante mari)')
   if (lg.cazare) ll.push('- Cazare: ' + lg.cazare)
   if (lg.diurna) ll.push('- Diurna / masa: ' + lg.diurna)
-  if (ll.length) t += '*DETALII:*' + '\n' + ll.join('\n') + '\n' + '\n'
+  if (ll.length) t += '*DETALII LOGISTICE:*' + '\n' + ll.join('\n') + '\n' + '\n'
   t += 'Onorariul nu include transport, cazare si masa.'
   return t
 }
@@ -172,9 +169,9 @@ function CardArtist({ a, audienta, token, tabInitial }: { a: any, audienta: stri
           </div>
         )}
 
-        <a href={'https://wa.me/40751144109?text=' + encodeURIComponent('Buna Bogdan, te contactez despre ' + a.nume + (audienta === 'b2b' ? ' (' + (TAB_LABEL[tab] || 'Standard') + ')' : '') + ' - link GIGx')} target="_blank" onClick={() => log('cta-whatsapp')}
+        <a href={'https://wa.me/40751144109?text=' + encodeURIComponent('Buna Bogdan, te contactez despre ' + a.nume + (audienta === 'b2b' && tab !== 'standard' ? ' (' + TAB_LABEL[tab] + ')' : '') + ' - link GIGx')} target="_blank" onClick={() => log('cta-whatsapp')}
           style={{display:'block', textAlign:'center', marginTop:'16px', padding:'13px', background:UI.ink, color:'white', borderRadius:'10px', fontSize:'13px', fontWeight:700, textDecoration:'none'}}>
-          Discuta cu Bogdan · cere oferta exacta
+          Discuta cu Bogdan Nita · cere oferta exacta
         </a>
         <div style={{display:'flex', gap:'8px', marginTop:'8px', paddingTop:'0px'}}>
           <button onClick={copiaza} style={{flex:1, padding:'12px', background: copiat ? '#047857' : UI.green, color:'white', border:'none', borderRadius:'10px', fontSize:'12px', fontWeight:700, cursor:'pointer', fontFamily:F, boxShadow:'0 1px 3px rgba(5,150,105,0.3)', transition:'background 0.15s'}}>{copiat ? '✓ Copiat' : 'Copiaza oferta'}</button>

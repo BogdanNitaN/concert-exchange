@@ -10,6 +10,32 @@ export const maxDuration = 60
 // Uneltele pe care Claude le poate folosi
 const TOOLS = [
   {
+    name: 'creeaza_link_share',
+    description: 'Creeaza un link de share (gigx.ro/r/token) pentru un artist sau pentru roster, catre un destinatar B2B sau client direct. Linkul expira automat. OBLIGATORIU cere confirmarea userului inainte de creare (artist/roster, destinatar, tip audienta).',
+    input_schema: {
+      type: 'object' as const,
+      properties: {
+        scop: { type: 'string', description: 'Numele EXACT al artistului, sau cuvantul roster pentru tot rosterul' },
+        destinatar: { type: 'string', description: 'Numele destinatarului (ex: Primaria Focsani, Club Fratelli)' },
+        tip_audienta: { type: 'string', description: 'b2b (intermediari, primarii, cluburi - vad toate categoriile de pret) sau direct (client final - vede doar de la X). Implicit b2b' },
+        zile: { type: 'number', description: 'Cate zile e valabil linkul (implicit 14)' },
+        filtru_gen: { type: 'string', description: 'Doar pentru roster: filtreaza pe gen muzical (Pop, Dance, Trap etc) (optional)' },
+      },
+      required: ['scop', 'destinatar'],
+    },
+  },
+  {
+    name: 'raport_vizualizari',
+    description: 'Raport despre cine s-a uitat la linkurile de share: vizualizari, tap-uri pe categorii de pret (intent: revelion/prom), copieri, click-uri pe documente si WhatsApp. Foloseste pentru: cine s-a uitat la artisti, ce interes exista, lead-uri active.',
+    input_schema: {
+      type: 'object' as const,
+      properties: {
+        zile: { type: 'number', description: 'Ultimele N zile (implicit 7)' },
+      },
+      required: [],
+    },
+  },
+  {
     name: 'artisti_liberi_pe_data',
     description: 'Returneaza lista artistilor liberi si ocupati la o data anume. Foloseste pentru intrebari despre disponibilitate: cine e liber, cine canta, ce artisti sunt disponibili pe o data.',
     input_schema: {
@@ -185,6 +211,44 @@ async function ruleazaUnealta(nume: string, input: any, baseUrl: string, tokenAu
         videouri7zile: x.tiktok_last_7_days_video_count ?? x.video_count ?? null,
       }))
       return JSON.stringify({ trending_tiktok_ro: rez })
+    }
+    if (nume === 'creeaza_link_share') {
+      const supa = createClient(process.env.NEXT_PUBLIC_SUPABASE_URL!, process.env.SUPABASE_SECRET_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!)
+      const token = Math.random().toString(36).slice(2, 10) + Math.random().toString(36).slice(2, 8)
+      const zile = input.zile || 14
+      const expira = new Date(Date.now() + zile * 24 * 3600 * 1000).toISOString()
+      const scop = input.scop === 'roster' ? 'roster' : input.scop
+      if (scop !== 'roster') {
+        const { data: art } = await supa.from('oferta_artisti').select('nume').ilike('nume', '%' + scop + '%')
+        if (!art || art.length === 0) return JSON.stringify({ eroare: 'Artistul nu exista in roster: ' + scop })
+        if (art.length > 1) return JSON.stringify({ eroare: 'Mai multi artisti se potrivesc', variante: art.map((x: any) => x.nume) })
+        input.scop = art[0].nume
+      }
+      const { error } = await supa.from('roster_links').insert({
+        token, destinatar: input.destinatar, tip_audienta: input.tip_audienta === 'direct' ? 'direct' : 'b2b',
+        scop: input.scop === 'roster' ? 'roster' : input.scop, filtru_gen: input.filtru_gen || null,
+        expira_la: expira, activ: true, creat_de: 'asistent',
+      })
+      if (error) return JSON.stringify({ eroare: 'nu s-a creat: ' + error.message })
+      return JSON.stringify({ creat: true, link: 'https://gigx.ro/r/' + token, destinatar: input.destinatar, scop: input.scop, audienta: input.tip_audienta === 'direct' ? 'direct' : 'b2b', valabil_zile: zile })
+    }
+    if (nume === 'raport_vizualizari') {
+      const supa = createClient(process.env.NEXT_PUBLIC_SUPABASE_URL!, process.env.SUPABASE_SECRET_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!)
+      const zile = input.zile || 7
+      const dupa = new Date(Date.now() - zile * 24 * 3600 * 1000).toISOString()
+      const { data: views } = await supa.from('roster_views').select('token, actiune, artist_vazut, created_at').gte('created_at', dupa).order('created_at', { ascending: false }).limit(300)
+      const { data: links } = await supa.from('roster_links').select('token, destinatar, scop, tip_audienta, expira_la, activ')
+      const linkMap: Record<string, any> = {}
+      for (const l of links || []) linkMap[l.token] = l
+      const agregat: Record<string, any> = {}
+      for (const v of views || []) {
+        const l = linkMap[v.token]
+        const cheie = (l?.destinatar || 'necunoscut') + '|' + (v.artist_vazut || l?.scop || '?')
+        if (!agregat[cheie]) agregat[cheie] = { destinatar: l?.destinatar || 'necunoscut', artist: v.artist_vazut || l?.scop || '?', vizualizari: 0, actiuni: {} as Record<string, number>, ultima: v.created_at }
+        if (v.actiune === 'view') agregat[cheie].vizualizari++
+        else agregat[cheie].actiuni[v.actiune] = (agregat[cheie].actiuni[v.actiune] || 0) + 1
+      }
+      return JSON.stringify({ perioada_zile: zile, total_evenimente: (views || []).length, detaliu: Object.values(agregat) })
     }
     if (nume === 'tine_minte') {
       const r = await fetch(baseUrl + '/api/asistent-memorie', {
