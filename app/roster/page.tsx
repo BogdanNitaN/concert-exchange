@@ -165,6 +165,7 @@ export default function RosterPublic() {
           </>
         )}
 
+        {!(eFiltrat && filtrati.length === 0) && (
         <div style={{marginTop:'36px', padding:'22px 20px', background:'#101014', borderRadius:'18px', textAlign:'center'}}>
           <div style={{fontSize:'15px', fontWeight:800, color:'#F5F2EC', letterSpacing:'-0.3px'}}>Nu ai gasit artistul potrivit?</div>
           <div style={{fontSize:'12.5px', color:'#a8a29e', fontWeight:500, marginTop:'6px', lineHeight:1.5}}>Rosterul Forward e doar inceputul. Avem acces direct la orice artist roman sau international - spune-ne ce cauti si il aducem in oferta ta.</div>
@@ -173,6 +174,7 @@ export default function RosterPublic() {
             Spune-ne ce artist cauti
           </a>
         </div>
+        )}
         <div style={{fontSize:'11px', color:UI.faint, marginTop:'20px', textAlign:'center', lineHeight:1.6}}>
           Forward Agency · Bogdan Nita · bogdan@forward.ro · +40 751 144 109
         </div>
