@@ -5,13 +5,13 @@ const F = 'Montserrat, sans-serif'
 const UI = { bg:'#f5f5f7', ink:'#1c1917', sub:'#57534e', faint:'#a8a29e', line:'#e7e5e4', green:'#059669' }
 
 const TIER_MAP: Record<string, {label: string, color: string, text: string, tip: string, ord: number}> = {
-  'A++': {label: 'Icon', color: '#eacda3', text: '#3f3520', tip: 'Top tier — vinde singur orice eveniment', ord: 0},
-  'Premium': {label: 'Icon', color: '#eacda3', text: '#3f3520', tip: 'Top tier — vinde singur orice eveniment', ord: 0},
+  'A++': {label: 'Icon', color: '#eacda3', text: 'white', tip: 'Top tier — vinde singur orice eveniment', ord: 0},
+  'Premium': {label: 'Icon', color: '#eacda3', text: 'white', tip: 'Top tier — vinde singur orice eveniment', ord: 0},
   'A+': {label: 'Premium', color: '#7c3aed', text: 'white', tip: 'Tracțiune puternică — vânzări consistente', ord: 1},
   'A': {label: 'Select', color: '#78716c', text: 'white', tip: 'Atracție solidă — fan base loial', ord: 2},
 }
 const TIERS = [
-  { range: 'A++', label: 'Icon', color: '#eacda3', text: '#3f3520', tip: 'Top tier — vinde singur orice eveniment' },
+  { range: 'A++', label: 'Icon', color: '#eacda3', text: 'white', tip: 'Top tier — vinde singur orice eveniment' },
   { range: 'A+', label: 'Premium', color: '#7c3aed', text: 'white', tip: 'Tracțiune puternică — vânzări consistente' },
   { range: 'A', label: 'Select', color: '#78716c', text: 'white', tip: 'Atracție solidă — fan base loial' },
 ]
