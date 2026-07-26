@@ -105,10 +105,13 @@ export default function RosterPublic() {
       </nav>
 
       {isMobile ? (
-        <div style={{display:'flex', alignItems:'center', justifyContent:'center', gap:'8px', padding:'11px 16px', background:'#101014', borderBottom:'1px solid #101014', position:'sticky', top:'56px', zIndex:50}}>
-          <span style={{background:'#eacda3', fontSize:'10px', fontWeight:800, padding:'3px 10px', borderRadius:'6px', color:'white'}}>A++ · Icon</span>
-          <span style={{background:'#7c3aed', fontSize:'10px', fontWeight:800, padding:'3px 10px', borderRadius:'6px', color:'white'}}>A+ · Premium</span>
-          <span style={{background:'#78716c', fontSize:'10px', fontWeight:800, padding:'3px 10px', borderRadius:'6px', color:'white'}}>A · Select</span>
+        <div style={{background:'#101014', borderBottom:'1px solid #101014', padding:'11px 16px', position:'sticky', top:'56px', zIndex:50}}>
+          <div style={{display:'flex', alignItems:'center', justifyContent:'center', gap:'8px'}}>
+            <span onClick={() => setTierExplicat(tierExplicat === '10.000€+ · vinde singur orice eveniment' ? '' : '10.000€+ · vinde singur orice eveniment')} style={{background:'#eacda3}', fontSize:'10px', fontWeight:800, padding:'3px 10px', borderRadius:'6px', color:'white', cursor:'pointer'}}>A++ · Icon</span>
+            <span onClick={() => setTierExplicat(tierExplicat === '5.000–10.000€ · tracțiune, vânzări consistente' ? '' : '5.000–10.000€ · tracțiune, vânzări consistente')} style={{background:'#7c3aed}', fontSize:'10px', fontWeight:800, padding:'3px 10px', borderRadius:'6px', color:'white', cursor:'pointer'}}>A+ · Premium</span>
+            <span onClick={() => setTierExplicat(tierExplicat === 'până la 5.000€ · fan base loial' ? '' : 'până la 5.000€ · fan base loial')} style={{background:'#78716c}', fontSize:'10px', fontWeight:800, padding:'3px 10px', borderRadius:'6px', color:'white', cursor:'pointer'}}>A · Select</span>
+          </div>
+          {tierExplicat && <div style={{textAlign:'center', fontSize:'11px', color:'#d6d3d1', fontWeight:600, marginTop:'8px'}}>{tierExplicat}</div>}
         </div>
       ) : (
       <div style={{display:'flex', alignItems:'center', gap:'14px', padding:'10px 16px', background:'#101014', borderBottom:'1px solid #101014', flexWrap:'wrap', position:'sticky', top:'56px', zIndex:50, justifyContent:'center'}}>
