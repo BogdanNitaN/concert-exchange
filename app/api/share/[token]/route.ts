@@ -52,6 +52,7 @@ export async function GET(req: Request, ctx: { params: Promise<{ token: string }
         poza: imgMap[a.nume] || null,
         epk: sh.epk_url || null, riderTehnic: sh.rider_tehnic_url || null, riderAcomodare: sh.rider_acomodare_url || null, ucmr: sh.ucmr_url || null, docs: sh.docs_url || null,
         logistica: {
+          landed: a.landed || false,
           persoane: a.nr_persoane || null,
           format: a.format_show || null,
           durata: a.durata_default || null,

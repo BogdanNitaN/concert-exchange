@@ -40,12 +40,13 @@ function textOferta(a: any, audienta: string, tab: string) {
   if (lg.persoane) ll.push('- Persoane in deplasare: ' + lg.persoane)
   if (lg.format) ll.push('- Format: ' + lg.format + ' (' + (lg.durata || '45 min') + ')')
   else ll.push('- Durata show: ' + (lg.durata || '45 min'))
-  if (lg.leiKm) ll.push('- Transport: ' + lg.leiKm + ' ' + (lg.transportMoneda || 'lei') + '/km + TVA')
+  if (lg.landed) ll.push('- Transport: inclus in onorariu (oriunde in RO)')
+  else if (lg.leiKm) ll.push('- Transport: ' + lg.leiKm + ' ' + (lg.transportMoneda || 'lei') + '/km + TVA')
   if (lg.bileteAvion) ll.push('- Bilete avion: ' + lg.bileteAvion + ' (distante mari)')
   if (lg.cazare) ll.push('- Cazare: ' + lg.cazare)
   if (lg.diurna) ll.push('- Diurna / masa: ' + lg.diurna)
   if (ll.length) t += '*DETALII LOGISTICE:*' + '\n' + ll.join('\n') + '\n' + '\n'
-  t += 'Onorariul nu include transport, cazare si masa.'
+  t += lg.landed ? 'Onorariul nu include cazare si masa.' : 'Onorariul nu include transport, cazare si masa.'
   return t
 }
 
@@ -81,7 +82,8 @@ function CardArtist({ a, audienta, token, tabInitial }: { a: any, audienta: stri
   if (lg.persoane) logi.push(['Persoane', String(lg.persoane)])
   if (lg.format) logi.push(['Format', lg.format + ' · ' + (lg.durata || '45 min')])
   else logi.push(['Durata show', String(lg.durata || '45 min')])
-  if (lg.leiKm) logi.push(['Transport', lg.leiKm + ' ' + (lg.transportMoneda || 'lei') + '/km'])
+  if (lg.landed) logi.push(['Transport', 'inclus (oriunde in RO)'])
+  else if (lg.leiKm) logi.push(['Transport', lg.leiKm + ' ' + (lg.transportMoneda || 'lei') + '/km'])
   if (lg.bileteAvion) logi.push(['Bilete avion', String(lg.bileteAvion)])
   if (lg.cazare) logi.push(['Cazare', lg.cazare])
   if (lg.diurna) logi.push(['Diurna / masa', String(lg.diurna)])
@@ -132,7 +134,7 @@ function CardArtist({ a, audienta, token, tabInitial }: { a: any, audienta: stri
               <div style={{fontSize:'33px', fontWeight:800, color:UI.ink, letterSpacing:'-1.5px', lineHeight:1}}>
                 {fmtEur(tab === 'prom' ? a.preturi.prom : a.preturi.standard)}
               </div>
-              <div style={{fontSize:'11px', color:UI.faint, fontWeight:600, marginTop:'8px'}}>Onorariul nu include transport, cazare si masa</div>
+              <div style={{fontSize:'11px', color:UI.faint, fontWeight:600, marginTop:'8px'}}>{a.logistica?.landed ? 'Transport inclus · onorariul nu include cazare si masa' : 'Onorariul nu include transport, cazare si masa'}</div>
             </div>
             <div style={{textAlign:'center', fontSize:'12px', color:UI.faint, fontWeight:600, padding:'10px 0', borderTop:'1px solid '+UI.line, marginTop:'12px'}}>
               Corporate · Private · Festival <span style={{color:UI.green, fontWeight:700}}>(la cerere)</span>
@@ -291,7 +293,8 @@ function ListaRoster({ artisti, audienta, token }: { artisti: any[], audienta: s
         const li: string[] = []
         if (lg.persoane) li.push('Persoane: ' + lg.persoane)
         li.push('Show: ' + (lg.durata || '45 min'))
-        if (lg.leiKm) li.push('Transport: ' + lg.leiKm + ' ' + (lg.transportMoneda || 'lei') + '/km + TVA')
+        if (lg.landed) li.push('Transport: inclus (oriunde in RO)')
+        else if (lg.leiKm) li.push('Transport: ' + lg.leiKm + ' ' + (lg.transportMoneda || 'lei') + '/km + TVA')
         if (lg.bileteAvion) li.push('Bilete avion: ' + lg.bileteAvion)
         if (lg.cazare) li.push('Cazare: ' + lg.cazare)
         doc.setTextColor(140,140,140)
@@ -302,7 +305,7 @@ function ListaRoster({ artisti, audienta, token }: { artisti: any[], audienta: s
     }
     doc.setFont('helvetica', 'italic'); doc.setFontSize(8); doc.setTextColor(140,140,140)
     if (y > 220) { deseneazaFooterForward(doc, W, M); doc.addPage(); deseneazaHeaderForward(doc, W, M, logo); y = 52 }
-    doc.text(noDia('Onorariile nu includ transport, cazare si masa. Oferta confidentiala.'), M, y)
+    doc.text(noDia('Onorariile nu includ cazare si masa; transportul conform detaliilor per artist. Oferta confidentiala.'), M, y)
     deseneazaFooterForward(doc, W, M)
     doc.save(gen ? 'roster-forward-' + gen.toLowerCase().replace(/[^a-z0-9]/g, '-') + '.pdf' : 'roster-forward.pdf')
   }
@@ -423,7 +426,7 @@ function ListaRoster({ artisti, audienta, token }: { artisti: any[], audienta: s
                   <div style={{display:'grid', gap:'4px', fontSize:'12px', color:UI.sub, marginBottom: docs.length ? '12px' : '0'}}>
                     {lg.persoane && <div>Persoane: <strong style={{color:UI.ink}}>{lg.persoane}</strong></div>}
                     <div>Durata show: <strong style={{color:UI.ink}}>{lg.durata || '45 min'}</strong></div>
-                    {lg.leiKm && <div>Transport: <strong style={{color:UI.ink}}>{lg.leiKm} {lg.transportMoneda || 'lei'}/km +TVA</strong></div>}
+                    {lg.landed ? <div>Transport: <strong style={{color:UI.green}}>inclus in onorariu (oriunde in RO)</strong></div> : lg.leiKm ? <div>Transport: <strong style={{color:UI.ink}}>{lg.leiKm} {lg.transportMoneda || 'lei'}/km +TVA</strong></div> : null}
                     {lg.bileteAvion && <div>Bilete avion: <strong style={{color:UI.ink}}>{lg.bileteAvion}</strong></div>}
                     {lg.cazare && <div>Cazare: <strong style={{color:UI.ink}}>{lg.cazare}</strong></div>}
                     {lg.diurna && <div>Diurna / masa: <strong style={{color:UI.ink}}>{lg.diurna}</strong></div>}
