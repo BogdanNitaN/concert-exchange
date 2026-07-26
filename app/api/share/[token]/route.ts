@@ -49,7 +49,7 @@ export async function GET(req: Request, ctx: { params: Promise<{ token: string }
       return {
         nume: a.nume, genuri: meta?.genres || [], tier: meta?.tier || null,
         poza: imgMap[a.nume] || null,
-        epk: sh.epk_url || null, riderTehnic: sh.rider_tehnic_url || null, riderAcomodare: sh.rider_acomodare_url || null, ucmr: sh.ucmr_url || null,
+        epk: sh.epk_url || null, riderTehnic: sh.rider_tehnic_url || null, riderAcomodare: sh.rider_acomodare_url || null, ucmr: sh.ucmr_url || null, docs: sh.docs_url || null,
         logistica: {
           persoane: a.nr_persoane || null,
           format: a.format_show || null,

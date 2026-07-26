@@ -35,10 +35,6 @@ function Card({ a, onTier }: { a: any, onTier: (r: string) => void }) {
         </a>
       </div>
 
-      <a href={'https://wa.me/40751144109?text=' + encodeURIComponent('Buna Bogdan, as vrea o oferta pentru un eveniment - catalog GIGx')} target="_blank"
-        style={{position:'fixed', bottom:'18px', left:'50%', transform:'translateX(-50%)', zIndex:200, display:'flex', alignItems:'center', gap:'8px', padding:'12px 22px', background:'rgba(16,16,20,0.94)', backdropFilter:'blur(8px)', color:'#F5F2EC', borderRadius:'26px', fontSize:'12.5px', fontWeight:700, textDecoration:'none', boxShadow:'0 6px 24px rgba(16,16,20,0.28)', whiteSpace:'nowrap', letterSpacing:'0.01em'}}>
-        <span style={{width:'7px', height:'7px', borderRadius:'50%', background:UI.green, display:'inline-block'}} />Cere oferta pentru un eveniment
-      </a>
     </div>
   )
 }
@@ -135,11 +131,20 @@ export default function RosterPublic() {
           {genuri.map(g => <button key={g} onClick={() => setGen(gen === g ? '' : g)} style={chip(gen === g)}>{g}</button>)}
         </div>
 
-        {eFiltrat ? (
+        {eFiltrat ? (filtrati.length === 0 ? (
+          <div style={{padding:'30px 20px', background:'#101014', borderRadius:'18px', textAlign:'center'}}>
+            <div style={{fontSize:'15px', fontWeight:800, color:'#F5F2EC', letterSpacing:'-0.3px'}}>Nu ai gasit artistul potrivit?</div>
+            <div style={{fontSize:'12.5px', color:'#a8a29e', fontWeight:500, marginTop:'6px', lineHeight:1.5}}>Rosterul Forward e doar inceputul. Avem acces direct la orice artist roman sau international.</div>
+            <a href={'https://wa.me/40751144109?text=' + encodeURIComponent('Buna Bogdan, caut ' + (q.trim() || 'un artist') + ' pentru un eveniment - catalog GIGx')} target="_blank"
+              style={{display:'inline-block', marginTop:'14px', padding:'10px 20px', background:UI.green, color:'white', borderRadius:'10px', fontSize:'12px', fontWeight:700, textDecoration:'none'}}>
+              {q.trim() ? 'Cere oferta pentru "' + q.trim() + '"' : 'Spune-ne ce artist cauti'}
+            </a>
+          </div>
+        ) : (
           <div style={GRID}>
             {filtrati.map(a => <Card key={a.nume} a={a} onTier={r => { setTierExplicat(r); window.scrollTo({top: 0, behavior: 'smooth'}) }} />)}
           </div>
-        ) : (
+        )) : (
           <>
             {top.length > 0 && (
               <div style={{marginBottom:'28px'}}>
@@ -173,10 +178,7 @@ export default function RosterPublic() {
         </div>
       </div>
 
-      <a href={'https://wa.me/40751144109?text=' + encodeURIComponent('Buna Bogdan, as vrea o oferta pentru un eveniment - catalog GIGx')} target="_blank"
-        style={{position:'fixed', bottom:'18px', left:'50%', transform:'translateX(-50%)', zIndex:200, display:'flex', alignItems:'center', gap:'8px', padding:'12px 22px', background:'rgba(16,16,20,0.94)', backdropFilter:'blur(8px)', color:'#F5F2EC', borderRadius:'26px', fontSize:'12.5px', fontWeight:700, textDecoration:'none', boxShadow:'0 6px 24px rgba(16,16,20,0.28)', whiteSpace:'nowrap', letterSpacing:'0.01em'}}>
-        <span style={{width:'7px', height:'7px', borderRadius:'50%', background:UI.green, display:'inline-block'}} />Cere oferta pentru un eveniment
-      </a>
+      
     </div>
   )
 }

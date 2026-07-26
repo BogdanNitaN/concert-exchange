@@ -89,6 +89,7 @@ function CardArtist({ a, audienta, token, tabInitial }: { a: any, audienta: stri
   if (a.riderTehnic) docs.push(['Rider tehnic', a.riderTehnic])
   if (a.riderAcomodare) docs.push(['Rider acomodare', a.riderAcomodare])
   if (a.ucmr) docs.push(['UCMR', a.ucmr])
+  if (docs.length === 0 && a.docs) docs.push(['Documente artist', a.docs])
 
   return (
     <div style={{background:'white', borderRadius:'20px', border:'1px solid '+UI.line, overflow:'hidden', boxShadow:'0 2px 8px rgba(0,0,0,0.04)'}}>
