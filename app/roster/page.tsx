@@ -109,18 +109,15 @@ export default function RosterPublic() {
           <div style={{display:'flex', alignItems:'center', gap:'10px'}}>
             <span style={{background:'#eacda3', fontSize:'11px', fontWeight:800, padding:'3px 9px', borderRadius:'6px', color:'white', whiteSpace:'nowrap', flexShrink:0, minWidth:'92px', textAlign:'center'}}>A++ · Icon</span>
             <span style={{fontSize:'11px', color:'#a8a29e', fontWeight:700, flexShrink:0, minWidth:'96px'}}>10.000€+</span>
-            <span style={{fontSize:'11px', color:'#d6d3d1', fontWeight:600}}>Top tier — vinde singur orice eveniment</span>
-          </div>
+            </div>
           <div style={{display:'flex', alignItems:'center', gap:'10px'}}>
             <span style={{background:'#7c3aed', fontSize:'11px', fontWeight:800, padding:'3px 9px', borderRadius:'6px', color:'white', whiteSpace:'nowrap', flexShrink:0, minWidth:'92px', textAlign:'center'}}>A+ · Premium</span>
             <span style={{fontSize:'11px', color:'#a8a29e', fontWeight:700, flexShrink:0, minWidth:'96px'}}>5.000–10.000€</span>
-            <span style={{fontSize:'11px', color:'#d6d3d1', fontWeight:600}}>Tracțiune puternică — vânzări consistente</span>
-          </div>
+            </div>
           <div style={{display:'flex', alignItems:'center', gap:'10px'}}>
             <span style={{background:'#78716c', fontSize:'11px', fontWeight:800, padding:'3px 9px', borderRadius:'6px', color:'white', whiteSpace:'nowrap', flexShrink:0, minWidth:'92px', textAlign:'center'}}>A · Select</span>
             <span style={{fontSize:'11px', color:'#a8a29e', fontWeight:700, flexShrink:0, minWidth:'96px'}}>până la 5.000€</span>
-            <span style={{fontSize:'11px', color:'#d6d3d1', fontWeight:600}}>Atracție solidă — fan base loial</span>
-          </div>
+            </div>
         </div>
       ) : (
       <div style={{display:'flex', alignItems:'center', gap:'14px', padding:'10px 16px', background:'#101014', borderBottom:'1px solid #101014', overflowX:'auto', WebkitOverflowScrolling:'touch', whiteSpace:'nowrap', position:'sticky', top:'56px', zIndex:50, justifyContent:'safe center'}}>
