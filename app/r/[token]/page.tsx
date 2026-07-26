@@ -281,11 +281,11 @@ function ListaRoster({ artisti, audienta, token }: { artisti: any[], audienta: s
           doc.setFontSize(11.5)
           doc.text(noDia(pretTxt), W - M, y, { align: 'right' })
         }
-        y += 5
+        y += 5.5
         doc.setFont('helvetica', 'normal'); doc.setFontSize(8.5); doc.setTextColor(90,90,90)
         if (a.preturi && audienta === 'b2b') {
           doc.text(noDia('Baluri/Prom: ' + a.preturi.prom.toLocaleString('ro-RO') + ' EUR + TVA  ·  Revelion/Corporate/Private/Festival: la cerere'), M, y)
-          y += 4.5
+          y += 5
         }
         const lg = a.logistica || {}
         const li: string[] = []
@@ -296,9 +296,9 @@ function ListaRoster({ artisti, audienta, token }: { artisti: any[], audienta: s
         if (lg.cazare) li.push('Cazare: ' + lg.cazare)
         doc.setTextColor(140,140,140)
         doc.text(noDia(li.join('  ·  ')), M, y)
-        y += 7.5
+        y += 11
       }
-      y += 3
+      y += 5
     }
     doc.setFont('helvetica', 'italic'); doc.setFontSize(8); doc.setTextColor(140,140,140)
     if (y > 220) { deseneazaFooterForward(doc, W, M); doc.addPage(); deseneazaHeaderForward(doc, W, M, logo); y = 52 }
@@ -460,6 +460,8 @@ export default function ShareView() {
   const token = String(params.token || '')
   const [d, setD] = useState<any>(null)
   const [err, setErr] = useState('')
+  const [acum, setAcum] = useState(Date.now())
+  useEffect(() => { const t = setInterval(() => setAcum(Date.now()), 60000); return () => clearInterval(t) }, [])
 
   useEffect(() => {
     if (!token) return
@@ -475,7 +477,13 @@ export default function ShareView() {
           <img src="/gigx-mark.png" width={24} height={24} alt="" style={{display:'block'}} />
           <span style={{fontSize:'20px', fontWeight:800, letterSpacing:'-0.5px', color:UI.ink}}>GIG<span style={{color:UI.green}}>x</span></span>
         </div>
-        {d && <span style={{fontSize:'12px', fontWeight:800, color:'white', background:UI.green, padding:'7px 14px', borderRadius:'20px', boxShadow:'0 1px 3px rgba(5,150,105,0.3)'}}>valabil pana la {new Date(d.expiraLa).toLocaleString('ro-RO', {day:'2-digit', month:'2-digit', hour:'2-digit', minute:'2-digit'})}</span>}
+        {d && (() => {
+          const ms = new Date(d.expiraLa).getTime() - acum
+          const ramasTimp = ms <= 0 ? 'expirat' : ms < 86400000
+            ? Math.floor(ms/3600000) + 'h ' + Math.floor((ms%3600000)/60000) + 'min'
+            : Math.floor(ms/86400000) + 'z ' + Math.floor((ms%86400000)/3600000) + 'h'
+          return <span style={{fontSize:'12px', fontWeight:800, color:'white', background: ms < 86400000 ? '#d97706' : UI.green, padding:'7px 14px', borderRadius:'20px', boxShadow:'0 1px 3px rgba(0,0,0,0.15)', whiteSpace:'nowrap'}}>valabil inca {ramasTimp}</span>
+        })()}
       </nav>
 
       <div style={{maxWidth:'720px', margin:'0 auto', padding:'24px 16px 44px'}}>
