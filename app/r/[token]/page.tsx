@@ -369,7 +369,7 @@ function ListaRoster({ artisti, audienta, token }: { artisti: any[], audienta: s
       </div>
       {selectati.size > 0 && (
         <div style={{position:'fixed', bottom:0, left:0, right:0, zIndex:300, padding:'12px 16px calc(12px + env(safe-area-inset-bottom))', background:'rgba(255,255,255,0.96)', backdropFilter:'blur(10px)', borderTop:'1px solid '+UI.line}}>
-          <a href={'https://wa.me/40751144109?text=' + encodeURIComponent('Buna Bogdan, te rog disponibilitatea pentru: ' + Array.from(selectati).join(', '))} target="_blank" onClick={() => log('cta-disponibilitate')}
+          <a href={'https://wa.me/40751144109?text=' + encodeURIComponent('Buna Bogdan, te rog disponibilitatea pentru: ' + Array.from(selectati).join(', ') + ', in localitatea ______, data ______')} target="_blank" onClick={() => log('cta-disponibilitate')}
             style={{display:'block', maxWidth:'688px', margin:'0 auto', textAlign:'center', padding:'14px', background:UI.green, color:'white', borderRadius:'12px', fontSize:'13.5px', fontWeight:800, textDecoration:'none', boxShadow:'0 4px 16px rgba(5,150,105,0.35)'}}>
             Cere disponibilitate pe WhatsApp ({selectati.size} selectati)
           </a>
