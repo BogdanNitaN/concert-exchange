@@ -321,6 +321,16 @@ export default function IstoricPage() {
                   {o.total_discount_eur > 0 && <span style={{color:UI.faint, fontSize:'12px'}}>Discount: {o.total_discount_eur.toLocaleString('ro-RO')} €</span>}
                   {o.total_cag_eur > 0 && <span style={{color:UI.faint, fontSize:'12px'}}>CAG: {o.total_cag_eur.toLocaleString('ro-RO')} €</span>}
                   <div style={{marginLeft:'auto', display:'flex', gap:'8px', alignItems:'center', flexWrap:'wrap'}}>
+                  <button onClick={() => { try { localStorage.setItem('oferta_edit', JSON.stringify(o)); localStorage.setItem('oferta_auto', 'pdf') } catch {}; window.location.href = '/oferta' }}
+                    title="Descarcă PDF"
+                    style={{padding:'6px 12px', background:'white', color:'#7c3aed', border:'1.5px solid #e9d5ff', borderRadius:'8px', fontSize:'12px', fontWeight:700, cursor:'pointer', fontFamily:F}}>
+                    PDF
+                  </button>
+                  <button onClick={() => { try { localStorage.setItem('oferta_edit', JSON.stringify(o)); localStorage.setItem('oferta_auto', 'copy') } catch {}; window.location.href = '/oferta' }}
+                    title="Copiază textul ofertei"
+                    style={{padding:'6px 12px', background:'white', color:'#0369a1', border:'1.5px solid #bae6fd', borderRadius:'8px', fontSize:'12px', fontWeight:700, cursor:'pointer', fontFamily:F}}>
+                    Copiază
+                  </button>
                   <button onClick={() => toggleTest(o.cod, !o.test)}
                     style={{padding:'6px 12px', background: o.test ? '#fde047' : 'transparent', color: o.test ? '#713f12' : '#d6d3d1', border:'1.5px dashed '+(o.test ? '#fde047' : '#e7e5e4'), borderRadius:'8px', fontSize:'11px', fontWeight:700, cursor:'pointer', fontFamily:F}}>
                     {o.test ? '✓ test' : 'test'}

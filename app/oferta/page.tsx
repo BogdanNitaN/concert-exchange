@@ -191,6 +191,7 @@ export default function OfertaPage() {
   const [useAdaos, setUseAdaos] = useState(false)
   const [destinatar, setDestinatar] = useState<'' | 'client' | 'intermediar'>('')
   const [institutiePublica, setInstitutiePublica] = useState(false)
+  const [autoActiune, setAutoActiune] = useState<string | null>(null)
   const [codOferta, setCodOferta] = useState(() => 'GIGX-' + new Date().getFullYear() + '-' + String(Math.floor(Math.random()*9000)+1000))
   const [adaosProcent, setAdaosProcent] = useState(1)
   const [showAddArtist, setShowAddArtist] = useState(false)
@@ -235,6 +236,8 @@ export default function OfertaPage() {
         if (raw) {
           const o = JSON.parse(raw)
           localStorage.removeItem('oferta_edit')
+          const auto = localStorage.getItem('oferta_auto')
+          if (auto) { localStorage.removeItem('oferta_auto'); setTimeout(() => setAutoActiune(auto), 100) }
           if (o.cod) setCodOferta(o.cod)
           if (o.client) setNumeClient(o.client)
           if (o.oras) {
@@ -441,6 +444,19 @@ export default function OfertaPage() {
   function calcLinie(l: Linie) {
     return calcLinieOferta(l, { km, eurRate, useAdaos, adaosProcent, local: esteLocalBucIlfov(l) })
   }
+
+  useEffect(() => {
+    // auto-actiune din istoric: pdf sau copy
+    if (!autoActiune) return
+    const t = setTimeout(() => {
+      if (autoActiune === 'pdf') { downloadPDF() }
+      if (autoActiune === 'copy') {
+        navigator.clipboard.writeText(genText()).then(() => alert('Oferta copiată în clipboard'))
+      }
+      setAutoActiune(null)
+    }, 1800)
+    return () => clearTimeout(t)
+  }, [autoActiune])
 
   function genText(): string {
     const out: string[] = []
