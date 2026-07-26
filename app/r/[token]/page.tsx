@@ -28,9 +28,9 @@ function textOferta(a: any, audienta: string, tab: string) {
     if (audienta === 'b2b') {
       const pret = tab === 'revelion' ? a.preturi.revelion : tab === 'prom' ? a.preturi.prom : a.preturi.standard
       const sufix = tab === 'revelion' ? ' (Revelion)' : tab === 'prom' ? ' (Baluri / Prom)' : ''
-      t += a.nume.toUpperCase() + ' - ' + fmtEur(pret) + ' + TVA' + sufix + '\n'
+      t += '*' + a.nume.toUpperCase() + ' - ' + fmtEur(pret) + ' + TVA' + sufix + '*' + '\n'
     } else {
-      t += a.nume.toUpperCase() + ' - de la ' + fmtEur(a.preturi.deLa) + ' + TVA' + '\n'
+      t += '*' + a.nume.toUpperCase() + ' - de la ' + fmtEur(a.preturi.deLa) + ' + TVA' + '*' + '\n'
     }
   } else {
     t += a.nume.toUpperCase() + '\n'
@@ -45,7 +45,7 @@ function textOferta(a: any, audienta: string, tab: string) {
   if (lg.bileteAvion) ll.push('- Bilete avion: ' + lg.bileteAvion + ' (distante mari)')
   if (lg.cazare) ll.push('- Cazare: ' + lg.cazare)
   if (lg.diurna) ll.push('- Diurna / masa: ' + lg.diurna)
-  if (ll.length) t += 'CONDITII LOGISTICE:' + '\n' + ll.join('\n') + '\n' + '\n'
+  if (ll.length) t += '*DETALII:*' + '\n' + ll.join('\n') + '\n' + '\n'
   t += 'Onorariul nu include transport, cazare si masa.'
   return t
 }
@@ -149,7 +149,7 @@ function CardArtist({ a, audienta, token, tabInitial }: { a: any, audienta: stri
 
         {logi.length > 0 && (
           <div style={{marginTop:'14px', background:UI.bg, borderRadius:'14px', padding:'14px 16px'}}>
-            <div style={{fontSize:'10px', fontWeight:700, color:'#78716c', textTransform:'uppercase', letterSpacing:'0.06em', marginBottom:'10px'}}>Conditii logistice</div>
+            <div style={{fontSize:'10px', fontWeight:700, color:'#78716c', textTransform:'uppercase', letterSpacing:'0.06em', marginBottom:'10px'}}>Detalii</div>
             <div style={{display:'grid', gap:'7px'}}>
               {logi.map(([k, v]) => (
                 <div key={k} style={{display:'flex', justifyContent:'space-between', gap:'12px', fontSize:'13px'}}>
