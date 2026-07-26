@@ -1,6 +1,16 @@
 'use client'
 import { useState, useEffect, useMemo } from 'react'
 
+function useIsMobile() {
+  const [m, setM] = useState(false)
+  useEffect(() => {
+    const c = () => setM(window.innerWidth < 640)
+    c(); window.addEventListener('resize', c)
+    return () => window.removeEventListener('resize', c)
+  }, [])
+  return m
+}
+
 const F = 'Montserrat, sans-serif'
 const UI = { bg:'#f5f5f7', ink:'#1c1917', sub:'#57534e', faint:'#a8a29e', line:'#e7e5e4', green:'#059669' }
 
@@ -46,6 +56,7 @@ export default function RosterPublic() {
   const [q, setQ] = useState('')
   const [gen, setGen] = useState('')
   const [tierExplicat, setTierExplicat] = useState('')
+  const isMobile = useIsMobile()
 
   useEffect(() => {
     fetch('/api/roster-public').then(r => r.json()).then(d => setArtisti(d.artisti || []))
@@ -93,26 +104,46 @@ export default function RosterPublic() {
         <span style={{fontSize:'13px', fontWeight:700, color:UI.sub, marginLeft:'6px'}}>Catalog Artisti Forward</span>
       </nav>
 
+      {isMobile ? (
+        <div style={{display:'flex', flexDirection:'column', gap:'8px', padding:'12px 16px', background:'#101014', borderBottom:'1px solid #101014', position:'sticky', top:'56px', zIndex:50}}>
+          <div style={{display:'flex', alignItems:'center', gap:'10px'}}>
+            <span style={{background:'#eacda3', fontSize:'11px', fontWeight:800, padding:'3px 9px', borderRadius:'6px', color:'white', whiteSpace:'nowrap', flexShrink:0, minWidth:'92px', textAlign:'center'}}>A++ · Icon</span>
+            <span style={{fontSize:'11px', color:'#a8a29e', fontWeight:700, flexShrink:0, minWidth:'96px'}}>10.000€+</span>
+            <span style={{fontSize:'11px', color:'#d6d3d1', fontWeight:600}}>Top tier — vinde singur orice eveniment</span>
+          </div>
+          <div style={{display:'flex', alignItems:'center', gap:'10px'}}>
+            <span style={{background:'#7c3aed', fontSize:'11px', fontWeight:800, padding:'3px 9px', borderRadius:'6px', color:'white', whiteSpace:'nowrap', flexShrink:0, minWidth:'92px', textAlign:'center'}}>A+ · Premium</span>
+            <span style={{fontSize:'11px', color:'#a8a29e', fontWeight:700, flexShrink:0, minWidth:'96px'}}>5.000–10.000€</span>
+            <span style={{fontSize:'11px', color:'#d6d3d1', fontWeight:600}}>Tracțiune puternică — vânzări consistente</span>
+          </div>
+          <div style={{display:'flex', alignItems:'center', gap:'10px'}}>
+            <span style={{background:'#78716c', fontSize:'11px', fontWeight:800, padding:'3px 9px', borderRadius:'6px', color:'white', whiteSpace:'nowrap', flexShrink:0, minWidth:'92px', textAlign:'center'}}>A · Select</span>
+            <span style={{fontSize:'11px', color:'#a8a29e', fontWeight:700, flexShrink:0, minWidth:'96px'}}>până la 5.000€</span>
+            <span style={{fontSize:'11px', color:'#d6d3d1', fontWeight:600}}>Atracție solidă — fan base loial</span>
+          </div>
+        </div>
+      ) : (
       <div style={{display:'flex', alignItems:'center', gap:'14px', padding:'10px 16px', background:'#101014', borderBottom:'1px solid #101014', overflowX:'auto', WebkitOverflowScrolling:'touch', whiteSpace:'nowrap', position:'sticky', top:'56px', zIndex:50, justifyContent:'safe center'}}>
         <div style={{display:'flex', alignItems:'center', gap:'14px', width:'max-content'}}>
         <span style={{fontSize:'10px', color:'#78716c', fontWeight:700, textTransform:'uppercase', letterSpacing:'0.08em'}}>Tier</span>
         <span className="tier-legend-item" style={{fontSize:'11px', color:'#d6d3d1', fontWeight:600, display:'flex', alignItems:'center', gap:'6px', position:'relative', cursor:'help', flexShrink:0}}>
-          <span style={{background:'#eacda3', fontSize:'10px', fontWeight:700, padding:'2px 8px', borderRadius:'6px', color:'white', cursor:'pointer'}} onClick={() => setTierExplicat(tierExplicat === 'Top tier — vinde singur orice eveniment' ? '' : 'Top tier — vinde singur orice eveniment')}>A++ · Icon</span>
+          <span style={{background:'#eacda3', fontSize:'10px', fontWeight:700, padding:'2px 8px', borderRadius:'6px', color:'white'}}>A++ · Icon</span>
           <span>10.000€+</span>
           <span className="tier-legend-tooltip">Top tier — vinde singur orice eveniment</span>
         </span>
         <span className="tier-legend-item" style={{fontSize:'11px', color:'#d6d3d1', fontWeight:600, display:'flex', alignItems:'center', gap:'6px', position:'relative', cursor:'help', flexShrink:0}}>
-          <span style={{background:'#7c3aed', fontSize:'10px', fontWeight:700, padding:'2px 8px', borderRadius:'6px', color:'white', cursor:'pointer'}} onClick={() => setTierExplicat(tierExplicat === 'Tracțiune puternică — vânzări consistente' ? '' : 'Tracțiune puternică — vânzări consistente')}>A+ · Premium</span>
+          <span style={{background:'#7c3aed', fontSize:'10px', fontWeight:700, padding:'2px 8px', borderRadius:'6px', color:'white'}}>A+ · Premium</span>
           <span>5.000–10.000€</span>
           <span className="tier-legend-tooltip">Tracțiune puternică — vânzări consistente</span>
         </span>
         <span className="tier-legend-item" style={{fontSize:'11px', color:'#d6d3d1', fontWeight:600, display:'flex', alignItems:'center', gap:'6px', position:'relative', cursor:'help', flexShrink:0}}>
-          <span style={{background:'#78716c', fontSize:'10px', fontWeight:700, padding:'2px 8px', borderRadius:'6px', color:'white', cursor:'pointer'}} onClick={() => setTierExplicat(tierExplicat === 'Atracție solidă — fan base loial' ? '' : 'Atracție solidă — fan base loial')}>A · Select</span>
+          <span style={{background:'#78716c', fontSize:'10px', fontWeight:700, padding:'2px 8px', borderRadius:'6px', color:'white'}}>A · Select</span>
           <span>până la 5.000€</span>
           <span className="tier-legend-tooltip">Atracție solidă — fan base loial</span>
         </span>
         </div>
       </div>
+      )}
       {tierExplicat && <div style={{marginBottom:'10px', padding:'10px 14px', background:'white', border:'1px solid #e7e5e4', borderRadius:'11px', fontSize:'12px', color:'#57534e', fontWeight:600}}>{tierExplicat}</div>}
 
       <div style={{maxWidth:'1080px', margin:'0 auto', padding:'26px 16px 50px'}}>
