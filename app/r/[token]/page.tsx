@@ -22,28 +22,30 @@ const TIER_MAP: Record<string, {label: string, color: string}> = {
 const TAB_LABEL: Record<string, string> = { standard: 'Standard', revelion: 'Revelion', prom: 'Baluri / Prom' }
 
 function textOferta(a: any, audienta: string, tab: string) {
-  let t = a.nume.toUpperCase() + '\\n'
-  if (a.genuri.length) t += a.genuri.join(' / ') + '\\n\\n'
+  const lg = a.logistica || {}
+  let t = ''
   if (a.preturi) {
     if (audienta === 'b2b') {
       const pret = tab === 'revelion' ? a.preturi.revelion : tab === 'prom' ? a.preturi.prom : a.preturi.standard
-      t += 'Onorariu ' + (TAB_LABEL[tab] || 'Standard') + ': ' + fmtEur(pret) + '\\n'
-      t += 'Alte categorii (Corporate / Private / Festival): la cerere\\n\\n'
+      const sufix = tab === 'revelion' ? ' (Revelion)' : tab === 'prom' ? ' (Baluri / Prom)' : ''
+      t += a.nume.toUpperCase() + ' - ' + fmtEur(pret) + ' + TVA' + sufix + '\n'
     } else {
-      t += 'Onorariu: de la ' + fmtEur(a.preturi.deLa) + '\\n'
-      t += 'Revelion / Corporate / Private: la cerere\\n\\n'
+      t += a.nume.toUpperCase() + ' - de la ' + fmtEur(a.preturi.deLa) + ' + TVA' + '\n'
     }
+  } else {
+    t += a.nume.toUpperCase() + '\n'
   }
-  const lg = a.logistica || {}
+  if (a.genuri.length) t += a.genuri.join(' / ') + '\n'
+  t += 'Corporate / Private - la cerere' + '\n' + '\n'
   const ll: string[] = []
   if (lg.persoane) ll.push('- Persoane in deplasare: ' + lg.persoane)
   if (lg.format) ll.push('- Format: ' + lg.format + ' (' + (lg.durata || '45 min') + ')')
   else ll.push('- Durata show: ' + (lg.durata || '45 min'))
-  if (lg.leiKm) ll.push('- Transport: ' + lg.leiKm + ' ' + (lg.transportMoneda || 'lei') + '/km')
-  if (lg.bileteAvion) ll.push('- Bilete avion: ' + lg.bileteAvion)
+  if (lg.leiKm) ll.push('- Transport: ' + lg.leiKm + ' ' + (lg.transportMoneda || 'lei') + '/km + TVA')
+  if (lg.bileteAvion) ll.push('- Bilete avion: ' + lg.bileteAvion + ' (distante mari)')
   if (lg.cazare) ll.push('- Cazare: ' + lg.cazare)
   if (lg.diurna) ll.push('- Diurna / masa: ' + lg.diurna)
-  if (ll.length) t += 'CONDITII LOGISTICE:\\n' + ll.join('\\n') + '\\n\\n'
+  if (ll.length) t += 'CONDITII LOGISTICE:' + '\n' + ll.join('\n') + '\n' + '\n'
   t += 'Onorariul nu include transport, cazare si masa.'
   return t
 }
