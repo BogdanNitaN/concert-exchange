@@ -32,7 +32,7 @@ function textOferta(a: any, audienta: string, tab: string) {
       const sufix = tab === 'prom' ? ' (Baluri / Prom)' : ''
       t += fmtEur(pret) + ' + TVA' + sufix + '\n'
     } else {
-      t += 'de la ' + fmtEur(a.preturi.deLa) + ' + TVA' + '\n'
+      t += fmtEur(a.preturi.deLa) + ' + TVA' + '\n'
     }
   }
   t += 'Corporate / Private (la cerere)' + '\n' + '\n'
@@ -279,7 +279,7 @@ function ListaRoster({ artisti, audienta, token }: { artisti: any[], audienta: s
         if (a.preturi) {
           const pretTxt = audienta === 'b2b'
             ? a.preturi.standard.toLocaleString('ro-RO') + ' EUR + TVA'
-            : 'de la ' + a.preturi.deLa.toLocaleString('ro-RO') + ' EUR + TVA'
+            : a.preturi.deLa.toLocaleString('ro-RO') + ' EUR + TVA'
           doc.setFontSize(11.5)
           doc.text(noDia(pretTxt), W - M, y, { align: 'right' })
         }
