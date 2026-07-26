@@ -363,7 +363,7 @@ function ListaRoster({ artisti, audienta, token }: { artisti: any[], audienta: s
           <span className="tier-legend-tooltip">Atracție solidă — fan base loial</span>
         </span>
       </div>
-      )}}
+      )}
       <input value={q} onChange={e => setQ(e.target.value)} placeholder="Cauta artist..."
         style={{width:'100%', boxSizing:'border-box', padding:'12px 16px', borderRadius:'12px', border:'1.5px solid '+UI.line, fontSize:'14px', fontFamily:F, outline:'none', background:'white', marginBottom:'10px'}} />
       <div style={{display:'flex', gap:'8px', overflowX:'auto', WebkitOverflowScrolling:'touch', paddingBottom:'6px', marginBottom:'10px'}}>
