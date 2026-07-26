@@ -5,13 +5,13 @@ const F = 'Montserrat, sans-serif'
 const UI = { bg:'#f5f5f7', ink:'#1c1917', sub:'#57534e', faint:'#a8a29e', line:'#e7e5e4', green:'#059669' }
 
 const TIER_MAP: Record<string, {label: string, color: string, text: string, tip: string, ord: number}> = {
-  'A++': {label: 'HEADLINER', color: '#eacda3', text: '#7c5e10', tip: 'Top tier - vinde singur orice eveniment', ord: 0},
-  'Premium': {label: 'HEADLINER', color: '#eacda3', text: '#7c5e10', tip: 'Top tier - vinde singur orice eveniment', ord: 0},
+  'A++': {label: 'HEADLINER', color: '#eacda3', text: '#101014', tip: 'Top tier - vinde singur orice eveniment', ord: 0},
+  'Premium': {label: 'HEADLINER', color: '#eacda3', text: '#101014', tip: 'Top tier - vinde singur orice eveniment', ord: 0},
   'A+': {label: 'POWER DRAW', color: '#7c3aed', text: 'white', tip: 'Tractiune puternica - vanzari consistente', ord: 1},
-  'A': {label: 'SOLID', color: '#44403c', text: 'white', tip: 'Atractie solida - fan base loial', ord: 2},
+  'A': {label: 'SOLID', color: '#78716c', text: 'white', tip: 'Atractie solida - fan base loial', ord: 2},
 }
 const TIERS = [
-  { range: 'A++', label: 'HEADLINER', color: '#eacda3', text: '#7c5e10', tip: 'Top tier - vinde singur orice eveniment' },
+  { range: 'A++', label: 'HEADLINER', color: '#eacda3', text: '#101014', tip: 'Top tier - vinde singur orice eveniment' },
   { range: 'A+', label: 'POWER DRAW', color: '#7c3aed', text: 'white', tip: 'Tractiune puternica - vanzari consistente' },
   { range: 'A', label: 'SOLID', color: '#44403c', text: 'white', tip: 'Atractie solida - fan base loial' },
 ]
@@ -61,11 +61,11 @@ export default function RosterPublic() {
     let l = artisti
     if (gen) l = l.filter(a => a.genuri.includes(gen))
     if (cauta) l = l.filter(a => a.nume.toLowerCase().includes(cauta))
-    return [...l].sort((a, b) => ordTier(a.tier) - ordTier(b.tier) || a.nume.localeCompare(b.nume))
+    return [...l].sort((a, b) => ordTier(a.tier) - ordTier(b.tier))
   }, [artisti, cauta, gen])
 
   const eFiltrat = !!(gen || cauta)
-  const top = useMemo(() => artisti.filter(a => ordTier(a.tier) <= 1).sort((a, b) => ordTier(a.tier) - ordTier(b.tier) || a.nume.localeCompare(b.nume)), [artisti])
+  const top = useMemo(() => artisti.filter(a => ordTier(a.tier) <= 1).sort((a, b) => ordTier(a.tier) - ordTier(b.tier)), [artisti])
   const topSet = useMemo(() => new Set(top.map(a => a.nume)), [top])
   const peGenuri = useMemo(() => {
     const m: Record<string, any[]> = {}
@@ -75,7 +75,7 @@ export default function RosterPublic() {
       if (!m[g]) m[g] = []
       m[g].push(a)
     }
-    for (const g of Object.keys(m)) m[g].sort((a, b) => ordTier(a.tier) - ordTier(b.tier) || a.nume.localeCompare(b.nume))
+    for (const g of Object.keys(m)) m[g].sort((a, b) => ordTier(a.tier) - ordTier(b.tier))
     return Object.entries(m).sort((x, y) => y[1].length - x[1].length)
   }, [artisti, topSet])
 

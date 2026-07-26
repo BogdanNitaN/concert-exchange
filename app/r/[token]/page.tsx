@@ -14,10 +14,10 @@ function formatNum(n: number) {
 function fmtEur(n: number) { return n.toLocaleString('ro-RO') + ' EUR' }
 
 const TIER_MAP: Record<string, {label: string, color: string, tip: string}> = {
-  'A++': {label: 'HEADLINER', color: '#b8860b', tip: 'Top tier - vinde singur orice eveniment'},
-  'Premium': {label: 'HEADLINER', color: '#b8860b', tip: 'Top tier - vinde singur orice eveniment'},
+  'A++': {label: 'HEADLINER', color: '#eacda3', tip: 'Top tier - vinde singur orice eveniment'},
+  'Premium': {label: 'HEADLINER', color: '#eacda3', tip: 'Top tier - vinde singur orice eveniment'},
   'A+': {label: 'POWER DRAW', color: '#7c3aed', tip: 'Tractiune puternica - vanzari consistente'},
-  'A': {label: 'SOLID', color: '#44403c', tip: 'Atractie solida - fan base loial'},
+  'A': {label: 'SOLID', color: '#78716c', tip: 'Atractie solida - fan base loial'},
 }
 const TAB_LABEL: Record<string, string> = { standard: 'Standard', revelion: 'Revelion', prom: 'Baluri / Prom' }
 
@@ -98,7 +98,7 @@ function CardArtist({ a, audienta, token, tabInitial }: { a: any, audienta: stri
           <div style={{fontSize:'24px', fontWeight:800, color:UI.ink, letterSpacing:'-0.8px', lineHeight:1.1}}>{a.nume}</div>
           <div style={{display:'flex', alignItems:'center', gap:'8px', marginTop:'6px', flexWrap:'wrap'}}>
             {a.genuri.length > 0 && <span style={{fontSize:'12px', color:UI.sub, fontWeight:600}}>{a.genuri.join(' · ')}</span>}
-            {tier && <span title={tier.tip} style={{fontSize:'10px', fontWeight:800, color:'white', background:tier.color, padding:'3px 9px', borderRadius:'6px', letterSpacing:'0.06em', cursor:'help'}}>{tier.label}</span>}
+            {tier && <span title={tier.tip} style={{fontSize:'10px', fontWeight:800, color: tier.color === '#eacda3' ? '#101014' : 'white', background:tier.color, padding:'3px 9px', borderRadius:'6px', letterSpacing:'0.06em', cursor:'help'}}>{tier.label}</span>}
           </div>
         </div>
       </div>

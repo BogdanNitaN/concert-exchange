@@ -9,7 +9,7 @@ const supabase = createClient(
 
 export async function GET() {
   try {
-    const { data: toti } = await supabase.from('oferta_artisti').select('nume, tip')
+    const { data: toti } = await supabase.from('oferta_artisti').select('nume, tip, fee_standard')
     const { data: imgs } = await supabase.from('artist_images').select('name, image_url')
     const { data: shares } = await supabase.from('artist_share').select('nume, afisabil')
     const imgMap: Record<string, string> = {}
@@ -42,9 +42,10 @@ export async function GET() {
         }
         const norm = (a.nume || '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').trim()
         const genuri: string[] = GENURI[norm] || (meta?.genres || [])
-        return { nume: a.nume, genuri, tier: meta?.tier || null, poza: imgMap[a.nume] || null }
+        return { nume: a.nume, genuri, tier: meta?.tier || null, poza: imgMap[a.nume] || null, _fee: a.fee_standard || 0 }
       })
-      .sort((a, b) => (ordineTier[a.tier || ''] ?? 3) - (ordineTier[b.tier || ''] ?? 3) || a.nume.localeCompare(b.nume))
+      .sort((a, b) => (ordineTier[a.tier || ''] ?? 3) - (ordineTier[b.tier || ''] ?? 3) || (b._fee || 0) - (a._fee || 0))
+      .map(({ _fee, ...rest }) => rest)
 
     return NextResponse.json({ ok: true, artisti })
   } catch {
