@@ -13,11 +13,11 @@ function formatNum(n: number) {
 }
 function fmtEur(n: number) { return n.toLocaleString('ro-RO') + ' EUR' }
 
-const TIER_MAP: Record<string, {label: string, color: string}> = {
-  'A++': {label: 'HEADLINER', color: '#b8860b'},
-  'Premium': {label: 'HEADLINER', color: '#b8860b'},
-  'A+': {label: 'POWER DRAW', color: '#7c3aed'},
-  'A': {label: 'SOLID', color: '#44403c'},
+const TIER_MAP: Record<string, {label: string, color: string, tip: string}> = {
+  'A++': {label: 'HEADLINER', color: '#b8860b', tip: 'Top tier - vinde singur orice eveniment'},
+  'Premium': {label: 'HEADLINER', color: '#b8860b', tip: 'Top tier - vinde singur orice eveniment'},
+  'A+': {label: 'POWER DRAW', color: '#7c3aed', tip: 'Tractiune puternica - vanzari consistente'},
+  'A': {label: 'SOLID', color: '#44403c', tip: 'Atractie solida - fan base loial'},
 }
 const TAB_LABEL: Record<string, string> = { standard: 'Standard', revelion: 'Revelion', prom: 'Baluri / Prom' }
 
@@ -50,7 +50,7 @@ function textOferta(a: any, audienta: string, tab: string) {
 function CardArtist({ a, audienta, token, tabInitial }: { a: any, audienta: string, token: string, tabInitial: string }) {
   const [tab, setTab] = useState(tabInitial)
   const [copiat, setCopiat] = useState(false)
-  const tier = a.tier ? (TIER_MAP[a.tier] || {label: 'BOOKING ACTIV', color: UI.green}) : null
+  const tier = a.tier ? (TIER_MAP[a.tier] || {label: 'BOOKING ACTIV', color: UI.green, tip: 'Artist activ pe platforma'}) : null
 
   function log(actiune: string) {
     fetch('/api/share/' + token, { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify({ actiune, artist: a.nume }) }).catch(() => {})
@@ -98,7 +98,7 @@ function CardArtist({ a, audienta, token, tabInitial }: { a: any, audienta: stri
           <div style={{fontSize:'24px', fontWeight:800, color:UI.ink, letterSpacing:'-0.8px', lineHeight:1.1}}>{a.nume}</div>
           <div style={{display:'flex', alignItems:'center', gap:'8px', marginTop:'6px', flexWrap:'wrap'}}>
             {a.genuri.length > 0 && <span style={{fontSize:'12px', color:UI.sub, fontWeight:600}}>{a.genuri.join(' · ')}</span>}
-            {tier && <span style={{fontSize:'10px', fontWeight:800, color:'white', background:tier.color, padding:'3px 9px', borderRadius:'6px', letterSpacing:'0.06em'}}>{tier.label}</span>}
+            {tier && <span title={tier.tip} style={{fontSize:'10px', fontWeight:800, color:'white', background:tier.color, padding:'3px 9px', borderRadius:'6px', letterSpacing:'0.06em', cursor:'help'}}>{tier.label}</span>}
           </div>
         </div>
       </div>
@@ -219,7 +219,10 @@ export default function ShareView() {
                 {d.artisti.map((a: any) => <CardArtist key={a.nume} a={a} audienta={d.audienta} token={token} tabInitial="standard" />)}
               </div>
             )}
-            <div style={{fontSize:'11px', color:UI.faint, marginTop:'28px', textAlign:'center', lineHeight:1.6}}>
+            <a href="/roster" target="_blank" style={{display:'block', textAlign:'center', marginTop:'24px', padding:'12px', background:'white', color:UI.sub, border:'1.5px solid '+UI.line, borderRadius:'11px', fontSize:'11px', fontWeight:800, letterSpacing:'0.08em', textDecoration:'none'}}>
+              CATALOG ARTISTI FORWARD
+            </a>
+            <div style={{fontSize:'11px', color:UI.faint, marginTop:'18px', textAlign:'center', lineHeight:1.6}}>
               Oferta confidentiala pregatita de Forward Agency<br/>Bogdan Nita · bogdan@forward.ro · +40 751 144 109
             </div>
           </>
