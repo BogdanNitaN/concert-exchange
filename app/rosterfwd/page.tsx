@@ -7,7 +7,7 @@ export default function RosterFwdGate() {
   const [cod, setCod] = useState('')
 
   function intra() {
-    const c = cod.trim().replace(/^.*\/r\//, '')
+    const c = cod.trim().replace(/^.*\/r\//, '').toLowerCase()
     if (c) window.location.href = '/r/' + c
   }
 
