@@ -1,6 +1,16 @@
 'use client'
 import { useState, useEffect, useMemo } from 'react'
 import { useParams } from 'next/navigation'
+
+function useIsMobile() {
+  const [m, setM] = useState(false)
+  useEffect(() => {
+    const c = () => setM(window.innerWidth < 640)
+    c(); window.addEventListener('resize', c)
+    return () => window.removeEventListener('resize', c)
+  }, [])
+  return m
+}
 import { jsPDF } from 'jspdf'
 import { deseneazaHeaderForward, deseneazaFooterForward } from '@/lib/pdf-forward'
 
@@ -198,6 +208,7 @@ function ListaRoster({ artisti, audienta, token }: { artisti: any[], audienta: s
   const [selectati, setSelectati] = useState<Set<string>>(new Set())
   const [copiat, setCopiat] = useState('')
   const [explT, setExplT] = useState('')
+  const isMobileLR = useIsMobile()
 
   const genuri = useMemo(() => {
     const gs = new Set<string>()
@@ -324,25 +335,35 @@ function ListaRoster({ artisti, audienta, token }: { artisti: any[], audienta: s
 
   return (
     <div>
-      <div style={{display:'flex', alignItems:'center', gap:'14px', padding:'10px 14px', background:'#101014', borderRadius:'12px', overflowX:'auto', WebkitOverflowScrolling:'touch', whiteSpace:'nowrap', marginBottom:'12px', position:'sticky', top:'62px', zIndex:80}}>
-        <span style={{fontSize:'10px', color:'#78716c', fontWeight:700, textTransform:'uppercase', letterSpacing:'0.08em', flexShrink:0}}>Tier</span>
-        <span className="tier-legend-item" style={{fontSize:'11px', color:'#d6d3d1', fontWeight:600, display:'flex', alignItems:'center', gap:'6px', position:'relative', cursor:'help', flexShrink:0}}>
-          <span style={{background:'#eacda3', fontSize:'10px', fontWeight:700, padding:'2px 8px', borderRadius:'6px', color:'white', cursor:'pointer'}} onClick={() => setExplT(explT === 'Top tier — vinde singur orice eveniment' ? '' : 'Top tier — vinde singur orice eveniment')}>A++ · Icon</span>
+      {isMobileLR ? (
+        <div style={{background:'#101014', borderRadius:'12px', padding:'11px 14px', marginBottom:'12px', position:'sticky', top:'62px', zIndex:80}}>
+          <div style={{display:'flex', alignItems:'center', justifyContent:'center', gap:'8px'}}>
+            <span onClick={() => setExplT(explT === '10.000€+ · vinde singur orice eveniment' ? '' : '10.000€+ · vinde singur orice eveniment')} style={{background:'#eacda3', fontSize:'10px', fontWeight:800, padding:'3px 10px', borderRadius:'6px', color:'white', cursor:'pointer'}}>A++ · Icon</span>
+            <span onClick={() => setExplT(explT === '5.000–10.000€ · tracțiune, vânzări consistente' ? '' : '5.000–10.000€ · tracțiune, vânzări consistente')} style={{background:'#7c3aed', fontSize:'10px', fontWeight:800, padding:'3px 10px', borderRadius:'6px', color:'white', cursor:'pointer'}}>A+ · Premium</span>
+            <span onClick={() => setExplT(explT === 'până la 5.000€ · fan base loial' ? '' : 'până la 5.000€ · fan base loial')} style={{background:'#78716c', fontSize:'10px', fontWeight:800, padding:'3px 10px', borderRadius:'6px', color:'white', cursor:'pointer'}}>A · Select</span>
+          </div>
+          {explT && <div style={{textAlign:'center', fontSize:'11px', color:'#d6d3d1', fontWeight:600, marginTop:'8px'}}>{explT}</div>}
+        </div>
+      ) : (
+      <div style={{display:'flex', alignItems:'center', justifyContent:'center', gap:'14px', padding:'10px 14px', background:'#101014', borderRadius:'12px', flexWrap:'wrap', marginBottom:'12px', position:'sticky', top:'62px', zIndex:80}}>
+        <span style={{fontSize:'10px', color:'#78716c', fontWeight:700, textTransform:'uppercase', letterSpacing:'0.08em'}}>Tier</span>
+        <span className="tier-legend-item" style={{fontSize:'11px', color:'#d6d3d1', fontWeight:600, display:'flex', alignItems:'center', gap:'6px', position:'relative', cursor:'help'}}>
+          <span style={{background:'#eacda3', fontSize:'10px', fontWeight:700, padding:'2px 8px', borderRadius:'6px', color:'white'}}>A++ · Icon</span>
           <span>10.000€+</span>
           <span className="tier-legend-tooltip">Top tier — vinde singur orice eveniment</span>
         </span>
-        <span className="tier-legend-item" style={{fontSize:'11px', color:'#d6d3d1', fontWeight:600, display:'flex', alignItems:'center', gap:'6px', position:'relative', cursor:'help', flexShrink:0}}>
-          <span style={{background:'#7c3aed', fontSize:'10px', fontWeight:700, padding:'2px 8px', borderRadius:'6px', color:'white', cursor:'pointer'}} onClick={() => setExplT(explT === 'Tracțiune puternică — vânzări consistente' ? '' : 'Tracțiune puternică — vânzări consistente')}>A+ · Premium</span>
+        <span className="tier-legend-item" style={{fontSize:'11px', color:'#d6d3d1', fontWeight:600, display:'flex', alignItems:'center', gap:'6px', position:'relative', cursor:'help'}}>
+          <span style={{background:'#7c3aed', fontSize:'10px', fontWeight:700, padding:'2px 8px', borderRadius:'6px', color:'white'}}>A+ · Premium</span>
           <span>5.000–10.000€</span>
           <span className="tier-legend-tooltip">Tracțiune puternică — vânzări consistente</span>
         </span>
-        <span className="tier-legend-item" style={{fontSize:'11px', color:'#d6d3d1', fontWeight:600, display:'flex', alignItems:'center', gap:'6px', position:'relative', cursor:'help', flexShrink:0}}>
-          <span style={{background:'#78716c', fontSize:'10px', fontWeight:700, padding:'2px 8px', borderRadius:'6px', color:'white', cursor:'pointer'}} onClick={() => setExplT(explT === 'Atracție solidă — fan base loial' ? '' : 'Atracție solidă — fan base loial')}>A · Select</span>
+        <span className="tier-legend-item" style={{fontSize:'11px', color:'#d6d3d1', fontWeight:600, display:'flex', alignItems:'center', gap:'6px', position:'relative', cursor:'help'}}>
+          <span style={{background:'#78716c', fontSize:'10px', fontWeight:700, padding:'2px 8px', borderRadius:'6px', color:'white'}}>A · Select</span>
           <span>până la 5.000€</span>
           <span className="tier-legend-tooltip">Atracție solidă — fan base loial</span>
         </span>
       </div>
-      {explT && <div style={{marginBottom:'10px', padding:'10px 14px', background:'white', border:'1px solid #e7e5e4', borderRadius:'11px', fontSize:'12px', color:'#57534e', fontWeight:600}}>{explT}</div>}
+      )}}
       <input value={q} onChange={e => setQ(e.target.value)} placeholder="Cauta artist..."
         style={{width:'100%', boxSizing:'border-box', padding:'12px 16px', borderRadius:'12px', border:'1.5px solid '+UI.line, fontSize:'14px', fontFamily:F, outline:'none', background:'white', marginBottom:'10px'}} />
       <div style={{display:'flex', gap:'8px', overflowX:'auto', WebkitOverflowScrolling:'touch', paddingBottom:'6px', marginBottom:'10px'}}>
