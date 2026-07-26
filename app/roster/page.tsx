@@ -135,7 +135,6 @@ export default function RosterPublic() {
         </div>
       </div>
       )}
-      {tierExplicat && <div style={{marginBottom:'10px', padding:'10px 14px', background:'white', border:'1px solid #e7e5e4', borderRadius:'11px', fontSize:'12px', color:'#57534e', fontWeight:600}}>{tierExplicat}</div>}
 
       <div style={{maxWidth:'1080px', margin:'0 auto', padding:'26px 16px 50px'}}>
         <input value={q} onChange={e => setQ(e.target.value)} placeholder="Cauta artist..."
