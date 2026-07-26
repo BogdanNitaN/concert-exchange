@@ -94,6 +94,7 @@ export default function RosterPublic() {
       </nav>
 
       <div style={{display:'flex', alignItems:'center', justifyContent:'flex-start', gap:'14px', padding:'10px 16px', background:'#101014', borderBottom:'1px solid #101014', flexWrap:'nowrap', overflowX:'auto', WebkitOverflowScrolling:'touch', whiteSpace:'nowrap', position:'sticky', top:'56px', zIndex:50}}>
+        <div style={{display:'flex', alignItems:'center', gap:'14px', margin:'0 auto', width:'max-content'}}>
         <span style={{fontSize:'10px', color:'#78716c', fontWeight:700, textTransform:'uppercase', letterSpacing:'0.08em'}}>Tier</span>
         <span className="tier-legend-item" style={{fontSize:'11px', color:'#d6d3d1', fontWeight:600, display:'flex', alignItems:'center', gap:'6px', position:'relative', cursor:'help', flexShrink:0}}>
           <span style={{background:'#eacda3', fontSize:'10px', fontWeight:700, padding:'2px 8px', borderRadius:'6px', color:'white', cursor:'pointer'}} onClick={() => setTierExplicat(tierExplicat === 'Top tier — vinde singur orice eveniment' ? '' : 'Top tier — vinde singur orice eveniment')}>A++ · Icon</span>
@@ -110,6 +111,7 @@ export default function RosterPublic() {
           <span>până la 5.000€</span>
           <span className="tier-legend-tooltip">Atracție solidă — fan base loial</span>
         </span>
+        </div>
       </div>
       {tierExplicat && <div style={{marginBottom:'10px', padding:'10px 14px', background:'white', border:'1px solid #e7e5e4', borderRadius:'11px', fontSize:'12px', color:'#57534e', fontWeight:600}}>{tierExplicat}</div>}
 
