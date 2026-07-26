@@ -3,7 +3,7 @@ import { useState, useEffect } from 'react'
 import { useParams } from 'next/navigation'
 
 const F = 'Montserrat, sans-serif'
-const INK = '#101014', CREM = '#F5F2EC', VERDE = '#059669', SUB = '#57534e', FAINT = '#a8a29e', LINE = '#e7e5e4'
+const UI = { bg:'#f5f5f7', ink:'#1c1917', sub:'#57534e', faint:'#a8a29e', line:'#e7e5e4', green:'#059669', greenSoft:'#f0fdf4' }
 
 function formatNum(n: number) {
   if (n >= 1000000000) return (n/1000000000).toFixed(1) + 'B'
@@ -19,31 +19,50 @@ const TIER_MAP: Record<string, {label: string, color: string}> = {
   'A+': {label: 'POWER DRAW', color: '#7c3aed'},
   'A': {label: 'SOLID', color: '#44403c'},
 }
+const TAB_LABEL: Record<string, string> = { standard: 'Standard', revelion: 'Revelion', prom: 'Baluri / Prom' }
+
+function textOferta(a: any, audienta: string, tab: string) {
+  let t = a.nume.toUpperCase() + '\\n'
+  if (a.genuri.length) t += a.genuri.join(' / ') + '\\n\\n'
+  if (a.preturi) {
+    if (audienta === 'b2b') {
+      const pret = tab === 'revelion' ? a.preturi.revelion : tab === 'prom' ? a.preturi.prom : a.preturi.standard
+      t += 'Onorariu ' + (TAB_LABEL[tab] || 'Standard') + ': ' + fmtEur(pret) + '\\n'
+      t += 'Alte categorii (Corporate / Private / Festival): la cerere\\n\\n'
+    } else {
+      t += 'Onorariu: de la ' + fmtEur(a.preturi.deLa) + '\\n'
+      t += 'Revelion / Corporate / Private: la cerere\\n\\n'
+    }
+  }
+  const lg = a.logistica || {}
+  const ll: string[] = []
+  if (lg.persoane) ll.push('- Persoane in deplasare: ' + lg.persoane)
+  if (lg.format) ll.push('- Format: ' + lg.format + ' (' + (lg.durata || '45 min') + ')')
+  else ll.push('- Durata show: ' + (lg.durata || '45 min'))
+  if (lg.leiKm) ll.push('- Transport: ' + lg.leiKm + ' ' + (lg.transportMoneda || 'lei') + '/km')
+  if (lg.bileteAvion) ll.push('- Bilete avion: ' + lg.bileteAvion)
+  if (lg.cazare) ll.push('- Cazare: ' + lg.cazare)
+  if (lg.diurna) ll.push('- Diurna / masa: ' + lg.diurna)
+  if (ll.length) t += 'CONDITII LOGISTICE:\\n' + ll.join('\\n') + '\\n\\n'
+  t += 'Onorariul nu include transport, cazare si masa.'
+  return t
+}
 
 function CardArtist({ a, audienta, token, tabInitial }: { a: any, audienta: string, token: string, tabInitial: string }) {
   const [tab, setTab] = useState(tabInitial)
-  const tier = a.tier ? (TIER_MAP[a.tier] || {label: 'BOOKING ACTIV', color: VERDE}) : null
+  const [copiat, setCopiat] = useState(false)
+  const tier = a.tier ? (TIER_MAP[a.tier] || {label: 'BOOKING ACTIV', color: UI.green}) : null
 
-  function schimbaTab(t: string) {
-    setTab(t)
-    fetch('/api/share/' + token, { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify({ actiune: 'tap-' + t, artist: a.nume }) }).catch(() => {})
+  function log(actiune: string) {
+    fetch('/api/share/' + token, { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify({ actiune, artist: a.nume }) }).catch(() => {})
   }
-
+  function schimbaTab(t: string) { setTab(t); log('tap-' + t) }
   function copiaza() {
-    const pret = a.preturi ? (audienta === 'b2b' ? (tab === 'revelion' ? a.preturi.revelion : tab === 'prom' ? a.preturi.prom : a.preturi.standard) : a.preturi.deLa) : null
-    const eticheta = tab === 'revelion' ? 'Revelion' : tab === 'prom' ? 'Baluri / Prom' : 'Standard'
-    let txt = a.nume.toUpperCase() + '\n'
-    if (a.genuri.length) txt += a.genuri.join(' / ') + '\n'
-    if (pret) txt += eticheta + ': ' + (audienta === 'b2b' ? fmtEur(pret) : 'de la ' + fmtEur(pret)) + '\n'
-    txt += 'Onorariul nu include transport, cazare si masa.\n'
-    txt += 'Corporate / Private / Festival: la cerere\n'
-    txt += 'Forward Agency · booking@forward.com.ro'
-    navigator.clipboard.writeText(txt).then(() => alert('Copiat - gata de trimis'))
-    fetch('/api/share/' + token, { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify({ actiune: 'copy', artist: a.nume }) }).catch(() => {})
+    navigator.clipboard.writeText(textOferta(a, audienta, tab)).then(() => { setCopiat(true); setTimeout(() => setCopiat(false), 2000) })
+    log('copy-' + tab)
   }
-
   function distribuie() {
-    fetch('/api/share/' + token, { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify({ actiune: 'share', artist: a.nume }) }).catch(() => {})
+    log('share')
     if (navigator.share) navigator.share({ title: a.nume + ' - GIGx', url: window.location.href }).catch(() => {})
     else { navigator.clipboard.writeText(window.location.href); alert('Link copiat') }
   }
@@ -55,34 +74,40 @@ function CardArtist({ a, audienta, token, tabInitial }: { a: any, audienta: stri
     { v: a.stats.instagramFollowers, l: 'Followers Instagram' },
   ].filter(x => x.v > 1000) : []
 
+  const lg = a.logistica || {}
+  const logi: [string, string][] = []
+  if (lg.persoane) logi.push(['Persoane', String(lg.persoane)])
+  if (lg.format) logi.push(['Format', lg.format + ' · ' + (lg.durata || '45 min')])
+  else logi.push(['Durata show', String(lg.durata || '45 min')])
+  if (lg.leiKm) logi.push(['Transport', lg.leiKm + ' ' + (lg.transportMoneda || 'lei') + '/km'])
+  if (lg.bileteAvion) logi.push(['Bilete avion', String(lg.bileteAvion)])
+  if (lg.cazare) logi.push(['Cazare', lg.cazare])
+  if (lg.diurna) logi.push(['Diurna / masa', String(lg.diurna)])
+
+  const docs: [string, string][] = []
+  if (a.epk) docs.push(['Media Kit', a.epk])
+  if (a.riderTehnic) docs.push(['Rider tehnic', a.riderTehnic])
+  if (a.riderAcomodare) docs.push(['Rider acomodare', a.riderAcomodare])
+  if (a.ucmr) docs.push(['UCMR', a.ucmr])
+
   return (
-    <div style={{background:'white', borderRadius:'22px', border:'1px solid '+LINE, overflow:'hidden', boxShadow:'0 6px 32px rgba(16,16,20,0.08)'}}>
-      {a.poza && (
-        <div style={{position:'relative'}}>
-          <img src={a.poza} alt={a.nume} style={{width:'100%', height:'300px', objectFit:'cover', display:'block'}} />
-          <div style={{position:'absolute', inset:0, background:'linear-gradient(180deg, rgba(16,16,20,0) 45%, rgba(16,16,20,0.85) 100%)'}} />
-          <div style={{position:'absolute', left:'22px', right:'22px', bottom:'18px'}}>
-            <div style={{fontSize:'30px', fontWeight:800, color:CREM, letterSpacing:'-1px', lineHeight:1.05, textShadow:'0 2px 12px rgba(0,0,0,0.3)'}}>{a.nume}</div>
-            <div style={{display:'flex', alignItems:'center', gap:'10px', marginTop:'6px', flexWrap:'wrap'}}>
-              {a.genuri.length > 0 && <span style={{fontSize:'12px', color:'rgba(245,242,236,0.85)', fontWeight:600}}>{a.genuri.join(' · ')}</span>}
-              {tier && <span style={{fontSize:'10px', fontWeight:800, color:CREM, background:tier.color, padding:'3px 9px', borderRadius:'6px', letterSpacing:'0.06em'}}>{tier.label}</span>}
-            </div>
+    <div style={{background:'white', borderRadius:'20px', border:'1px solid '+UI.line, overflow:'hidden', boxShadow:'0 2px 8px rgba(0,0,0,0.04)'}}>
+      <div style={{display:'flex', gap:'16px', alignItems:'center', padding:'18px 20px 0'}}>
+        {a.poza && <img src={a.poza} alt={a.nume} style={{width:'104px', height:'104px', objectFit:'cover', borderRadius:'16px', display:'block', flexShrink:0}} />}
+        <div style={{minWidth:0}}>
+          <div style={{fontSize:'24px', fontWeight:800, color:UI.ink, letterSpacing:'-0.8px', lineHeight:1.1}}>{a.nume}</div>
+          <div style={{display:'flex', alignItems:'center', gap:'8px', marginTop:'6px', flexWrap:'wrap'}}>
+            {a.genuri.length > 0 && <span style={{fontSize:'12px', color:UI.sub, fontWeight:600}}>{a.genuri.join(' · ')}</span>}
+            {tier && <span style={{fontSize:'10px', fontWeight:800, color:'white', background:tier.color, padding:'3px 9px', borderRadius:'6px', letterSpacing:'0.06em'}}>{tier.label}</span>}
           </div>
         </div>
-      )}
-      <div style={{padding:'20px 22px 22px'}}>
-        {!a.poza && (
-          <div style={{marginBottom:'14px'}}>
-            <div style={{fontSize:'26px', fontWeight:800, color:INK, letterSpacing:'-0.5px'}}>{a.nume}</div>
-            {a.genuri.length > 0 && <div style={{fontSize:'13px', color:SUB, marginTop:'3px'}}>{a.genuri.join(' · ')}</div>}
-          </div>
-        )}
-
+      </div>
+      <div style={{padding:'18px 20px 20px'}}>
         {statCards.length > 0 && (
-          <div style={{display:'grid', gridTemplateColumns:'repeat(auto-fit, minmax(120px, 1fr))', gap:'10px', marginBottom:'18px'}}>
+          <div style={{display:'grid', gridTemplateColumns:'repeat(auto-fit, minmax(118px, 1fr))', gap:'10px', marginBottom:'16px'}}>
             {statCards.map(sc => (
-              <div key={sc.l} style={{textAlign:'center', padding:'13px 8px', background:'#f0fdf4', borderRadius:'14px'}}>
-                <div style={{fontWeight:800, fontSize:'19px', color:VERDE, letterSpacing:'-0.5px'}}>{formatNum(sc.v)}</div>
+              <div key={sc.l} style={{textAlign:'center', padding:'13px 8px', background:UI.greenSoft, borderRadius:'12px'}}>
+                <div style={{fontWeight:800, fontSize:'18px', color:UI.green, letterSpacing:'-0.5px'}}>{formatNum(sc.v)}</div>
                 <div style={{fontSize:'9.5px', color:'#78716c', fontWeight:600, marginTop:'4px', textTransform:'uppercase', letterSpacing:'0.04em'}}>{sc.l}</div>
               </div>
             ))}
@@ -91,46 +116,67 @@ function CardArtist({ a, audienta, token, tabInitial }: { a: any, audienta: stri
 
         {a.preturi && audienta === 'b2b' && (
           <div>
-            <div style={{display:'flex', background:'#f5f5f4', borderRadius:'12px', padding:'4px', gap:'4px'}}>
-              {[['standard','Standard'],['revelion','Revelion'],['prom','Baluri / Prom']].map(([k, l]) => (
+            <div style={{display:'flex', background:UI.bg, borderRadius:'12px', padding:'4px', gap:'4px'}}>
+              {Object.entries(TAB_LABEL).map(([k, l]) => (
                 <button key={k} onClick={() => schimbaTab(k)}
                   style={{flex:1, padding:'9px 6px', borderRadius:'9px', border:'none', cursor:'pointer', fontFamily:F, fontSize:'12px', fontWeight:700,
-                    background: tab === k ? INK : 'transparent', color: tab === k ? CREM : SUB, transition:'all 0.15s'}}>
+                    background: tab === k ? UI.ink : 'transparent', color: tab === k ? 'white' : UI.sub, transition:'all 0.15s'}}>
                   {l}
                 </button>
               ))}
             </div>
-            <div style={{textAlign:'center', padding:'22px 0 6px'}}>
-              <div style={{fontSize:'34px', fontWeight:800, color:INK, letterSpacing:'-1.5px', lineHeight:1}}>
+            <div style={{textAlign:'center', padding:'20px 0 4px'}}>
+              <div style={{fontSize:'33px', fontWeight:800, color:UI.ink, letterSpacing:'-1.5px', lineHeight:1}}>
                 {fmtEur(tab === 'revelion' ? a.preturi.revelion : tab === 'prom' ? a.preturi.prom : a.preturi.standard)}
               </div>
-              <div style={{fontSize:'11px', color:FAINT, fontWeight:600, marginTop:'8px'}}>Onorariul nu include transport, cazare si masa</div>
+              <div style={{fontSize:'11px', color:UI.faint, fontWeight:600, marginTop:'8px'}}>Onorariul nu include transport, cazare si masa</div>
             </div>
-            <div style={{textAlign:'center', fontSize:'12px', color:FAINT, fontWeight:600, paddingTop:'10px', borderTop:'1px solid '+LINE, marginTop:'12px'}}>
-              Corporate · Private · Festival — <span style={{color:VERDE, fontWeight:700}}>la cerere</span>
+            <div style={{textAlign:'center', fontSize:'12px', color:UI.faint, fontWeight:600, padding:'10px 0', borderTop:'1px solid '+UI.line, marginTop:'12px'}}>
+              Corporate · Private · Festival — <span style={{color:UI.green, fontWeight:700}}>la cerere</span>
             </div>
           </div>
         )}
         {a.preturi && audienta !== 'b2b' && (
-          <div style={{textAlign:'center', padding:'14px 0 6px'}}>
-            <div style={{fontSize:'13px', color:SUB, fontWeight:600}}>Onorariu</div>
-            <div style={{fontSize:'32px', fontWeight:800, color:INK, letterSpacing:'-1.5px', marginTop:'4px'}}>de la {fmtEur(a.preturi.deLa)}</div>
-            <div style={{fontSize:'11px', color:FAINT, fontWeight:600, marginTop:'8px'}}>Revelion · Corporate · Private — la cerere</div>
+          <div style={{textAlign:'center', padding:'12px 0 4px'}}>
+            <div style={{fontSize:'13px', color:UI.sub, fontWeight:600}}>Onorariu</div>
+            <div style={{fontSize:'31px', fontWeight:800, color:UI.ink, letterSpacing:'-1.5px', marginTop:'4px'}}>de la {fmtEur(a.preturi.deLa)}</div>
+            <div style={{fontSize:'11px', color:UI.faint, fontWeight:600, marginTop:'8px'}}>Revelion · Corporate · Private — la cerere</div>
           </div>
         )}
-        {!a.preturi && <div style={{textAlign:'center', padding:'16px 0', fontSize:'14px', color:SUB, fontWeight:600}}>Onorariu la cerere</div>}
+        {!a.preturi && <div style={{textAlign:'center', padding:'14px 0', fontSize:'14px', color:UI.sub, fontWeight:600}}>Onorariu la cerere</div>}
 
-        {(a.epk || a.riderTehnic || a.riderAcomodare) && (
-          <div style={{display:'flex', gap:'8px', flexWrap:'wrap', marginTop:'16px'}}>
-            {a.epk && <a href={a.epk} target="_blank" onClick={() => fetch('/api/share/' + token, { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({actiune:'epk', artist:a.nume}) }).catch(()=>{})} style={{padding:'10px 15px', background:INK, color:CREM, borderRadius:'10px', fontSize:'12px', fontWeight:700, textDecoration:'none'}}>Press Kit (EPK)</a>}
-            {a.riderTehnic && <a href={a.riderTehnic} target="_blank" style={{padding:'10px 15px', background:'white', color:INK, border:'1.5px solid '+LINE, borderRadius:'10px', fontSize:'12px', fontWeight:700, textDecoration:'none'}}>Rider tehnic</a>}
-            {a.riderAcomodare && <a href={a.riderAcomodare} target="_blank" style={{padding:'10px 15px', background:'white', color:INK, border:'1.5px solid '+LINE, borderRadius:'10px', fontSize:'12px', fontWeight:700, textDecoration:'none'}}>Rider acomodare</a>}
+        {logi.length > 0 && (
+          <div style={{marginTop:'14px', background:UI.bg, borderRadius:'14px', padding:'14px 16px'}}>
+            <div style={{fontSize:'10px', fontWeight:700, color:'#78716c', textTransform:'uppercase', letterSpacing:'0.06em', marginBottom:'10px'}}>Conditii logistice</div>
+            <div style={{display:'grid', gap:'7px'}}>
+              {logi.map(([k, v]) => (
+                <div key={k} style={{display:'flex', justifyContent:'space-between', gap:'12px', fontSize:'13px'}}>
+                  <span style={{color:UI.sub, fontWeight:600}}>{k}</span>
+                  <span style={{color:UI.ink, fontWeight:700, textAlign:'right'}}>{v}</span>
+                </div>
+              ))}
+            </div>
           </div>
         )}
 
-        <div style={{display:'flex', gap:'8px', marginTop:'16px', paddingTop:'16px', borderTop:'1px solid '+LINE}}>
-          <button onClick={copiaza} style={{flex:1, padding:'11px', background:'#f5f5f4', color:INK, border:'none', borderRadius:'10px', fontSize:'12px', fontWeight:700, cursor:'pointer', fontFamily:F}}>Copiaza oferta</button>
-          <button onClick={distribuie} style={{flex:1, padding:'11px', background:'#f5f5f4', color:INK, border:'none', borderRadius:'10px', fontSize:'12px', fontWeight:700, cursor:'pointer', fontFamily:F}}>Trimite mai departe</button>
+        {docs.length > 0 && (
+          <div style={{display:'flex', gap:'8px', flexWrap:'wrap', marginTop:'14px'}}>
+            {docs.map(([l, url], i) => (
+              <a key={l} href={url} target="_blank" onClick={() => log('doc-' + l.toLowerCase().replace(/ /g, '-'))}
+                style={{padding:'10px 15px', background: i === 0 ? UI.ink : 'white', color: i === 0 ? 'white' : UI.ink, border:'1.5px solid '+(i === 0 ? UI.ink : UI.line), borderRadius:'10px', fontSize:'12px', fontWeight:700, textDecoration:'none'}}>
+                {l}
+              </a>
+            ))}
+          </div>
+        )}
+
+        <a href={'https://wa.me/40751144109?text=' + encodeURIComponent('Buna Bogdan, te contactez despre ' + a.nume + (audienta === 'b2b' ? ' (' + (TAB_LABEL[tab] || 'Standard') + ')' : '') + ' - link GIGx')} target="_blank" onClick={() => log('cta-whatsapp')}
+          style={{display:'block', textAlign:'center', marginTop:'16px', padding:'13px', background:UI.ink, color:'white', borderRadius:'10px', fontSize:'13px', fontWeight:700, textDecoration:'none'}}>
+          Discuta cu Bogdan · cere oferta exacta
+        </a>
+        <div style={{display:'flex', gap:'8px', marginTop:'8px', paddingTop:'0px'}}>
+          <button onClick={copiaza} style={{flex:1, padding:'12px', background: copiat ? '#047857' : UI.green, color:'white', border:'none', borderRadius:'10px', fontSize:'12px', fontWeight:700, cursor:'pointer', fontFamily:F, boxShadow:'0 1px 3px rgba(5,150,105,0.3)', transition:'background 0.15s'}}>{copiat ? '✓ Copiat' : 'Copiaza oferta'}</button>
+          <button onClick={distribuie} style={{flex:1, padding:'12px', background:'white', color:UI.ink, border:'1.5px solid '+UI.line, borderRadius:'10px', fontSize:'12px', fontWeight:700, cursor:'pointer', fontFamily:F}}>Trimite mai departe</button>
         </div>
       </div>
     </div>
@@ -151,30 +197,30 @@ export default function ShareView() {
   }, [token])
 
   return (
-    <div style={{minHeight:'100vh', background:CREM, fontFamily:F, padding:'26px 16px 40px'}}>
-      <div style={{maxWidth:'720px', margin:'0 auto'}}>
-        <div style={{display:'flex', alignItems:'center', justifyContent:'space-between', marginBottom:'20px'}}>
-          <div style={{display:'flex', alignItems:'center', gap:'9px'}}>
-            <img src="/gigx-mark.png" width={26} height={26} alt="" style={{display:'block'}} />
-            <span style={{fontSize:'22px', fontWeight:800, letterSpacing:'-0.5px', color:INK}}>GIG<span style={{color:VERDE}}>x</span></span>
-          </div>
-          {d && <span style={{fontSize:'11px', fontWeight:700, color:SUB, background:'white', border:'1px solid '+LINE, padding:'6px 12px', borderRadius:'20px'}}>valabil pana la {new Date(d.expiraLa).toLocaleDateString('ro-RO')}</span>}
+    <div style={{minHeight:'100vh', background:UI.bg, fontFamily:F}}>
+      <nav style={{borderBottom:'1px solid '+UI.line, background:'white', height:'56px', display:'flex', alignItems:'center', padding:'0 20px', justifyContent:'space-between', position:'sticky', top:0, zIndex:100}}>
+        <div style={{display:'flex', alignItems:'center', gap:'8px'}}>
+          <img src="/gigx-mark.png" width={24} height={24} alt="" style={{display:'block'}} />
+          <span style={{fontSize:'20px', fontWeight:800, letterSpacing:'-0.5px', color:UI.ink}}>GIG<span style={{color:UI.green}}>x</span></span>
         </div>
+        {d && <span style={{fontSize:'11px', fontWeight:700, color:UI.sub, background:UI.bg, padding:'6px 12px', borderRadius:'20px'}}>valabil pana la {new Date(d.expiraLa).toLocaleDateString('ro-RO')}</span>}
+      </nav>
 
-        {err && <div style={{background:'white', border:'1px solid '+LINE, borderRadius:'16px', padding:'32px', textAlign:'center', color:SUB, fontSize:'15px', fontWeight:600}}>{err}</div>}
-        {!err && !d && <div style={{textAlign:'center', color:FAINT, fontSize:'14px', padding:'50px'}}>Se incarca...</div>}
+      <div style={{maxWidth:'720px', margin:'0 auto', padding:'24px 16px 44px'}}>
+        {err && <div style={{background:'white', border:'1px solid '+UI.line, borderRadius:'16px', padding:'32px', textAlign:'center', color:UI.sub, fontSize:'15px', fontWeight:600}}>{err}</div>}
+        {!err && !d && <div style={{textAlign:'center', color:UI.faint, fontSize:'14px', padding:'50px'}}>Se incarca...</div>}
 
         {d && (
           <>
-            <div style={{fontSize:'13px', color:SUB, marginBottom:'16px'}}>Pregatit pentru <strong style={{color:INK}}>{d.destinatar}</strong></div>
+            <div style={{fontSize:'13px', color:UI.sub, marginBottom:'16px'}}>Pregatit pentru <strong style={{color:UI.ink}}>{d.destinatar}</strong></div>
             {d.tip === 'artist' && <CardArtist a={d.artist} audienta={d.audienta} token={token} tabInitial="standard" />}
             {d.tip === 'roster' && (
-              <div style={{display:'grid', gridTemplateColumns:'repeat(auto-fill, minmax(320px, 1fr))', gap:'18px'}}>
+              <div style={{display:'grid', gridTemplateColumns:'repeat(auto-fill, minmax(320px, 1fr))', gap:'16px'}}>
                 {d.artisti.map((a: any) => <CardArtist key={a.nume} a={a} audienta={d.audienta} token={token} tabInitial="standard" />)}
               </div>
             )}
-            <div style={{fontSize:'11px', color:FAINT, marginTop:'28px', textAlign:'center', lineHeight:1.6}}>
-              Oferta confidentiala pregatita de Forward Agency<br/>booking@forward.com.ro
+            <div style={{fontSize:'11px', color:UI.faint, marginTop:'28px', textAlign:'center', lineHeight:1.6}}>
+              Oferta confidentiala pregatita de Forward Agency<br/>Bogdan Nita · bogdan@forward.ro · +40 751 144 109
             </div>
           </>
         )}

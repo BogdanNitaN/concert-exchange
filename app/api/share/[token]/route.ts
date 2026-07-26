@@ -49,7 +49,18 @@ export async function GET(req: Request, ctx: { params: Promise<{ token: string }
       return {
         nume: a.nume, genuri: meta?.genres || [], tier: meta?.tier || null,
         poza: imgMap[a.nume] || null,
-        epk: sh.epk_url || null, riderTehnic: sh.rider_tehnic_url || null, riderAcomodare: sh.rider_acomodare_url || null,
+        epk: sh.epk_url || null, riderTehnic: sh.rider_tehnic_url || null, riderAcomodare: sh.rider_acomodare_url || null, ucmr: sh.ucmr_url || null,
+        logistica: {
+          persoane: a.nr_persoane || null,
+          format: a.format_show || null,
+          durata: a.durata_default || null,
+          leiKm: a.lei_km || null,
+          transportMoneda: a.transport_moneda || 'lei',
+          bileteAvion: a.bilete_avion || null,
+          cazare: a.cazare || null,
+          cazareFixa: a.cazare_fixa || null,
+          diurna: a.diurna_fixa || null,
+        },
         preturi,
       }
     }
