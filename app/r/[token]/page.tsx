@@ -50,7 +50,7 @@ function textOferta(a: any, audienta: string, tab: string) {
   return t
 }
 
-function CardArtist({ a, audienta, token, tabInitial }: { a: any, audienta: string, token: string, tabInitial: string }) {
+function CardArtist({ a, audienta, token, tabInitial, destinatar }: { a: any, audienta: string, token: string, tabInitial: string, destinatar?: string }) {
   const [tab, setTab] = useState(tabInitial)
   const [copiat, setCopiat] = useState(false)
   const tier = a.tier ? (TIER_MAP[a.tier] || {label: 'BOOKING ACTIV', color: UI.green, tip: 'Artist activ pe platforma'}) : null
@@ -175,7 +175,7 @@ function CardArtist({ a, audienta, token, tabInitial }: { a: any, audienta: stri
           </div>
         )}
 
-        <a href={'https://wa.me/40751144109?text=' + encodeURIComponent('Buna Bogdan, te contactez despre ' + a.nume + (audienta === 'b2b' && tab === 'prom' ? ' (Baluri / Prom)' : '') + ' - link GIGx')} target="_blank" onClick={() => log('cta-whatsapp')}
+        <a href={'https://wa.me/40751144109?text=' + encodeURIComponent('Buna Bogdan, sunt ' + (destinatar || '') + ', te contactez despre ' + a.nume + (audienta === 'b2b' && tab === 'prom' ? ' (Baluri / Prom)' : '') + ', in localitatea ______, data ______ (link GIGx)')} target="_blank" onClick={() => log('cta-whatsapp')}
           style={{display:'block', textAlign:'center', marginTop:'16px', padding:'13px', background:UI.ink, color:'white', borderRadius:'10px', fontSize:'13px', fontWeight:700, textDecoration:'none'}}>
           Discuta cu Bogdan Nita · verifica disponibilitatea
         </a>
@@ -509,7 +509,7 @@ export default function ShareView() {
         {d && (
           <>
             <div style={{fontSize:'13px', color:UI.sub, marginBottom:'16px'}}>Pregatit pentru <strong style={{color:UI.ink}}>{d.destinatar}</strong></div>
-            {d.tip === 'artist' && <CardArtist a={d.artist} audienta={d.audienta} token={token} tabInitial="standard" />}
+            {d.tip === 'artist' && <CardArtist a={d.artist} audienta={d.audienta} token={token} tabInitial="standard" destinatar={d.destinatar} />}
             {d.tip === 'roster' && <ListaRoster artisti={d.artisti} audienta={d.audienta} token={token} />}
             {d.audienta !== 'b2b' && (
             <a href="/roster" target="_blank" style={{display:'block', textAlign:'center', marginTop:'24px', padding:'12px', background:'white', color:UI.sub, border:'1.5px solid '+UI.line, borderRadius:'11px', fontSize:'11px', fontWeight:800, letterSpacing:'0.08em', textDecoration:'none'}}>
