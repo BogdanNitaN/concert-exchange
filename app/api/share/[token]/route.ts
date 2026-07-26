@@ -7,16 +7,28 @@ const supabase = createClient(
   process.env.SUPABASE_SECRET_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
 )
 
+async function iaLink(token: string) {
+  const { data: link } = await supabase.from('roster_links').select('*').eq('token', token).single()
+  if (!link || !link.activ) return { err: NextResponse.json({ ok: false, error: 'Link invalid sau dezactivat.' }, { status: 404 }) }
+  if (new Date(link.expira_la) < new Date()) return { err: NextResponse.json({ ok: false, error: 'Linkul a expirat. Cere unul nou de la Forward.' }, { status: 410 }) }
+  return { link }
+}
+
 export async function GET(req: Request, ctx: { params: Promise<{ token: string }> }) {
   const { token } = await ctx.params
   try {
-    const { data: link } = await supabase.from('roster_links').select('*').eq('token', token).single()
-    if (!link || !link.activ) return NextResponse.json({ ok: false, error: 'Link invalid sau dezactivat.' }, { status: 404 })
-    if (new Date(link.expira_la) < new Date()) return NextResponse.json({ ok: false, error: 'Linkul a expirat. Cere unul nou.' }, { status: 410 })
+    const { link, err } = await iaLink(token)
+    if (err) return err
 
-    const { data: imgs } = await supabase.from('artist_images').select('name, image_url')
+    const { data: imgs } = await supabase.from('artist_images').select('name, image_url, spotify_id')
     const imgMap: Record<string, string> = {}
-    for (const i of imgs || []) imgMap[i.name] = i.image_url
+    const idMap: Record<string, string> = {}
+    for (const i of imgs || []) {
+      if (i.name) {
+        imgMap[i.name] = i.image_url
+        if (i.spotify_id) idMap[i.name.toLowerCase().trim()] = String(i.spotify_id).split('-')[0]
+      }
+    }
 
     const { data: shares } = await supabase.from('artist_share').select('*')
     const shareMap: Record<string, any> = {}
@@ -29,23 +41,15 @@ export async function GET(req: Request, ctx: { params: Promise<{ token: string }
       let preturi: any = null
       if (link.arata_preturi && fee > 0) {
         if (link.tip_audienta === 'b2b') {
-          preturi = {
-            standard: fee,
-            revelion: Math.round(fee * (sh.mult_revelion ?? 2)),
-            prom: Math.round(fee * (sh.mult_prom ?? 1)),
-          }
+          preturi = { standard: fee, revelion: Math.round(fee * (sh.mult_revelion ?? 2)), prom: Math.round(fee * (sh.mult_prom ?? 1)) }
         } else {
           preturi = { deLa: fee }
         }
       }
       return {
-        nume: a.nume,
-        genuri: meta?.genres || [],
-        tier: meta?.tier || null,
+        nume: a.nume, genuri: meta?.genres || [], tier: meta?.tier || null,
         poza: imgMap[a.nume] || null,
-        epk: sh.epk_url || null,
-        riderTehnic: sh.rider_tehnic_url || null,
-        riderAcomodare: sh.rider_acomodare_url || null,
+        epk: sh.epk_url || null, riderTehnic: sh.rider_tehnic_url || null, riderAcomodare: sh.rider_acomodare_url || null,
         preturi,
       }
     }
@@ -65,23 +69,48 @@ export async function GET(req: Request, ctx: { params: Promise<{ token: string }
     } else {
       const { data: a } = await supabase.from('oferta_artisti').select('*').eq('nume', link.scop).single()
       if (!a) return NextResponse.json({ ok: false, error: 'Artist negasit.' }, { status: 404 })
-      payload = { tip: 'artist', artist: fa(a) }
+      const artist: any = fa(a)
+      // statistici live (doar pe pagina de un artist)
+      try {
+        const origin = new URL(req.url).origin
+        const sid = idMap[a.nume.toLowerCase().trim()] || ''
+        const rc = await fetch(origin + '/api/chartex?action=artist_full&artist=' + encodeURIComponent(a.nume) + (sid ? '&spotify_id=' + encodeURIComponent(sid) : '') + '&country=RO', { cache: 'no-store' })
+        const dc = await rc.json()
+        artist.stats = {
+          monthlyListeners: dc.spotifyMonthlyListeners || 0,
+          spotifyFollowers: dc.spotifyFollowers || 0,
+          tiktokFollowers: dc.tiktokFollowers || 0,
+          instagramFollowers: dc.instagramFollowers || 0,
+        }
+      } catch {}
+      payload = { tip: 'artist', artist }
     }
 
     await supabase.from('roster_views').insert({
-      token,
+      token, actiune: 'view',
       artist_vazut: link.scop === 'roster' ? null : link.scop,
       user_agent: req.headers.get('user-agent') || null,
     })
 
-    return NextResponse.json({
-      ok: true,
-      destinatar: link.destinatar,
-      audienta: link.tip_audienta,
-      expiraLa: link.expira_la,
-      ...payload,
-    })
-  } catch (e: any) {
+    return NextResponse.json({ ok: true, destinatar: link.destinatar, audienta: link.tip_audienta, expiraLa: link.expira_la, ...payload })
+  } catch {
     return NextResponse.json({ ok: false, error: 'Eroare tehnica.' }, { status: 500 })
+  }
+}
+
+export async function POST(req: Request, ctx: { params: Promise<{ token: string }> }) {
+  const { token } = await ctx.params
+  try {
+    const { link, err } = await iaLink(token)
+    if (err) return err
+    const body = await req.json()
+    await supabase.from('roster_views').insert({
+      token, actiune: String(body.actiune || 'tap').slice(0, 40),
+      artist_vazut: body.artist ? String(body.artist).slice(0, 80) : (link.scop === 'roster' ? null : link.scop),
+      user_agent: req.headers.get('user-agent') || null,
+    })
+    return NextResponse.json({ ok: true })
+  } catch {
+    return NextResponse.json({ ok: false }, { status: 500 })
   }
 }
