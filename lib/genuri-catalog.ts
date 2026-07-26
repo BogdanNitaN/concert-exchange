@@ -23,3 +23,9 @@ export function genuriPentru(nume: string, fallback: string[] = []): string[] {
   const norm = (nume || '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').trim()
   return GENURI[norm] || fallback
 }
+
+export const ARTISTI_ASCUNSI = ['gojira', 'puya & urban symphony orchestra', 'alternosfera']
+export function esteAscuns(nume: string): boolean {
+  const n = (nume || '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').trim()
+  return ARTISTI_ASCUNSI.includes(n)
+}

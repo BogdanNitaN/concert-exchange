@@ -101,7 +101,7 @@ function CardArtist({ a, audienta, token, tabInitial }: { a: any, audienta: stri
           <div style={{fontSize:'24px', fontWeight:800, color:UI.ink, letterSpacing:'-0.8px', lineHeight:1.1}}>{a.nume}</div>
           <div style={{display:'flex', alignItems:'center', gap:'8px', marginTop:'6px', flexWrap:'wrap'}}>
             {a.genuri.length > 0 && <span style={{fontSize:'12px', color:UI.sub, fontWeight:600}}>{a.genuri.join(' · ')}</span>}
-            {tier && <span title={tier.tip} style={{fontSize:'10px', fontWeight:800, color: 'white', background:tier.color, padding:'3px 9px', borderRadius:'6px', letterSpacing:'0.06em', cursor:'help'}}>{tier.label}</span>}
+            {tier && <span title={tier.tip} style={{fontSize:'10px', fontWeight:800, color: tier.color === '#eacda3' ? '#101014' : 'white', background:tier.color, padding:'3px 9px', borderRadius:'6px', letterSpacing:'0.06em', cursor:'help'}}>{tier.label}</span>}
           </div>
         </div>
       </div>
@@ -214,7 +214,7 @@ function ListaRoster({ artisti, audienta, token }: { artisti: any[], audienta: s
     if (gen || q.trim()) return filtrati
     const ordT: Record<string, number> = { 'A++': 0, 'Premium': 0, 'A+': 1, 'A': 2 }
     const ot = (t: string | null) => (t && ordT[t] !== undefined) ? ordT[t] : 3
-    const top = filtrati.filter(a => ot(a.tier) <= 1).sort((a, b) => ot(a.tier) - ot(b.tier))
+    const top = filtrati.filter(a => ot(a.tier) === 0).sort((a, b) => ot(a.tier) - ot(b.tier))
     const topSet = new Set(top.map(a => a.nume))
     const grupe: Record<string, any[]> = {}
     for (const a of filtrati) {
@@ -322,7 +322,7 @@ function ListaRoster({ artisti, audienta, token }: { artisti: any[], audienta: s
       <div style={{display:'flex', alignItems:'center', gap:'14px', padding:'10px 14px', background:'#101014', borderRadius:'12px', overflowX:'auto', WebkitOverflowScrolling:'touch', whiteSpace:'nowrap', marginBottom:'12px', position:'sticky', top:'62px', zIndex:80}}>
         <span style={{fontSize:'10px', color:'#78716c', fontWeight:700, textTransform:'uppercase', letterSpacing:'0.08em', flexShrink:0}}>Tier</span>
         <span className="tier-legend-item" style={{fontSize:'11px', color:'#d6d3d1', fontWeight:600, display:'flex', alignItems:'center', gap:'6px', position:'relative', cursor:'help', flexShrink:0}}>
-          <span style={{background:'#eacda3', fontSize:'10px', fontWeight:700, padding:'2px 8px', borderRadius:'6px', color:'white'}}>A++ · Icon</span>
+          <span style={{background:'#eacda3', fontSize:'10px', fontWeight:700, padding:'2px 8px', borderRadius:'6px', color:'#101014'}}>A++ · Icon</span>
           <span>10.000€+</span>
           <span className="tier-legend-tooltip">Top tier — vinde singur orice eveniment</span>
         </span>
@@ -394,7 +394,7 @@ function ListaRoster({ artisti, audienta, token }: { artisti: any[], audienta: s
                   : <div style={{width:'44px', height:'44px', borderRadius:'10px', background:UI.bg, display:'flex', alignItems:'center', justifyContent:'center', fontWeight:800, color:UI.faint, flexShrink:0}}>{a.nume.charAt(0)}</div>}
                 <div style={{minWidth:0, flex:1}}>
                   <div style={{fontSize:'14px', fontWeight:800, color:UI.ink, letterSpacing:'-0.2px', whiteSpace:'nowrap', overflow:'hidden', textOverflow:'ellipsis'}}>{a.nume}</div>
-                  {tier && <span style={{fontSize:'8.5px', fontWeight:800, color: 'white', background:tier.color, padding:'2px 6px', borderRadius:'4px', letterSpacing:'0.05em'}}>{tier.label}</span>}
+                  {tier && <span style={{fontSize:'8.5px', fontWeight:800, color: tier.color === '#eacda3' ? '#101014' : 'white', background:tier.color, padding:'2px 6px', borderRadius:'4px', letterSpacing:'0.05em'}}>{tier.label}</span>}
                 </div>
                 <div style={{textAlign:'right', flexShrink:0}}>
                   {a.preturi
@@ -479,9 +479,11 @@ export default function ShareView() {
             <div style={{fontSize:'13px', color:UI.sub, marginBottom:'16px'}}>Pregatit pentru <strong style={{color:UI.ink}}>{d.destinatar}</strong></div>
             {d.tip === 'artist' && <CardArtist a={d.artist} audienta={d.audienta} token={token} tabInitial="standard" />}
             {d.tip === 'roster' && <ListaRoster artisti={d.artisti} audienta={d.audienta} token={token} />}
+            {d.audienta !== 'b2b' && (
             <a href="/roster" target="_blank" style={{display:'block', textAlign:'center', marginTop:'24px', padding:'12px', background:'white', color:UI.sub, border:'1.5px solid '+UI.line, borderRadius:'11px', fontSize:'11px', fontWeight:800, letterSpacing:'0.08em', textDecoration:'none'}}>
               CATALOG ARTISTI FORWARD
             </a>
+            )}
             <div style={{fontSize:'11px', color:UI.faint, marginTop:'18px', textAlign:'center', lineHeight:1.6}}>
               Oferta confidentiala pregatita de Forward Agency<br/>Bogdan Nita · bogdan@forward.ro · +40 751 144 109
             </div>

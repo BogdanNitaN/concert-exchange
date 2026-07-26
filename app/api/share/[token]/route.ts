@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
 import { ARTISTS_DATA } from '@/lib/artists-data'
-import { genuriPentru } from '@/lib/genuri-catalog'
+import { genuriPentru, esteAscuns } from '@/lib/genuri-catalog'
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -69,7 +69,7 @@ export async function GET(req: Request, ctx: { params: Promise<{ token: string }
     let payload: any
     if (link.scop === 'roster') {
       const { data: toti } = await supabase.from('oferta_artisti').select('*')
-      let lista = (toti || []).filter(a => a.tip !== 'intermediere' && (shareMap[a.nume]?.afisabil ?? true))
+      let lista = (toti || []).filter(a => a.tip !== 'intermediere' && !esteAscuns(a.nume) && (shareMap[a.nume]?.afisabil ?? true))
       if (link.filtru_gen) {
         const g = link.filtru_gen.toLowerCase()
         lista = lista.filter(a => {
