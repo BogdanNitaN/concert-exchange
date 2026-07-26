@@ -1,5 +1,5 @@
 'use client'
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useMemo } from 'react'
 import { useParams } from 'next/navigation'
 
 const F = 'Montserrat, sans-serif'
@@ -184,6 +184,131 @@ function CardArtist({ a, audienta, token, tabInitial }: { a: any, audienta: stri
   )
 }
 
+
+function ListaRoster({ artisti, audienta, token }: { artisti: any[], audienta: string, token: string }) {
+  const [q, setQ] = useState('')
+  const [gen, setGen] = useState('')
+  const [deschis, setDeschis] = useState('')
+  const [copiat, setCopiat] = useState('')
+
+  const genuri = useMemo(() => {
+    const gs = new Set<string>()
+    for (const a of artisti) for (const g of (a.genuri || [])) gs.add(g)
+    return Array.from(gs).sort()
+  }, [artisti])
+
+  const filtrati = useMemo(() => {
+    let l = artisti
+    if (gen) l = l.filter(a => (a.genuri || []).includes(gen))
+    if (q.trim()) l = l.filter(a => a.nume.toLowerCase().includes(q.trim().toLowerCase()))
+    return l
+  }, [artisti, q, gen])
+
+  function log(actiune: string, artist?: string) {
+    fetch('/api/share/' + token, { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify({ actiune, artist }) }).catch(() => {})
+  }
+  function copiazaText(txt: string, cheie: string, actiune: string, artist?: string) {
+    navigator.clipboard.writeText(txt).then(() => { setCopiat(cheie); setTimeout(() => setCopiat(''), 2000) })
+    log(actiune, artist)
+  }
+  function copiazaCatalog() {
+    const titlu = gen ? '*ROSTER FORWARD - ' + gen.toUpperCase() + '*' : '*ROSTER FORWARD*'
+    const txt = titlu + String.fromCharCode(10) + String.fromCharCode(10) + filtrati.map(a => textOferta(a, audienta, 'standard')).join(String.fromCharCode(10) + String.fromCharCode(10) + '----------' + String.fromCharCode(10) + String.fromCharCode(10))
+    copiazaText(txt, 'catalog', gen ? 'copy-catalog-' + gen : 'copy-catalog')
+  }
+
+  const chip = (activ: boolean): any => ({
+    padding:'8px 14px', borderRadius:'18px', border:'1.5px solid '+(activ ? UI.ink : UI.line), cursor:'pointer',
+    fontFamily:F, fontSize:'12px', fontWeight:700, background: activ ? UI.ink : 'white', color: activ ? 'white' : UI.sub, whiteSpace:'nowrap', flexShrink:0,
+  })
+
+  return (
+    <div>
+      <input value={q} onChange={e => setQ(e.target.value)} placeholder="Cauta artist..."
+        style={{width:'100%', boxSizing:'border-box', padding:'12px 16px', borderRadius:'12px', border:'1.5px solid '+UI.line, fontSize:'14px', fontFamily:F, outline:'none', background:'white', marginBottom:'10px'}} />
+      <div style={{display:'flex', gap:'8px', overflowX:'auto', WebkitOverflowScrolling:'touch', paddingBottom:'6px', marginBottom:'10px'}}>
+        <button onClick={() => setGen('')} style={chip(!gen)}>Toti</button>
+        {genuri.map(g => <button key={g} onClick={() => setGen(gen === g ? '' : g)} style={chip(gen === g)}>{g}</button>)}
+      </div>
+      <button onClick={copiazaCatalog}
+        style={{width:'100%', padding:'13px', background: copiat === 'catalog' ? '#047857' : UI.ink, color:'white', border:'none', borderRadius:'11px', fontSize:'13px', fontWeight:800, cursor:'pointer', fontFamily:F, marginBottom:'14px', transition:'background 0.15s'}}>
+        {copiat === 'catalog' ? '✓ Copiat - gata de trimis' : (gen ? 'Copiaza oferta ' + gen + ' (' + filtrati.length + ')' : 'Copiaza tot catalogul (' + filtrati.length + ')')}
+      </button>
+
+      <div style={{background:'white', border:'1px solid '+UI.line, borderRadius:'16px', overflow:'hidden'}}>
+        {filtrati.map((a, i) => {
+          const tier = a.tier ? (TIER_MAP[a.tier] || null) : null
+          const e = deschis === a.nume
+          const lg = a.logistica || {}
+          const docs: [string, string][] = []
+          if (a.epk) docs.push(['Media Kit', a.epk])
+          if (a.riderTehnic) docs.push(['Rider tehnic', a.riderTehnic])
+          if (a.riderAcomodare) docs.push(['Rider acomodare', a.riderAcomodare])
+          if (a.ucmr) docs.push(['UCMR', a.ucmr])
+          if (docs.length === 0 && a.docs) docs.push(['Documente artist', a.docs])
+          return (
+            <div key={a.nume} style={{borderTop: i > 0 ? '1px solid #f0f0ef' : 'none'}}>
+              <div onClick={() => { const nou = e ? '' : a.nume; setDeschis(nou); if (nou) log('expand', a.nume) }}
+                style={{display:'flex', alignItems:'center', gap:'12px', padding:'11px 14px', cursor:'pointer', background: e ? '#fafaf9' : 'white'}}>
+                {a.poza
+                  ? <img src={a.poza} alt="" width={44} height={44} style={{width:'44px', height:'44px', objectFit:'cover', borderRadius:'10px', flexShrink:0}} />
+                  : <div style={{width:'44px', height:'44px', borderRadius:'10px', background:UI.bg, display:'flex', alignItems:'center', justifyContent:'center', fontWeight:800, color:UI.faint, flexShrink:0}}>{a.nume.charAt(0)}</div>}
+                <div style={{minWidth:0, flex:1}}>
+                  <div style={{fontSize:'14px', fontWeight:800, color:UI.ink, letterSpacing:'-0.2px', whiteSpace:'nowrap', overflow:'hidden', textOverflow:'ellipsis'}}>{a.nume}</div>
+                  {tier && <span style={{fontSize:'8.5px', fontWeight:800, color: tier.color === '#eacda3' ? '#101014' : 'white', background:tier.color, padding:'2px 6px', borderRadius:'4px', letterSpacing:'0.05em'}}>{tier.label}</span>}
+                </div>
+                <div style={{textAlign:'right', flexShrink:0}}>
+                  {a.preturi
+                    ? <div style={{fontSize:'16px', fontWeight:800, color:UI.ink, letterSpacing:'-0.5px'}}>{fmtEur(audienta === 'b2b' ? a.preturi.standard : a.preturi.deLa)}<span style={{fontSize:'10px', color:UI.faint, fontWeight:700}}> +TVA</span></div>
+                    : <div style={{fontSize:'12px', fontWeight:700, color:UI.faint}}>la cerere</div>}
+                  <div style={{fontSize:'10px', color:UI.faint, fontWeight:600}}>{e ? 'inchide' : 'detalii'}</div>
+                </div>
+              </div>
+              {e && (
+                <div style={{padding:'4px 14px 16px', background:'#fafaf9'}}>
+                  {a.preturi && audienta === 'b2b' && (
+                    <div style={{display:'grid', gap:'5px', fontSize:'13px', marginBottom:'12px'}}>
+                      <div style={{display:'flex', justifyContent:'space-between'}}><span style={{color:UI.sub, fontWeight:600}}>Revelion</span><strong>{fmtEur(a.preturi.revelion)} +TVA</strong></div>
+                      <div style={{display:'flex', justifyContent:'space-between'}}><span style={{color:UI.sub, fontWeight:600}}>Baluri / Prom</span><strong>{fmtEur(a.preturi.prom)} +TVA</strong></div>
+                      <div style={{display:'flex', justifyContent:'space-between'}}><span style={{color:UI.sub, fontWeight:600}}>Corporate · Private · Festival</span><span style={{color:UI.green, fontWeight:700}}>la cerere</span></div>
+                    </div>
+                  )}
+                  <div style={{display:'grid', gap:'4px', fontSize:'12px', color:UI.sub, marginBottom: docs.length ? '12px' : '0'}}>
+                    {lg.persoane && <div>Persoane: <strong style={{color:UI.ink}}>{lg.persoane}</strong></div>}
+                    <div>Durata show: <strong style={{color:UI.ink}}>{lg.durata || '45 min'}</strong></div>
+                    {lg.leiKm && <div>Transport: <strong style={{color:UI.ink}}>{lg.leiKm} {lg.transportMoneda || 'lei'}/km +TVA</strong></div>}
+                    {lg.bileteAvion && <div>Bilete avion: <strong style={{color:UI.ink}}>{lg.bileteAvion}</strong></div>}
+                    {lg.cazare && <div>Cazare: <strong style={{color:UI.ink}}>{lg.cazare}</strong></div>}
+                    {lg.diurna && <div>Diurna / masa: <strong style={{color:UI.ink}}>{lg.diurna}</strong></div>}
+                  </div>
+                  {docs.length > 0 && (
+                    <div style={{display:'flex', gap:'6px', flexWrap:'wrap', marginBottom:'12px'}}>
+                      {docs.map(([l, url]) => (
+                        <a key={l} href={url} target="_blank" onClick={() => log('doc-' + l.toLowerCase().replace(/ /g, '-'), a.nume)}
+                          style={{padding:'8px 12px', background:'white', color:UI.ink, border:'1.5px solid '+UI.line, borderRadius:'9px', fontSize:'11px', fontWeight:700, textDecoration:'none'}}>{l}</a>
+                      ))}
+                    </div>
+                  )}
+                  <div style={{display:'flex', gap:'8px'}}>
+                    <button onClick={() => copiazaText(textOferta(a, audienta, 'standard'), a.nume, 'copy-standard', a.nume)}
+                      style={{flex:1, padding:'10px', background: copiat === a.nume ? '#047857' : UI.green, color:'white', border:'none', borderRadius:'9px', fontSize:'12px', fontWeight:700, cursor:'pointer', fontFamily:F, transition:'background 0.15s'}}>
+                      {copiat === a.nume ? '✓ Copiat' : 'Copiaza oferta'}
+                    </button>
+                    <button onClick={() => { log('share', a.nume); const t = textOferta(a, audienta, 'standard'); if (navigator.share) navigator.share({ text: t }).catch(() => {}); else copiazaText(t, a.nume, 'copy-standard', a.nume) }}
+                      style={{flex:1, padding:'10px', background:'white', color:UI.ink, border:'1.5px solid '+UI.line, borderRadius:'9px', fontSize:'12px', fontWeight:700, cursor:'pointer', fontFamily:F}}>
+                      Trimite mai departe
+                    </button>
+                  </div>
+                </div>
+              )}
+            </div>
+          )
+        })}
+      </div>
+    </div>
+  )
+}
+
 export default function ShareView() {
   const params = useParams()
   const token = String(params.token || '')
@@ -215,11 +340,7 @@ export default function ShareView() {
           <>
             <div style={{fontSize:'13px', color:UI.sub, marginBottom:'16px'}}>Pregatit pentru <strong style={{color:UI.ink}}>{d.destinatar}</strong></div>
             {d.tip === 'artist' && <CardArtist a={d.artist} audienta={d.audienta} token={token} tabInitial="standard" />}
-            {d.tip === 'roster' && (
-              <div style={{display:'grid', gridTemplateColumns:'repeat(auto-fill, minmax(320px, 1fr))', gap:'16px'}}>
-                {d.artisti.map((a: any) => <CardArtist key={a.nume} a={a} audienta={d.audienta} token={token} tabInitial="standard" />)}
-              </div>
-            )}
+            {d.tip === 'roster' && <ListaRoster artisti={d.artisti} audienta={d.audienta} token={token} />}
             <a href="/roster" target="_blank" style={{display:'block', textAlign:'center', marginTop:'24px', padding:'12px', background:'white', color:UI.sub, border:'1.5px solid '+UI.line, borderRadius:'11px', fontSize:'11px', fontWeight:800, letterSpacing:'0.08em', textDecoration:'none'}}>
               CATALOG ARTISTI FORWARD
             </a>
