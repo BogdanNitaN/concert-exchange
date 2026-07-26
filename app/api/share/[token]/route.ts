@@ -68,7 +68,7 @@ export async function GET(req: Request, ctx: { params: Promise<{ token: string }
     let payload: any
     if (link.scop === 'roster') {
       const { data: toti } = await supabase.from('oferta_artisti').select('*')
-      let lista = (toti || []).filter(a => (shareMap[a.nume]?.afisabil ?? true))
+      let lista = (toti || []).filter(a => a.tip !== 'intermediere' && (shareMap[a.nume]?.afisabil ?? true))
       if (link.filtru_gen) {
         const g = link.filtru_gen.toLowerCase()
         lista = lista.filter(a => {

@@ -1,6 +1,8 @@
 'use client'
 import { useState, useEffect, useMemo } from 'react'
 import { useParams } from 'next/navigation'
+import { jsPDF } from 'jspdf'
+import { deseneazaHeaderForward, deseneazaFooterForward } from '@/lib/pdf-forward'
 
 const F = 'Montserrat, sans-serif'
 const UI = { bg:'#f5f5f7', ink:'#1c1917', sub:'#57534e', faint:'#a8a29e', line:'#e7e5e4', green:'#059669', greenSoft:'#f0fdf4' }
@@ -189,6 +191,8 @@ function ListaRoster({ artisti, audienta, token }: { artisti: any[], audienta: s
   const [q, setQ] = useState('')
   const [gen, setGen] = useState('')
   const [deschis, setDeschis] = useState('')
+  const [totiDeschisi, setTotiDeschisi] = useState(false)
+  const [selectati, setSelectati] = useState<Set<string>>(new Set())
   const [copiat, setCopiat] = useState('')
 
   const genuri = useMemo(() => {
@@ -204,6 +208,8 @@ function ListaRoster({ artisti, audienta, token }: { artisti: any[], audienta: s
     return l
   }, [artisti, q, gen])
 
+  const tinta = useMemo(() => selectati.size ? filtrati.filter(a => selectati.has(a.nume)) : filtrati, [filtrati, selectati])
+
   function log(actiune: string, artist?: string) {
     fetch('/api/share/' + token, { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify({ actiune, artist }) }).catch(() => {})
   }
@@ -211,9 +217,76 @@ function ListaRoster({ artisti, audienta, token }: { artisti: any[], audienta: s
     navigator.clipboard.writeText(txt).then(() => { setCopiat(cheie); setTimeout(() => setCopiat(''), 2000) })
     log(actiune, artist)
   }
+  async function descarcaPdf() {
+    log(gen ? 'pdf-catalog-' + gen : 'pdf-catalog')
+    const noDia = (t: string) => t.normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+    let logo: string | null = null
+    try {
+      const r = await fetch('/forward-logo.png')
+      const b = await r.blob()
+      logo = await new Promise<string>((res, rej) => { const fr = new FileReader(); fr.onload = () => res(String(fr.result)); fr.onerror = rej; fr.readAsDataURL(b) })
+    } catch {}
+    const doc = new jsPDF({ unit: 'mm', format: 'a4' })
+    const W = 210, M = 16
+    deseneazaHeaderForward(doc, W, M, logo)
+    let y = 52
+    doc.setFont('helvetica', 'bold'); doc.setFontSize(15); doc.setTextColor(28,25,23)
+    doc.text(noDia(gen ? 'ROSTER FORWARD - ' + gen.toUpperCase() : 'ROSTER FORWARD'), M, y)
+    y += 9
+    // grupez pe genul principal
+    const grupe: Record<string, any[]> = {}
+    for (const a of tinta) {
+      const g = (a.genuri && a.genuri[0]) || 'Alte genuri'
+      if (!grupe[g]) grupe[g] = []
+      grupe[g].push(a)
+    }
+    for (const [g, lista] of Object.entries(grupe)) {
+      if (y > 200) { deseneazaFooterForward(doc, W, M); doc.addPage(); deseneazaHeaderForward(doc, W, M, logo); y = 52 }
+      if (!gen) {
+        doc.setFont('helvetica', 'bold'); doc.setFontSize(10.5); doc.setTextColor(120,113,108)
+        doc.text(noDia(g.toUpperCase()), M, y)
+        y += 6
+      }
+      for (const a of lista) {
+        if (y > 210) { deseneazaFooterForward(doc, W, M); doc.addPage(); deseneazaHeaderForward(doc, W, M, logo); y = 52 }
+        doc.setFont('helvetica', 'bold'); doc.setFontSize(11.5); doc.setTextColor(28,25,23)
+        doc.text(noDia(a.nume.toUpperCase()), M, y)
+        if (a.preturi) {
+          const pretTxt = audienta === 'b2b'
+            ? a.preturi.standard.toLocaleString('ro-RO') + ' EUR + TVA'
+            : 'de la ' + a.preturi.deLa.toLocaleString('ro-RO') + ' EUR + TVA'
+          doc.setFontSize(11.5)
+          doc.text(noDia(pretTxt), W - M, y, { align: 'right' })
+        }
+        y += 5
+        doc.setFont('helvetica', 'normal'); doc.setFontSize(8.5); doc.setTextColor(90,90,90)
+        if (a.preturi && audienta === 'b2b') {
+          doc.text(noDia('Revelion: ' + a.preturi.revelion.toLocaleString('ro-RO') + ' EUR + TVA  ·  Baluri/Prom: ' + a.preturi.prom.toLocaleString('ro-RO') + ' EUR + TVA  ·  Corporate/Private/Festival: la cerere'), M, y)
+          y += 4.5
+        }
+        const lg = a.logistica || {}
+        const li: string[] = []
+        if (lg.persoane) li.push('Persoane: ' + lg.persoane)
+        li.push('Show: ' + (lg.durata || '45 min'))
+        if (lg.leiKm) li.push('Transport: ' + lg.leiKm + ' ' + (lg.transportMoneda || 'lei') + '/km + TVA')
+        if (lg.bileteAvion) li.push('Bilete avion: ' + lg.bileteAvion)
+        if (lg.cazare) li.push('Cazare: ' + lg.cazare)
+        doc.setTextColor(140,140,140)
+        doc.text(noDia(li.join('  ·  ')), M, y)
+        y += 7.5
+      }
+      y += 3
+    }
+    doc.setFont('helvetica', 'italic'); doc.setFontSize(8); doc.setTextColor(140,140,140)
+    if (y > 220) { deseneazaFooterForward(doc, W, M); doc.addPage(); deseneazaHeaderForward(doc, W, M, logo); y = 52 }
+    doc.text(noDia('Onorariile nu includ transport, cazare si masa. Oferta confidentiala.'), M, y)
+    deseneazaFooterForward(doc, W, M)
+    doc.save(gen ? 'roster-forward-' + gen.toLowerCase().replace(/[^a-z0-9]/g, '-') + '.pdf' : 'roster-forward.pdf')
+  }
+
   function copiazaCatalog() {
     const titlu = gen ? '*ROSTER FORWARD - ' + gen.toUpperCase() + '*' : '*ROSTER FORWARD*'
-    const txt = titlu + String.fromCharCode(10) + String.fromCharCode(10) + filtrati.map(a => textOferta(a, audienta, 'standard')).join(String.fromCharCode(10) + String.fromCharCode(10) + '----------' + String.fromCharCode(10) + String.fromCharCode(10))
+    const txt = titlu + String.fromCharCode(10) + String.fromCharCode(10) + tinta.map(a => textOferta(a, audienta, 'standard')).join(String.fromCharCode(10) + String.fromCharCode(10) + '----------' + String.fromCharCode(10) + String.fromCharCode(10))
     copiazaText(txt, 'catalog', gen ? 'copy-catalog-' + gen : 'copy-catalog')
   }
 
@@ -230,15 +303,33 @@ function ListaRoster({ artisti, audienta, token }: { artisti: any[], audienta: s
         <button onClick={() => setGen('')} style={chip(!gen)}>Toti</button>
         {genuri.map(g => <button key={g} onClick={() => setGen(gen === g ? '' : g)} style={chip(gen === g)}>{g}</button>)}
       </div>
+      <div style={{display:'flex', gap:'8px', marginBottom:'14px'}}>
       <button onClick={copiazaCatalog}
-        style={{width:'100%', padding:'13px', background: copiat === 'catalog' ? '#047857' : UI.ink, color:'white', border:'none', borderRadius:'11px', fontSize:'13px', fontWeight:800, cursor:'pointer', fontFamily:F, marginBottom:'14px', transition:'background 0.15s'}}>
-        {copiat === 'catalog' ? '✓ Copiat - gata de trimis' : (gen ? 'Copiaza oferta ' + gen + ' (' + filtrati.length + ')' : 'Copiaza tot catalogul (' + filtrati.length + ')')}
+        style={{flex:2, padding:'13px', background: copiat === 'catalog' ? '#047857' : UI.ink, color:'white', border:'none', borderRadius:'11px', fontSize:'13px', fontWeight:800, cursor:'pointer', fontFamily:F, transition:'background 0.15s'}}>
+        {copiat === 'catalog' ? '✓ Copiat - gata de trimis' : (selectati.size ? 'Copiaza selectia (' + selectati.size + ')' : (gen ? 'Copiaza oferta ' + gen + ' (' + filtrati.length + ')' : 'Copiaza tot catalogul (' + filtrati.length + ')'))}
       </button>
+      <button onClick={descarcaPdf}
+        style={{flex:1, padding:'13px', background:'white', color:UI.ink, border:'1.5px solid '+UI.line, borderRadius:'11px', fontSize:'13px', fontWeight:800, cursor:'pointer', fontFamily:F}}>
+        PDF
+      </button>
+      </div>
+      <div style={{display:'flex', alignItems:'center', justifyContent:'space-between', gap:'10px', marginBottom:'10px'}}>
+        <label style={{display:'flex', alignItems:'center', gap:'8px', fontSize:'12px', fontWeight:700, color:UI.sub, cursor:'pointer'}}>
+          <input type="checkbox" checked={filtrati.length > 0 && filtrati.every(a => selectati.has(a.nume))}
+            onChange={ev => setSelectati(ev.target.checked ? new Set(filtrati.map(a => a.nume)) : new Set())}
+            style={{width:'17px', height:'17px', accentColor:'#059669', cursor:'pointer'}} />
+          Selecteaza tot{selectati.size > 0 ? ' · ' + selectati.size + ' selectati' : ''}
+        </label>
+        <button onClick={() => { setTotiDeschisi(!totiDeschisi); setDeschis(''); if (!totiDeschisi) log('expand-all') }}
+          style={{padding:'8px 13px', background:'white', color:UI.ink, border:'1.5px solid '+UI.line, borderRadius:'9px', fontSize:'11px', fontWeight:700, cursor:'pointer', fontFamily:F, whiteSpace:'nowrap'}}>
+          {totiDeschisi ? 'Ascunde detaliile' : 'Vezi toate detaliile'}
+        </button>
+      </div>
 
       <div style={{background:'white', border:'1px solid '+UI.line, borderRadius:'16px', overflow:'hidden'}}>
         {filtrati.map((a, i) => {
           const tier = a.tier ? (TIER_MAP[a.tier] || null) : null
-          const e = deschis === a.nume
+          const e = totiDeschisi || deschis === a.nume
           const lg = a.logistica || {}
           const docs: [string, string][] = []
           if (a.epk) docs.push(['Media Kit', a.epk])
@@ -250,6 +341,10 @@ function ListaRoster({ artisti, audienta, token }: { artisti: any[], audienta: s
             <div key={a.nume} style={{borderTop: i > 0 ? '1px solid #f0f0ef' : 'none'}}>
               <div onClick={() => { const nou = e ? '' : a.nume; setDeschis(nou); if (nou) log('expand', a.nume) }}
                 style={{display:'flex', alignItems:'center', gap:'12px', padding:'11px 14px', cursor:'pointer', background: e ? '#fafaf9' : 'white'}}>
+                <input type="checkbox" checked={selectati.has(a.nume)}
+                  onClick={ev => ev.stopPropagation()}
+                  onChange={() => { const n = new Set(selectati); if (n.has(a.nume)) n.delete(a.nume); else n.add(a.nume); setSelectati(n) }}
+                  style={{width:'17px', height:'17px', accentColor:'#059669', cursor:'pointer', flexShrink:0}} />
                 {a.poza
                   ? <img src={a.poza} alt="" width={44} height={44} style={{width:'44px', height:'44px', objectFit:'cover', borderRadius:'10px', flexShrink:0}} />
                   : <div style={{width:'44px', height:'44px', borderRadius:'10px', background:UI.bg, display:'flex', alignItems:'center', justifyContent:'center', fontWeight:800, color:UI.faint, flexShrink:0}}>{a.nume.charAt(0)}</div>}
