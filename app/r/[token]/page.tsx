@@ -384,7 +384,7 @@ function ListaRoster({ artisti, audienta, token }: { artisti: any[], audienta: s
           return (
             <div key={a.nume} style={{borderTop: i > 0 ? '1px solid #f0f0ef' : 'none'}}>
               <div onClick={() => { const nou = e ? '' : a.nume; setDeschis(nou); if (nou) log('expand', a.nume) }}
-                style={{display:'flex', alignItems:'center', gap:'12px', padding:'11px 14px', cursor:'pointer', background: e ? '#fafaf9' : 'white'}}>
+                style={{display:'flex', alignItems:'center', gap:'10px', padding:'10px 12px', cursor:'pointer', background: e ? '#fafaf9' : 'white'}}>
                 <input type="checkbox" checked={selectati.has(a.nume)}
                   onClick={ev => ev.stopPropagation()}
                   onChange={() => { const n = new Set(selectati); if (n.has(a.nume)) n.delete(a.nume); else n.add(a.nume); setSelectati(n) }}
@@ -398,7 +398,7 @@ function ListaRoster({ artisti, audienta, token }: { artisti: any[], audienta: s
                 </div>
                 <div style={{textAlign:'right', flexShrink:0}}>
                   {a.preturi
-                    ? <div style={{fontSize:'16px', fontWeight:800, color:UI.ink, letterSpacing:'-0.5px'}}>{fmtEur(audienta === 'b2b' ? a.preturi.standard : a.preturi.deLa)}<span style={{fontSize:'10px', color:UI.faint, fontWeight:700}}> +TVA</span></div>
+                    ? <div style={{fontSize:'clamp(13.5px, 3.8vw, 16px)', fontWeight:800, color:UI.ink, letterSpacing:'-0.5px'}}>{fmtEur(audienta === 'b2b' ? a.preturi.standard : a.preturi.deLa)}<span style={{fontSize:'10px', color:UI.faint, fontWeight:700}}> +TVA</span></div>
                     : <div style={{fontSize:'12px', fontWeight:700, color:UI.faint}}>la cerere</div>}
                   <div style={{fontSize:'10px', color:UI.faint, fontWeight:600}}>{e ? 'inchide' : 'detalii'}</div>
                 </div>
@@ -471,7 +471,16 @@ export default function ShareView() {
       </nav>
 
       <div style={{maxWidth:'720px', margin:'0 auto', padding:'24px 16px 44px'}}>
-        {err && <div style={{background:'white', border:'1px solid '+UI.line, borderRadius:'16px', padding:'32px', textAlign:'center', color:UI.sub, fontSize:'15px', fontWeight:600}}>{err}</div>}
+        {err && (
+          <div style={{background:'#101014', borderRadius:'18px', padding:'36px 24px', textAlign:'center'}}>
+            <div style={{fontSize:'17px', fontWeight:800, color:'#F5F2EC', letterSpacing:'-0.3px'}}>{err.includes('expirat') ? 'Acest acces a expirat' : 'Link indisponibil'}</div>
+            <div style={{fontSize:'13px', color:'#a8a29e', fontWeight:500, marginTop:'8px', lineHeight:1.5}}>{err.includes('expirat') ? 'Ofertele Forward se actualizeaza constant - cere un cod nou si primesti lista la zi.' : err}</div>
+            <a href={'https://wa.me/40751144109?text=' + encodeURIComponent('Buna Bogdan, codul meu de acces la rosterul Forward a expirat - te rog unul nou')} target="_blank"
+              style={{display:'inline-block', marginTop:'18px', padding:'12px 24px', background:UI.green, color:'white', borderRadius:'11px', fontSize:'13px', fontWeight:800, textDecoration:'none'}}>
+              Cere un cod nou pe WhatsApp
+            </a>
+          </div>
+        )}
         {!err && !d && <div style={{textAlign:'center', color:UI.faint, fontSize:'14px', padding:'50px'}}>Se incarca...</div>}
 
         {d && (
