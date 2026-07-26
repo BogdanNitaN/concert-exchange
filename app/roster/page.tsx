@@ -23,7 +23,7 @@ function Card({ a, onTier }: { a: any, onTier: (r: string) => void }) {
   return (
     <div style={{background:'white', border:'1px solid '+UI.line, borderRadius:'16px', overflow:'hidden', boxShadow:'0 2px 8px rgba(0,0,0,0.04)'}}>
       {a.poza
-        ? <img src={a.poza} alt={a.nume} loading="lazy" style={{width:'100%', aspectRatio:'1', objectFit:'cover', display:'block'}} />
+        ? <img src={a.poza} alt={a.nume} loading="lazy" width={300} height={300} style={{width:'100%', aspectRatio:'1', objectFit:'cover', display:'block'}} />
         : <div style={{width:'100%', aspectRatio:'1', background:UI.bg, display:'flex', alignItems:'center', justifyContent:'center', fontSize:'34px', fontWeight:800, color:UI.faint}}>{a.nume.charAt(0)}</div>}
       <div style={{padding:'12px 13px 13px'}}>
         <div style={{fontSize:'14px', fontWeight:800, color:UI.ink, letterSpacing:'-0.3px', lineHeight:1.2}}>{a.nume}</div>
@@ -34,6 +34,11 @@ function Card({ a, onTier }: { a: any, onTier: (r: string) => void }) {
           Cere oferta
         </a>
       </div>
+
+      <a href={'https://wa.me/40751144109?text=' + encodeURIComponent('Buna Bogdan, as vrea o oferta pentru un eveniment - catalog GIGx')} target="_blank"
+        style={{position:'fixed', bottom:'16px', left:'50%', transform:'translateX(-50%)', zIndex:200, padding:'14px 26px', background:UI.green, color:'white', borderRadius:'28px', fontSize:'13px', fontWeight:800, textDecoration:'none', boxShadow:'0 4px 20px rgba(5,150,105,0.4)', whiteSpace:'nowrap'}}>
+        Cere oferta pentru un eveniment
+      </a>
     </div>
   )
 }
@@ -45,6 +50,17 @@ export default function RosterPublic() {
   const [q, setQ] = useState('')
   const [gen, setGen] = useState('')
   const [tierExplicat, setTierExplicat] = useState('')
+  const [ascunsLegenda, setAscunsLegenda] = useState(false)
+  useEffect(() => {
+    let lastY = 0
+    const f = () => {
+      const y = window.scrollY
+      setAscunsLegenda(y > 150 && y > lastY)
+      lastY = y
+    }
+    window.addEventListener('scroll', f, { passive: true })
+    return () => window.removeEventListener('scroll', f)
+  }, [])
 
   useEffect(() => {
     fetch('/api/roster-public').then(r => r.json()).then(d => setArtisti(d.artisti || []))
@@ -92,19 +108,19 @@ export default function RosterPublic() {
         <span style={{fontSize:'13px', fontWeight:700, color:UI.sub, marginLeft:'6px'}}>Catalog Artisti Forward</span>
       </nav>
 
-      <div style={{display:'flex', alignItems:'center', justifyContent:'center', gap:'16px', padding:'10px 18px', background:'#101014', borderBottom:'1px solid #101014', flexWrap:'wrap', position:'sticky', top:'56px', zIndex:50}}>
+      <div style={{display:'flex', alignItems:'center', justifyContent:'center', gap:'16px', padding:'10px 18px', background:'#101014', borderBottom:'1px solid #101014', flexWrap:'nowrap', overflowX:'auto', WebkitOverflowScrolling:'touch', whiteSpace:'nowrap', position:'sticky', top:'56px', zIndex:50, transform: ascunsLegenda ? 'translateY(-110%)' : 'none', opacity: ascunsLegenda ? 0 : 1, transition:'transform 0.25s, opacity 0.2s'}}>
         <span style={{fontSize:'10px', color:'#78716c', fontWeight:700, textTransform:'uppercase', letterSpacing:'0.08em'}}>Tier</span>
-        <span className="tier-legend-item" style={{fontSize:'11px', color:'#d6d3d1', fontWeight:600, display:'flex', alignItems:'center', gap:'6px', position:'relative', cursor:'help'}}>
+        <span className="tier-legend-item" style={{fontSize:'11px', color:'#d6d3d1', fontWeight:600, display:'flex', alignItems:'center', gap:'6px', position:'relative', cursor:'help', flexShrink:0}}>
           <span style={{background:'#eacda3', fontSize:'10px', fontWeight:700, padding:'2px 8px', borderRadius:'6px', color:'#101014'}}>A++ · HEADLINER</span>
           <span>10.000€+</span>
           <span className="tier-legend-tooltip">Top tier — vinde singur orice eveniment</span>
         </span>
-        <span className="tier-legend-item" style={{fontSize:'11px', color:'#d6d3d1', fontWeight:600, display:'flex', alignItems:'center', gap:'6px', position:'relative', cursor:'help'}}>
+        <span className="tier-legend-item" style={{fontSize:'11px', color:'#d6d3d1', fontWeight:600, display:'flex', alignItems:'center', gap:'6px', position:'relative', cursor:'help', flexShrink:0}}>
           <span style={{background:'#7c3aed', fontSize:'10px', fontWeight:700, padding:'2px 8px', borderRadius:'6px', color:'white'}}>A+ · POWER DRAW</span>
           <span>5.000–10.000€</span>
           <span className="tier-legend-tooltip">Tracțiune puternică — vânzări consistente</span>
         </span>
-        <span className="tier-legend-item" style={{fontSize:'11px', color:'#d6d3d1', fontWeight:600, display:'flex', alignItems:'center', gap:'6px', position:'relative', cursor:'help'}}>
+        <span className="tier-legend-item" style={{fontSize:'11px', color:'#d6d3d1', fontWeight:600, display:'flex', alignItems:'center', gap:'6px', position:'relative', cursor:'help', flexShrink:0}}>
           <span style={{background:'#78716c', fontSize:'10px', fontWeight:700, padding:'2px 8px', borderRadius:'6px', color:'white'}}>A · SOLID</span>
           <span>până la 5.000€</span>
           <span className="tier-legend-tooltip">Atracție solidă — fan base loial</span>
@@ -127,7 +143,7 @@ export default function RosterPublic() {
           <>
             {top.length > 0 && (
               <div style={{marginBottom:'28px'}}>
-                <div style={{fontSize:'12px', fontWeight:800, color:UI.ink, textTransform:'uppercase', letterSpacing:'0.1em', marginBottom:'12px'}}>Top artisti</div>
+                <div style={{fontSize:'12px', fontWeight:800, color:UI.ink, textTransform:'uppercase', letterSpacing:'0.1em', marginBottom:'12px'}}>Top artisti <span style={{color:UI.faint, fontWeight:700}}>· {top.length}</span></div>
                 <div style={GRID}>
                   {top.map(a => <Card key={a.nume} a={a} onTier={r => { setTierExplicat(r); window.scrollTo({top: 0, behavior: 'smooth'}) }} />)}
                 </div>
@@ -135,7 +151,7 @@ export default function RosterPublic() {
             )}
             {peGenuri.map(([g, lista]) => (
               <div key={g} style={{marginBottom:'28px'}}>
-                <div style={{fontSize:'12px', fontWeight:800, color:UI.sub, textTransform:'uppercase', letterSpacing:'0.1em', marginBottom:'12px'}}>{g}</div>
+                <div style={{fontSize:'12px', fontWeight:800, color:UI.sub, textTransform:'uppercase', letterSpacing:'0.1em', marginBottom:'12px'}}>{g} <span style={{color:UI.faint, fontWeight:700}}>· {lista.length}</span></div>
                 <div style={GRID}>
                   {lista.map((a: any) => <Card key={a.nume} a={a} onTier={r => { setTierExplicat(r); window.scrollTo({top: 0, behavior: 'smooth'}) }} />)}
                 </div>
@@ -148,6 +164,11 @@ export default function RosterPublic() {
           Forward Agency · Bogdan Nita · bogdan@forward.ro · +40 751 144 109
         </div>
       </div>
+
+      <a href={'https://wa.me/40751144109?text=' + encodeURIComponent('Buna Bogdan, as vrea o oferta pentru un eveniment - catalog GIGx')} target="_blank"
+        style={{position:'fixed', bottom:'16px', left:'50%', transform:'translateX(-50%)', zIndex:200, padding:'14px 26px', background:UI.green, color:'white', borderRadius:'28px', fontSize:'13px', fontWeight:800, textDecoration:'none', boxShadow:'0 4px 20px rgba(5,150,105,0.4)', whiteSpace:'nowrap'}}>
+        Cere oferta pentru un eveniment
+      </a>
     </div>
   )
 }
