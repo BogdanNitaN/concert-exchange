@@ -35,7 +35,7 @@ function textOferta(a: any, audienta: string, tab: string) {
       t += 'de la ' + fmtEur(a.preturi.deLa) + ' + TVA' + '\n'
     }
   }
-  t += 'Revelion / Corporate / Private - la cerere' + '\n' + '\n'
+  t += 'Corporate / Private - la cerere' + '\n' + '\n'
   const ll: string[] = []
   if (lg.persoane) ll.push('- Persoane in deplasare: ' + lg.persoane)
   if (lg.format) ll.push('- Format: ' + lg.format + ' (' + (lg.durata || '45 min') + ')')
@@ -135,7 +135,7 @@ function CardArtist({ a, audienta, token, tabInitial }: { a: any, audienta: stri
               <div style={{fontSize:'11px', color:UI.faint, fontWeight:600, marginTop:'8px'}}>Onorariul nu include transport, cazare si masa</div>
             </div>
             <div style={{textAlign:'center', fontSize:'12px', color:UI.faint, fontWeight:600, padding:'10px 0', borderTop:'1px solid '+UI.line, marginTop:'12px'}}>
-              Revelion · Corporate · Private · Festival — <span style={{color:UI.green, fontWeight:700}}>la cerere</span>
+              Corporate · Private · Festival — <span style={{color:UI.green, fontWeight:700}}>la cerere</span>
             </div>
           </div>
         )}
@@ -143,7 +143,7 @@ function CardArtist({ a, audienta, token, tabInitial }: { a: any, audienta: stri
           <div style={{textAlign:'center', padding:'12px 0 4px'}}>
             <div style={{fontSize:'13px', color:UI.sub, fontWeight:600}}>Onorariu</div>
             <div style={{fontSize:'31px', fontWeight:800, color:UI.ink, letterSpacing:'-1.5px', marginTop:'4px'}}>de la {fmtEur(a.preturi.deLa)}</div>
-            <div style={{fontSize:'11px', color:UI.faint, fontWeight:600, marginTop:'8px'}}>Revelion · Corporate · Private — la cerere</div>
+            <div style={{fontSize:'11px', color:UI.faint, fontWeight:600, marginTop:'8px'}}>Corporate · Private — la cerere</div>
           </div>
         )}
         {!a.preturi && <div style={{textAlign:'center', padding:'14px 0', fontSize:'14px', color:UI.sub, fontWeight:600}}>Onorariu la cerere</div>}
@@ -284,7 +284,7 @@ function ListaRoster({ artisti, audienta, token }: { artisti: any[], audienta: s
         y += 5.5
         doc.setFont('helvetica', 'normal'); doc.setFontSize(8.5); doc.setTextColor(90,90,90)
         if (a.preturi && audienta === 'b2b') {
-          doc.text(noDia('Baluri/Prom: ' + a.preturi.prom.toLocaleString('ro-RO') + ' EUR + TVA  ·  Revelion/Corporate/Private/Festival: la cerere'), M, y)
+          doc.text(noDia('Baluri/Prom: ' + a.preturi.prom.toLocaleString('ro-RO') + ' EUR + TVA  ·  Corporate/Private/Festival: la cerere'), M, y)
           y += 5
         }
         const lg = a.logistica || {}
@@ -296,9 +296,9 @@ function ListaRoster({ artisti, audienta, token }: { artisti: any[], audienta: s
         if (lg.cazare) li.push('Cazare: ' + lg.cazare)
         doc.setTextColor(140,140,140)
         doc.text(noDia(li.join('  ·  ')), M, y)
-        y += 11
+        y += 14
       }
-      y += 5
+      y += 8
     }
     doc.setFont('helvetica', 'italic'); doc.setFontSize(8); doc.setTextColor(140,140,140)
     if (y > 220) { deseneazaFooterForward(doc, W, M); doc.addPage(); deseneazaHeaderForward(doc, W, M, logo); y = 52 }
@@ -418,7 +418,7 @@ function ListaRoster({ artisti, audienta, token }: { artisti: any[], audienta: s
                   {a.preturi && audienta === 'b2b' && (
                     <div style={{display:'grid', gap:'5px', fontSize:'13px', marginBottom:'12px'}}>
                       <div style={{display:'flex', justifyContent:'space-between'}}><span style={{color:UI.sub, fontWeight:600}}>Baluri / Prom</span><strong>{fmtEur(a.preturi.prom)} +TVA</strong></div>
-                      <div style={{display:'flex', justifyContent:'space-between'}}><span style={{color:UI.sub, fontWeight:600}}>Revelion · Corporate · Private · Festival</span><span style={{color:UI.green, fontWeight:700}}>la cerere</span></div>
+                      <div style={{display:'flex', justifyContent:'space-between'}}><span style={{color:UI.sub, fontWeight:600}}>Corporate · Private · Festival</span><span style={{color:UI.green, fontWeight:700}}>la cerere</span></div>
                     </div>
                   )}
                   <div style={{display:'grid', gap:'4px', fontSize:'12px', color:UI.sub, marginBottom: docs.length ? '12px' : '0'}}>
