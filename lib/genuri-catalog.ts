@@ -29,3 +29,14 @@ export function esteAscuns(nume: string): boolean {
   const n = (nume || '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').trim()
   return ARTISTI_ASCUNSI.includes(n)
 }
+
+const TIER_OVERRIDE: Record<string, string> = { 'andrew dum': 'A+' }
+export function tierPentru(nume: string, metaTier: string | null, fee: number): string | null {
+  const n = (nume || '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').trim()
+  if (TIER_OVERRIDE[n]) return TIER_OVERRIDE[n]
+  if (metaTier) return metaTier
+  if (fee >= 10000) return 'A++'
+  if (fee >= 5000) return 'A+'
+  if (fee > 0) return 'A'
+  return null
+}

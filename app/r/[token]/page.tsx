@@ -101,7 +101,7 @@ function CardArtist({ a, audienta, token, tabInitial }: { a: any, audienta: stri
           <div style={{fontSize:'24px', fontWeight:800, color:UI.ink, letterSpacing:'-0.8px', lineHeight:1.1}}>{a.nume}</div>
           <div style={{display:'flex', alignItems:'center', gap:'8px', marginTop:'6px', flexWrap:'wrap'}}>
             {a.genuri.length > 0 && <span style={{fontSize:'12px', color:UI.sub, fontWeight:600}}>{a.genuri.join(' · ')}</span>}
-            {tier && <span title={tier.tip} style={{fontSize:'10px', fontWeight:800, color: tier.color === '#eacda3' ? '#101014' : 'white', background:tier.color, padding:'3px 9px', borderRadius:'6px', letterSpacing:'0.06em', cursor:'help'}}>{tier.label}</span>}
+            {tier && <span title={tier.tip} style={{fontSize:'10px', fontWeight:800, color: 'white', background:tier.color, padding:'3px 9px', borderRadius:'6px', letterSpacing:'0.06em', cursor:'help'}}>{tier.label}</span>}
           </div>
         </div>
       </div>
@@ -194,6 +194,7 @@ function ListaRoster({ artisti, audienta, token }: { artisti: any[], audienta: s
   const [totiDeschisi, setTotiDeschisi] = useState(false)
   const [selectati, setSelectati] = useState<Set<string>>(new Set())
   const [copiat, setCopiat] = useState('')
+  const [explT, setExplT] = useState('')
 
   const genuri = useMemo(() => {
     const gs = new Set<string>()
@@ -322,21 +323,22 @@ function ListaRoster({ artisti, audienta, token }: { artisti: any[], audienta: s
       <div style={{display:'flex', alignItems:'center', gap:'14px', padding:'10px 14px', background:'#101014', borderRadius:'12px', overflowX:'auto', WebkitOverflowScrolling:'touch', whiteSpace:'nowrap', marginBottom:'12px', position:'sticky', top:'62px', zIndex:80}}>
         <span style={{fontSize:'10px', color:'#78716c', fontWeight:700, textTransform:'uppercase', letterSpacing:'0.08em', flexShrink:0}}>Tier</span>
         <span className="tier-legend-item" style={{fontSize:'11px', color:'#d6d3d1', fontWeight:600, display:'flex', alignItems:'center', gap:'6px', position:'relative', cursor:'help', flexShrink:0}}>
-          <span style={{background:'#eacda3', fontSize:'10px', fontWeight:700, padding:'2px 8px', borderRadius:'6px', color:'#101014'}}>A++ · Icon</span>
+          <span style={{background:'#eacda3', fontSize:'10px', fontWeight:700, padding:'2px 8px', borderRadius:'6px', color:'white', cursor:'pointer'}} onClick={() => setExplT(explT === 'Top tier — vinde singur orice eveniment' ? '' : 'Top tier — vinde singur orice eveniment')}>A++ · Icon</span>
           <span>10.000€+</span>
           <span className="tier-legend-tooltip">Top tier — vinde singur orice eveniment</span>
         </span>
         <span className="tier-legend-item" style={{fontSize:'11px', color:'#d6d3d1', fontWeight:600, display:'flex', alignItems:'center', gap:'6px', position:'relative', cursor:'help', flexShrink:0}}>
-          <span style={{background:'#7c3aed', fontSize:'10px', fontWeight:700, padding:'2px 8px', borderRadius:'6px', color:'white'}}>A+ · Premium</span>
+          <span style={{background:'#7c3aed', fontSize:'10px', fontWeight:700, padding:'2px 8px', borderRadius:'6px', color:'white', cursor:'pointer'}} onClick={() => setExplT(explT === 'Tracțiune puternică — vânzări consistente' ? '' : 'Tracțiune puternică — vânzări consistente')}>A+ · Premium</span>
           <span>5.000–10.000€</span>
           <span className="tier-legend-tooltip">Tracțiune puternică — vânzări consistente</span>
         </span>
         <span className="tier-legend-item" style={{fontSize:'11px', color:'#d6d3d1', fontWeight:600, display:'flex', alignItems:'center', gap:'6px', position:'relative', cursor:'help', flexShrink:0}}>
-          <span style={{background:'#78716c', fontSize:'10px', fontWeight:700, padding:'2px 8px', borderRadius:'6px', color:'white'}}>A · Select</span>
+          <span style={{background:'#78716c', fontSize:'10px', fontWeight:700, padding:'2px 8px', borderRadius:'6px', color:'white', cursor:'pointer'}} onClick={() => setExplT(explT === 'Atracție solidă — fan base loial' ? '' : 'Atracție solidă — fan base loial')}>A · Select</span>
           <span>până la 5.000€</span>
           <span className="tier-legend-tooltip">Atracție solidă — fan base loial</span>
         </span>
       </div>
+      {explT && <div style={{marginBottom:'10px', padding:'10px 14px', background:'white', border:'1px solid #e7e5e4', borderRadius:'11px', fontSize:'12px', color:'#57534e', fontWeight:600}}>{explT}</div>}
       <input value={q} onChange={e => setQ(e.target.value)} placeholder="Cauta artist..."
         style={{width:'100%', boxSizing:'border-box', padding:'12px 16px', borderRadius:'12px', border:'1.5px solid '+UI.line, fontSize:'14px', fontFamily:F, outline:'none', background:'white', marginBottom:'10px'}} />
       <div style={{display:'flex', gap:'8px', overflowX:'auto', WebkitOverflowScrolling:'touch', paddingBottom:'6px', marginBottom:'10px'}}>
@@ -361,10 +363,16 @@ function ListaRoster({ artisti, audienta, token }: { artisti: any[], audienta: s
           Selecteaza tot{selectati.size > 0 ? ' · ' + selectati.size + ' selectati' : ''}
         </label>
         <button onClick={() => { setTotiDeschisi(!totiDeschisi); setDeschis(''); if (!totiDeschisi) log('expand-all') }}
-          style={{padding:'8px 13px', background:'white', color:UI.ink, border:'1.5px solid '+UI.line, borderRadius:'9px', fontSize:'11px', fontWeight:700, cursor:'pointer', fontFamily:F, whiteSpace:'nowrap'}}>
+          style={{padding:'9px 14px', background:UI.ink, color:'white', border:'none', borderRadius:'9px', fontSize:'11px', fontWeight:800, cursor:'pointer', fontFamily:F, whiteSpace:'nowrap'}}>
           {totiDeschisi ? 'Ascunde detaliile' : 'Vezi toate detaliile'}
         </button>
       </div>
+      {selectati.size > 0 && (
+        <a href={'https://wa.me/40751144109?text=' + encodeURIComponent('Buna Bogdan, te rog disponibilitatea pentru: ' + Array.from(selectati).join(', '))} target="_blank" onClick={() => log('cta-disponibilitate')}
+          style={{display:'block', textAlign:'center', padding:'13px', background:UI.green, color:'white', borderRadius:'11px', fontSize:'13px', fontWeight:800, textDecoration:'none', marginBottom:'12px', boxShadow:'0 2px 8px rgba(5,150,105,0.3)'}}>
+          Cere disponibilitate pe WhatsApp ({selectati.size} selectati)
+        </a>
+      )}
 
       <div style={{background:'white', border:'1px solid '+UI.line, borderRadius:'16px', overflow:'hidden'}}>
         {randuri.map((item: any, i: number) => {
@@ -394,13 +402,13 @@ function ListaRoster({ artisti, audienta, token }: { artisti: any[], audienta: s
                   : <div style={{width:'44px', height:'44px', borderRadius:'10px', background:UI.bg, display:'flex', alignItems:'center', justifyContent:'center', fontWeight:800, color:UI.faint, flexShrink:0}}>{a.nume.charAt(0)}</div>}
                 <div style={{minWidth:0, flex:1}}>
                   <div style={{fontSize:'14px', fontWeight:800, color:UI.ink, letterSpacing:'-0.2px', whiteSpace:'nowrap', overflow:'hidden', textOverflow:'ellipsis'}}>{a.nume}</div>
-                  {tier && <span style={{fontSize:'8.5px', fontWeight:800, color: tier.color === '#eacda3' ? '#101014' : 'white', background:tier.color, padding:'2px 6px', borderRadius:'4px', letterSpacing:'0.05em'}}>{tier.label}</span>}
+                  {tier && <span style={{fontSize:'8.5px', fontWeight:800, color: 'white', background:tier.color, padding:'2px 6px', borderRadius:'4px', letterSpacing:'0.05em'}}>{tier.label}</span>}
                 </div>
                 <div style={{textAlign:'right', flexShrink:0}}>
                   {a.preturi
                     ? <div style={{fontSize:'clamp(13.5px, 3.8vw, 16px)', fontWeight:800, color:UI.ink, letterSpacing:'-0.5px'}}>{fmtEur(audienta === 'b2b' ? a.preturi.standard : a.preturi.deLa)}<span style={{fontSize:'10px', color:UI.faint, fontWeight:700}}> +TVA</span></div>
                     : <div style={{fontSize:'12px', fontWeight:700, color:UI.faint}}>la cerere</div>}
-                  <div style={{fontSize:'10px', color:UI.faint, fontWeight:600}}>{e ? 'inchide' : 'detalii'}</div>
+                  <div style={{fontSize:'10px', color:UI.green, fontWeight:800}}>{e ? 'închide ▲' : 'detalii ▼'}</div>
                 </div>
               </div>
               {e && (

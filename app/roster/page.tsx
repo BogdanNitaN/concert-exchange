@@ -5,13 +5,13 @@ const F = 'Montserrat, sans-serif'
 const UI = { bg:'#f5f5f7', ink:'#1c1917', sub:'#57534e', faint:'#a8a29e', line:'#e7e5e4', green:'#059669' }
 
 const TIER_MAP: Record<string, {label: string, color: string, text: string, tip: string, ord: number}> = {
-  'A++': {label: 'Icon', color: '#eacda3', text: '#101014', tip: 'Top tier — vinde singur orice eveniment', ord: 0},
-  'Premium': {label: 'Icon', color: '#eacda3', text: '#101014', tip: 'Top tier — vinde singur orice eveniment', ord: 0},
+  'A++': {label: 'Icon', color: '#eacda3', text: 'white', tip: 'Top tier — vinde singur orice eveniment', ord: 0},
+  'Premium': {label: 'Icon', color: '#eacda3', text: 'white', tip: 'Top tier — vinde singur orice eveniment', ord: 0},
   'A+': {label: 'Premium', color: '#7c3aed', text: 'white', tip: 'Tracțiune puternică — vânzări consistente', ord: 1},
   'A': {label: 'Select', color: '#78716c', text: 'white', tip: 'Atracție solidă — fan base loial', ord: 2},
 }
 const TIERS = [
-  { range: 'A++', label: 'Icon', color: '#eacda3', text: '#101014', tip: 'Top tier — vinde singur orice eveniment' },
+  { range: 'A++', label: 'Icon', color: '#eacda3', text: 'white', tip: 'Top tier — vinde singur orice eveniment' },
   { range: 'A+', label: 'Premium', color: '#7c3aed', text: 'white', tip: 'Tracțiune puternică — vânzări consistente' },
   { range: 'A', label: 'Select', color: '#78716c', text: 'white', tip: 'Atracție solidă — fan base loial' },
 ]
@@ -96,21 +96,22 @@ export default function RosterPublic() {
       <div style={{display:'flex', alignItems:'center', justifyContent:'center', gap:'16px', padding:'10px 18px', background:'#101014', borderBottom:'1px solid #101014', flexWrap:'nowrap', overflowX:'auto', WebkitOverflowScrolling:'touch', whiteSpace:'nowrap', position:'sticky', top:'56px', zIndex:50}}>
         <span style={{fontSize:'10px', color:'#78716c', fontWeight:700, textTransform:'uppercase', letterSpacing:'0.08em'}}>Tier</span>
         <span className="tier-legend-item" style={{fontSize:'11px', color:'#d6d3d1', fontWeight:600, display:'flex', alignItems:'center', gap:'6px', position:'relative', cursor:'help', flexShrink:0}}>
-          <span style={{background:'#eacda3', fontSize:'10px', fontWeight:700, padding:'2px 8px', borderRadius:'6px', color:'#101014'}}>A++ · Icon</span>
+          <span style={{background:'#eacda3', fontSize:'10px', fontWeight:700, padding:'2px 8px', borderRadius:'6px', color:'white', cursor:'pointer'}} onClick={() => setTierExplicat(tierExplicat === 'Top tier — vinde singur orice eveniment' ? '' : 'Top tier — vinde singur orice eveniment')}>A++ · Icon</span>
           <span>10.000€+</span>
           <span className="tier-legend-tooltip">Top tier — vinde singur orice eveniment</span>
         </span>
         <span className="tier-legend-item" style={{fontSize:'11px', color:'#d6d3d1', fontWeight:600, display:'flex', alignItems:'center', gap:'6px', position:'relative', cursor:'help', flexShrink:0}}>
-          <span style={{background:'#7c3aed', fontSize:'10px', fontWeight:700, padding:'2px 8px', borderRadius:'6px', color:'white'}}>A+ · Premium</span>
+          <span style={{background:'#7c3aed', fontSize:'10px', fontWeight:700, padding:'2px 8px', borderRadius:'6px', color:'white', cursor:'pointer'}} onClick={() => setTierExplicat(tierExplicat === 'Tracțiune puternică — vânzări consistente' ? '' : 'Tracțiune puternică — vânzări consistente')}>A+ · Premium</span>
           <span>5.000–10.000€</span>
           <span className="tier-legend-tooltip">Tracțiune puternică — vânzări consistente</span>
         </span>
         <span className="tier-legend-item" style={{fontSize:'11px', color:'#d6d3d1', fontWeight:600, display:'flex', alignItems:'center', gap:'6px', position:'relative', cursor:'help', flexShrink:0}}>
-          <span style={{background:'#78716c', fontSize:'10px', fontWeight:700, padding:'2px 8px', borderRadius:'6px', color:'white'}}>A · Select</span>
+          <span style={{background:'#78716c', fontSize:'10px', fontWeight:700, padding:'2px 8px', borderRadius:'6px', color:'white', cursor:'pointer'}} onClick={() => setTierExplicat(tierExplicat === 'Atracție solidă — fan base loial' ? '' : 'Atracție solidă — fan base loial')}>A · Select</span>
           <span>până la 5.000€</span>
           <span className="tier-legend-tooltip">Atracție solidă — fan base loial</span>
         </span>
       </div>
+      {tierExplicat && <div style={{marginBottom:'10px', padding:'10px 14px', background:'white', border:'1px solid #e7e5e4', borderRadius:'11px', fontSize:'12px', color:'#57534e', fontWeight:600}}>{tierExplicat}</div>}
 
       <div style={{maxWidth:'1080px', margin:'0 auto', padding:'26px 16px 50px'}}>
         <input value={q} onChange={e => setQ(e.target.value)} placeholder="Cauta artist..."

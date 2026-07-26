@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
 import { ARTISTS_DATA } from '@/lib/artists-data'
-import { genuriPentru, esteAscuns } from '@/lib/genuri-catalog'
+import { genuriPentru, esteAscuns, tierPentru } from '@/lib/genuri-catalog'
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -48,7 +48,7 @@ export async function GET(req: Request, ctx: { params: Promise<{ token: string }
         }
       }
       return {
-        nume: a.nume, genuri: genuriPentru(a.nume, meta?.genres || []), tier: meta?.tier || null,
+        nume: a.nume, genuri: genuriPentru(a.nume, meta?.genres || []), tier: tierPentru(a.nume, meta?.tier || null, fee),
         poza: imgMap[a.nume] || null,
         epk: sh.epk_url || null, riderTehnic: sh.rider_tehnic_url || null, riderAcomodare: sh.rider_acomodare_url || null, ucmr: sh.ucmr_url || null, docs: sh.docs_url || null,
         logistica: {

@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
 import { ARTISTS_DATA } from '@/lib/artists-data'
-import { genuriPentru, esteAscuns } from '@/lib/genuri-catalog'
+import { genuriPentru, esteAscuns, tierPentru } from '@/lib/genuri-catalog'
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -23,7 +23,7 @@ export async function GET() {
       .map(a => {
         const meta = (ARTISTS_DATA as unknown as any[]).find(x => (x.name || '').toLowerCase() === (a.nume || '').toLowerCase())
         const genuri: string[] = genuriPentru(a.nume, meta?.genres || [])
-        return { nume: a.nume, genuri, tier: meta?.tier || null, poza: imgMap[a.nume] || null, _fee: a.fee_standard || 0 }
+        return { nume: a.nume, genuri, tier: tierPentru(a.nume, meta?.tier || null, a.fee_standard || 0), poza: imgMap[a.nume] || null, _fee: a.fee_standard || 0 }
       })
       .sort((a, b) => (ordineTier[a.tier || ''] ?? 3) - (ordineTier[b.tier || ''] ?? 3) || (b._fee || 0) - (a._fee || 0))
       .map(({ _fee, ...rest }) => rest)
