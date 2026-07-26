@@ -16,10 +16,10 @@ function formatNum(n: number) {
 function fmtEur(n: number) { return n.toLocaleString('ro-RO') + ' EUR' }
 
 const TIER_MAP: Record<string, {label: string, color: string, tip: string}> = {
-  'A++': {label: 'HEADLINER', color: '#eacda3', tip: 'Top tier - vinde singur orice eveniment'},
-  'Premium': {label: 'HEADLINER', color: '#eacda3', tip: 'Top tier - vinde singur orice eveniment'},
-  'A+': {label: 'POWER DRAW', color: '#7c3aed', tip: 'Tractiune puternica - vanzari consistente'},
-  'A': {label: 'SOLID', color: '#78716c', tip: 'Atractie solida - fan base loial'},
+  'A++': {label: 'A++ · Icon', color: '#eacda3', tip: 'Top tier — vinde singur orice eveniment'},
+  'Premium': {label: 'A++ · Icon', color: '#eacda3', tip: 'Top tier — vinde singur orice eveniment'},
+  'A+': {label: 'A+ · Premium', color: '#7c3aed', tip: 'Tracțiune puternică — vânzări consistente'},
+  'A': {label: 'A · Select', color: '#78716c', tip: 'Atracție solidă — fan base loial'},
 }
 const TAB_LABEL: Record<string, string> = { standard: 'Standard', revelion: 'Revelion', prom: 'Baluri / Prom' }
 
@@ -101,7 +101,7 @@ function CardArtist({ a, audienta, token, tabInitial }: { a: any, audienta: stri
           <div style={{fontSize:'24px', fontWeight:800, color:UI.ink, letterSpacing:'-0.8px', lineHeight:1.1}}>{a.nume}</div>
           <div style={{display:'flex', alignItems:'center', gap:'8px', marginTop:'6px', flexWrap:'wrap'}}>
             {a.genuri.length > 0 && <span style={{fontSize:'12px', color:UI.sub, fontWeight:600}}>{a.genuri.join(' · ')}</span>}
-            {tier && <span title={tier.tip} style={{fontSize:'10px', fontWeight:800, color: tier.color === '#eacda3' ? '#101014' : 'white', background:tier.color, padding:'3px 9px', borderRadius:'6px', letterSpacing:'0.06em', cursor:'help'}}>{tier.label}</span>}
+            {tier && <span title={tier.tip} style={{fontSize:'10px', fontWeight:800, color: tier.color === '#eacda3' ? '#3f3520' : 'white', background:tier.color, padding:'3px 9px', borderRadius:'6px', letterSpacing:'0.06em', cursor:'help'}}>{tier.label}</span>}
           </div>
         </div>
       </div>
@@ -210,6 +210,28 @@ function ListaRoster({ artisti, audienta, token }: { artisti: any[], audienta: s
 
   const tinta = useMemo(() => selectati.size ? filtrati.filter(a => selectati.has(a.nume)) : filtrati, [filtrati, selectati])
 
+  const randuri = useMemo(() => {
+    if (gen || q.trim()) return filtrati
+    const ordT: Record<string, number> = { 'A++': 0, 'Premium': 0, 'A+': 1, 'A': 2 }
+    const ot = (t: string | null) => (t && ordT[t] !== undefined) ? ordT[t] : 3
+    const top = filtrati.filter(a => ot(a.tier) <= 1).sort((a, b) => ot(a.tier) - ot(b.tier))
+    const topSet = new Set(top.map(a => a.nume))
+    const grupe: Record<string, any[]> = {}
+    for (const a of filtrati) {
+      if (topSet.has(a.nume)) continue
+      const g = (a.genuri && a.genuri[0]) || 'Alte genuri'
+      if (!grupe[g]) grupe[g] = []
+      grupe[g].push(a)
+    }
+    const out: any[] = []
+    if (top.length) { out.push({ _h: 'Top artisti', _n: top.length }); out.push(...top) }
+    for (const [g, l] of Object.entries(grupe).sort((x, y) => y[1].length - x[1].length)) {
+      l.sort((a, b) => ot(a.tier) - ot(b.tier))
+      out.push({ _h: g, _n: l.length }); out.push(...l)
+    }
+    return out
+  }, [filtrati, gen, q])
+
   function log(actiune: string, artist?: string) {
     fetch('/api/share/' + token, { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify({ actiune, artist }) }).catch(() => {})
   }
@@ -297,6 +319,24 @@ function ListaRoster({ artisti, audienta, token }: { artisti: any[], audienta: s
 
   return (
     <div>
+      <div style={{display:'flex', alignItems:'center', gap:'14px', padding:'10px 14px', background:'#101014', borderRadius:'12px', overflowX:'auto', WebkitOverflowScrolling:'touch', whiteSpace:'nowrap', marginBottom:'12px', position:'sticky', top:'62px', zIndex:80}}>
+        <span style={{fontSize:'10px', color:'#78716c', fontWeight:700, textTransform:'uppercase', letterSpacing:'0.08em', flexShrink:0}}>Tier</span>
+        <span className="tier-legend-item" style={{fontSize:'11px', color:'#d6d3d1', fontWeight:600, display:'flex', alignItems:'center', gap:'6px', position:'relative', cursor:'help', flexShrink:0}}>
+          <span style={{background:'#eacda3', fontSize:'10px', fontWeight:700, padding:'2px 8px', borderRadius:'6px', color:'#3f3520'}}>A++ · Icon</span>
+          <span>10.000€+</span>
+          <span className="tier-legend-tooltip">Top tier — vinde singur orice eveniment</span>
+        </span>
+        <span className="tier-legend-item" style={{fontSize:'11px', color:'#d6d3d1', fontWeight:600, display:'flex', alignItems:'center', gap:'6px', position:'relative', cursor:'help', flexShrink:0}}>
+          <span style={{background:'#7c3aed', fontSize:'10px', fontWeight:700, padding:'2px 8px', borderRadius:'6px', color:'white'}}>A+ · Premium</span>
+          <span>5.000–10.000€</span>
+          <span className="tier-legend-tooltip">Tracțiune puternică — vânzări consistente</span>
+        </span>
+        <span className="tier-legend-item" style={{fontSize:'11px', color:'#d6d3d1', fontWeight:600, display:'flex', alignItems:'center', gap:'6px', position:'relative', cursor:'help', flexShrink:0}}>
+          <span style={{background:'#78716c', fontSize:'10px', fontWeight:700, padding:'2px 8px', borderRadius:'6px', color:'white'}}>A · Select</span>
+          <span>până la 5.000€</span>
+          <span className="tier-legend-tooltip">Atracție solidă — fan base loial</span>
+        </span>
+      </div>
       <input value={q} onChange={e => setQ(e.target.value)} placeholder="Cauta artist..."
         style={{width:'100%', boxSizing:'border-box', padding:'12px 16px', borderRadius:'12px', border:'1.5px solid '+UI.line, fontSize:'14px', fontFamily:F, outline:'none', background:'white', marginBottom:'10px'}} />
       <div style={{display:'flex', gap:'8px', overflowX:'auto', WebkitOverflowScrolling:'touch', paddingBottom:'6px', marginBottom:'10px'}}>
@@ -327,7 +367,11 @@ function ListaRoster({ artisti, audienta, token }: { artisti: any[], audienta: s
       </div>
 
       <div style={{background:'white', border:'1px solid '+UI.line, borderRadius:'16px', overflow:'hidden'}}>
-        {filtrati.map((a, i) => {
+        {randuri.map((item: any, i: number) => {
+          if (item._h) return (
+            <div key={'h-' + item._h} style={{padding:'10px 14px', background:'#f5f5f7', borderTop: i > 0 ? '1px solid #f0f0ef' : 'none', fontSize:'11px', fontWeight:800, color:UI.sub, textTransform:'uppercase', letterSpacing:'0.08em'}}>{item._h} <span style={{color:UI.faint}}>· {item._n}</span></div>
+          )
+          const a = item
           const tier = a.tier ? (TIER_MAP[a.tier] || null) : null
           const e = totiDeschisi || deschis === a.nume
           const lg = a.logistica || {}
@@ -350,7 +394,7 @@ function ListaRoster({ artisti, audienta, token }: { artisti: any[], audienta: s
                   : <div style={{width:'44px', height:'44px', borderRadius:'10px', background:UI.bg, display:'flex', alignItems:'center', justifyContent:'center', fontWeight:800, color:UI.faint, flexShrink:0}}>{a.nume.charAt(0)}</div>}
                 <div style={{minWidth:0, flex:1}}>
                   <div style={{fontSize:'14px', fontWeight:800, color:UI.ink, letterSpacing:'-0.2px', whiteSpace:'nowrap', overflow:'hidden', textOverflow:'ellipsis'}}>{a.nume}</div>
-                  {tier && <span style={{fontSize:'8.5px', fontWeight:800, color: tier.color === '#eacda3' ? '#101014' : 'white', background:tier.color, padding:'2px 6px', borderRadius:'4px', letterSpacing:'0.05em'}}>{tier.label}</span>}
+                  {tier && <span style={{fontSize:'8.5px', fontWeight:800, color: tier.color === '#eacda3' ? '#3f3520' : 'white', background:tier.color, padding:'2px 6px', borderRadius:'4px', letterSpacing:'0.05em'}}>{tier.label}</span>}
                 </div>
                 <div style={{textAlign:'right', flexShrink:0}}>
                   {a.preturi
@@ -424,7 +468,7 @@ export default function ShareView() {
           <img src="/gigx-mark.png" width={24} height={24} alt="" style={{display:'block'}} />
           <span style={{fontSize:'20px', fontWeight:800, letterSpacing:'-0.5px', color:UI.ink}}>GIG<span style={{color:UI.green}}>x</span></span>
         </div>
-        {d && <span style={{fontSize:'12px', fontWeight:800, color:'white', background:UI.green, padding:'7px 14px', borderRadius:'20px', boxShadow:'0 1px 3px rgba(5,150,105,0.3)'}}>valabil pana la {new Date(d.expiraLa).toLocaleDateString('ro-RO')}</span>}
+        {d && <span style={{fontSize:'12px', fontWeight:800, color:'white', background:UI.green, padding:'7px 14px', borderRadius:'20px', boxShadow:'0 1px 3px rgba(5,150,105,0.3)'}}>valabil pana la {new Date(d.expiraLa).toLocaleString('ro-RO', {day:'2-digit', month:'2-digit', hour:'2-digit', minute:'2-digit'})}</span>}
       </nav>
 
       <div style={{maxWidth:'720px', margin:'0 auto', padding:'24px 16px 44px'}}>
