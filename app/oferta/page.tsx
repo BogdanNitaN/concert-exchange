@@ -183,6 +183,29 @@ export default function OfertaPage() {
   const [toCity, setToCity] = useState('')
   const [citySuggestions, setCitySuggestions] = useState<{description: string}[]>([])
   const [showCitySugg, setShowCitySugg] = useState(false)
+  const [locSugestii, setLocSugestii] = useState<any[]>([])
+  const [showLocSugg, setShowLocSugg] = useState(false)
+  async function cautaLocatie(input: string) {
+    setLocatie(input)
+    if (input.trim().length < 2) { setLocSugestii([]); setShowLocSugg(false); return }
+    try {
+      const r = await fetch('/api/places?input=' + encodeURIComponent(input + ' ' + toCity))
+      const d = await r.json()
+      const preds = d.predictions || []
+      setLocSugestii(preds)
+      setShowLocSugg(preds.length > 0)
+    } catch { setLocSugestii([]) }
+  }
+  function alegeLocatie(sg: any) {
+    setLocatie(sg.structured_formatting?.main_text || sg.description)
+    if (!toCity.trim()) {
+      const sec = sg.structured_formatting?.secondary_text || sg.description || ''
+      const parti = sec.split(',').map((x: string) => x.trim()).filter(Boolean)
+      if (parti.length >= 2) setToCity(parti[parti.length - 2])
+    }
+    setLocSugestii([])
+    setShowLocSugg(false)
+  }
   const [locatie, setLocatie] = useState('')
   const [dataEveniment, setDataEveniment] = useState('')
   const [numeClient, setNumeClient] = useState('')
@@ -314,7 +337,7 @@ export default function OfertaPage() {
     setToCity(input)
     if (input.trim().length < 2) { setCitySuggestions([]); setShowCitySugg(false); return }
     try {
-      const r = await fetch('/api/places?input=' + encodeURIComponent(input) + '&type=search')
+      const r = await fetch('/api/places?input=' + encodeURIComponent(input) + '&type=cities')
       const d = await r.json()
       const preds = (d.predictions || []).map((p: any) => ({ description: p.description }))
       setCitySuggestions(preds)
@@ -323,15 +346,7 @@ export default function OfertaPage() {
   }
 
   function alegeOras(desc: string) {
-    // "Nish, Strada X, Iasi, Romania" -> locatie "Nish", oras "Iasi"
-    // "Iasi, Romania" -> doar oras
-    const parti = desc.split(',').map(x => x.trim()).filter(Boolean)
-    if (parti.length >= 3) {
-      setLocatie(parti[0])
-      setToCity(parti[parti.length - 2])
-    } else {
-      setToCity(parti[0])
-    }
+    setToCity(desc.split(',')[0].trim())
     setCitySuggestions([])
     setShowCitySugg(false)
   }
@@ -873,8 +888,20 @@ export default function OfertaPage() {
                 </div>
               )}
             </div>
-            <div><label style={label}>Locație / Client</label>
-              <input value={locatie} onChange={e => setLocatie(e.target.value)} placeholder="ex: Club Nish" style={inputStyle} /></div>
+            <div style={{position:'relative'}}><label style={label}>Locație / Client</label>
+              <input value={locatie} onChange={e => cautaLocatie(e.target.value)} onFocus={() => { if (locSugestii.length) setShowLocSugg(true) }} onBlur={() => setTimeout(() => setShowLocSugg(false), 200)} placeholder="ex: Club Nish" style={inputStyle} autoComplete="off" />
+              {showLocSugg && locSugestii.length > 0 && (
+                <div style={{position:'absolute', top:'100%', left:0, right:0, background:'white', border:'1px solid #e7e5e4', borderRadius:'12px', marginTop:'4px', boxShadow:'0 4px 12px rgba(0,0,0,0.08)', zIndex:50, maxHeight:'200px', overflowY:'auto'}}>
+                  {locSugestii.slice(0, 5).map((sg: any) => (
+                    <div key={sg.place_id} onClick={() => alegeLocatie(sg)}
+                      style={{padding:'10px 14px', cursor:'pointer', fontSize:'13px', color:'#1c1917', borderBottom:'1px solid #f5f5f4'}}>
+                      <div style={{fontWeight:600}}>{sg.structured_formatting?.main_text || sg.description}</div>
+                      {sg.structured_formatting?.secondary_text && <div style={{fontSize:'11px', color:'#78716c', marginTop:'2px'}}>{sg.structured_formatting.secondary_text}</div>}
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
             <button onClick={calcTransport} style={{padding:'11px 22px', background:UI.green, color:'white', border:'none', borderRadius:UI.radiusSm, fontWeight:700, cursor:'pointer', fontFamily:F, whiteSpace:'nowrap', boxShadow:'0 1px 3px rgba(5,150,105,0.3)'}}>
               {loadingKm ? '...' : 'Calculează'}
             </button>
