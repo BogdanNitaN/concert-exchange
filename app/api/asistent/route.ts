@@ -221,8 +221,9 @@ async function ruleazaUnealta(nume: string, input: any, baseUrl: string, tokenAu
       if (scop !== 'roster') {
         const { data: art } = await supa.from('oferta_artisti').select('nume').ilike('nume', '%' + scop + '%')
         if (!art || art.length === 0) return JSON.stringify({ eroare: 'Artistul nu exista in roster: ' + scop })
-        if (art.length > 1) return JSON.stringify({ eroare: 'Mai multi artisti se potrivesc', variante: art.map((x: any) => x.nume) })
-        input.scop = art[0].nume
+        const exactArt = art.find((x: any) => normArt(x.nume) === normArt(scop))
+        if (!exactArt && art.length > 1) return JSON.stringify({ eroare: 'Mai multi artisti se potrivesc', variante: art.map((x: any) => x.nume) })
+        input.scop = exactArt ? exactArt.nume : art[0].nume
       }
       const { error } = await supa.from('roster_links').insert({
         token, destinatar: input.destinatar, tip_audienta: input.tip_audienta === 'direct' ? 'direct' : 'b2b',
