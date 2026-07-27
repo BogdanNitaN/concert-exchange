@@ -195,7 +195,7 @@ function CardArtist({ a, audienta, token, tabInitial, destinatar, ascundeContact
 }
 
 
-function ListaRoster({ artisti, audienta, token }: { artisti: any[], audienta: string, token: string }) {
+function ListaRoster({ artisti, audienta, token, ascundeContacte }: { artisti: any[], audienta: string, token: string, ascundeContacte?: boolean }) {
   const [q, setQ] = useState('')
   const [gen, setGen] = useState('')
   const [deschis, setDeschis] = useState('')
@@ -407,7 +407,7 @@ function ListaRoster({ artisti, audienta, token }: { artisti: any[], audienta: s
           {totiDeschisi ? 'Ascunde detaliile' : 'Vezi toate detaliile'}
         </button>
       </div>
-      {selectati.size > 0 && (
+      {selectati.size > 0 && !ascundeContacte && (
         <div style={{position:'fixed', bottom:0, left:0, right:0, zIndex:300, padding:'12px 16px calc(12px + env(safe-area-inset-bottom))', background:'rgba(255,255,255,0.96)', backdropFilter:'blur(10px)', borderTop:'1px solid '+UI.line}}>
           <a href={'https://wa.me/40751144109?text=' + encodeURIComponent('Buna Bogdan, te rog disponibilitatea pentru: ' + Array.from(selectati).join(', ') + ', in localitatea ______, data ______')} target="_blank" onClick={() => log('cta-disponibilitate')}
             style={{display:'block', maxWidth:'688px', margin:'0 auto', textAlign:'center', padding:'14px', background:UI.green, color:'white', borderRadius:'12px', fontSize:'13.5px', fontWeight:800, textDecoration:'none', boxShadow:'0 4px 16px rgba(5,150,105,0.35)'}}>
@@ -547,7 +547,7 @@ export default function ShareView() {
           <>
             <div style={{fontSize:'13px', color:UI.sub, marginBottom:'16px'}}>Pregatit pentru <strong style={{color:UI.ink}}>{d.destinatar}</strong></div>
             {d.tip === 'artist' && <CardArtist a={d.artist} audienta={d.audienta} token={token} tabInitial="standard" destinatar={d.destinatar} ascundeContacte={d.ascundeContacte} />}
-            {d.tip === 'roster' && <ListaRoster artisti={d.artisti} audienta={d.audienta} token={token} />}
+            {d.tip === 'roster' && <ListaRoster artisti={d.artisti} audienta={d.audienta} token={token} ascundeContacte={d.ascundeContacte} />}
             {d.audienta !== 'b2b' && (
             <a href="/roster" target="_blank" style={{display:'block', textAlign:'center', marginTop:'24px', padding:'12px', background:'white', color:UI.sub, border:'1.5px solid '+UI.line, borderRadius:'11px', fontSize:'11px', fontWeight:800, letterSpacing:'0.08em', textDecoration:'none'}}>
               CATALOG ARTISTI FORWARD
