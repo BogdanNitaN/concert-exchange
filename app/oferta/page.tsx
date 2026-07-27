@@ -314,7 +314,7 @@ export default function OfertaPage() {
     setToCity(input)
     if (input.trim().length < 2) { setCitySuggestions([]); setShowCitySugg(false); return }
     try {
-      const r = await fetch('/api/places?input=' + encodeURIComponent(input) + '&type=cities')
+      const r = await fetch('/api/places?input=' + encodeURIComponent(input) + '&type=search')
       const d = await r.json()
       const preds = (d.predictions || []).map((p: any) => ({ description: p.description }))
       setCitySuggestions(preds)
@@ -323,9 +323,15 @@ export default function OfertaPage() {
   }
 
   function alegeOras(desc: string) {
-    // iau doar orasul (inainte de prima virgula)
-    const oras = desc.split(',')[0].trim()
-    setToCity(oras)
+    // "Nish, Strada X, Iasi, Romania" -> locatie "Nish", oras "Iasi"
+    // "Iasi, Romania" -> doar oras
+    const parti = desc.split(',').map(x => x.trim()).filter(Boolean)
+    if (parti.length >= 3) {
+      setLocatie(parti[0])
+      setToCity(parti[parti.length - 2])
+    } else {
+      setToCity(parti[0])
+    }
     setCitySuggestions([])
     setShowCitySugg(false)
   }
