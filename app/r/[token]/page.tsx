@@ -131,18 +131,9 @@ function CardArtist({ a, audienta, token, tabInitial, destinatar }: { a: any, au
 
         {a.preturi && audienta === 'b2b' && (
           <div>
-            <div style={{display:'flex', background:UI.bg, borderRadius:'12px', padding:'4px', gap:'4px'}}>
-              {Object.entries(TAB_LABEL).map(([k, l]) => (
-                <button key={k} onClick={() => schimbaTab(k)}
-                  style={{flex:1, padding:'9px 6px', borderRadius:'9px', border:'none', cursor:'pointer', fontFamily:F, fontSize:'12px', fontWeight:700,
-                    background: tab === k ? UI.ink : 'transparent', color: tab === k ? 'white' : UI.sub, transition:'all 0.15s'}}>
-                  {l}
-                </button>
-              ))}
-            </div>
-            <div style={{textAlign:'center', padding:'20px 0 4px'}}>
+            <div style={{textAlign:'center', padding:'4px 0'}}>
               <div style={{fontSize:'33px', fontWeight:800, color:UI.ink, letterSpacing:'-1.5px', lineHeight:1}}>
-                {fmtEur(tab === 'prom' ? a.preturi.prom : a.preturi.standard)}
+                {fmtEur(a.preturi.standard)}
               </div>
               <div style={{fontSize:'11px', color:UI.faint, fontWeight:600, marginTop:'8px'}}>{a.logistica?.landed ? 'Transport inclus · onorariul nu include cazare si masa' : 'Onorariul nu include transport, cazare si masa'}</div>
             </div>
