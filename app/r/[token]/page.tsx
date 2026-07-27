@@ -100,7 +100,7 @@ function CardArtist({ a, audienta, token, tabInitial, destinatar }: { a: any, au
 
   const docs: [string, string][] = []
   if (a.epk) docs.push(['Media Kit', a.epk])
-  if (a.riderTehnic) docs.push(['Rider tehnic', a.riderTehnic])
+  if (a.riderTehnic) docs.push(['Rider tehnic si ospitalitate', a.riderTehnic])
   if (a.riderAcomodare) docs.push(['Rider acomodare', a.riderAcomodare])
   if (a.ucmr) docs.push(['UCMR', a.ucmr])
   if (docs.length === 0 && a.docs) docs.push(['Documente artist', a.docs])
@@ -412,7 +412,7 @@ function ListaRoster({ artisti, audienta, token }: { artisti: any[], audienta: s
           const lg = a.logistica || {}
           const docs: [string, string][] = []
           if (a.epk) docs.push(['Media Kit', a.epk])
-          if (a.riderTehnic) docs.push(['Rider tehnic', a.riderTehnic])
+          if (a.riderTehnic) docs.push(['Rider tehnic si ospitalitate', a.riderTehnic])
           if (a.riderAcomodare) docs.push(['Rider acomodare', a.riderAcomodare])
           if (a.ucmr) docs.push(['UCMR', a.ucmr])
           if (docs.length === 0 && a.docs) docs.push(['Documente artist', a.docs])
