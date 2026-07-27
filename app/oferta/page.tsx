@@ -94,6 +94,7 @@ interface Linie {
   landed: boolean
   allIn: boolean
   allInSuma: number
+  allInAvionLei: number
   cazare: string
   persoane: number
   bileteAvion: number
@@ -261,7 +262,7 @@ export default function OfertaPage() {
                 key: lc.artistNume + '-' + Date.now() + '-' + i,
                 artist: art, formatSelectat: lc.formatSelectat || '', durata: lc.durata || '', dateOptiuni: lc.dateOptiuni || '',
                 tipPret: lc.tipPret, feeLista: lc.feeLista, fee: lc.fee, leiKm: lc.leiKm,
-                useMarja: lc.useMarja, landed: lc.landed || false, allIn: lc.allIn || false, allInSuma: lc.allInSuma || 0, cazare: lc.cazare, persoane: lc.persoane, bileteAvion: lc.bileteAvion, restulRutier: lc.restulRutier !== undefined ? lc.restulRutier : true,
+                useMarja: lc.useMarja, landed: lc.landed || false, allIn: lc.allIn || false, allInSuma: lc.allInSuma || 0, allInAvionLei: lc.allInAvionLei || 0, cazare: lc.cazare, persoane: lc.persoane, bileteAvion: lc.bileteAvion, restulRutier: lc.restulRutier !== undefined ? lc.restulRutier : true,
                 tipMasa: lc.tipMasa, zile: lc.zile, diurnaPerPers: lc.diurnaPerPers, diurnaFixa: lc.diurnaFixa || 0, cazareFixa: lc.cazareFixa || 0,
                 useAlcool: lc.useAlcool, alcool: lc.alcool,
                 useCag: lc.useCag, cagProcent: lc.cagProcent || 10, cagSuma: lc.cagSuma || 0, cagMod: lc.cagMod || 'procent',
@@ -377,6 +378,7 @@ export default function OfertaPage() {
       landed: false,
       allIn: false,
       allInSuma: 0,
+      allInAvionLei: 0,
       cazare: fmt ? fmt.cazare : a.cazare,
       persoane: fmt ? fmt.persoane : a.nr_persoane,
       bileteAvion: fmt ? fmt.bilete : (a.bilete_avion || 0),
@@ -498,6 +500,13 @@ export default function OfertaPage() {
         if (!c.local) parts.push(l.cazareFixa > 0 ? 'cazare ' + l.cazareFixa.toLocaleString('ro-RO') + ' lei' : 'cazare ' + l.cazare)
         if (!c.local && c.diurnaTotal > 0) parts.push('diurna ' + c.diurnaTotal.toLocaleString('ro-RO') + ' lei + TVA')
         if (!c.local && l.tipMasa === 'alacarte' && l.diurnaFixa === 0 && l.cazareFixa === 0) parts.push('masa a la carte ' + l.persoane + ' pers (pranz, cina) + mic dejun la hotel')
+        if (l.allIn && eurRate) {
+          const transLei = c.transportLei + (c.transportEur > 0 ? Math.round(c.transportEur * eurRate) : 0)
+          const totalLei = Math.round(l.allInSuma * eurRate) + transLei + c.diurnaTotal + (l.cazareFixa || 0) + (l.allInAvionLei || 0)
+          const totalEur = l.allInSuma + Math.round((transLei + c.diurnaTotal + (l.cazareFixa || 0) + (l.allInAvionLei || 0)) / eurRate)
+          if (l.allInAvionLei > 0) parts.push('avion ' + l.allInAvionLei.toLocaleString('ro-RO') + ' lei')
+          parts.push('TOTAL: ' + totalEur.toLocaleString('ro-RO') + ' EUR (~' + totalLei.toLocaleString('ro-RO') + ' lei) + TVA · curs ' + eurRate.toFixed(4))
+        }
         if (c.alcoolTotal > 0) parts.push('protocol ' + c.alcoolTotal.toLocaleString('ro-RO') + ' lei + TVA')
         if (l.durata) parts.push('durata: ' + l.durata)
         out.push(parts.join(' || '))
@@ -542,7 +551,7 @@ export default function OfertaPage() {
             artistNume: l.artist.nume,
             formatSelectat: l.formatSelectat, durata: l.durata,
             tipPret: l.tipPret, feeLista: l.feeLista, fee: l.fee, leiKm: l.leiKm,
-            useMarja: l.useMarja, landed: l.landed || false, allIn: l.allIn || false, allInSuma: l.allInSuma || 0, cazare: l.cazare, persoane: l.persoane, bileteAvion: l.bileteAvion, restulRutier: l.restulRutier,
+            useMarja: l.useMarja, landed: l.landed || false, allIn: l.allIn || false, allInSuma: l.allInSuma || 0, allInAvionLei: l.allInAvionLei || 0, cazare: l.cazare, persoane: l.persoane, bileteAvion: l.bileteAvion, restulRutier: l.restulRutier,
             tipMasa: l.tipMasa, zile: l.zile, diurnaPerPers: l.diurnaPerPers, diurnaFixa: l.diurnaFixa, cazareFixa: l.cazareFixa,
             useAlcool: l.useAlcool, alcool: l.alcool,
             useCag: l.useCag, cagProcent: l.cagProcent, cagSuma: l.cagSuma, cagMod: l.cagMod,
@@ -693,6 +702,13 @@ export default function OfertaPage() {
       if (!c.local) rows.push(l.cazareFixa > 0 ? 'Cazare: ' + l.cazareFixa.toLocaleString('ro-RO') + ' lei' : 'Cazare: ' + l.cazare + ' (' + l.persoane + ' persoane)')
       if (!c.local && c.diurnaTotal > 0) rows.push('Diurna: ' + c.diurnaTotal.toLocaleString('ro-RO') + ' lei + TVA')
       if (!c.local && l.tipMasa === 'alacarte' && l.diurnaFixa === 0 && l.cazareFixa === 0) rows.push('Masa: a la carte ' + l.persoane + ' pers (pranz, cina) + mic dejun la hotel')
+      if (l.allIn && eurRate) {
+        const transLeiP = c.transportLei + (c.transportEur > 0 ? Math.round(c.transportEur * eurRate) : 0)
+        const totalLeiP = Math.round(l.allInSuma * eurRate) + transLeiP + c.diurnaTotal + (l.cazareFixa || 0) + (l.allInAvionLei || 0)
+        const totalEurP = l.allInSuma + Math.round((transLeiP + c.diurnaTotal + (l.cazareFixa || 0) + (l.allInAvionLei || 0)) / eurRate)
+        if (l.allInAvionLei > 0) rows.push('Avion: ' + l.allInAvionLei.toLocaleString('ro-RO') + ' lei')
+        rows.push('TOTAL ALL IN: ' + totalEurP.toLocaleString('ro-RO') + ' EUR (~' + totalLeiP.toLocaleString('ro-RO') + ' lei) + TVA')
+      }
       if (c.alcoolTotal > 0) rows.push('Protocol: ' + c.alcoolTotal.toLocaleString('ro-RO') + ' lei + TVA')
       if (l.durata) rows.push('Durata: ' + l.durata)
       if (!institutiePublica && c.discount > 0) {
@@ -972,6 +988,8 @@ export default function OfertaPage() {
                   <span style={{display:'inline-flex', alignItems:'center', gap:'6px', fontSize:'12px', fontWeight:700, color:'#7c3aed'}}>
                     Suma ALL IN (EUR):
                     <input type="number" value={l.allInSuma || ''} onChange={e => updateLinie(l.key, { allInSuma: Number(e.target.value) })} placeholder="0" style={{width:'90px', padding:'5px 8px', borderRadius:'8px', border:'1.5px solid #c4b5fd', fontSize:'13px', fontWeight:700, outline:'none'}} />
+                    <span style={{color:'#78716c'}}>Avion (lei):</span>
+                    <input type="number" value={l.allInAvionLei || ''} onChange={e => updateLinie(l.key, { allInAvionLei: Number(e.target.value) })} placeholder="0" style={{width:'80px', padding:'5px 8px', borderRadius:'8px', border:'1.5px solid #c4b5fd', fontSize:'13px', fontWeight:700, outline:'none'}} />
                   </span>
                 )}
                 {l.landed && c.feeNetLanded !== null && c.transportEurEchiv > 0 && (
