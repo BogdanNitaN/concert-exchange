@@ -487,7 +487,7 @@ export default function OfertaPage() {
       } else {
         // format comercial normal
         const parts: string[] = []
-        if (l.allIn) parts.push('ALL IN: ' + l.allInSuma + ' EUR + TVA')
+        if (l.allIn) parts.push('Onorariu ALL IN: ' + l.allInSuma + ' EUR + TVA')
         else parts.push(c.discount > 0 ? '~' + l.feeLista + ' EUR~ ' + l.fee + ' EUR + TVA' : l.fee + ' EUR + TVA')
         if (l.landed) parts.push('transport inclus')
         if (!l.landed && c.transportLei > 0) parts.push('transport ' + l.leiKm + ' lei/km x ' + c.kmTotal + ' km = ' + c.transportLei.toLocaleString('ro-RO') + ' lei + TVA')
@@ -500,10 +500,11 @@ export default function OfertaPage() {
         if (!c.local) parts.push(l.cazareFixa > 0 ? 'cazare ' + l.cazareFixa.toLocaleString('ro-RO') + ' lei' : 'cazare ' + l.cazare)
         if (!c.local && c.diurnaTotal > 0) parts.push('diurna ' + c.diurnaTotal.toLocaleString('ro-RO') + ' lei + TVA')
         if (!c.local && l.tipMasa === 'alacarte' && l.diurnaFixa === 0 && l.cazareFixa === 0) parts.push('masa a la carte ' + l.persoane + ' pers (pranz, cina) + mic dejun la hotel')
-        if (l.allIn && eurRate) {
-          const transLei = c.transportLei + (c.transportEur > 0 ? Math.round(c.transportEur * eurRate) : 0)
-          const totalLei = Math.round(l.allInSuma * eurRate) + transLei + c.diurnaTotal + (l.cazareFixa || 0) + (l.allInAvionLei || 0)
-          const totalEur = l.allInSuma + Math.round((transLei + c.diurnaTotal + (l.cazareFixa || 0) + (l.allInAvionLei || 0)) / eurRate)
+        if ((l.allIn || l.landed) && eurRate) {
+          const bazaEur = l.allIn ? l.allInSuma : l.fee
+          const transLei = l.landed ? 0 : c.transportLei + (c.transportEur > 0 ? Math.round(c.transportEur * eurRate) : 0)
+          const totalLei = Math.round(bazaEur * eurRate) + transLei + c.diurnaTotal + (l.cazareFixa || 0) + (l.allInAvionLei || 0)
+          const totalEur = bazaEur + Math.round((transLei + c.diurnaTotal + (l.cazareFixa || 0) + (l.allInAvionLei || 0)) / eurRate)
           if (l.allInAvionLei > 0) parts.push('avion ' + l.allInAvionLei.toLocaleString('ro-RO') + ' lei')
           parts.push('TOTAL: ' + totalEur.toLocaleString('ro-RO') + ' EUR (~' + totalLei.toLocaleString('ro-RO') + ' lei) + TVA · curs ' + eurRate.toFixed(4))
         }
@@ -689,7 +690,7 @@ export default function OfertaPage() {
         rows.push('Onorariu: ' + c.feeLeiConv.toLocaleString('ro-RO') + ' lei + TVA')
         rows.push('(echivalent: ' + l.fee + ' EUR onorariu, curs ' + c.cursAdaos.toFixed(4) + ' lei/EUR)')
       } else {
-        if (l.allIn) rows.push('ALL IN: ' + l.allInSuma + ' EUR + TVA')
+        if (l.allIn) rows.push('Onorariu ALL IN: ' + l.allInSuma + ' EUR + TVA')
         else if (c.discount === 0) rows.push('Onorariu: ' + l.fee + ' EUR + TVA')
       }
       if (l.landed) rows.push('Transport: inclus in onorariu')
@@ -702,12 +703,13 @@ export default function OfertaPage() {
       if (!c.local) rows.push(l.cazareFixa > 0 ? 'Cazare: ' + l.cazareFixa.toLocaleString('ro-RO') + ' lei' : 'Cazare: ' + l.cazare + ' (' + l.persoane + ' persoane)')
       if (!c.local && c.diurnaTotal > 0) rows.push('Diurna: ' + c.diurnaTotal.toLocaleString('ro-RO') + ' lei + TVA')
       if (!c.local && l.tipMasa === 'alacarte' && l.diurnaFixa === 0 && l.cazareFixa === 0) rows.push('Masa: a la carte ' + l.persoane + ' pers (pranz, cina) + mic dejun la hotel')
-      if (l.allIn && eurRate) {
-        const transLeiP = c.transportLei + (c.transportEur > 0 ? Math.round(c.transportEur * eurRate) : 0)
-        const totalLeiP = Math.round(l.allInSuma * eurRate) + transLeiP + c.diurnaTotal + (l.cazareFixa || 0) + (l.allInAvionLei || 0)
-        const totalEurP = l.allInSuma + Math.round((transLeiP + c.diurnaTotal + (l.cazareFixa || 0) + (l.allInAvionLei || 0)) / eurRate)
+      if ((l.allIn || l.landed) && eurRate) {
+        const bazaEurP = l.allIn ? l.allInSuma : l.fee
+        const transLeiP = l.landed ? 0 : c.transportLei + (c.transportEur > 0 ? Math.round(c.transportEur * eurRate) : 0)
+        const totalLeiP = Math.round(bazaEurP * eurRate) + transLeiP + c.diurnaTotal + (l.cazareFixa || 0) + (l.allInAvionLei || 0)
+        const totalEurP = bazaEurP + Math.round((transLeiP + c.diurnaTotal + (l.cazareFixa || 0) + (l.allInAvionLei || 0)) / eurRate)
         if (l.allInAvionLei > 0) rows.push('Avion: ' + l.allInAvionLei.toLocaleString('ro-RO') + ' lei')
-        rows.push('TOTAL ALL IN: ' + totalEurP.toLocaleString('ro-RO') + ' EUR (~' + totalLeiP.toLocaleString('ro-RO') + ' lei) + TVA')
+        rows.push('TOTAL: ' + totalEurP.toLocaleString('ro-RO') + ' EUR (~' + totalLeiP.toLocaleString('ro-RO') + ' lei) + TVA')
       }
       if (c.alcoolTotal > 0) rows.push('Protocol: ' + c.alcoolTotal.toLocaleString('ro-RO') + ' lei + TVA')
       if (l.durata) rows.push('Durata: ' + l.durata)
@@ -984,7 +986,7 @@ export default function OfertaPage() {
                   <input type="checkbox" checked={l.allIn} onChange={e => updateLinie(l.key, { allIn: e.target.checked, landed: e.target.checked ? false : l.landed })} style={{width:'16px', height:'16px', accentColor:'#7c3aed'}} />
                   ALL IN
                 </label>
-                {l.allIn && (
+                {(l.allIn || l.landed) && (
                   <span style={{display:'inline-flex', alignItems:'center', gap:'6px', fontSize:'12px', fontWeight:700, color:'#7c3aed'}}>
                     Suma ALL IN (EUR):
                     <input type="number" value={l.allInSuma || ''} onChange={e => updateLinie(l.key, { allInSuma: Number(e.target.value) })} placeholder="0" style={{width:'90px', padding:'5px 8px', borderRadius:'8px', border:'1.5px solid #c4b5fd', fontSize:'13px', fontWeight:700, outline:'none'}} />
