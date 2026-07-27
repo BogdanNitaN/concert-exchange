@@ -988,6 +988,8 @@ export default function OfertaPage() {
                   <span style={{display:'inline-flex', alignItems:'center', gap:'6px', fontSize:'12px', fontWeight:700, color:'#7c3aed'}}>
                     Suma ALL IN (EUR):
                     <input type="number" value={l.allInSuma || ''} onChange={e => updateLinie(l.key, { allInSuma: Number(e.target.value) })} placeholder="0" style={{width:'90px', padding:'5px 8px', borderRadius:'8px', border:'1.5px solid #c4b5fd', fontSize:'13px', fontWeight:700, outline:'none'}} />
+                    <span style={{color:'#78716c'}}>Cazare (lei):</span>
+                    <input type="number" value={l.cazareFixa || ''} onChange={e => updateLinie(l.key, { cazareFixa: Number(e.target.value) })} placeholder="0" style={{width:'80px', padding:'5px 8px', borderRadius:'8px', border:'1.5px solid #c4b5fd', fontSize:'13px', fontWeight:700, outline:'none'}} />
                     <span style={{color:'#78716c'}}>Avion (lei):</span>
                     <input type="number" value={l.allInAvionLei || ''} onChange={e => updateLinie(l.key, { allInAvionLei: Number(e.target.value) })} placeholder="0" style={{width:'80px', padding:'5px 8px', borderRadius:'8px', border:'1.5px solid #c4b5fd', fontSize:'13px', fontWeight:700, outline:'none'}} />
                   </span>
