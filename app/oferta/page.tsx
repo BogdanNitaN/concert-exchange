@@ -492,7 +492,7 @@ export default function OfertaPage() {
         if (l.landed) parts.push('transport inclus')
         if (!l.landed && c.transportLei > 0) parts.push('transport ' + l.leiKm + ' lei/km x ' + c.kmTotal + ' km = ' + c.transportLei.toLocaleString('ro-RO') + ' lei + TVA')
         if (!l.landed && c.transportEur > 0) parts.push('transport ' + l.leiKm + ' EUR/km x ' + c.kmTotal + ' km = ' + c.transportEur.toLocaleString('ro-RO') + ' EUR + TVA' + (c.transportEurInLei > 0 ? ' (aprox ' + c.transportEurInLei.toLocaleString('ro-RO') + ' lei)' : ''))
-        if (km !== null && km > 300 && l.bileteAvion > 0) {
+        if (km !== null && km > 300 && l.bileteAvion > 0 && !(l.allInAvionLei > 0)) {
           let av = l.bileteAvion + (l.bileteAvion === 1 ? ' bilet avion' : ' bilete avion')
           av += ' + transfer de asigurat'
           parts.push(av)
@@ -696,7 +696,7 @@ export default function OfertaPage() {
       if (l.landed) rows.push('Transport: inclus in onorariu')
       if (!l.landed && c.transportLei > 0) rows.push('Transport: ' + l.leiKm + ' lei/km x ' + c.kmTotal + ' km = ' + c.transportLei.toLocaleString('ro-RO') + ' lei + TVA')
       if (c.transportEur > 0) rows.push('Transport: ' + l.leiKm + ' EUR/km x ' + c.kmTotal + ' km = ' + c.transportEur.toLocaleString('ro-RO') + ' EUR + TVA' + (c.transportEurInLei > 0 ? ' (aprox ' + c.transportEurInLei.toLocaleString('ro-RO') + ' lei)' : ''))
-      if (km !== null && km > 300 && l.bileteAvion > 0) {
+      if (km !== null && km > 300 && l.bileteAvion > 0 && !(l.allInAvionLei > 0)) {
         let av = 'Avion: ' + l.bileteAvion + (l.bileteAvion === 1 ? ' bilet' : ' bilete') + ' + transfer de asigurat'
         rows.push(av)
       }
