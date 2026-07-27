@@ -445,6 +445,7 @@ export default function OfertaPage() {
     const orasEv = normOras(toCity)
     const orasArtist = normOras(l.artist.oras_rezidenta || 'bucuresti')
     if (orasArtist !== 'bucuresti') return false
+    if (km !== null) return km <= 40
     return LOCALITATI_IF.some(loc => orasEv === normOras(loc) || orasEv.includes(normOras(loc)))
   }
   function calcLinie(l: Linie) {
