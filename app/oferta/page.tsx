@@ -574,7 +574,7 @@ export default function OfertaPage() {
   }
 
   async function downloadPDF() {
-    const doc = new jsPDF({ unit: 'mm', format: 'a4' })
+    const doc = new jsPDF({ unit: 'mm', format: 'a4', compress: true })
     const W = 210, M = 18
     let y = 0
     // Helvetica nu suporta diacritice - le scot

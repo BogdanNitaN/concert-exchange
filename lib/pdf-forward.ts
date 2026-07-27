@@ -15,7 +15,7 @@ export function deseneazaHeaderForward(doc: jsPDF, W: number, M: number, logo: s
   doc.setFillColor(255, 255, 255)
   doc.triangle(W, 30, W, 42, W - 60, 42, 'F')
   doc.triangle(0, 38, 0, 44, 70, 44, 'F')
-  if (logo) doc.addImage(logo, 'PNG', W - M - 34, 8, 34, 21)
+  if (logo) doc.addImage(logo, 'PNG', W - M - 34, 8, 34, 21, 'fwd-logo', 'FAST')
   doc.setTextColor(255, 255, 255)
   doc.setFont('helvetica', 'bold'); doc.setFontSize(16)
   doc.text('FORWARD AGENCY', M, 16)

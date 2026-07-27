@@ -256,7 +256,7 @@ function ListaRoster({ artisti, audienta, token }: { artisti: any[], audienta: s
       const b = await r.blob()
       logo = await new Promise<string>((res, rej) => { const fr = new FileReader(); fr.onload = () => res(String(fr.result)); fr.onerror = rej; fr.readAsDataURL(b) })
     } catch {}
-    const doc = new jsPDF({ unit: 'mm', format: 'a4' })
+    const doc = new jsPDF({ unit: 'mm', format: 'a4', compress: true })
     const W = 210, M = 16
     deseneazaHeaderForward(doc, W, M, logo)
     let y = 52

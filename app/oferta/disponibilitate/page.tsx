@@ -491,7 +491,7 @@ export default function DisponibilitatePage() {
   }
   async function exportaPdf() {
     const { default: jsPDF } = await import('jspdf')
-    const doc = new jsPDF()
+    const doc = new jsPDF({ compress: true })
     const W = 210, M = 18
     const noDia = (t: string) => t.normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/ș/g,'s').replace(/Ș/g,'S').replace(/ț/g,'t').replace(/Ț/g,'T').replace(/ă/g,'a').replace(/î/g,'i').replace(/â/g,'a')
     // logo
