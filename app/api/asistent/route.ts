@@ -283,7 +283,7 @@ async function ruleazaUnealta(nume: string, input: any, baseUrl: string, tokenAu
       // iau datele artistului din roster pt linia completa
       const ra = await fetch(baseUrl + '/api/oferta-artist?q=' + encodeURIComponent(input.artistNume), { cache: 'no-store' })
       const rd = await ra.json()
-      const art = (rd.artists || []).find((a: any) => a.nume.toLowerCase() === input.artistNume.toLowerCase()) || (rd.artists || [])[0]
+      const art = gasesteArtist(rd.artists, input.artistNume)
       if (!art) return JSON.stringify({ eroare: 'artistul nu exista in roster: ' + input.artistNume })
       const cod = 'GIGX-' + new Date().getFullYear() + '-A' + String(Math.floor(Math.random() * 9000) + 1000)
       const linie = {
@@ -312,7 +312,7 @@ async function ruleazaUnealta(nume: string, input: any, baseUrl: string, tokenAu
     if (nume === 'calculeaza_deviz') {
       const ra = await fetch(baseUrl + '/api/oferta-artist?q=' + encodeURIComponent(input.artistNume), { cache: 'no-store' })
       const rd = await ra.json()
-      const art = (rd.artists || []).find((a: any) => a.nume.toLowerCase() === input.artistNume.toLowerCase()) || (rd.artists || [])[0]
+      const art = gasesteArtist(rd.artists, input.artistNume)
       if (!art) return JSON.stringify({ eroare: 'artistul nu exista in roster: ' + input.artistNume })
       // km din orasul de resedinta al artistului spre orasul evenimentului
       const fromCity = art.oras_rezidenta || 'Bucuresti'
@@ -356,7 +356,7 @@ async function ruleazaUnealta(nume: string, input: any, baseUrl: string, tokenAu
     if (nume === 'calcul_landed') {
       const ra = await fetch(baseUrl + '/api/oferta-artist?q=' + encodeURIComponent(input.artistNume), { cache: 'no-store' })
       const rd = await ra.json()
-      const art = (rd.artists || []).find((a: any) => a.nume.toLowerCase() === input.artistNume.toLowerCase()) || (rd.artists || [])[0]
+      const art = gasesteArtist(rd.artists, input.artistNume)
       if (!art) return JSON.stringify({ eroare: 'artistul nu exista in roster: ' + input.artistNume })
       const fromCity = art.oras_rezidenta || 'Bucuresti'
       let km: number | null = null
@@ -449,6 +449,48 @@ async function ruleazaUnealta(nume: string, input: any, baseUrl: string, tokenAu
   } catch (e: any) {
     return JSON.stringify({ eroare: e?.message || 'eroare unealta' })
   }
+}
+
+function normArt(x: string) {
+  return (x || '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-z0-9 ]/g, ' ').replace(/\s+/g, ' ').trim()
+}
+function distLev(a: string, b: string) {
+  const m = a.length, n = b.length
+  if (!m) return n
+  if (!n) return m
+  let prev = Array.from({ length: n + 1 }, (_, i) => i)
+  for (let i = 1; i <= m; i++) {
+    const cur = [i]
+    for (let j = 1; j <= n; j++) {
+      cur[j] = Math.min(prev[j] + 1, cur[j - 1] + 1, prev[j - 1] + (a[i - 1] === b[j - 1] ? 0 : 1))
+    }
+    prev = cur
+  }
+  return prev[n]
+}
+function gasesteArtist(lista: any[], q: string) {
+  const arr = lista || []
+  const nq = normArt(q)
+  if (!nq || !arr.length) return null
+  const exact = arr.find((a: any) => normArt(a.nume) === nq)
+  if (exact) return exact
+  const starts = arr.filter((a: any) => normArt(a.nume).startsWith(nq))
+  if (starts.length === 1) return starts[0]
+  const contains = arr.filter((a: any) => normArt(a.nume).includes(nq) || nq.includes(normArt(a.nume)))
+  if (contains.length === 1) return contains[0]
+  const cuv = nq.split(' ').filter(Boolean)
+  const toate = arr.filter((a: any) => cuv.every((c: string) => normArt(a.nume).includes(c)))
+  if (toate.length === 1) return toate[0]
+  let best: any = null, bestD = 99
+  for (const a of arr) {
+    const d = distLev(normArt(a.nume), nq)
+    if (d < bestD) { bestD = d; best = a }
+  }
+  const prag = Math.max(2, Math.floor(nq.length / 4))
+  if (best && bestD <= prag) return best
+  if (starts.length) return starts[0]
+  if (contains.length) return contains[0]
+  return null
 }
 
 export async function POST(req: Request) {
