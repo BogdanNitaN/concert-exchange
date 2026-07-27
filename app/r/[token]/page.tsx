@@ -256,6 +256,23 @@ function ListaRoster({ artisti, audienta, token }: { artisti: any[], audienta: s
       const b = await r.blob()
       logo = await new Promise<string>((res, rej) => { const fr = new FileReader(); fr.onload = () => res(String(fr.result)); fr.onerror = rej; fr.readAsDataURL(b) })
     } catch {}
+    async function toCompressedPoza(url: string): Promise<string | null> {
+      try {
+        const res = await fetch(url)
+        const blob = await res.blob()
+        const bitmap = await createImageBitmap(blob)
+        const size = 160
+        const canvas = document.createElement('canvas')
+        canvas.width = size; canvas.height = size
+        const ctx = canvas.getContext('2d')
+        if (!ctx) return null
+        const m = Math.min(bitmap.width, bitmap.height)
+        ctx.drawImage(bitmap, (bitmap.width - m) / 2, (bitmap.height - m) / 2, m, m, 0, 0, size, size)
+        return canvas.toDataURL('image/jpeg', 0.7)
+      } catch { return null }
+    }
+    const poze: Record<string, string | null> = {}
+    await Promise.all(tinta.map(async (a: any) => { poze[a.nume] = a.poza ? await toCompressedPoza(a.poza) : null }))
     const doc = new jsPDF({ unit: 'mm', format: 'a4', compress: true })
     const W = 210, M = 16
     deseneazaHeaderForward(doc, W, M, logo)
@@ -280,7 +297,10 @@ function ListaRoster({ artisti, audienta, token }: { artisti: any[], audienta: s
       for (const a of lista) {
         if (y > 210) { deseneazaFooterForward(doc, W, M); doc.addPage(); deseneazaHeaderForward(doc, W, M, logo); y = 52 }
         doc.setFont('helvetica', 'bold'); doc.setFontSize(11.5); doc.setTextColor(28,25,23)
-        doc.text(noDia(a.nume.toUpperCase()), M, y)
+        const ph = poze[a.nume]
+        if (ph) { try { doc.addImage(ph, 'JPEG', M, y - 4, 18, 18) } catch {} }
+        const tx = ph ? M + 22 : M
+        doc.text(noDia(a.nume.toUpperCase()), tx, y)
         if (a.preturi) {
           const pretTxt = audienta === 'b2b'
             ? a.preturi.standard.toLocaleString('ro-RO') + ' EUR + TVA'
@@ -291,7 +311,7 @@ function ListaRoster({ artisti, audienta, token }: { artisti: any[], audienta: s
         y += 5.5
         doc.setFont('helvetica', 'normal'); doc.setFontSize(8.5); doc.setTextColor(90,90,90)
         if (a.preturi && audienta === 'b2b') {
-          doc.text(noDia('Corporate / Private / Festival (la cerere)'), M, y)
+          doc.text(noDia('Corporate / Private / Festival (la cerere)'), tx, y)
           y += 5
         }
         const lg = a.logistica || {}
@@ -303,7 +323,7 @@ function ListaRoster({ artisti, audienta, token }: { artisti: any[], audienta: s
         if (lg.bileteAvion) li.push('Bilete avion: ' + lg.bileteAvion)
         if (lg.cazare) li.push('Cazare: ' + lg.cazare)
         doc.setTextColor(140,140,140)
-        doc.text(noDia(li.join('  ·  ')), M, y)
+        doc.text(noDia(li.join('  ·  ')), tx, y)
         y += 14
       }
       y += 8
