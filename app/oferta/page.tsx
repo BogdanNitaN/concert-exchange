@@ -189,9 +189,15 @@ export default function OfertaPage() {
     setLocatie(input)
     if (input.trim().length < 2) { setLocSugestii([]); setShowLocSugg(false); return }
     try {
-      const r = await fetch('/api/places?input=' + encodeURIComponent(input + ' ' + toCity))
-      const d = await r.json()
-      const preds = d.predictions || []
+      const q = (input + ' ' + toCity).trim()
+      let r = await fetch('/api/places?input=' + encodeURIComponent(q))
+      let d = await r.json()
+      let preds = d.predictions || []
+      if (!preds.length) {
+        r = await fetch('/api/places?input=' + encodeURIComponent(q) + '&type=search')
+        d = await r.json()
+        preds = d.predictions || []
+      }
       setLocSugestii(preds)
       setShowLocSugg(preds.length > 0)
     } catch { setLocSugestii([]) }
