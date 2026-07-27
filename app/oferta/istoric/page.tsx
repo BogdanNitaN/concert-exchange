@@ -3,7 +3,7 @@ import Link from 'next/link'
 
 import { useState, useEffect, useMemo } from 'react'
 import { supabase } from '@/lib/supabase'
-import { FileText, Plus, CalendarSearch, History, Sparkles, Users } from 'lucide-react'
+import { FileText, Plus, CalendarSearch, History, Sparkles, Users, KeyRound } from 'lucide-react'
 
 const F = 'Montserrat,sans-serif'
 const UI = {
@@ -217,6 +217,7 @@ export default function IstoricPage() {
             <Link href="/oferta/disponibilitate" style={{fontSize:'13px', color:'#1c1917', fontWeight:700, background:'white', border:'1.5px solid #ececec', borderRadius:'10px', padding:'10px 13px', textDecoration:'none', whiteSpace:'nowrap', flexShrink:0}}><span style={{display:'inline-flex', alignItems:'center', gap:'6px'}}><CalendarSearch size={15} strokeWidth={2.2} /> Calendar</span></Link>
             <span style={{fontSize:'13px', color:'#1c1917', fontWeight:800, background:'#ebe9e6', border:'1.5px solid #ebe9e6', borderRadius:'10px', padding:'10px 13px', whiteSpace:'nowrap', flexShrink:0}}><span style={{display:'inline-flex', alignItems:'center', gap:'6px'}}><History size={15} strokeWidth={2.2} /> Istoric</span></span>
             <Link href="/oferta/roster" style={{fontSize:'13px', color:'#1c1917', fontWeight:700, background:'white', border:'1.5px solid #ececec', borderRadius:'10px', padding:'10px 13px', textDecoration:'none', whiteSpace:'nowrap', flexShrink:0}}><span style={{display:'inline-flex', alignItems:'center', gap:'6px'}}><Users size={15} strokeWidth={2.2} /> Roster</span></Link>
+            <Link href="/oferta/coduri" style={{fontSize:'13px', color:'#1c1917', fontWeight:700, background:'white', border:'1.5px solid #ececec', borderRadius:'10px', padding:'10px 13px', textDecoration:'none', whiteSpace:'nowrap', flexShrink:0}}><span style={{display:'inline-flex', alignItems:'center', gap:'6px'}}><KeyRound size={15} strokeWidth={2.2} /> Coduri</span></Link>
           </div>
         </div>
 
