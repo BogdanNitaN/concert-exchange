@@ -979,7 +979,7 @@ export default function OfertaPage() {
                   Marjă transport
                 </label>
                 <label style={{display:'flex', alignItems:'center', gap:'6px', fontSize:'13px', cursor:'pointer', color: l.landed ? '#0369a1' : undefined, fontWeight: l.landed ? 700 : undefined}}>
-                  <input type="checkbox" checked={l.landed} onChange={e => updateLinie(l.key, { landed: e.target.checked, allIn: e.target.checked ? false : l.allIn })} style={{width:'16px', height:'16px', accentColor:'#0369a1'}} />
+                  <input type="checkbox" checked={l.landed} onChange={e => updateLinie(l.key, { landed: e.target.checked, allIn: e.target.checked ? false : l.allIn, tipMasa: e.target.checked ? 'alacarte' : l.tipMasa })} style={{width:'16px', height:'16px', accentColor:'#0369a1'}} />
                   Landed (transport inclus)
                 </label>
                 <label style={{display:'flex', alignItems:'center', gap:'6px', fontSize:'13px', cursor:'pointer', color: l.allIn ? '#7c3aed' : undefined, fontWeight: l.allIn ? 700 : undefined}}>
