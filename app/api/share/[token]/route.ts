@@ -55,7 +55,7 @@ export async function GET(req: Request, ctx: { params: Promise<{ token: string }
           landed: a.landed || false,
           persoane: a.nr_persoane || null,
           format: a.format_show || null,
-          durata: a.durata_default || null,
+          durata: a.set_type === 'dj' ? '90-120 min' : (a.durata_default || null),
           leiKm: a.lei_km || null,
           transportMoneda: a.transport_moneda || 'lei',
           bileteAvion: a.bilete_avion || null,
