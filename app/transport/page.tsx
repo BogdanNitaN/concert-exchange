@@ -218,7 +218,7 @@ export default function TransportPage() {
               <div style={{display:'flex', justifyContent:'space-between', alignItems:'baseline', marginBottom:'16px', paddingBottom:'16px', borderBottom:'1px solid #292524'}}>
                 <div>
                   <div style={{fontSize:'11px', color:'#78716c', fontWeight:700, textTransform:'uppercase', letterSpacing:'0.08em', marginBottom:'4px'}}>Distanta dus-intors</div>
-                  <div style={{fontSize:'20px', fontWeight:800}}>{kmTotal} km</div>
+                  <div style={{fontSize:'20px', fontWeight:800}}>{kmCuMarja} km x 2 = {kmTotal} km</div>
                   <div style={{fontSize:'11px', color:'#78716c', marginTop:'2px'}}>dus-intors din {fromCity || 'Bucuresti'}</div>
                 </div>
                 <div style={{textAlign:'right'}}>

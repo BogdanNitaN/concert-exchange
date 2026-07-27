@@ -188,7 +188,7 @@ function CardArtist({ a, audienta, token, tabInitial, destinatar }: { a: any, au
         <a href={'https://wa.me/40751144109?text=' + encodeURIComponent('Buna Bogdan, sunt ' + (destinatar || '') + ', te contactez despre ' + a.nume + (audienta === 'b2b' && tab === 'prom' ? ' (Baluri / Prom)' : '') + ', in localitatea ______, data ______ (link GIGx)')} target="_blank" onClick={() => log('cta-whatsapp')}
           style={{display:'block', textAlign:'center', marginTop:'16px', padding:'13px', background:UI.ink, color:'white', borderRadius:'10px', fontSize:'13px', fontWeight:700, textDecoration:'none'}}>
           Verifica disponibilitatea
-          <span style={{display:'block', fontSize:'10.5px', fontWeight:600, color:'rgba(245,242,236,0.7)', marginTop:'3px'}}><span style={{color:'#34d399'}}>●</span> Bogdan Nita · raspuns garantat in mai putin de 30 min</span>
+          <span style={{display:'block', fontSize:'10.5px', fontWeight:600, color:'rgba(245,242,236,0.7)', marginTop:'3px'}}><span style={{color:'#34d399'}}>●</span> raspuns garantat in mai putin de 30 min</span>
         </a>
         <div style={{display:'flex', gap:'8px', marginTop:'8px', paddingTop:'0px'}}>
           <button onClick={copiaza} style={{flex:1, padding:'12px', background: copiat ? '#047857' : UI.green, color:'white', border:'none', borderRadius:'10px', fontSize:'12px', fontWeight:700, cursor:'pointer', fontFamily:F, boxShadow:'0 1px 3px rgba(5,150,105,0.3)', transition:'background 0.15s'}}>{copiat ? '✓ Copiat' : 'Copiaza oferta'}</button>
