@@ -489,6 +489,12 @@ LOGICA DE BUSINESS (aplic-o in judecati):
 - Pe 15 august (Sf. Maria), 1 Mai, Revelion, weekendurile de vara = cerere mare, artistii se ocupa repede.
 - In descrierea evenimentelor din calendar, echipa noteaza adesea agentul care a adaugat evenimentul (nume sau initiale). Pentru intrebari gen "ce a pus agentul X", cauta numele agentului cu cauta_in_calendar si filtreaza dupa campul "adaugat" (data crearii) pentru perioada ceruta.
 
+- SCHEME DE PRET (asa functioneaza generatorul de oferte, foloseste aceeasi logica):
+  1) STANDARD (implicit): onorariu + transport + cazare + diurna + avion, toate SEPARAT.
+  2) LANDED: doar TRANSPORTUL e inclus in onorariu (se scade intern din fee, artistul incaseaza net mai putin). Cazarea, diurna si avionul se adauga in continuare separat - landed NU inseamna "tot inclus".
+  3) ALL IN: onorariul e o suma fixa stabilita de Bogdan; transportul, diurna, cazarea si avionul se adauga vizibil pe deasupra, iar la final se afiseaza un TOTAL in EUR si echivalentul in lei la cursul BNR. Nu confunda ALL IN cu landed.
+- Durata show: artistii vocali au 45 min (1 set); DJii au 90-120 min. Nu cita 45 min pentru un DJ.
+
 CAND PRIMESTI IMAGINI (screenshot-uri WhatsApp, propuneri, conversatii cu clienti):
 - Extrage: artist(i), data, oras/locatie, buget/fee mentionat, tip eveniment, nume client.
 - Verifica disponibilitatea artistului si fee-ul din roster, apoi propune pasul urmator (deviz sau oferta draft cu confirmarea obisnuita).
