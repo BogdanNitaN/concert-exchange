@@ -92,6 +92,8 @@ interface Linie {
   leiKm: number
   useMarja: boolean
   landed: boolean
+  allIn: boolean
+  allInSuma: number
   cazare: string
   persoane: number
   bileteAvion: number
@@ -259,7 +261,7 @@ export default function OfertaPage() {
                 key: lc.artistNume + '-' + Date.now() + '-' + i,
                 artist: art, formatSelectat: lc.formatSelectat || '', durata: lc.durata || '', dateOptiuni: lc.dateOptiuni || '',
                 tipPret: lc.tipPret, feeLista: lc.feeLista, fee: lc.fee, leiKm: lc.leiKm,
-                useMarja: lc.useMarja, landed: lc.landed || false, cazare: lc.cazare, persoane: lc.persoane, bileteAvion: lc.bileteAvion, restulRutier: lc.restulRutier !== undefined ? lc.restulRutier : true,
+                useMarja: lc.useMarja, landed: lc.landed || false, allIn: lc.allIn || false, allInSuma: lc.allInSuma || 0, cazare: lc.cazare, persoane: lc.persoane, bileteAvion: lc.bileteAvion, restulRutier: lc.restulRutier !== undefined ? lc.restulRutier : true,
                 tipMasa: lc.tipMasa, zile: lc.zile, diurnaPerPers: lc.diurnaPerPers, diurnaFixa: lc.diurnaFixa || 0, cazareFixa: lc.cazareFixa || 0,
                 useAlcool: lc.useAlcool, alcool: lc.alcool,
                 useCag: lc.useCag, cagProcent: lc.cagProcent || 10, cagSuma: lc.cagSuma || 0, cagMod: lc.cagMod || 'procent',
@@ -373,6 +375,8 @@ export default function OfertaPage() {
       leiKm: fmt ? fmt.leiKm : a.lei_km,
       useMarja: true,
       landed: false,
+      allIn: false,
+      allInSuma: 0,
       cazare: fmt ? fmt.cazare : a.cazare,
       persoane: fmt ? fmt.persoane : a.nr_persoane,
       bileteAvion: fmt ? fmt.bilete : (a.bilete_avion || 0),
@@ -442,7 +446,8 @@ export default function OfertaPage() {
     return LOCALITATI_IF.some(loc => orasEv === normOras(loc) || orasEv.includes(normOras(loc)))
   }
   function calcLinie(l: Linie) {
-    return calcLinieOferta(l, { km, eurRate, useAdaos, adaosProcent, local: esteLocalBucIlfov(l) })
+    const lc = l.allIn ? { ...l, fee: l.allInSuma, feeLista: l.allInSuma, landed: false } : l
+    return calcLinieOferta(lc, { km, eurRate, useAdaos, adaosProcent, local: esteLocalBucIlfov(l) })
   }
 
   useEffect(() => {
@@ -480,7 +485,8 @@ export default function OfertaPage() {
       } else {
         // format comercial normal
         const parts: string[] = []
-        parts.push(c.discount > 0 ? '~' + l.feeLista + ' EUR~ ' + l.fee + ' EUR + TVA' : l.fee + ' EUR + TVA')
+        if (l.allIn) parts.push('ALL IN: ' + l.allInSuma + ' EUR + TVA')
+        else parts.push(c.discount > 0 ? '~' + l.feeLista + ' EUR~ ' + l.fee + ' EUR + TVA' : l.fee + ' EUR + TVA')
         if (l.landed) parts.push('transport inclus')
         if (!l.landed && c.transportLei > 0) parts.push('transport ' + l.leiKm + ' lei/km x ' + c.kmTotal + ' km = ' + c.transportLei.toLocaleString('ro-RO') + ' lei + TVA')
         if (!l.landed && c.transportEur > 0) parts.push('transport ' + l.leiKm + ' EUR/km x ' + c.kmTotal + ' km = ' + c.transportEur.toLocaleString('ro-RO') + ' EUR + TVA' + (c.transportEurInLei > 0 ? ' (aprox ' + c.transportEurInLei.toLocaleString('ro-RO') + ' lei)' : ''))
@@ -536,7 +542,7 @@ export default function OfertaPage() {
             artistNume: l.artist.nume,
             formatSelectat: l.formatSelectat, durata: l.durata,
             tipPret: l.tipPret, feeLista: l.feeLista, fee: l.fee, leiKm: l.leiKm,
-            useMarja: l.useMarja, landed: l.landed || false, cazare: l.cazare, persoane: l.persoane, bileteAvion: l.bileteAvion, restulRutier: l.restulRutier,
+            useMarja: l.useMarja, landed: l.landed || false, allIn: l.allIn || false, allInSuma: l.allInSuma || 0, cazare: l.cazare, persoane: l.persoane, bileteAvion: l.bileteAvion, restulRutier: l.restulRutier,
             tipMasa: l.tipMasa, zile: l.zile, diurnaPerPers: l.diurnaPerPers, diurnaFixa: l.diurnaFixa, cazareFixa: l.cazareFixa,
             useAlcool: l.useAlcool, alcool: l.alcool,
             useCag: l.useCag, cagProcent: l.cagProcent, cagSuma: l.cagSuma, cagMod: l.cagMod,
@@ -674,7 +680,8 @@ export default function OfertaPage() {
         rows.push('Onorariu: ' + c.feeLeiConv.toLocaleString('ro-RO') + ' lei + TVA')
         rows.push('(echivalent: ' + l.fee + ' EUR onorariu, curs ' + c.cursAdaos.toFixed(4) + ' lei/EUR)')
       } else {
-        if (c.discount === 0) rows.push('Onorariu: ' + l.fee + ' EUR + TVA')
+        if (l.allIn) rows.push('ALL IN: ' + l.allInSuma + ' EUR + TVA')
+        else if (c.discount === 0) rows.push('Onorariu: ' + l.fee + ' EUR + TVA')
       }
       if (l.landed) rows.push('Transport: inclus in onorariu')
       if (!l.landed && c.transportLei > 0) rows.push('Transport: ' + l.leiKm + ' lei/km x ' + c.kmTotal + ' km = ' + c.transportLei.toLocaleString('ro-RO') + ' lei + TVA')
@@ -954,9 +961,19 @@ export default function OfertaPage() {
                   Marjă transport
                 </label>
                 <label style={{display:'flex', alignItems:'center', gap:'6px', fontSize:'13px', cursor:'pointer', color: l.landed ? '#0369a1' : undefined, fontWeight: l.landed ? 700 : undefined}}>
-                  <input type="checkbox" checked={l.landed} onChange={e => updateLinie(l.key, { landed: e.target.checked })} style={{width:'16px', height:'16px', accentColor:'#0369a1'}} />
+                  <input type="checkbox" checked={l.landed} onChange={e => updateLinie(l.key, { landed: e.target.checked, allIn: e.target.checked ? false : l.allIn })} style={{width:'16px', height:'16px', accentColor:'#0369a1'}} />
                   Landed (transport inclus)
                 </label>
+                <label style={{display:'flex', alignItems:'center', gap:'6px', fontSize:'13px', cursor:'pointer', color: l.allIn ? '#7c3aed' : undefined, fontWeight: l.allIn ? 700 : undefined}}>
+                  <input type="checkbox" checked={l.allIn} onChange={e => updateLinie(l.key, { allIn: e.target.checked, landed: e.target.checked ? false : l.landed })} style={{width:'16px', height:'16px', accentColor:'#7c3aed'}} />
+                  ALL IN
+                </label>
+                {l.allIn && (
+                  <span style={{display:'inline-flex', alignItems:'center', gap:'6px', fontSize:'12px', fontWeight:700, color:'#7c3aed'}}>
+                    Suma ALL IN (EUR):
+                    <input type="number" value={l.allInSuma || ''} onChange={e => updateLinie(l.key, { allInSuma: Number(e.target.value) })} placeholder="0" style={{width:'90px', padding:'5px 8px', borderRadius:'8px', border:'1.5px solid #c4b5fd', fontSize:'13px', fontWeight:700, outline:'none'}} />
+                  </span>
+                )}
                 {l.landed && c.feeNetLanded !== null && c.transportEurEchiv > 0 && (
                   <span style={{display:'inline-flex', alignItems:'center', gap:'6px', fontSize:'12px', fontWeight:700, color:'#0369a1', background:'#e0f2fe', border:'1px solid #bae6fd', borderRadius:'8px', padding:'6px 12px'}}>
                     intern: transport ~{c.transportEurEchiv} EUR scazut → net artist {c.feeNetLanded.toLocaleString('ro-RO')} EUR
