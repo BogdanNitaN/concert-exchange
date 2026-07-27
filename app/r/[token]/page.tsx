@@ -62,6 +62,7 @@ function textOferta(a: any, audienta: string, tab: string) {
 
 function CardArtist({ a, audienta, token, tabInitial, destinatar }: { a: any, audienta: string, token: string, tabInitial: string, destinatar?: string }) {
   const [tab, setTab] = useState(tabInitial)
+  const [explTier, setExplTier] = useState(false)
   const [copiat, setCopiat] = useState(false)
   const tier = a.tier ? (TIER_MAP[a.tier] || {label: 'BOOKING ACTIV', color: UI.green, tip: 'Artist activ pe platforma'}) : null
 
@@ -113,8 +114,9 @@ function CardArtist({ a, audienta, token, tabInitial, destinatar }: { a: any, au
           <div style={{fontSize:'24px', fontWeight:800, color:UI.ink, letterSpacing:'-0.8px', lineHeight:1.1}}>{a.nume}</div>
           <div style={{display:'flex', alignItems:'center', gap:'8px', marginTop:'6px', flexWrap:'wrap'}}>
             {a.genuri.length > 0 && <span style={{fontSize:'12px', color:UI.sub, fontWeight:600}}>{a.genuri.join(' · ')}</span>}
-            {tier && <span title={tier.tip} style={{fontSize:'10px', fontWeight:800, color: 'white', background:tier.color, padding:'3px 9px', borderRadius:'6px', letterSpacing:'0.06em', cursor:'help'}}>{tier.label}</span>}
+            {tier && <span onClick={() => setExplTier(!explTier)} style={{fontSize:'10px', fontWeight:800, color: 'white', background:tier.color, padding:'3px 9px', borderRadius:'6px', letterSpacing:'0.06em', cursor:'pointer'}}>{tier.label}</span>}
           </div>
+          {tier && explTier && <div style={{fontSize:'11px', color:UI.sub, fontWeight:600, marginTop:'6px', lineHeight:1.4}}>{tier.tip}</div>}
         </div>
       </div>
       <div style={{padding:'18px 20px 20px'}}>
