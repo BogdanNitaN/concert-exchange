@@ -56,6 +56,7 @@ export async function POST(req: Request) {
     token, destinatar: b.destinatar || 'Parteneri Forward',
     tip_audienta: b.tip_audienta === 'direct' ? 'direct' : 'b2b',
     scop: b.scop || 'roster', filtru_gen: b.filtru_gen || null,
+    ascunde_contacte: !!b.ascunde_contacte,
     expira_la: new Date(Date.now() + zile * 86400000).toISOString(), activ: true, creat_de: 'admin',
   })
   if (error) return NextResponse.json({ ok: false, error: error.message }, { status: 400 })

@@ -60,7 +60,7 @@ function textOferta(a: any, audienta: string, tab: string) {
   return t
 }
 
-function CardArtist({ a, audienta, token, tabInitial, destinatar }: { a: any, audienta: string, token: string, tabInitial: string, destinatar?: string }) {
+function CardArtist({ a, audienta, token, tabInitial, destinatar, ascundeContacte }: { a: any, audienta: string, token: string, tabInitial: string, destinatar?: string, ascundeContacte?: boolean }) {
   const [tab, setTab] = useState(tabInitial)
   const [explTier, setExplTier] = useState(false)
   const [copiat, setCopiat] = useState(false)
@@ -178,11 +178,13 @@ function CardArtist({ a, audienta, token, tabInitial, destinatar }: { a: any, au
           </div>
         )}
 
+        {!ascundeContacte && (
         <a href={'https://wa.me/40751144109?text=' + encodeURIComponent('Buna Bogdan, sunt ' + (destinatar || '') + ', te contactez despre ' + a.nume + (audienta === 'b2b' && tab === 'prom' ? ' (Baluri / Prom)' : '') + ', in localitatea ______, data ______ (link GIGx)')} target="_blank" onClick={() => log('cta-whatsapp')}
           style={{display:'block', textAlign:'center', marginTop:'16px', padding:'13px', background:UI.ink, color:'white', borderRadius:'10px', fontSize:'13px', fontWeight:700, textDecoration:'none'}}>
           Verifica disponibilitatea
           <span style={{display:'block', fontSize:'10.5px', fontWeight:600, color:'rgba(245,242,236,0.7)', marginTop:'3px'}}><span style={{color:'#34d399'}}>●</span> raspuns garantat in mai putin de 30 min</span>
         </a>
+        )}
         <div style={{display:'flex', gap:'8px', marginTop:'8px', paddingTop:'0px'}}>
           <button onClick={copiaza} style={{flex:1, padding:'12px', background: copiat ? '#047857' : UI.green, color:'white', border:'none', borderRadius:'10px', fontSize:'12px', fontWeight:700, cursor:'pointer', fontFamily:F, boxShadow:'0 1px 3px rgba(5,150,105,0.3)', transition:'background 0.15s'}}>{copiat ? '✓ Copiat' : 'Copiaza oferta'}</button>
           <button onClick={distribuie} style={{flex:1, padding:'12px', background:'white', color:UI.ink, border:'1.5px solid '+UI.line, borderRadius:'10px', fontSize:'12px', fontWeight:700, cursor:'pointer', fontFamily:F}}>Trimite mai departe</button>
@@ -544,7 +546,7 @@ export default function ShareView() {
         {d && (
           <>
             <div style={{fontSize:'13px', color:UI.sub, marginBottom:'16px'}}>Pregatit pentru <strong style={{color:UI.ink}}>{d.destinatar}</strong></div>
-            {d.tip === 'artist' && <CardArtist a={d.artist} audienta={d.audienta} token={token} tabInitial="standard" destinatar={d.destinatar} />}
+            {d.tip === 'artist' && <CardArtist a={d.artist} audienta={d.audienta} token={token} tabInitial="standard" destinatar={d.destinatar} ascundeContacte={d.ascundeContacte} />}
             {d.tip === 'roster' && <ListaRoster artisti={d.artisti} audienta={d.audienta} token={token} />}
             {d.audienta !== 'b2b' && (
             <a href="/roster" target="_blank" style={{display:'block', textAlign:'center', marginTop:'24px', padding:'12px', background:'white', color:UI.sub, border:'1.5px solid '+UI.line, borderRadius:'11px', fontSize:'11px', fontWeight:800, letterSpacing:'0.08em', textDecoration:'none'}}>
@@ -552,7 +554,7 @@ export default function ShareView() {
             </a>
             )}
             <div style={{fontSize:'11px', color:UI.faint, marginTop:'18px', textAlign:'center', lineHeight:1.6}}>
-              Oferta confidentiala pregatita de Forward Agency<br/>Bogdan Nita · bogdan@forward.ro · +40 751 144 109
+              Oferta confidentiala pregatita de Forward Agency{!d.ascundeContacte && <><br/>Bogdan Nita · bogdan@forward.ro · +40 751 144 109</>}
             </div>
           </>
         )}
