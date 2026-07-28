@@ -23,7 +23,7 @@ export async function generateMetadata({ params }: { params: Promise<{ token: st
   const d = await dateLink(token)
   const descriere = 'Prezentare, logistica si documente oficiale.'
   const titlu = d && d.tip === 'artist' ? d.nume + ' · Forward Agency' : 'Roster Forward Agency'
-  const imagine = d && d.tip === 'artist' && d.poza ? d.poza : SITE + '/og-image.png'
+  const imagine = d && d.tip === 'artist' && d.poza ? d.poza : SITE + '/og-roster.png'
   return {
     metadataBase: new URL(SITE),
     title: titlu,
