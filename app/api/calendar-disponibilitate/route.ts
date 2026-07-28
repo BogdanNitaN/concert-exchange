@@ -34,19 +34,30 @@ export async function GET(req: Request) {
     const lista = await cal.calendarList.list({ maxResults: 250 })
     const excluseNorm = CALENDAR_EXCLUSE.map(normNume)
     const calendare = (lista.data.items || []).filter(c => c.summary && !excluseNorm.includes(normNume(c.summary)))
-    const timeMin = data + 'T00:00:00+03:00'
-    const timeMax = data + 'T23:59:59+03:00'
+    // fereastra larga in UTC + filtrare pe ziua reala: imun la ora de vara/iarna
+    const baza = new Date(data + 'T12:00:00Z')
+    const ziua = (d: Date) => d.toISOString().slice(0, 10)
+    const timeMin = ziua(new Date(baza.getTime() - 36 * 3600 * 1000)) + 'T00:00:00Z'
+    const timeMax = ziua(new Date(baza.getTime() + 36 * 3600 * 1000)) + 'T23:59:59Z'
+    const acoperaZiua = (e: any) => {
+      if (e.start?.date) {
+        const s0 = e.start.date
+        const e0 = e.end?.date || s0
+        return s0 <= data && data < e0
+      }
+      return (e.start?.dateTime || '').slice(0, 10) === data
+    }
     const rezultate = await Promise.all(calendare.map(async c => {
       const numeCalNorm = normNume(c.summary!)
       const curatEpicenter = (n: string) => n.replace(/\s*[-x@]?\s*epicentr[u]?\b/gi, '').replace(/\s+/g, ' ').trim()
       const artist = calToRosterNorm.get(numeCalNorm) || curatEpicenter(c.summary!.trim())
       const rd: any = rosterNorm.get(normNume(artist)) || null
       try {
-        const ev = await cal.events.list({ calendarId: c.id!, timeMin, timeMax, singleEvents: true, maxResults: 10 })
+        const ev = await cal.events.list({ calendarId: c.id!, timeMin, timeMax, singleEvents: true, maxResults: 25 })
         // clasificare inteligenta: distinge artist vs echipa
         const cuvinteArtist = artist.toLowerCase().replace(/[^a-z0-9\u00e0-\u017f ]/gi, '').split(/\s+/).filter((w: string) => w.length >= 3 && !['the','and','feat'].includes(w))
         const despreArtist = (titlu: string) => { const t = titlu.toLowerCase(); return cuvinteArtist.some((w: string) => t.includes(w)) }
-        const evenimente = (ev.data.items || []).map(e => {
+        const evenimente = (ev.data.items || []).filter(acoperaZiua).map(e => {
           const titlu = e.summary || '(fara titlu)'
           const tip = clasificaEveniment(titlu, cuvinteArtist)
           return { titlu, descriere: e.description || '', allDay: !!e.start?.date, created: e.created || null, tip }

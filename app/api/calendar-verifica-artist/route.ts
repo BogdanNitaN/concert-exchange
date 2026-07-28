@@ -32,10 +32,21 @@ export async function GET(req: Request) {
     })
     if (!calArtist) return NextResponse.json({ ok: true, gasit: false, ocupat: false })
 
-    const timeMin = data + 'T00:00:00+03:00'
-    const timeMax = data + 'T23:59:59+03:00'
-    const ev = await cal.events.list({ calendarId: calArtist.id!, timeMin, timeMax, singleEvents: true, maxResults: 10 })
-    const evenimente = (ev.data.items || []).map(e => ({ titlu: e.summary || '(fara titlu)', created: e.created || null }))
+    // fereastra larga in UTC + filtrare pe ziua reala: imun la ora de vara/iarna
+    const baza = new Date(data + 'T12:00:00Z')
+    const ziua = (d: Date) => d.toISOString().slice(0, 10)
+    const timeMin = ziua(new Date(baza.getTime() - 36 * 3600 * 1000)) + 'T00:00:00Z'
+    const timeMax = ziua(new Date(baza.getTime() + 36 * 3600 * 1000)) + 'T23:59:59Z'
+    const acoperaZiua = (e: any) => {
+      if (e.start?.date) {
+        const s0 = e.start.date
+        const e0 = e.end?.date || s0
+        return s0 <= data && data < e0
+      }
+      return (e.start?.dateTime || '').slice(0, 10) === data
+    }
+    const ev = await cal.events.list({ calendarId: calArtist.id!, timeMin, timeMax, singleEvents: true, maxResults: 25 })
+    const evenimente = (ev.data.items || []).filter(acoperaZiua).map(e => ({ titlu: e.summary || '(fara titlu)', created: e.created || null }))
     return NextResponse.json({ ok: true, gasit: true, ocupat: evenimente.length > 0, evenimente })
   } catch (e) {
     return NextResponse.json({ ok: false, error: String(e) }, { status: 500 })
