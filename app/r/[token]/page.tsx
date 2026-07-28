@@ -1,6 +1,7 @@
 'use client'
 import { useState, useEffect, useMemo } from 'react'
 import { useParams } from 'next/navigation'
+import { esteFaraTop } from '@/lib/genuri-catalog'
 
 function useIsMobile() {
   const [m, setM] = useState(false)
@@ -224,7 +225,7 @@ function ListaRoster({ artisti, audienta, token, ascundeContacte }: { artisti: a
     if (gen || q.trim()) return filtrati
     const ordT: Record<string, number> = { 'A++': 0, 'Premium': 0, 'A+': 1, 'A': 2 }
     const ot = (t: string | null) => (t && ordT[t] !== undefined) ? ordT[t] : 3
-    const top = filtrati.filter(a => ot(a.tier) === 0).sort((a, b) => ot(a.tier) - ot(b.tier))
+    const top = filtrati.filter(a => ot(a.tier) === 0 && !esteFaraTop(a.nume)).sort((a, b) => ot(a.tier) - ot(b.tier))
     const topSet = new Set(top.map(a => a.nume))
     const grupe: Record<string, any[]> = {}
     for (const a of filtrati) {

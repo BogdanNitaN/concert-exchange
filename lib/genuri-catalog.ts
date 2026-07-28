@@ -24,7 +24,7 @@ export function genuriPentru(nume: string, fallback: string[] = []): string[] {
   return GENURI[norm] || fallback
 }
 
-export const ARTISTI_ASCUNSI = ['gojira', 'puya & urban symphony orchestra', 'alternosfera']
+export const ARTISTI_ASCUNSI = ['gojira', 'puya & urban symphony orchestra', 'alternosfera', 'the motans & symphony orchestra']
 export function esteAscuns(nume: string): boolean {
   const n = (nume || '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').trim()
   return ARTISTI_ASCUNSI.includes(n)
@@ -39,4 +39,11 @@ export function tierPentru(nume: string, metaTier: string | null, fee: number): 
   if (fee >= 5000) return 'A+'
   if (fee > 0) return 'A'
   return null
+}
+
+// artisti care raman in genul lor, nu urca in sectiunea "Top artisti"
+export const FARA_TOP = ['parazitii']
+export function esteFaraTop(nume: string): boolean {
+  const n = (nume || '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').trim()
+  return FARA_TOP.includes(n)
 }

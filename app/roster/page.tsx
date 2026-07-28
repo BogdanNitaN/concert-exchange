@@ -1,5 +1,6 @@
 'use client'
 import { useState, useEffect, useMemo } from 'react'
+import { esteFaraTop } from '@/lib/genuri-catalog'
 
 function useIsMobile() {
   const [m, setM] = useState(false)
@@ -77,7 +78,7 @@ export default function RosterPublic() {
   }, [artisti, cauta, gen])
 
   const eFiltrat = !!(gen || cauta)
-  const top = useMemo(() => artisti.filter(a => ordTier(a.tier) === 0).sort((a, b) => ordTier(a.tier) - ordTier(b.tier)), [artisti])
+  const top = useMemo(() => artisti.filter(a => ordTier(a.tier) === 0 && !esteFaraTop(a.nume)).sort((a, b) => ordTier(a.tier) - ordTier(b.tier)), [artisti])
   const topSet = useMemo(() => new Set(top.map(a => a.nume)), [top])
   const peGenuri = useMemo(() => {
     const m: Record<string, any[]> = {}
