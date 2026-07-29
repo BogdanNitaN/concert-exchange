@@ -335,8 +335,9 @@ export default function PromPage() {
   const Nav = () => (
     <>
       <nav style={{borderBottom:'1px solid #e7e5e4', background:'white', height:'56px', display:'flex', alignItems:'center', padding:'0 24px', justifyContent:'space-between', position:'sticky', top:0, zIndex:100}}>
-        <Link href="/" style={{fontSize:'20px', fontWeight:800, color:'#1c1917', textDecoration:'none', letterSpacing:'-0.5px'}}>
-          GIG<span style={{color:'#059669'}}>x</span>
+        <Link href="/" style={{display:'inline-flex', alignItems:'center', gap:'8px', fontSize:'20px', fontWeight:800, color:'#1c1917', textDecoration:'none', letterSpacing:'-0.5px'}}>
+          <img src="/gigx-mark.png" width={24} height={24} alt="" style={{display:'block'}} />
+          <span>GIG<span style={{color:'#059669'}}>x</span></span>
         </Link>
         <button onClick={() => { formRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' }) }}
           style={{background:'none', border:'none', fontSize:'13px', fontWeight:600, color:'#78716c', cursor:'pointer', fontFamily:F}}>
@@ -376,8 +377,9 @@ export default function PromPage() {
       <div style={{maxWidth:'1100px', margin:'0 auto'}}>
         <div style={{display:'flex', justifyContent:'space-between', flexWrap:'wrap', gap:'32px', marginBottom:'32px'}}>
           <div style={{maxWidth:'260px'}}>
-            <div style={{fontWeight:800, fontSize:'20px', color:'white', marginBottom:'12px', letterSpacing:'-0.5px'}}>
-              GIG<span style={{color:'#059669'}}>x</span>
+            <div style={{display:'flex', alignItems:'center', gap:'8px', fontWeight:800, fontSize:'20px', color:'white', marginBottom:'12px', letterSpacing:'-0.5px'}}>
+              <img src="/gigx-mark.png" width={24} height={24} alt="" style={{display:'block', filter:'brightness(0) invert(1)'}} />
+              <span>GIG<span style={{color:'#059669'}}>x</span></span>
             </div>
             <div style={{fontSize:'13px', color:'#a8a29e', lineHeight:1.6, marginBottom:'16px'}}>
               Booking artistic, făcut cu rigoare.<br />Din 2005.

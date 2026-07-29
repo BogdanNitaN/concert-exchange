@@ -10,8 +10,9 @@ export default function HomePage() {
       {/* Navbar */}
       <nav style={{background:'rgba(255,255,255,0.85)', backdropFilter:'blur(20px)', borderBottom:'1px solid #e7e5e4', position:'sticky', top:0, zIndex:100}}>
         <div style={{maxWidth:'1200px', margin:'0 auto', padding:'0 24px', height:'64px', display:'flex', alignItems:'center', justifyContent:'space-between'}}>
-          <div style={{fontWeight:800, fontSize:'20px', color:'#1c1917', letterSpacing:'-0.5px'}}>
-            GIG<span style={{color:'#059669'}}>x</span>
+          <div style={{display:'flex', alignItems:'center', gap:'8px', fontWeight:800, fontSize:'20px', color:'#1c1917', letterSpacing:'-0.5px'}}>
+            <img src="/gigx-mark.png" width={24} height={24} alt="" style={{display:'block'}} />
+            <span>GIG<span style={{color:'#059669'}}>x</span></span>
           </div>
           <div style={{display:'flex', alignItems:'center', gap:'8px'}}>
             <Link href="/roster" style={{background:'#101014', color:'white', padding:'10px 22px', borderRadius:'12px', fontSize:'13px', fontWeight:700, textDecoration:'none', display:'flex', alignItems:'center', gap:'6px'}}>
@@ -240,7 +241,7 @@ export default function HomePage() {
         <div style={{maxWidth:'1100px', margin:'0 auto'}}>
           <div style={{display:'grid', gridTemplateColumns:'repeat(auto-fit, minmax(180px, 1fr))', gap:'40px', marginBottom:'40px'}}>
             <div>
-              <div style={{fontWeight:800, fontSize:'20px', color:'white', marginBottom:'12px', letterSpacing:'-0.5px'}}>GIG<span style={{color:'#059669'}}>x</span></div>
+              <div style={{display:'flex', alignItems:'center', gap:'8px', fontWeight:800, fontSize:'20px', color:'white', marginBottom:'12px', letterSpacing:'-0.5px'}}><img src="/gigx-mark.png" width={24} height={24} alt="" style={{display:'block', filter:'brightness(0) invert(1)'}} /><span>GIG<span style={{color:'#059669'}}>x</span></span></div>
               <div style={{fontSize:'13px', lineHeight:1.6, color:'rgba(255,255,255,0.6)'}}>Booking artistic, făcut cu rigoare.<br/>Din 2005.</div>
             </div>
             <div>

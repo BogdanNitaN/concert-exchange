@@ -107,7 +107,7 @@ export default function BookArtistPage() {
       <div style={{minHeight:'100vh',background:'#f5f5f7',fontFamily:'Montserrat,sans-serif'}}>
         <nav style={{background:'white',borderBottom:'1px solid #e7e5e4',position:'sticky',top:0,zIndex:100}}>
           <div style={{maxWidth:'600px',margin:'0 auto',padding:'0 24px',height:'56px',display:'flex',alignItems:'center',justifyContent:'space-between'}}>
-            <Link href="/" style={{fontWeight:800,fontSize:'16px',color:'#1c1917',textDecoration:'none',letterSpacing:'-0.5px'}}>GIG<span style={{color:'#059669'}}>x</span></Link>
+            <Link href="/" style={{display:'inline-flex',alignItems:'center',gap:'7px',fontWeight:800,fontSize:'16px',color:'#1c1917',textDecoration:'none',letterSpacing:'-0.5px'}}><img src="/gigx-mark.png" width={20} height={20} alt="" style={{display:'block'}} /><span>GIG<span style={{color:'#059669'}}>x</span></span></Link>
           </div>
         </nav>
       <TierLegend />
@@ -138,7 +138,7 @@ export default function BookArtistPage() {
       <nav style={{background:'white',borderBottom:'1px solid #e7e5e4',position:'sticky',top:0,zIndex:100}}>
         <div style={{maxWidth:'600px',margin:'0 auto',padding:'0 24px',height:'56px',display:'flex',alignItems:'center',justifyContent:'space-between'}}>
           <Link href={'/artist/' + slug} style={{display:'flex',alignItems:'center',gap:'6px',color:'#78716c',textDecoration:'none',fontSize:'13px',fontWeight:600}}><ArrowLeft size={14} /> Inapoi</Link>
-          <Link href="/" style={{fontWeight:800,fontSize:'16px',color:'#1c1917',textDecoration:'none',letterSpacing:'-0.5px'}}>GIG<span style={{color:'#059669'}}>x</span></Link>
+          <Link href="/" style={{display:'inline-flex',alignItems:'center',gap:'7px',fontWeight:800,fontSize:'16px',color:'#1c1917',textDecoration:'none',letterSpacing:'-0.5px'}}><img src="/gigx-mark.png" width={20} height={20} alt="" style={{display:'block'}} /><span>GIG<span style={{color:'#059669'}}>x</span></span></Link>
           <div style={{width:'60px'}}></div>
         </div>
       </nav>
