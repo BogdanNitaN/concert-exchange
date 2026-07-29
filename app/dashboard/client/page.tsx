@@ -287,6 +287,7 @@ export default function ClientDashboard() {
             citySearch={citySearch} setCitySearch={setCitySearch}
             setCenter={setCenter}
             onCitySelect={(lat: number, lng: number) => { setSelectedCityLat(lat); setSelectedCityLng(lng) }}
+            onVenuePick={(nume: string, oras: string) => setSelectedVenues([{ id: 'ev-' + nume, name: nume, city: oras, capacity: 0, type: '', priceEstimate: 'La cerere' }])}
             onExpert={() => setShowExpertModal(true)}
             onNext={() => setStep('atmosfera')}
           />

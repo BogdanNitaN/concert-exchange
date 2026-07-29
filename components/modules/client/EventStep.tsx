@@ -17,6 +17,7 @@ interface Props {
   setGuestCount: (v: number) => void
   selectedCity: string
   setSelectedCity: (v: string) => void
+  onVenuePick?: (nume: string, oras: string) => void
   citySearch: string
   setCitySearch: (v: string) => void
   setCenter: (v: [number, number]) => void
@@ -49,7 +50,7 @@ const CAPACITY_OPTIONS = [50, 100, 150, 200, 250, 350, 400, 600, 1000, 5000, 100
 
 const NEEDS_GUESTS = ['nunta', 'botez', 'private', 'gala']
 
-export default function EventStep({ eventType, setEventType, eventDate, setEventDate, budget, setBudget, guestCount, setGuestCount, selectedCity, setSelectedCity, citySearch, setCitySearch, setCenter, onCitySelect, onExpert, onNext }: Props) {
+export default function EventStep({ eventType, setEventType, eventDate, setEventDate, budget, setBudget, guestCount, setGuestCount, selectedCity, setSelectedCity, citySearch, setCitySearch, setCenter, onCitySelect, onVenuePick, onExpert, onNext }: Props) {
   const [citySuggestions, setCitySuggestions] = useState<GeoSuggestion[]>([])
   const searchTimer = useRef<any>(null)
 
@@ -65,18 +66,25 @@ export default function EventStep({ eventType, setEventType, eventDate, setEvent
       try {
         const res = await fetch('https://nominatim.openstreetmap.org/search?q=' + encodeURIComponent(citySearch) + '&countrycodes=ro,md&format=json&limit=6&accept-language=ro&addressdetails=1')
         const data = await res.json()
-        setCitySuggestions(data.map((d: any) => ({
-          name: d.address?.city || d.address?.town || d.address?.village || d.name,
-          fullName: [d.address?.city || d.address?.town || d.address?.village || d.name, d.address?.county].filter(Boolean).join(', '),
-          lat: parseFloat(d.lat), lng: parseFloat(d.lon)
-        })))
+        setCitySuggestions(data.map((d: any) => {
+          const oras = d.address?.city || d.address?.town || d.address?.village || d.name
+          const denumire = d.name || oras
+          return {
+            name: denumire,
+            oras,
+            eLocatie: !!d.name && d.name !== oras,
+            fullName: [oras, d.address?.county].filter(Boolean).join(', '),
+            lat: parseFloat(d.lat), lng: parseFloat(d.lon)
+          }
+        }) as any)
       } catch {}
     }, 400)
   }, [citySearch])
 
-  const selectCity = (s: GeoSuggestion) => {
+  const selectCity = (s: any) => {
     setSelectedCity(s.fullName)
-    setCitySearch(s.name)
+    setCitySearch(s.eLocatie ? s.name + ' · ' + s.oras : s.name)
+    if (s.eLocatie) onVenuePick?.(s.name, s.oras)
     setCenter([s.lat, s.lng])
     onCitySelect?.(s.lat, s.lng)
     setCitySuggestions([])
@@ -146,10 +154,10 @@ export default function EventStep({ eventType, setEventType, eventDate, setEvent
 
         <div>
           <label style={{display:'flex', alignItems:'center', gap:'6px', fontSize:'10px', fontWeight:700, color:'#a8a29e', textTransform:'uppercase', letterSpacing:'0.08em', marginBottom:'8px'}}>
-            <MapPin size={11} strokeWidth={2} /> Orașul evenimentului
+            <MapPin size={11} strokeWidth={2} /> Unde are loc evenimentul?
           </label>
           <div style={{position:'relative'}}>
-            <input type="text" value={citySearch} onChange={e => { setCitySearch(e.target.value); setSelectedCity('') }} placeholder="Caută orașul..."
+            <input type="text" value={citySearch} onChange={e => { setCitySearch(e.target.value); setSelectedCity('') }} placeholder="Oraș sau locație (ex: Nish, Iași)"
               style={{width:'100%', padding:'11px 14px', borderRadius:'12px', border:'1px solid ' + (selectedCity ? '#059669' : '#e7e5e4'), fontSize:'13px', fontFamily:'Montserrat,sans-serif', color:'#1c1917', outline:'none', boxSizing:'border-box', background:'#fafaf9'}} />
             {citySuggestions.length > 0 && !selectedCity && (
               <div style={{position:'absolute', top:'100%', left:0, right:0, background:'white', border:'1px solid #e7e5e4', borderRadius:'12px', marginTop:'4px', zIndex:200, boxShadow:'0 8px 32px rgba(0,0,0,0.10)', overflow:'hidden'}}>
