@@ -1143,7 +1143,7 @@ export default function OfertaPage() {
                   style={{flex:1, padding:'12px', borderRadius:UI.radiusSm, border:'1.5px solid ' + (destinatar==='client'?UI.green:UI.lineStrong), background: destinatar==='client'?UI.green:'white', color: destinatar==='client'?'white':UI.sub, fontSize:'14px', fontWeight:700, cursor:'pointer', fontFamily:F, transition:'all 0.15s'}}>
                   Client {destinatar==='client' ? '✓' : ''}
                 </button>
-                <button onClick={() => setDestinatar('intermediar')}
+                <button onClick={() => { setDestinatar('intermediar'); setLinii(prev => prev.map(x => ({ ...x, useCag: true, cagProcent: 0, cagSuma: 0 }))) }}
                   style={{flex:1, padding:'12px', borderRadius:UI.radiusSm, border:'1.5px solid ' + (destinatar==='intermediar'?UI.green:UI.lineStrong), background: destinatar==='intermediar'?UI.green:'white', color: destinatar==='intermediar'?'white':UI.sub, fontSize:'14px', fontWeight:700, cursor:'pointer', fontFamily:F, transition:'all 0.15s'}}>
                   Intermediar {destinatar==='intermediar' ? '✓' : ''}
                 </button>
