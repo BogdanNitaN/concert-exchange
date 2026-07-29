@@ -328,6 +328,7 @@ function ListaRoster({ artisti, audienta, token, ascundeContacte }: { artisti: a
         if (lg.bileteAvion) li.push('Bilete avion: ' + lg.bileteAvion)
         if (lg.cazareFixa > 0) li.push('Cazare: ' + Number(lg.cazareFixa).toLocaleString('ro-RO') + ' lei')
         else if (lg.cazare) li.push('Cazare: ' + lg.cazare)
+        if (lg.diurna) li.push('Diurna / masa: ' + Number(lg.diurna).toLocaleString('ro-RO') + ' lei')
         doc.setTextColor(140,140,140)
         doc.text(noDia(li.join('  ·  ')), tx, y)
         y += 14

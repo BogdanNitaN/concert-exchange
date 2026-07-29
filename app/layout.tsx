@@ -3,7 +3,7 @@ import './globals.css'
 
 export const metadata: Metadata = {
   title: 'GIGx',
-  description: 'We book the artists behind the moments people remember.',
+  description: '30 de minute până la prețul real. Booking artistic riguros, din 2005.',
   metadataBase: new URL('https://gigx.ro'),
   manifest: '/manifest.webmanifest',
   icons: {
@@ -12,7 +12,7 @@ export const metadata: Metadata = {
   },
   openGraph: {
     title: 'GIGx',
-    description: 'We book the artists behind the moments people remember.',
+    description: '30 de minute până la prețul real. Booking artistic riguros, din 2005.',
     url: 'https://gigx.ro',
     siteName: 'GIGx',
     images: [{ url: '/og-image.png', width: 1200, height: 630 }],
