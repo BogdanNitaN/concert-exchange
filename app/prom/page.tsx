@@ -434,7 +434,8 @@ export default function PromPage() {
   if (step === 'summary') {
     const kmReal = distances[form.city.trim().toLowerCase()]
     const km = kmReal !== undefined ? kmReal : null
-    const isBucuresti = km === 0
+    // local = sub 40 km: fara transport, cazare, diurna (acelasi prag ca in deviz si la client)
+    const isBucuresti = km !== null && km <= 40
     const cityLow = form.city.trim().toLowerCase()
     const noFlightCity = ORASE_FARA_ZBOR.includes(cityLow)
     return (

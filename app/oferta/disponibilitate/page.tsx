@@ -178,7 +178,8 @@ export default function DisponibilitatePage() {
       const zileText = g.zile.map((d: string) => lunaData(d)).join(', ')
       return {
         artistNume: g.artist,
-        dateOptiuni: g.zile.length > 1 ? zileText : '',
+        // daca nu exista o data globala, arat zilele artistului chiar si cand e una singura
+        dateOptiuni: (g.zile.length > 1 || !dataGlobala) ? zileText : '',
         formatSelectat: '', durata: rd.durata_default || '40 min',
         tipPret: 'Standard', feeLista: rd.fee_standard || 0, fee: rd.fee_standard || 0,
         leiKm: rd.lei_km || 0, useMarja: true, cazare: rd.cazare || '', persoane: rd.nr_persoane || 0,
