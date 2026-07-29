@@ -56,7 +56,7 @@ function textOferta(a: any, audienta: string, tab: string) {
   if (lg.bileteAvion) ll.push('- Bilete avion: ' + lg.bileteAvion + ' (distante mari)')
   if (lg.cazareFixa > 0) ll.push('- Cazare: ' + Number(lg.cazareFixa).toLocaleString('ro-RO') + ' lei')
   else if (lg.cazare) ll.push('- Cazare: ' + lg.cazare)
-  if (lg.diurna) ll.push('- Diurna / masa: ' + lg.diurna)
+  if (lg.diurna) ll.push('- Diurna / masa: ' + Number(lg.diurna).toLocaleString('ro-RO') + ' lei')
   if (ll.length) t += '*DETALII LOGISTICE:*' + '\n' + ll.join('\n') + '\n' + '\n'
   t += lg.landed ? 'Onorariul nu include cazare si masa.' : 'Onorariul nu include transport, cazare si masa.'
   return t
@@ -100,7 +100,7 @@ function CardArtist({ a, audienta, token, tabInitial, destinatar, ascundeContact
   if (lg.bileteAvion) logi.push(['Bilete avion', String(lg.bileteAvion)])
   if (lg.cazareFixa > 0) logi.push(['Cazare', Number(lg.cazareFixa).toLocaleString('ro-RO') + ' lei'])
   else if (lg.cazare) logi.push(['Cazare', lg.cazare])
-  if (lg.diurna) logi.push(['Diurna / masa', String(lg.diurna)])
+  if (lg.diurna) logi.push(['Diurna / masa', Number(lg.diurna).toLocaleString('ro-RO') + ' lei'])
 
   const docs: [string, string][] = []
   if (a.epk) docs.push(['Media Kit', a.epk])
@@ -470,7 +470,7 @@ function ListaRoster({ artisti, audienta, token, ascundeContacte }: { artisti: a
                     {lg.landed ? <div>Transport: <strong style={{color:UI.green}}>inclus in onorariu (oriunde in RO)</strong></div> : lg.leiKm ? <div>Transport: <strong style={{color:UI.ink}}>{lg.leiKm} {lg.transportMoneda || 'lei'}/km +TVA</strong></div> : null}
                     {lg.bileteAvion && <div>Bilete avion: <strong style={{color:UI.ink}}>{lg.bileteAvion}</strong></div>}
                     {(lg.cazareFixa > 0 || lg.cazare) && <div>Cazare: <strong style={{color:UI.ink}}>{lg.cazareFixa > 0 ? Number(lg.cazareFixa).toLocaleString('ro-RO') + ' lei' : lg.cazare}</strong></div>}
-                    {lg.diurna && <div>Diurna / masa: <strong style={{color:UI.ink}}>{lg.diurna}</strong></div>}
+                    {lg.diurna && <div>Diurna / masa: <strong style={{color:UI.ink}}>{Number(lg.diurna).toLocaleString('ro-RO')} lei</strong></div>}
                   </div>
                   {docs.length > 0 && (
                     <div style={{display:'flex', gap:'6px', flexWrap:'wrap', marginBottom:'12px'}}>
