@@ -118,7 +118,7 @@ export default function AddVenuePage() {
       <nav className="border-b border-stone-200 bg-white sticky top-0 z-50">
         <div className="max-w-2xl mx-auto px-6 h-16 flex items-center justify-between">
           <Link href="/" className="text-xl font-bold text-stone-900 tracking-tight">
-            Concert <span className="text-amber-500">●</span> Exchange
+            GIG<span className="text-emerald-600">x</span>
           </Link>
           <Link href="/search" className="text-sm text-stone-500 hover:text-stone-900">← Hartă</Link>
         </div>

@@ -133,7 +133,7 @@ export default function ArtistVenueSearch() {
     <div style={{display:'flex', flexDirection:'column', height:'100vh', overflow:'hidden', fontFamily:'Montserrat,sans-serif'}}>
       <nav style={{borderBottom:'1px solid #e7e5e4', background:'white', flexShrink:0, height:'56px', display:'flex', alignItems:'center', padding:'0 24px', justifyContent:'space-between', zIndex:100}}>
         <Link href="/" style={{fontWeight:800, fontSize:'18px', color:'#1c1917', textDecoration:'none'}}>
-          Concert <span style={{color:'#f59e0b'}}>●</span> Exchange
+          GIG<span style={{color:'#059669'}}>x</span>
         </Link>
         <div style={{display:'flex', alignItems:'center', gap:'12px'}}>
           <Link href="/dashboard/artist" style={{fontSize:'12px', color:'#78716c', textDecoration:'none'}}>← Dashboard artist</Link>

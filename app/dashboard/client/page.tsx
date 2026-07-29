@@ -230,7 +230,7 @@ export default function ClientDashboard() {
     <div style={{minHeight:'100vh', background:'#f5f5f7', fontFamily:'Montserrat,sans-serif'}}>
       <nav style={{borderBottom:'1px solid #e7e5e4', background:'white', height:'56px', display:'flex', alignItems:'center', padding:'0 24px', justifyContent:'space-between', position:'sticky', top:0, zIndex:100}}>
         <Link href="/" style={{fontWeight:800, fontSize:'18px', color:'#1c1917', textDecoration:'none'}}>
-          Concert <span style={{color:'#f59e0b'}}>&#9679;</span> Exchange
+          GIG<span style={{color:'#059669'}}>x</span>
         </Link>
         <div style={{display:'flex', alignItems:'center', gap:'6px'}}>
           {steps.map((s, i) => (

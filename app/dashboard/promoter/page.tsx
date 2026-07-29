@@ -57,7 +57,7 @@ export default function PromoterDashboard() {
       <nav className="border-b border-stone-200 bg-white sticky top-0 z-50">
         <div className="max-w-6xl mx-auto px-6 h-16 flex items-center justify-between">
           <Link href="/" className="text-xl font-bold text-stone-900 tracking-tight">
-            Concert <span className="text-amber-500">●</span> Exchange
+            GIG<span className="text-emerald-600">x</span>
           </Link>
           <div className="flex items-center gap-3">
             {isPremium && <span className="bg-amber-100 text-amber-700 text-xs font-semibold px-3 py-1 rounded-full">⭐ Premium</span>}
