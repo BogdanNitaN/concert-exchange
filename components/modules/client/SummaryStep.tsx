@@ -119,7 +119,7 @@ export default function SummaryStep({ eventType, eventDate, guestCount, selected
   }
 
   const tierInfo = (tier: string) => {
-    if (tier === 'Premium') return { bg: '#eacda3', color: 'white', label: 'A++ · Icon', range: '10.000€+' }
+    if (tier === 'Premium' || tier === 'A++') return { bg: '#eacda3', color: 'white', label: 'A++ · Icon', range: '10.000€+' }
     if (tier === 'A+') return { bg: '#7c3aed', color: 'white', label: 'A+ · Premium', range: '5.000–10.000€' }
     return { bg: '#78716c', color: 'white', label: 'A · Select', range: 'până la 5.000€' }
   }

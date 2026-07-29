@@ -79,7 +79,7 @@ export default function EventStep({ eventType, setEventType, eventDate, setEvent
   }, [citySearch])
 
   const selectCity = (s: any) => {
-    setSelectedCity(s.fullName)
+    setSelectedCity(s.oras || s.name)
     setCitySearch(s.eLocatie ? s.name + ' · ' + s.oras : s.name)
     if (s.eLocatie) onVenuePick?.(s.name, s.oras)
     if (s.lat && s.lng) { setCenter([s.lat, s.lng]); onCitySelect?.(s.lat, s.lng) }

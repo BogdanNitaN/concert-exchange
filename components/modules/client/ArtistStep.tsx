@@ -16,7 +16,7 @@ interface Props {
 }
 
 const tierInfo = (tier: string) => {
-  if (tier === 'Premium') return { bg: '#eacda3', color: 'white', label: 'A++ · Icon' }
+  if (tier === 'Premium' || tier === 'A++') return { bg: '#eacda3', color: 'white', label: 'A++ · Icon' }
   if (tier === 'A+') return { bg: '#7c3aed', color: 'white', label: 'A+ · Premium' }
   return { bg: '#78716c', color: 'white', label: 'A · Select' }
 }
