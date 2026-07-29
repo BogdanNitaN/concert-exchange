@@ -1,7 +1,7 @@
 'use client'
 import Link from 'next/link'
 import { motion } from 'framer-motion'
-import { ArrowRight, Search, MessageCircle, Award, BarChart3, ShieldCheck, Clock, Sparkles, Heart, Building2, PartyPopper, Disc3, Rocket, Star, Sun, Sunset, Wine, Flame } from 'lucide-react'
+import { ArrowRight, Search, MessageCircle, Award, BarChart3, ShieldCheck, Clock, Sparkles, Heart, Building2, PartyPopper, Disc3, Rocket, Star, Sun, Sunset, Wine, Flame, Baby } from 'lucide-react'
 
 export default function HomePage() {
   return (
@@ -148,7 +148,9 @@ export default function HomePage() {
               {label:'Festival', id:'festival', Icon: Star},
               {label:'Club Night', id:'clubnight', Icon: Disc3},
               {label:'Nuntă', id:'nunta', Icon: Heart},
+              {label:'Botez', id:'botez', Icon: Baby},
               {label:'Corporate', id:'corporate', Icon: Building2},
+              {label:'Gală / Revelion', id:'gala', Icon: Award},
               {label:'Beach Party', id:'beach', Icon: Sunset},
               {label:'Pop-Up', id:'popup', Icon: Sparkles},
               {label:'Day Party', id:'dayparty', Icon: Sun},
