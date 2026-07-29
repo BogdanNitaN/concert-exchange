@@ -1,8 +1,9 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { MapPin, Calendar, Users, ArrowRight, CheckCircle2, ChevronDown, ChevronUp, Plane, Car, Hotel } from 'lucide-react'
+import { ORASE_FARA_ZBOR } from '@/lib/zbor-intern'
 
 const SETURI_VOCAL = [
   { id: '1x45', label: '1 set · 45 min' },
@@ -85,6 +86,12 @@ export default function SummaryStep({ eventType, eventDate, guestCount, selected
   const [telefon, setTelefon] = useState('')
   const [emailC, setEmailC] = useState('')
   const [seTrimite, setSeTrimite] = useState(false)
+  const [eurRate, setEurRate] = useState<number | null>(null)
+  useEffect(() => {
+    fetch('/api/bnr-rate').then(r => r.json())
+      .then(d => setEurRate(d.rate || d.curs || d.eurRate || d.value || null))
+      .catch(() => {})
+  }, [])
   const contactOk = nume.trim().length > 1 && telefon.trim().length > 5
   const [openArtistId, setOpenArtistId] = useState<number | null>(selectedArtists[0]?.id || null)
   const eventInfo = EVENT_TYPES.find(e => e.id === eventType)
@@ -182,9 +189,17 @@ export default function SummaryStep({ eventType, eventDate, guestCount, selected
           const isOpen = openArtistId === a.id
           const ts = tierInfo(a.tier)
           const distantaArtist = getDistanta(a)
-          const costRutier = Math.round(distantaArtist * (a.costPerKm || 2) / 10) * 10
+          // aceeasi formula ca pe /prom: marja pe km, dus-intors, apoi conversie la curs BNR
+          const marjaProcent = distantaArtist > 300 ? 0.065 : 0.115
+          const kmTotalArtist = (distantaArtist + Math.round(distantaArtist * marjaProcent)) * 2
+          const costRutierLei = (a.costPerKm || 0) > 0 ? Math.round(kmTotalArtist * a.costPerKm / 10) * 10 : 0
+          const costRutier = eurRate && costRutierLei > 0 ? Math.round(costRutierLei / eurRate) : 0
           const nrBilete = a.nrBileteAvion || 0
-          const necesitaZborArtist = distantaArtist > 300
+          // regulile de pe /prom: local = fara transport/cazare; zbor doar unde exista curse si artistul are bilete
+          const eLocal = distantaArtist < 40
+          const orasLow = (selectedCity || '').split(',')[0].toLowerCase().trim()
+          const noFlightCity = ORASE_FARA_ZBOR.includes(orasLow)
+          const necesitaZborArtist = !eLocal && !noFlightCity && distantaArtist > 300 && nrBilete > 0
           const seturiArtist = getSeturi(a)
 
           return (
@@ -206,34 +221,35 @@ export default function SummaryStep({ eventType, eventDate, guestCount, selected
               {isOpen && (
                 <div style={{padding:'20px', borderTop:'1px solid #f0f0ef'}}>
                   <div style={{display:'flex', flexDirection:'column', gap:'10px', marginBottom:'16px'}}>
+                    {!eLocal && (
                     <div style={{display:'flex', alignItems:'center', justifyContent:'space-between', background:'#fafaf9', borderRadius:'12px', padding:'12px 14px'}}>
                       <div style={{display:'flex', alignItems:'center', gap:'8px'}}>
                         <Car size={16} color='#44403c' strokeWidth={1.5} />
                         <div>
                           <div style={{fontSize:'13px', fontWeight:600, color:'#1c1917'}}>Transport rutier</div>
-                          <div style={{fontSize:'11px', color:'#a8a29e'}}>{distantaArtist} km · din {a.cityFrom || 'București'}</div>
+                          <div style={{fontSize:'11px', color:'#a8a29e'}}>{kmTotalArtist} km dus-întors · din {a.cityFrom || 'București'}</div>
                         </div>
                       </div>
-                      <div style={{fontSize:'14px', fontWeight:800, color:'#1c1917'}}>{costRutier.toLocaleString()} €</div>
+                      <div style={{textAlign:'right'}}>
+                        <div style={{fontSize:'14px', fontWeight:800, color:'#1c1917'}}>{costRutier > 0 ? costRutier.toLocaleString('ro-RO') + ' €' : costRutierLei.toLocaleString('ro-RO') + ' lei'}</div>
+                        {costRutier > 0 && <div style={{fontSize:'11px', color:'#a8a29e'}}>~{costRutierLei.toLocaleString('ro-RO')} lei</div>}
+                      </div>
                     </div>
+                    )}
 
-                    {necesitaZborArtist && nrBilete > 0 && (
+                    {necesitaZborArtist && (
                       <div style={{display:'flex', alignItems:'center', justifyContent:'space-between', background:'#eff6ff', borderRadius:'12px', padding:'12px 14px', border:'1px solid #bfdbfe'}}>
                         <div style={{display:'flex', alignItems:'center', gap:'8px'}}>
                           <Plane size={16} color='#1e40af' strokeWidth={1.5} />
                           <div>
-                            <div style={{fontSize:'13px', fontWeight:600, color:'#1e40af'}}>Zbor artist</div>
-                            <div style={{fontSize:'11px', color:'#3b82f6'}}>{nrBilete} {nrBilete === 1 ? 'bilet' : 'bilete'} · {distantaArtist} km</div>
+                            <div style={{fontSize:'13px', fontWeight:600, color:'#1e40af'}}>Zbor artist + transfer</div>
+                            <div style={{fontSize:'11px', color:'#3b82f6'}}>{nrBilete} {nrBilete === 1 ? 'bilet' : 'bilete'} · {distantaArtist} km · transfer auto</div>
                           </div>
                         </div>
-                        <a href="https://masirotravel.ro" target="_blank" rel="noopener noreferrer"
-                          style={{fontSize:'11px', color:'#1e40af', textDecoration:'none', fontWeight:700, background:'white', padding:'4px 10px', borderRadius:'8px', border:'1px solid #bfdbfe'}}>
-                          Vezi zboruri →
-                        </a>
                       </div>
                     )}
 
-                    {a.cazare && (
+                    {!eLocal && a.cazare && a.cazare !== 'la cerere' && (
                       <div style={{display:'flex', alignItems:'center', justifyContent:'space-between', background:'#f5f3ff', borderRadius:'12px', padding:'12px 14px', border:'1px solid #ddd6fe'}}>
                         <div style={{display:'flex', alignItems:'center', gap:'8px'}}>
                           <Hotel size={16} color='#7c3aed' strokeWidth={1.5} />
@@ -242,10 +258,6 @@ export default function SummaryStep({ eventType, eventDate, guestCount, selected
                             <div style={{fontSize:'11px', color:'#8b5cf6'}}>{a.cazare}</div>
                           </div>
                         </div>
-                        <a href="https://masirotravel.ro" target="_blank" rel="noopener noreferrer"
-                          style={{fontSize:'11px', color:'#7c3aed', textDecoration:'none', fontWeight:700, background:'white', padding:'4px 10px', borderRadius:'8px', border:'1px solid #ddd6fe'}}>
-                          Vezi hoteluri →
-                        </a>
                       </div>
                     )}
 
