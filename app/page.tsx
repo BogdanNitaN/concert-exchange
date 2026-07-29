@@ -159,7 +159,7 @@ export default function HomePage() {
             ].map((cat, i) => {
               const Icon = cat.Icon
               return (
-                <Link key={i} href="/roster" style={{background:'rgba(255,255,255,0.05)', border:'1px solid rgba(255,255,255,0.1)', borderRadius:'16px', padding:'28px 24px', textAlign:'center', textDecoration:'none', transition:'all 0.2s'}}>
+                <Link key={i} href="/dashboard/client" style={{background:'rgba(255,255,255,0.05)', border:'1px solid rgba(255,255,255,0.1)', borderRadius:'16px', padding:'28px 24px', textAlign:'center', textDecoration:'none', transition:'all 0.2s'}}>
                   <div style={{display:'flex', justifyContent:'center', marginBottom:'14px'}}>
                     <Icon size={28} color='#eacda3' strokeWidth={1.5} />
                   </div>
