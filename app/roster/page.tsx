@@ -1,4 +1,5 @@
 'use client'
+import Link from 'next/link'
 import { useState, useEffect, useMemo } from 'react'
 import { esteFaraTop } from '@/lib/genuri-catalog'
 
@@ -100,8 +101,10 @@ export default function RosterPublic() {
   return (
     <div style={{minHeight:'100vh', background:UI.bg, fontFamily:F}}>
       <nav style={{borderBottom:'1px solid '+UI.line, background:'white', height:'56px', display:'flex', alignItems:'center', padding:'0 20px', gap:'8px', position:'sticky', top:0, zIndex:100}}>
-        <img src="/gigx-mark.png" width={24} height={24} alt="" style={{display:'block'}} />
-        <span style={{fontSize:'20px', fontWeight:800, letterSpacing:'-0.5px', color:UI.ink}}>GIG<span style={{color:UI.green}}>x</span></span>
+        <Link href="/" style={{display:'inline-flex', alignItems:'center', gap:'8px', textDecoration:'none'}}>
+          <img src="/gigx-mark.png" width={24} height={24} alt="" style={{display:'block'}} />
+          <span style={{fontSize:'20px', fontWeight:800, letterSpacing:'-0.5px', color:UI.ink}}>GIG<span style={{color:UI.green}}>x</span></span>
+        </Link>
         <span style={{fontSize:'13px', fontWeight:700, color:UI.sub, marginLeft:'6px'}}>Catalog Artisti Forward</span>
       </nav>
 

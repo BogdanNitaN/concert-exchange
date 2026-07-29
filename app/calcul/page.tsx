@@ -137,7 +137,7 @@ export default function TransportPage() {
       <div style={{position:'relative', zIndex:1}}>
 
         <nav style={{borderBottom:'1px solid #e7e5e4', background:'white', height:'56px', display:'flex', alignItems:'center', padding:'0 24px', justifyContent:'space-between', position:'sticky', top:0, zIndex:100}}>
-          <Link href="/prom" style={{display:'inline-flex', alignItems:'center', gap:'8px', fontSize:'20px', fontWeight:800, color:'#1c1917', textDecoration:'none', letterSpacing:'-0.5px'}}>
+          <Link href="/" style={{display:'inline-flex', alignItems:'center', gap:'8px', fontSize:'20px', fontWeight:800, color:'#1c1917', textDecoration:'none', letterSpacing:'-0.5px'}}>
             <img src="/gigx-mark.png" width={24} height={24} alt="" style={{display:'block'}} />
             <span>GIG<span style={{color:'#059669'}}>x</span></span>
           </Link>
