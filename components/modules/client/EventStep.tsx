@@ -64,19 +64,16 @@ export default function EventStep({ eventType, setEventType, eventDate, setEvent
     if (searchTimer.current) clearTimeout(searchTimer.current)
     searchTimer.current = setTimeout(async () => {
       try {
-        const res = await fetch('https://nominatim.openstreetmap.org/search?q=' + encodeURIComponent(citySearch) + '&countrycodes=ro,md&format=json&limit=6&accept-language=ro&addressdetails=1')
+        const res = await fetch('/api/places?input=' + encodeURIComponent(citySearch) + '&type=search')
         const data = await res.json()
-        setCitySuggestions(data.map((d: any) => {
-          const oras = d.address?.city || d.address?.town || d.address?.village || d.name
-          const denumire = d.name || oras
-          return {
-            name: denumire,
-            oras,
-            eLocatie: !!d.name && d.name !== oras,
-            fullName: [oras, d.address?.county].filter(Boolean).join(', '),
-            lat: parseFloat(d.lat), lng: parseFloat(d.lon)
-          }
-        }) as any)
+        setCitySuggestions((((data.predictions || []) as any[]).map((d: any) => {
+          const principal = d.structured_formatting?.main_text || d.description || ''
+          const secundar = d.structured_formatting?.secondary_text || ''
+          const parti = secundar.split(',').map((x: string) => x.trim()).filter(Boolean)
+          const eLocatie = parti.length >= 2
+          const oras = eLocatie ? parti[parti.length - 2] : principal
+          return { name: principal, oras, eLocatie, fullName: secundar || principal, lat: 0, lng: 0 }
+        })) as any)
       } catch {}
     }, 400)
   }, [citySearch])
@@ -85,8 +82,7 @@ export default function EventStep({ eventType, setEventType, eventDate, setEvent
     setSelectedCity(s.fullName)
     setCitySearch(s.eLocatie ? s.name + ' · ' + s.oras : s.name)
     if (s.eLocatie) onVenuePick?.(s.name, s.oras)
-    setCenter([s.lat, s.lng])
-    onCitySelect?.(s.lat, s.lng)
+    if (s.lat && s.lng) { setCenter([s.lat, s.lng]); onCitySelect?.(s.lat, s.lng) }
     setCitySuggestions([])
   }
 

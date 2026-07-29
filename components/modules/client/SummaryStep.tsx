@@ -87,6 +87,18 @@ export default function SummaryStep({ eventType, eventDate, guestCount, selected
   const [emailC, setEmailC] = useState('')
   const [seTrimite, setSeTrimite] = useState(false)
   const [eurRate, setEurRate] = useState<number | null>(null)
+  const [distanteReale, setDistanteReale] = useState<Record<string, number>>({})
+  useEffect(() => {
+    const oras = (selectedCity || '').split(',')[0].trim()
+    if (!oras) return
+    const surse = Array.from(new Set(selectedArtists.map((a: any) => a.cityFrom || 'Bucuresti')))
+    surse.forEach((src: any) => {
+      fetch('/api/distance?to=' + encodeURIComponent(oras) + '&from=' + encodeURIComponent(String(src)))
+        .then(r => r.json())
+        .then(d => { if (d?.km) setDistanteReale(prev => ({ ...prev, [String(src)]: d.km })) })
+        .catch(() => {})
+    })
+  }, [selectedCity, selectedArtists])
   useEffect(() => {
     fetch('/api/bnr-rate').then(r => r.json())
       .then(d => setEurRate(d.rate || d.curs || d.eurRate || d.value || null))
@@ -102,10 +114,8 @@ export default function SummaryStep({ eventType, eventDate, guestCount, selected
   }
 
   const getDistanta = (artist: any) => {
-    // fara coordonate nu inventam o distanta: 0 inseamna necunoscut, nu se afiseaza transport
-    if (!selectedCityLat || !selectedCityLng) return 0
-    const from = getArtistCoords(artist)
-    return Math.round(haversineKm(from.lat, from.lng, selectedCityLat, selectedCityLng) * 1.35)
+    // distanta rutiera reala, aceeasi sursa ca in deviz si pe /prom
+    return distanteReale[artist.cityFrom || 'Bucuresti'] ?? 0
   }
 
   const tierInfo = (tier: string) => {
