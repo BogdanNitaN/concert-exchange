@@ -3,6 +3,8 @@ import { Resend } from 'resend'
 
 const resend = new Resend(process.env.RESEND_API_KEY)
 const TO = 'bogdanitan@gmail.com'
+// pana cand domeniul e verificat in Resend, expeditorul de test poate trimite doar catre adresa contului;
+// incercam catre toti, iar daca e refuzat retrimitem doar catre Bogdan ca sa nu pierdem cererea
 
 const rateLimit = new Map<string, { count: number; reset: number }>()
 function checkRate(ip: string): boolean {
@@ -65,13 +67,16 @@ export async function POST(req: Request) {
       </div>
     `
 
-    const { error } = await resend.emails.send({
+    const trimite = (cc?: string[]) => resend.emails.send({
       from: 'GIGx <onboarding@resend.dev>',
       to: TO,
+      cc,
       replyTo: email || undefined,
       subject: `Cerere client: ${tipEveniment || 'eveniment'} — ${oras || ''} (${nume})`,
       html,
     })
+    let { error } = await trimite(['alexandra.stefan@forward.ro'])
+    if (error) error = (await trimite()).error
     if (error) return NextResponse.json({ ok: false, error: error.message }, { status: 500 })
     return NextResponse.json({ ok: true })
   } catch (e: any) {
