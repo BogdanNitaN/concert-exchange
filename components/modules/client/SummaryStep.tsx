@@ -141,7 +141,7 @@ export default function SummaryStep({ eventType, eventDate, guestCount, selected
       </div>
 
       <div style={{background:'white', border:'1px solid #e7e5e4', borderRadius:'20px', padding:'24px', marginBottom:'14px', boxShadow:'0 1px 4px rgba(0,0,0,0.04)'}}>
-        <div style={{display:'grid', gridTemplateColumns:'1fr 1fr 1fr', gap:'16px', marginBottom:'20px'}}>
+        <div style={{display:'grid', gridTemplateColumns:'repeat(auto-fit, minmax(150px, 1fr))', gap:'16px', marginBottom:'20px'}}>
           <div>
             <div style={{fontSize:'10px', fontWeight:700, color:'#a8a29e', textTransform:'uppercase', letterSpacing:'0.08em', marginBottom:'6px', display:'flex', alignItems:'center', gap:'4px'}}>
               <Calendar size={10} strokeWidth={2} /> Eveniment
@@ -162,7 +162,7 @@ export default function SummaryStep({ eventType, eventDate, guestCount, selected
           </div>
         </div>
 
-        <div style={{borderTop:'1px solid #f5f5f4', paddingTop:'20px', display:'grid', gridTemplateColumns:'1fr 1fr', gap:'14px'}}>
+        <div style={{borderTop:'1px solid #f5f5f4', paddingTop:'20px', display:'grid', gridTemplateColumns:'repeat(auto-fit, minmax(160px, 1fr))', gap:'14px'}}>
           <div>
             <div style={{fontSize:'10px', fontWeight:700, color:'#a8a29e', textTransform:'uppercase', letterSpacing:'0.08em', marginBottom:'8px', display:'flex', alignItems:'center', gap:'4px'}}>
               <MapPin size={10} strokeWidth={2} /> Locație
@@ -306,7 +306,7 @@ export default function SummaryStep({ eventType, eventDate, guestCount, selected
       <div style={{background:'white', border:'1px solid #e7e5e4', borderRadius:'20px', padding:'24px', marginBottom:'14px', boxShadow:'0 1px 4px rgba(0,0,0,0.04)'}}>
         <div style={{fontSize:'15px', fontWeight:800, color:'#1c1917', marginBottom:'4px'}}>Cum te contactăm</div>
         <div style={{fontSize:'13px', color:'#78716c', marginBottom:'16px'}}>Îți răspundem în mai puțin de 30 de minute.</div>
-        <div style={{display:'grid', gridTemplateColumns:'1fr 1fr', gap:'10px', marginBottom:'10px'}}>
+        <div style={{display:'grid', gridTemplateColumns:'repeat(auto-fit, minmax(160px, 1fr))', gap:'10px', marginBottom:'10px'}}>
           <input value={nume} onChange={e => setNume(e.target.value)} placeholder="Nume și prenume *" style={{padding:'11px 13px', borderRadius:'12px', border:'1.5px solid #e7e5e4', fontSize:'14px', fontFamily:'Montserrat,sans-serif', boxSizing:'border-box', width:'100%', outline:'none'}} />
           <input value={telefon} onChange={e => setTelefon(e.target.value)} placeholder="Telefon *" style={{padding:'11px 13px', borderRadius:'12px', border:'1.5px solid #e7e5e4', fontSize:'14px', fontFamily:'Montserrat,sans-serif', boxSizing:'border-box', width:'100%', outline:'none'}} />
         </div>

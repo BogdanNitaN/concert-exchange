@@ -41,7 +41,7 @@ export default function AtmosferaStep({ atmosfera, toggleAtmosfera, tipEntertain
         <p style={{fontSize:'15px', color:'#78716c'}}>Alege până la 3 stări care descriu evenimentul tău</p>
       </div>
 
-      <div style={{display:'grid', gridTemplateColumns:'repeat(3, 1fr)', gap:'10px', marginBottom:'28px'}}>
+      <div style={{display:'grid', gridTemplateColumns:'repeat(auto-fit, minmax(150px, 1fr))', gap:'10px', marginBottom:'28px'}}>
         {ATMOSFERA.map(a => {
           const Icon = a.icon
           const isSelected = atmosfera.includes(a.id)

@@ -370,7 +370,7 @@ export default function ClientDashboard() {
                 <div style={{height:'240px', borderRadius:'16px', overflow:'hidden', marginBottom:'14px', border:'1px solid #e7e5e4'}}>
                   <MapVenues venues={filteredVenues} center={center} radius={200} onSelectVenue={(v: any) => toggleVenueSelect(v)} />
                 </div>
-                <div style={{display:'grid', gridTemplateColumns:'1fr 1fr', gap:'12px', marginBottom:'20px'}}>
+                <div style={{display:'grid', gridTemplateColumns:'repeat(auto-fit, minmax(160px, 1fr))', gap:'12px', marginBottom:'20px'}}>
                   {loadingVenues && <div style={{gridColumn:'1/-1', textAlign:'center', padding:'20px', fontSize:'13px', color:'#a8a29e'}}>Se caută locații în {selectedCity.split(',')[0]}...</div>}
                   {venueType !== 'Toate' && venuesByType[venueType] !== undefined && venuesByType[venueType].length === 0 && (
                     <div style={{gridColumn:'1/-1', textAlign:'center', padding:'32px', fontSize:'13px', color:'#a8a29e'}}>

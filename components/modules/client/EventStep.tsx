@@ -89,7 +89,7 @@ export default function EventStep({ eventType, setEventType, eventDate, setEvent
         <p style={{fontSize:'15px', color:'#78716c'}}>Vom găsi artiștii și locațiile potrivite pentru tine</p>
       </div>
 
-      <div style={{display:'grid', gridTemplateColumns:'repeat(4, 1fr)', gap:'8px', marginBottom:'28px'}}>
+      <div style={{display:'grid', gridTemplateColumns:'repeat(auto-fit, minmax(140px, 1fr))', gap:'8px', marginBottom:'28px'}}>
         {EVENT_TYPES.map(e => {
           const Icon = e.icon
           const isSelected = eventType === e.id
@@ -106,7 +106,7 @@ export default function EventStep({ eventType, setEventType, eventDate, setEvent
       </div>
 
       <div style={{background:'white', border:'1px solid #e7e5e4', borderRadius:'20px', padding:'28px', marginBottom:'24px', boxShadow:'0 1px 4px rgba(0,0,0,0.04)'}}>
-        <div style={{display:'grid', gridTemplateColumns:'1fr 1fr', gap:'20px', marginBottom:'24px'}}>
+        <div style={{display:'grid', gridTemplateColumns:'repeat(auto-fit, minmax(160px, 1fr))', gap:'20px', marginBottom:'24px'}}>
           <div>
             <label style={{display:'flex', alignItems:'center', gap:'6px', fontSize:'10px', fontWeight:700, color:'#a8a29e', textTransform:'uppercase', letterSpacing:'0.08em', marginBottom:'8px'}}>
               Data evenimentului
