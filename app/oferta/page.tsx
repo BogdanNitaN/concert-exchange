@@ -922,7 +922,7 @@ export default function OfertaPage() {
               <input type="checkbox" checked={institutiePublica} onChange={e => setInstitutiePublica(e.target.checked)} style={{width:'16px', height:'16px', accentColor:'#059669'}} />
               Instituție publică (ofertă în lei)
             </label>
-            {useAdaos && <input type="number" step="0.1" value={adaosProcent} onChange={e => setAdaosProcent(Number(e.target.value))} style={{...inputStyle, width:'80px'}} />}
+            {useAdaos && <input type="number" onWheel={e => (e.currentTarget as HTMLInputElement).blur()} step="0.1" value={adaosProcent} onChange={e => setAdaosProcent(Number(e.target.value))} style={{...inputStyle, width:'80px'}} />}
             {eurRate && <span style={{fontSize:'12px', color:'#78716c'}}>Curs BNR: {eurRate.toFixed(4)} lei/€</span>}
           </div>
         </div>
@@ -1002,11 +1002,11 @@ export default function OfertaPage() {
                   </select>
                 </div>
                 <div><label style={label}>Preț listă (€)</label>
-                  <input type="number" value={l.feeLista || ''} onFocus={e => e.target.select()} onChange={e => updateLinie(l.key, { feeLista: Number(e.target.value) })} style={{...inputStyle, color:'#a8a29e'}} /></div>
+                  <input type="number" onWheel={e => (e.currentTarget as HTMLInputElement).blur()} value={l.feeLista || ''} onFocus={e => e.target.select()} onChange={e => updateLinie(l.key, { feeLista: Number(e.target.value) })} style={{...inputStyle, color:'#a8a29e'}} /></div>
                 <div><label style={{...label, color:UI.green}}>Ofertă (€)</label>
-                  <input type="number" value={l.fee || ''} onFocus={e => e.target.select()} onChange={e => updateLinie(l.key, { fee: Number(e.target.value) })} style={{...inputStyle, fontWeight:800, fontSize:'17px', color:UI.green, borderColor:'#86efac', background:'#f0fdf4'}} /></div>
+                  <input type="number" onWheel={e => (e.currentTarget as HTMLInputElement).blur()} value={l.fee || ''} onFocus={e => e.target.select()} onChange={e => updateLinie(l.key, { fee: Number(e.target.value) })} style={{...inputStyle, fontWeight:800, fontSize:'17px', color:UI.green, borderColor:'#86efac', background:'#f0fdf4'}} /></div>
                 <div><label style={label}>Lei/km</label>
-                  <input type="number" step="0.1" value={l.leiKm || ''} onFocus={e => e.target.select()} onChange={e => updateLinie(l.key, { leiKm: Number(e.target.value) })} style={inputStyle} /></div>
+                  <input type="number" onWheel={e => (e.currentTarget as HTMLInputElement).blur()} step="0.1" value={l.leiKm || ''} onFocus={e => e.target.select()} onChange={e => updateLinie(l.key, { leiKm: Number(e.target.value) })} style={inputStyle} /></div>
                 <div><label style={label}>Durată</label>
                   <input value={l.durata} onChange={e => updateLinie(l.key, { durata: e.target.value })} placeholder="40 min" style={inputStyle} /></div>
               </div>
@@ -1031,11 +1031,11 @@ export default function OfertaPage() {
                 {(l.allIn || l.landed) && (
                   <span style={{display:'inline-flex', alignItems:'center', gap:'6px', fontSize:'12px', fontWeight:700, color:'#7c3aed'}}>
                     Suma ALL IN (EUR):
-                    <input type="number" value={l.allInSuma || ''} onChange={e => updateLinie(l.key, { allInSuma: Number(e.target.value) })} placeholder="0" style={{width:'90px', padding:'5px 8px', borderRadius:'8px', border:'1.5px solid #c4b5fd', fontSize:'13px', fontWeight:700, outline:'none'}} />
+                    <input type="number" onWheel={e => (e.currentTarget as HTMLInputElement).blur()} value={l.allInSuma || ''} onChange={e => updateLinie(l.key, { allInSuma: Number(e.target.value) })} placeholder="0" style={{width:'90px', padding:'5px 8px', borderRadius:'8px', border:'1.5px solid #c4b5fd', fontSize:'13px', fontWeight:700, outline:'none'}} />
                     <span style={{color:'#78716c'}}>Cazare (lei):</span>
-                    <input type="number" value={l.cazareFixa || ''} onChange={e => updateLinie(l.key, { cazareFixa: Number(e.target.value) })} placeholder="0" style={{width:'80px', padding:'5px 8px', borderRadius:'8px', border:'1.5px solid #c4b5fd', fontSize:'13px', fontWeight:700, outline:'none'}} />
+                    <input type="number" onWheel={e => (e.currentTarget as HTMLInputElement).blur()} value={l.cazareFixa || ''} onChange={e => updateLinie(l.key, { cazareFixa: Number(e.target.value) })} placeholder="0" style={{width:'80px', padding:'5px 8px', borderRadius:'8px', border:'1.5px solid #c4b5fd', fontSize:'13px', fontWeight:700, outline:'none'}} />
                     <span style={{color:'#78716c'}}>Avion (lei):</span>
-                    <input type="number" value={l.allInAvionLei || ''} onChange={e => updateLinie(l.key, { allInAvionLei: Number(e.target.value) })} placeholder="0" style={{width:'80px', padding:'5px 8px', borderRadius:'8px', border:'1.5px solid #c4b5fd', fontSize:'13px', fontWeight:700, outline:'none'}} />
+                    <input type="number" onWheel={e => (e.currentTarget as HTMLInputElement).blur()} value={l.allInAvionLei || ''} onChange={e => updateLinie(l.key, { allInAvionLei: Number(e.target.value) })} placeholder="0" style={{width:'80px', padding:'5px 8px', borderRadius:'8px', border:'1.5px solid #c4b5fd', fontSize:'13px', fontWeight:700, outline:'none'}} />
                   </span>
                 )}
                 {l.landed && c.feeNetLanded !== null && c.transportEurEchiv > 0 && (
@@ -1059,7 +1059,7 @@ export default function OfertaPage() {
                 <div style={{display:'flex', gap:'16px', flexWrap:'wrap', marginBottom:'12px', alignItems:'center', padding:'12px 14px', background:UI.bg, borderRadius:UI.radiusSm, border:'1px solid '+UI.line}}>
                   <div style={{display:'flex', alignItems:'center', gap:'8px'}}>
                     <label style={{fontSize:'12px', fontWeight:700, color:'#57534e'}}>Bilete avion (câți zboară):</label>
-                    <input type="number" value={l.bileteAvion || ''} onFocus={e => e.target.select()} onChange={e => updateLinie(l.key, { bileteAvion: Number(e.target.value) })} style={{width:'60px', padding:'7px 9px', borderRadius:'8px', border:'1px solid '+UI.lineStrong, fontSize:'13px', fontFamily:F, textAlign:'center', outline:'none'}} />
+                    <input type="number" onWheel={e => (e.currentTarget as HTMLInputElement).blur()} value={l.bileteAvion || ''} onFocus={e => e.target.select()} onChange={e => updateLinie(l.key, { bileteAvion: Number(e.target.value) })} style={{width:'60px', padding:'7px 9px', borderRadius:'8px', border:'1px solid '+UI.lineStrong, fontSize:'13px', fontFamily:F, textAlign:'center', outline:'none'}} />
                   </div>
                   <label style={{display:'flex', alignItems:'center', gap:'6px', fontSize:'13px', cursor:'pointer'}}>
                     <input type="checkbox" checked={l.restulRutier} onChange={e => updateLinie(l.key, { restulRutier: e.target.checked })} style={{width:'16px', height:'16px', accentColor:'#059669'}} />
@@ -1081,8 +1081,8 @@ export default function OfertaPage() {
 
               {(l.diurnaFixa > 0 || l.cazareFixa > 0) ? (
                 <div style={{display:'flex', gap:'8px', marginBottom:'12px', padding:'10px 12px', background:'#f3efff', border:'1.5px solid #1c1917', borderRadius:'8px'}}>
-                  <div style={{flex:1}}><label style={{...label, color:'#1c1917'}}>Diurnă fixă (lei)</label><input type="number" value={l.diurnaFixa || ''} onFocus={e => e.target.select()} onChange={e => updateLinie(l.key, { diurnaFixa: Number(e.target.value) })} style={inputStyle} /></div>
-                  <div style={{flex:1}}><label style={{...label, color:'#1c1917'}}>Cazare fixă (lei)</label><input type="number" value={l.cazareFixa || ''} onFocus={e => e.target.select()} onChange={e => updateLinie(l.key, { cazareFixa: Number(e.target.value) })} style={inputStyle} /></div>
+                  <div style={{flex:1}}><label style={{...label, color:'#1c1917'}}>Diurnă fixă (lei)</label><input type="number" onWheel={e => (e.currentTarget as HTMLInputElement).blur()} value={l.diurnaFixa || ''} onFocus={e => e.target.select()} onChange={e => updateLinie(l.key, { diurnaFixa: Number(e.target.value) })} style={inputStyle} /></div>
+                  <div style={{flex:1}}><label style={{...label, color:'#1c1917'}}>Cazare fixă (lei)</label><input type="number" onWheel={e => (e.currentTarget as HTMLInputElement).blur()} value={l.cazareFixa || ''} onFocus={e => e.target.select()} onChange={e => updateLinie(l.key, { cazareFixa: Number(e.target.value) })} style={inputStyle} /></div>
                 </div>
               ) : (<>
               <div style={{display:'flex', gap:'8px', marginBottom:'8px'}}>
@@ -1091,8 +1091,8 @@ export default function OfertaPage() {
               </div>
               {l.tipMasa === 'diurna' ? (
                 <div style={{display:'flex', gap:'8px', marginBottom:'12px'}}>
-                  <div style={{flex:1}}><label style={label}>Lei/pers/zi</label><input type="number" value={l.diurnaPerPers || ''} onFocus={e => e.target.select()} onChange={e => updateLinie(l.key, { diurnaPerPers: Number(e.target.value) })} style={inputStyle} /></div>
-                  <div style={{flex:1}}><label style={label}>Zile</label><input type="number" value={l.zile || ''} onFocus={e => e.target.select()} onChange={e => updateLinie(l.key, { zile: Number(e.target.value) })} style={inputStyle} /></div>
+                  <div style={{flex:1}}><label style={label}>Lei/pers/zi</label><input type="number" onWheel={e => (e.currentTarget as HTMLInputElement).blur()} value={l.diurnaPerPers || ''} onFocus={e => e.target.select()} onChange={e => updateLinie(l.key, { diurnaPerPers: Number(e.target.value) })} style={inputStyle} /></div>
+                  <div style={{flex:1}}><label style={label}>Zile</label><input type="number" onWheel={e => (e.currentTarget as HTMLInputElement).blur()} value={l.zile || ''} onFocus={e => e.target.select()} onChange={e => updateLinie(l.key, { zile: Number(e.target.value) })} style={inputStyle} /></div>
                   <div style={{flex:1}}><label style={label}>Total diurnă</label><div style={{padding:'10px 0', fontWeight:700}}>{c.diurnaTotal.toLocaleString('ro-RO')} lei</div></div>
                 </div>
               ) : (
@@ -1104,7 +1104,7 @@ export default function OfertaPage() {
                 <input type="checkbox" checked={l.useAlcool} onChange={e => updateLinie(l.key, { useAlcool: e.target.checked })} style={{width:'16px', height:'16px', accentColor:'#059669'}} />
                 Protocol
               </label>
-              {l.useAlcool && <input type="number" placeholder="Sumă lei" value={l.alcool || ''} onFocus={e => e.target.select()} onChange={e => updateLinie(l.key, { alcool: Number(e.target.value) })} style={{...inputStyle, marginTop:'8px'}} />}
+              {l.useAlcool && <input type="number" onWheel={e => (e.currentTarget as HTMLInputElement).blur()} placeholder="Sumă lei" value={l.alcool || ''} onFocus={e => e.target.select()} onChange={e => updateLinie(l.key, { alcool: Number(e.target.value) })} style={{...inputStyle, marginTop:'8px'}} />}
 
               <div style={{marginTop:'16px', paddingTop:'16px', borderTop:'1px dashed #e7e5e4'}}>
                 <label style={{display:'flex', alignItems:'center', gap:'8px', fontSize:'13px', cursor: destinatar==='client'?'not-allowed':'pointer', fontWeight:700, opacity: destinatar==='client'?0.4:1}}>
@@ -1119,8 +1119,8 @@ export default function OfertaPage() {
                       <button onClick={() => updateLinie(l.key, { cagMod: 'suma' })} style={{padding:'6px 12px', borderRadius:'6px', border:'1.5px solid '+(l.cagMod==='suma'?'#1c1917':'#e7e5e4'), background:l.cagMod==='suma'?'#1c1917':'white', color:l.cagMod==='suma'?'white':'#78716c', fontSize:'12px', fontWeight:700, cursor:'pointer', fontFamily:F}}>€ fix</button>
                     </div>
                     {l.cagMod === 'procent'
-                      ? <input type="number" value={l.cagProcent || ''} onFocus={e => e.target.select()} onChange={e => updateLinie(l.key, { cagProcent: Number(e.target.value) })} style={{...inputStyle, width:'90px'}} placeholder="%" />
-                      : <input type="number" value={l.cagSuma || ''} onFocus={e => e.target.select()} onChange={e => updateLinie(l.key, { cagSuma: Number(e.target.value) })} style={{...inputStyle, width:'110px'}} placeholder="€" />}
+                      ? <input type="number" onWheel={e => (e.currentTarget as HTMLInputElement).blur()} value={l.cagProcent || ''} onFocus={e => e.target.select()} onChange={e => updateLinie(l.key, { cagProcent: Number(e.target.value) })} style={{...inputStyle, width:'90px'}} placeholder="%" />
+                      : <input type="number" onWheel={e => (e.currentTarget as HTMLInputElement).blur()} value={l.cagSuma || ''} onFocus={e => e.target.select()} onChange={e => updateLinie(l.key, { cagSuma: Number(e.target.value) })} style={{...inputStyle, width:'110px'}} placeholder="€" />}
                     <span style={{fontSize:'13px', fontWeight:700, color:'#1c1917'}}>CAG: {c.cag} € {l.cagMod === 'procent' && c.cag === 1000 ? '(plafon)' : ''}</span>
                     <span style={{fontSize:'13px', color:'#78716c'}}>· Net GIGx: <strong>{c.netGigx} €</strong></span>
                   </div>
@@ -1217,12 +1217,12 @@ export default function OfertaPage() {
               <div style={{display:'grid', gridTemplateColumns:'1fr 1fr', gap:'12px'}}>
                 <div>
                   <label style={{fontSize:'11px', fontWeight:700, color:'#78716c', textTransform:'uppercase', display:'block', marginBottom:'4px'}}>Fee (€)</label>
-                  <input type="number" value={newArtist.fee} onFocus={e => e.target.select()} onChange={e => setNewArtist({...newArtist, fee: e.target.value})} placeholder="5000" style={{width:'100%', padding:'10px 12px', borderRadius:'8px', border:'1.5px solid #e7e5e4', fontSize:'14px', fontFamily:F, boxSizing:'border-box'}} />
+                  <input type="number" onWheel={e => (e.currentTarget as HTMLInputElement).blur()} value={newArtist.fee} onFocus={e => e.target.select()} onChange={e => setNewArtist({...newArtist, fee: e.target.value})} placeholder="5000" style={{width:'100%', padding:'10px 12px', borderRadius:'8px', border:'1.5px solid #e7e5e4', fontSize:'14px', fontFamily:F, boxSizing:'border-box'}} />
                 </div>
                 <div>
                   <label style={{fontSize:'11px', fontWeight:700, color:'#78716c', textTransform:'uppercase', display:'block', marginBottom:'4px'}}>Transport /km</label>
                   <div style={{display:'flex', gap:'6px'}}>
-                    <input type="number" step="0.1" value={newArtist.leiKm} onFocus={e => e.target.select()} onChange={e => setNewArtist({...newArtist, leiKm: e.target.value})} placeholder="5" style={{flex:1, padding:'10px 12px', borderRadius:'8px', border:'1.5px solid #e7e5e4', fontSize:'14px', fontFamily:F, boxSizing:'border-box', minWidth:0}} />
+                    <input type="number" onWheel={e => (e.currentTarget as HTMLInputElement).blur()} step="0.1" value={newArtist.leiKm} onFocus={e => e.target.select()} onChange={e => setNewArtist({...newArtist, leiKm: e.target.value})} placeholder="5" style={{flex:1, padding:'10px 12px', borderRadius:'8px', border:'1.5px solid #e7e5e4', fontSize:'14px', fontFamily:F, boxSizing:'border-box', minWidth:0}} />
                     <select value={newArtist.transportMoneda} onChange={e => setNewArtist({...newArtist, transportMoneda: e.target.value})} style={{padding:'10px 8px', borderRadius:'8px', border:'1.5px solid #e7e5e4', fontSize:'13px', fontFamily:F, background:'white'}}>
                       <option value="lei">lei</option><option value="euro">€</option>
                     </select>
@@ -1237,7 +1237,7 @@ export default function OfertaPage() {
                 </div>
                 <div>
                   <label style={{fontSize:'11px', fontWeight:700, color:'#78716c', textTransform:'uppercase', display:'block', marginBottom:'4px'}}>Diurnă fixă (lei, opțional)</label>
-                  <input type="number" value={newArtist.diurnaFixa} onFocus={e => e.target.select()} onChange={e => setNewArtist({...newArtist, diurnaFixa: e.target.value})} placeholder="ex: 2500" style={{width:'100%', padding:'10px 12px', borderRadius:'8px', border:'1.5px solid #e7e5e4', fontSize:'14px', fontFamily:F, boxSizing:'border-box'}} />
+                  <input type="number" onWheel={e => (e.currentTarget as HTMLInputElement).blur()} value={newArtist.diurnaFixa} onFocus={e => e.target.select()} onChange={e => setNewArtist({...newArtist, diurnaFixa: e.target.value})} placeholder="ex: 2500" style={{width:'100%', padding:'10px 12px', borderRadius:'8px', border:'1.5px solid #e7e5e4', fontSize:'14px', fontFamily:F, boxSizing:'border-box'}} />
                 </div>
               </div>
               <div>
@@ -1262,7 +1262,7 @@ export default function OfertaPage() {
                       <button onClick={() => delVariantaNou(i)} style={{padding:'0 10px', background:'#fef2f2', color:'#dc2626', border:'none', borderRadius:'6px', fontSize:'16px', cursor:'pointer'}}>×</button>
                     </div>
                     <div style={{display:'flex', gap:'6px'}}>
-                      <input type="number" value={v.fee} onFocus={e => e.target.select()} onChange={e => updVariantaNou(i, { fee: e.target.value })} placeholder="fee €" style={{flex:1, padding:'7px 9px', borderRadius:'6px', border:'1px solid #e7e5e4', fontSize:'12px', fontFamily:F, boxSizing:'border-box'}} />
+                      <input type="number" onWheel={e => (e.currentTarget as HTMLInputElement).blur()} value={v.fee} onFocus={e => e.target.select()} onChange={e => updVariantaNou(i, { fee: e.target.value })} placeholder="fee €" style={{flex:1, padding:'7px 9px', borderRadius:'6px', border:'1px solid #e7e5e4', fontSize:'12px', fontFamily:F, boxSizing:'border-box'}} />
                       <input value={v.durata} onChange={e => updVariantaNou(i, { durata: e.target.value })} placeholder="2 × 40 min" style={{flex:1, padding:'7px 9px', borderRadius:'6px', border:'1px solid #e7e5e4', fontSize:'12px', fontFamily:F, boxSizing:'border-box'}} />
                     </div>
                   </div>
@@ -1271,11 +1271,11 @@ export default function OfertaPage() {
               <div style={{display:'grid', gridTemplateColumns:'1fr 1fr', gap:'12px'}}>
                 <div>
                   <label style={{fontSize:'11px', fontWeight:700, color:'#78716c', textTransform:'uppercase', display:'block', marginBottom:'4px'}}>Bilete avion</label>
-                  <input type="number" value={newArtist.bileteAvion} onFocus={e => e.target.select()} onChange={e => setNewArtist({...newArtist, bileteAvion: e.target.value})} placeholder="0" style={{width:'100%', padding:'10px 12px', borderRadius:'8px', border:'1.5px solid #e7e5e4', fontSize:'14px', fontFamily:F, boxSizing:'border-box'}} />
+                  <input type="number" onWheel={e => (e.currentTarget as HTMLInputElement).blur()} value={newArtist.bileteAvion} onFocus={e => e.target.select()} onChange={e => setNewArtist({...newArtist, bileteAvion: e.target.value})} placeholder="0" style={{width:'100%', padding:'10px 12px', borderRadius:'8px', border:'1.5px solid #e7e5e4', fontSize:'14px', fontFamily:F, boxSizing:'border-box'}} />
                 </div>
                 <div>
                   <label style={{fontSize:'11px', fontWeight:700, color:'#78716c', textTransform:'uppercase', display:'block', marginBottom:'4px'}}>Protocol (lei)</label>
-                  <input type="number" value={newArtist.alcool} onFocus={e => e.target.select()} onChange={e => setNewArtist({...newArtist, alcool: e.target.value})} placeholder="0" style={{width:'100%', padding:'10px 12px', borderRadius:'8px', border:'1.5px solid #e7e5e4', fontSize:'14px', fontFamily:F, boxSizing:'border-box'}} />
+                  <input type="number" onWheel={e => (e.currentTarget as HTMLInputElement).blur()} value={newArtist.alcool} onFocus={e => e.target.select()} onChange={e => setNewArtist({...newArtist, alcool: e.target.value})} placeholder="0" style={{width:'100%', padding:'10px 12px', borderRadius:'8px', border:'1.5px solid #e7e5e4', fontSize:'14px', fontFamily:F, boxSizing:'border-box'}} />
                 </div>
               </div>
               <div style={{fontSize:'11px', color:'#a8a29e', marginTop:'-4px'}}>Poza se caută automat pe Chartex după nume.</div>
