@@ -92,7 +92,7 @@ export default function ClientDashboard() {
   const [showExpertModal, setShowExpertModal] = useState(false)
   const [selectedSeturi, setSelectedSeturi] = useState<Record<number,string>>({})
 
-  const steps = ['event', 'atmosfera', 'artist', 'venue', 'summary']
+  const steps = ['event', 'atmosfera', 'artist', 'summary']
   // tipul vine din butoanele de pe prima pagina: pornim direct de la pasul 2
   useEffect(() => {
     const tip = new URLSearchParams(window.location.search).get('tip')
@@ -311,7 +311,7 @@ export default function ClientDashboard() {
             tipEntertainment={tipEntertainment}
             selectedArtists={selectedArtists} setSelectedArtists={setSelectedArtists}
             onBack={() => setStep('atmosfera')}
-            onNext={() => { if(selectedArtists.length > 0) setStep('venue') }}
+            onNext={() => { if(selectedArtists.length > 0) setStep('summary') }}
           />
         )}
 
@@ -429,7 +429,7 @@ export default function ClientDashboard() {
             setSelectedSeturi={(artistId: number, val: string) => setSelectedSeturi(prev => ({...prev, [artistId]: val}))}
             requestSent={requestSent}
             onTrimite={handleTrimite}
-            onBack={() => setStep('venue')}
+            onBack={() => setStep('artist')}
             onPretExact={() => setShowPretExactModal(true)}
           />
         )}
