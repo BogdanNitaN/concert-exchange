@@ -113,8 +113,9 @@ export default async function ArtistPage({ params }: { params: Promise<{ slug: s
       {/* Navbar */}
       <nav style={{background:'white', borderBottom:'1px solid #e7e5e4', position:'sticky', top:0, zIndex:100}}>
         <div style={{maxWidth:'900px', margin:'0 auto', padding:'0 24px', height:'56px', display:'flex', alignItems:'center', justifyContent:'space-between'}}>
-          <Link href="/" style={{fontWeight:800, fontSize:'16px', color:'#1c1917', textDecoration:'none', letterSpacing:'-0.5px'}}>
-            GIG<span style={{color:'#059669'}}>x</span>
+          <Link href="/" style={{display:'inline-flex', alignItems:'center', gap:'7px', fontWeight:800, fontSize:'16px', color:'#1c1917', textDecoration:'none', letterSpacing:'-0.5px'}}>
+            <img src="/gigx-mark.png" width={20} height={20} alt="" style={{display:'block'}} />
+            <span>GIG<span style={{color:'#059669'}}>x</span></span>
           </Link>
           <Link href="/dashboard/client" style={{background:'#1c1917', color:'white', padding:'8px 18px', borderRadius:'10px', fontSize:'12px', fontWeight:700, textDecoration:'none'}}>
             Caută artiști
