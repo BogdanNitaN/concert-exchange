@@ -1,6 +1,6 @@
 'use client'
 
-import { ARTISTS_DATA } from '@/lib/artists-data'
+import { useState, useEffect } from 'react'
 import { Star, TrendingUp, X } from 'lucide-react'
 
 interface Props {
@@ -68,7 +68,13 @@ const getMatchScore = (artistGenres: string[], atmosfera: string[]) => {
 
 
 export default function ArtistStep({ budget, setBudget, eventTypeLabel, atmosfera = [], tipEntertainment = [], selectedArtists, setSelectedArtists, onBack, onNext }: Props) {
-  const ARTISTS = ARTISTS_DATA as unknown as any[]
+  const [ARTISTS, setArtists] = useState<any[]>([])
+  useEffect(() => {
+    fetch('/api/artisti-client')
+      .then(r => r.json())
+      .then(d => setArtists(d.artisti || []))
+      .catch(() => setArtists([]))
+  }, [])
   const filteredByType = ARTISTS.filter(a => matchesEntertainment(a.genres, tipEntertainment))
   const inBudgetArtists = budget > 0 ? filteredByType.filter(a => a.feeMax <= budget) : filteredByType
   const overBudgetArtists = budget > 0 ? filteredByType.filter(a => a.feeMax > budget && a.feeMin <= budget * 1.5) : []
