@@ -32,7 +32,7 @@ export default function PriceExactModal({ isOpen, onClose, artists = [], eventDa
     if (!phone || !name || honeypot) return
 
     const lines = [
-      'Cerere pret exact — Concert Exchange',
+      'Cerere pret exact — GIGx',
       '',
       'ARTISTI SOLICITATI:',
       artistNames,
@@ -50,7 +50,7 @@ export default function PriceExactModal({ isOpen, onClose, artists = [], eventDa
     ]
 
     const msg = encodeURIComponent(lines.join('\n'))
-    const subject = encodeURIComponent('Cerere pret exact — Concert Exchange')
+    const subject = encodeURIComponent('Cerere pret exact — GIGx')
     const body = encodeURIComponent(lines.join('\n'))
 
     window.open(`https://wa.me/40751144109?text=${msg}`, '_blank')

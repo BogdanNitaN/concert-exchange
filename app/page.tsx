@@ -14,7 +14,7 @@ export default function HomePage() {
             GIG<span style={{color:'#059669'}}>x</span>
           </div>
           <div style={{display:'flex', alignItems:'center', gap:'8px'}}>
-            <Link href="/roster" style={{background:'#1c1917', color:'white', padding:'10px 22px', borderRadius:'12px', fontSize:'13px', fontWeight:700, textDecoration:'none', display:'flex', alignItems:'center', gap:'6px'}}>
+            <Link href="/roster" style={{background:'#101014', color:'white', padding:'10px 22px', borderRadius:'12px', fontSize:'13px', fontWeight:700, textDecoration:'none', display:'flex', alignItems:'center', gap:'6px'}}>
               Vezi artiștii <ArrowRight size={14} strokeWidth={2} />
             </Link>
           </div>
@@ -45,11 +45,11 @@ export default function HomePage() {
           21 de ani de relații în industrie.
         </p>
         <div style={{display:'flex', alignItems:'center', justifyContent:'center', gap:'12px', flexWrap:'wrap', marginBottom:'56px'}}>
-          <Link href="/roster" style={{background:'#1c1917', color:'white', padding:'16px 40px', borderRadius:'14px', fontSize:'15px', fontWeight:700, textDecoration:'none', display:'flex', alignItems:'center', gap:'8px', boxShadow:'0 8px 30px rgba(0,0,0,0.18)'}}>
+          <Link href="/roster" style={{background:'#101014', color:'white', padding:'16px 40px', borderRadius:'14px', fontSize:'15px', fontWeight:700, textDecoration:'none', display:'flex', alignItems:'center', gap:'8px', boxShadow:'0 8px 30px rgba(0,0,0,0.18)'}}>
             Artiști Forward <ArrowRight size={16} strokeWidth={2.5} />
           </Link>
           <Link href="/prom" style={{background:'white', color:'#1c1917', padding:'16px 40px', borderRadius:'14px', fontSize:'15px', fontWeight:700, textDecoration:'none', border:'1.5px solid #e7e5e4'}}>
-            Baluri / Prom
+            Calculează bugetul balului
           </Link>
         </div>
         <div style={{display:'flex', alignItems:'center', justifyContent:'center', gap:'28px', flexWrap:'wrap', fontSize:'12px', color:'#78716c', fontWeight:500}}>
@@ -74,7 +74,7 @@ export default function HomePage() {
             {n:'1.617', l:'Evenimente anual'},
             {n:'18M€+', l:'Contractați în 3 ani'},
             {n:'30 min', l:'Răspuns mediu'},
-            {n:'20 ani', l:'În industrie'},
+            {n:'21 ani', l:'În industrie'},
           ].map((s, i) => (
             <div key={i}>
               <div style={{fontWeight:800, fontSize:'44px', color:'#1c1917', marginBottom:'6px', letterSpacing:'-1.5px'}}>{s.n}</div>
@@ -87,7 +87,7 @@ export default function HomePage() {
       {/* Showcase */}
       <section style={{background:'white', padding:'80px 24px', borderTop:'1px solid #e7e5e4', borderBottom:'1px solid #e7e5e4'}}>
         <div style={{maxWidth:'1000px', margin:'0 auto', textAlign:'center'}}>
-          <div style={{fontSize:'11px', fontWeight:700, color:'#a8a29e', textTransform:'uppercase', letterSpacing:'0.15em', marginBottom:'16px'}}>De două decenii</div>
+          <div style={{fontSize:'11px', fontWeight:700, color:'#a8a29e', textTransform:'uppercase', letterSpacing:'0.15em', marginBottom:'16px'}}>De peste două decenii</div>
           <h2 style={{fontSize:'42px', fontWeight:800, color:'#1c1917', letterSpacing:'-1.5px', margin:'0 0 14px', lineHeight:1.1}}>
             Cei care contează,<br/>trec pe aici.
           </h2>
@@ -133,7 +133,7 @@ export default function HomePage() {
       </section>
 
       {/* Categorii */}
-      <section style={{background:'#1c1917', padding:'100px 24px'}}>
+      <section style={{background:'#101014', padding:'100px 24px'}}>
         <div style={{maxWidth:'1000px', margin:'0 auto'}}>
           <div style={{textAlign:'center', marginBottom:'48px'}}>
             <div style={{fontSize:'11px', fontWeight:700, color:'#eacda3', textTransform:'uppercase', letterSpacing:'0.15em', marginBottom:'14px'}}>Evenimente</div>
@@ -236,7 +236,7 @@ export default function HomePage() {
       </section>
 
       {/* Footer */}
-      <footer style={{background:'#1c1917', padding:'56px 24px 36px', color:'rgba(255,255,255,0.7)'}}>
+      <footer style={{background:'#101014', padding:'56px 24px 36px', color:'rgba(255,255,255,0.7)'}}>
         <div style={{maxWidth:'1100px', margin:'0 auto'}}>
           <div style={{display:'grid', gridTemplateColumns:'repeat(auto-fit, minmax(180px, 1fr))', gap:'40px', marginBottom:'40px'}}>
             <div>
@@ -260,7 +260,7 @@ export default function HomePage() {
             </div>
             <div>
               <div style={{fontSize:'11px', fontWeight:700, color:'white', textTransform:'uppercase', letterSpacing:'0.1em', marginBottom:'14px'}}>Contact</div>
-              <div style={{fontSize:'13px', lineHeight:1.6, color:'rgba(255,255,255,0.7)'}}>contact@gigx.ro</div>
+              <div style={{fontSize:'13px', lineHeight:1.6, color:'rgba(255,255,255,0.7)'}}>hello@gigx.ro</div>
             </div>
           </div>
           <div style={{borderTop:'1px solid rgba(255,255,255,0.1)', paddingTop:'28px', fontSize:'12px', textAlign:'center', color:'rgba(255,255,255,0.5)'}}>

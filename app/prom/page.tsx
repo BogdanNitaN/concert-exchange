@@ -348,7 +348,7 @@ export default function PromPage() {
   )
 
   const SelectedBar = () => selection.length === 0 ? null : (
-    <div style={{background:'#1c1917', borderRadius:'12px', padding:'12px 16px', marginBottom:'20px', display:'flex', alignItems:'center', justifyContent:'space-between', flexWrap:'wrap', gap:'8px'}}>
+    <div style={{background:'#101014', borderRadius:'12px', padding:'12px 16px', marginBottom:'20px', display:'flex', alignItems:'center', justifyContent:'space-between', flexWrap:'wrap', gap:'8px'}}>
       <div style={{display:'flex', alignItems:'center', gap:'10px', flexWrap:'wrap'}}>
         {selection.map((a, i) => {
           const t = tierInfo(a.tier)
@@ -372,7 +372,7 @@ export default function PromPage() {
   )
 
   const Footer = () => (
-    <footer style={{background:'#1c1917', padding:'48px 24px 32px'}}>
+    <footer style={{background:'#101014', padding:'48px 24px 32px'}}>
       <div style={{maxWidth:'1100px', margin:'0 auto'}}>
         <div style={{display:'flex', justifyContent:'space-between', flexWrap:'wrap', gap:'32px', marginBottom:'32px'}}>
           <div style={{maxWidth:'260px'}}>
@@ -617,7 +617,7 @@ export default function PromPage() {
                         </div>
                       </div>
 
-                      <div style={{background:'#1c1917', borderRadius:'14px', padding:'16px 18px', display:'flex', alignItems:'center', justifyContent:'space-between', cursor:'pointer'}}
+                      <div style={{background:'#101014', borderRadius:'14px', padding:'16px 18px', display:'flex', alignItems:'center', justifyContent:'space-between', cursor:'pointer'}}
                         onClick={() => openExpert([a.name])}>
                         <div>
                           <div style={{fontWeight:800, fontSize:'13px', color:'white', marginBottom:'2px'}}>Prețul exact, confirmat în 30 min.</div>
@@ -654,7 +654,7 @@ export default function PromPage() {
               Înapoi
             </button>
             <button onClick={submit} disabled={submitting}
-              style={{flex:1, background:'#1c1917', color:'white', padding:'14px', borderRadius:'14px', border:'none', cursor: submitting ? 'not-allowed' : 'pointer', fontSize:'14px', fontWeight:700, fontFamily:F, display:'flex', alignItems:'center', justifyContent:'center', gap:'8px'}}>
+              style={{flex:1, background:'#101014', color:'white', padding:'14px', borderRadius:'14px', border:'none', cursor: submitting ? 'not-allowed' : 'pointer', fontSize:'14px', fontWeight:700, fontFamily:F, display:'flex', alignItems:'center', justifyContent:'center', gap:'8px'}}>
               {submitting ? 'Se trimite...' : 'Trimite cererea'} <ArrowRight size={16} strokeWidth={2} />
             </button>
           </div>
@@ -793,7 +793,7 @@ export default function PromPage() {
             {selection.length === 0 ? (
               <>
                 <button onClick={() => { catalogRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' }) }}
-                  style={{width:'100%', background:'#1c1917', color:'white', padding:'16px', borderRadius:'14px', border:'none', cursor:'pointer', fontSize:'15px', fontWeight:700, fontFamily:F, display:'flex', alignItems:'center', justifyContent:'center', gap:'8px'}}>
+                  style={{width:'100%', background:'#101014', color:'white', padding:'16px', borderRadius:'14px', border:'none', cursor:'pointer', fontSize:'15px', fontWeight:700, fontFamily:F, display:'flex', alignItems:'center', justifyContent:'center', gap:'8px'}}>
                   Alege artiștii din listă ↓
                 </button>
                 <div style={{fontSize:'12px', color:'#a8a29e', textAlign:'center', marginTop:'8px'}}>Completează formularul și alege până la {MAX_ARTISTS} artiști din listă.</div>
@@ -910,7 +910,7 @@ export default function PromPage() {
 
       {/* bara fixa jos - apare cand exista selectie */}
       {selection.length > 0 && (
-        <div style={{position:'fixed', bottom:0, left:0, right:0, background:'#1c1917', padding:'14px 24px', display:'flex', alignItems:'center', justifyContent:'space-between', gap:'16px', flexWrap:'wrap', zIndex:200, boxShadow:'0 -4px 20px rgba(0,0,0,0.15)'}}>
+        <div style={{position:'fixed', bottom:0, left:0, right:0, background:'#101014', padding:'14px 24px', display:'flex', alignItems:'center', justifyContent:'space-between', gap:'16px', flexWrap:'wrap', zIndex:200, boxShadow:'0 -4px 20px rgba(0,0,0,0.15)'}}>
           <div style={{display:'flex', alignItems:'center', gap:'10px', flexWrap:'wrap'}}>
             {selection.map((a, i) => {
               const t = tierInfo(a.tier)
