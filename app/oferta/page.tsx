@@ -475,6 +475,19 @@ export default function OfertaPage() {
     if (km !== null) return km <= 40
     return LOCALITATI_IF.some(loc => orasEv === normOras(loc) || orasEv.includes(normOras(loc)))
   }
+  const CAMP_PRET: Record<string, string> = { Bal: 'fee_bal', Privat: 'fee_privat', Diaspora: 'fee_diaspora' }
+  function pretPentruTip(art: any, tip: string): number | null {
+    const camp = CAMP_PRET[tip]
+    const v = camp ? art?.[camp] : null
+    return (typeof v === 'number' && v > 0) ? v : null
+  }
+  function aplicaTipEveniment(tip: string) {
+    setLinii(prev => prev.map(l => {
+      const p = pretPentruTip(l.artist, tip)
+      return p ? { ...l, tipPret: tip, feeLista: p, fee: p } : { ...l, tipPret: tip }
+    }))
+  }
+
   function calcLinie(l: Linie) {
     const lc = l.allIn ? { ...l, fee: l.allInSuma, feeLista: l.allInSuma, landed: false } : l
     return calcLinieOferta(lc, { km, eurRate, useAdaos, adaosProcent, local: esteLocalBucIlfov(l) })
@@ -1133,6 +1146,25 @@ export default function OfertaPage() {
         {/* cheia de control + export */}
         {linii.length > 0 && (
           <div style={{background:UI.dark, padding: isMobile ? '20px' : '24px', borderRadius:UI.radius, marginTop:'8px', boxShadow:UI.shadowHover}}>
+            {/* TIPUL EVENIMENTULUI */}
+            <div style={{marginBottom:'16px', padding:'16px', borderRadius:UI.radiusSm, background:'rgba(0,0,0,0.15)', border:'1px solid rgba(0,0,0,0.5)'}}>
+              <div style={{fontSize:'13px', fontWeight:700, color:'rgba(255,255,255,0.7)', marginBottom:'12px'}}>Tipul evenimentului</div>
+              <div style={{display:'flex', gap:'8px', flexWrap:'wrap'}}>
+                <button key='Standard' onClick={() => aplicaTipEveniment('Standard')}
+                  style={{padding:'9px 14px', borderRadius:UI.radiusSm, border:'1.5px solid ' + (linii.every(x => x.tipPret === 'Standard') ? UI.green : UI.lineStrong), background: linii.every(x => x.tipPret === 'Standard') ? UI.green : 'white', color: linii.every(x => x.tipPret === 'Standard') ? 'white' : UI.sub, fontSize:'13px', fontWeight:700, cursor:'pointer', fontFamily:F}}>Standard</button>
+                <button key='Bal' onClick={() => aplicaTipEveniment('Bal')}
+                  style={{padding:'9px 14px', borderRadius:UI.radiusSm, border:'1.5px solid ' + (linii.every(x => x.tipPret === 'Bal') ? UI.green : UI.lineStrong), background: linii.every(x => x.tipPret === 'Bal') ? UI.green : 'white', color: linii.every(x => x.tipPret === 'Bal') ? 'white' : UI.sub, fontSize:'13px', fontWeight:700, cursor:'pointer', fontFamily:F}}>Bal</button>
+                <button key='Privat' onClick={() => aplicaTipEveniment('Privat')}
+                  style={{padding:'9px 14px', borderRadius:UI.radiusSm, border:'1.5px solid ' + (linii.every(x => x.tipPret === 'Privat') ? UI.green : UI.lineStrong), background: linii.every(x => x.tipPret === 'Privat') ? UI.green : 'white', color: linii.every(x => x.tipPret === 'Privat') ? 'white' : UI.sub, fontSize:'13px', fontWeight:700, cursor:'pointer', fontFamily:F}}>Privat</button>
+                <button key='Corporate' onClick={() => aplicaTipEveniment('Corporate')}
+                  style={{padding:'9px 14px', borderRadius:UI.radiusSm, border:'1.5px solid ' + (linii.every(x => x.tipPret === 'Corporate') ? UI.green : UI.lineStrong), background: linii.every(x => x.tipPret === 'Corporate') ? UI.green : 'white', color: linii.every(x => x.tipPret === 'Corporate') ? 'white' : UI.sub, fontSize:'13px', fontWeight:700, cursor:'pointer', fontFamily:F}}>Corporate</button>
+                <button key='Revelion' onClick={() => aplicaTipEveniment('Revelion')}
+                  style={{padding:'9px 14px', borderRadius:UI.radiusSm, border:'1.5px solid ' + (linii.every(x => x.tipPret === 'Revelion') ? UI.green : UI.lineStrong), background: linii.every(x => x.tipPret === 'Revelion') ? UI.green : 'white', color: linii.every(x => x.tipPret === 'Revelion') ? 'white' : UI.sub, fontSize:'13px', fontWeight:700, cursor:'pointer', fontFamily:F}}>Revelion</button>
+                <button key='Diaspora' onClick={() => aplicaTipEveniment('Diaspora')}
+                  style={{padding:'9px 14px', borderRadius:UI.radiusSm, border:'1.5px solid ' + (linii.every(x => x.tipPret === 'Diaspora') ? UI.green : UI.lineStrong), background: linii.every(x => x.tipPret === 'Diaspora') ? UI.green : 'white', color: linii.every(x => x.tipPret === 'Diaspora') ? 'white' : UI.sub, fontSize:'13px', fontWeight:700, cursor:'pointer', fontFamily:F}}>Diaspora</button>
+              </div>
+              <div style={{fontSize:'12px', color:'#a8a29e', marginTop:'8px'}}>Se aplică tuturor artiștilor; unde nu există preț pe categoria aleasă rămâne cel de plecare. Poți schimba individual pe fiecare linie.</div>
+            </div>
             {/* CHEIA DE CONTROL */}
             <div style={{marginBottom:'16px', padding:'16px', borderRadius:UI.radiusSm, background: destinatar ? 'rgba(0,0,0,0.15)' : 'rgba(0,0,0,0.18)', border:'1px solid ' + (destinatar ? 'rgba(0,0,0,0.5)' : 'rgba(0,0,0,0.5)')}}>
               <div style={{fontSize:'13px', fontWeight:700, color: destinatar ? '#6ee7b7' : 'rgba(255,255,255,0.7)', marginBottom:'12px', display:'flex', alignItems:'center', gap:'6px'}}>
