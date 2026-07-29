@@ -54,7 +54,8 @@ function textOferta(a: any, audienta: string, tab: string) {
   if (lg.landed) ll.push('- Transport: inclus in onorariu (oriunde in RO)')
   else if (lg.leiKm) ll.push('- Transport: ' + lg.leiKm + ' ' + (lg.transportMoneda || 'lei') + '/km + TVA')
   if (lg.bileteAvion) ll.push('- Bilete avion: ' + lg.bileteAvion + ' (distante mari)')
-  if (lg.cazare) ll.push('- Cazare: ' + lg.cazare)
+  if (lg.cazareFixa > 0) ll.push('- Cazare: ' + Number(lg.cazareFixa).toLocaleString('ro-RO') + ' lei')
+  else if (lg.cazare) ll.push('- Cazare: ' + lg.cazare)
   if (lg.diurna) ll.push('- Diurna / masa: ' + lg.diurna)
   if (ll.length) t += '*DETALII LOGISTICE:*' + '\n' + ll.join('\n') + '\n' + '\n'
   t += lg.landed ? 'Onorariul nu include cazare si masa.' : 'Onorariul nu include transport, cazare si masa.'
@@ -97,7 +98,8 @@ function CardArtist({ a, audienta, token, tabInitial, destinatar, ascundeContact
   if (lg.landed) logi.push(['Transport', 'inclus (oriunde in RO)'])
   else if (lg.leiKm) logi.push(['Transport', lg.leiKm + ' ' + (lg.transportMoneda || 'lei') + '/km'])
   if (lg.bileteAvion) logi.push(['Bilete avion', String(lg.bileteAvion)])
-  if (lg.cazare) logi.push(['Cazare', lg.cazare])
+  if (lg.cazareFixa > 0) logi.push(['Cazare', Number(lg.cazareFixa).toLocaleString('ro-RO') + ' lei'])
+  else if (lg.cazare) logi.push(['Cazare', lg.cazare])
   if (lg.diurna) logi.push(['Diurna / masa', String(lg.diurna)])
 
   const docs: [string, string][] = []
@@ -324,7 +326,8 @@ function ListaRoster({ artisti, audienta, token, ascundeContacte }: { artisti: a
         if (lg.landed) li.push('Transport: inclus (oriunde in RO)')
         else if (lg.leiKm) li.push('Transport: ' + lg.leiKm + ' ' + (lg.transportMoneda || 'lei') + '/km + TVA')
         if (lg.bileteAvion) li.push('Bilete avion: ' + lg.bileteAvion)
-        if (lg.cazare) li.push('Cazare: ' + lg.cazare)
+        if (lg.cazareFixa > 0) li.push('Cazare: ' + Number(lg.cazareFixa).toLocaleString('ro-RO') + ' lei')
+        else if (lg.cazare) li.push('Cazare: ' + lg.cazare)
         doc.setTextColor(140,140,140)
         doc.text(noDia(li.join('  ·  ')), tx, y)
         y += 14
@@ -466,7 +469,7 @@ function ListaRoster({ artisti, audienta, token, ascundeContacte }: { artisti: a
                     <div>Durata show: <strong style={{color:UI.ink}}>{lg.durata || '45 min'}</strong></div>
                     {lg.landed ? <div>Transport: <strong style={{color:UI.green}}>inclus in onorariu (oriunde in RO)</strong></div> : lg.leiKm ? <div>Transport: <strong style={{color:UI.ink}}>{lg.leiKm} {lg.transportMoneda || 'lei'}/km +TVA</strong></div> : null}
                     {lg.bileteAvion && <div>Bilete avion: <strong style={{color:UI.ink}}>{lg.bileteAvion}</strong></div>}
-                    {lg.cazare && <div>Cazare: <strong style={{color:UI.ink}}>{lg.cazare}</strong></div>}
+                    {(lg.cazareFixa > 0 || lg.cazare) && <div>Cazare: <strong style={{color:UI.ink}}>{lg.cazareFixa > 0 ? Number(lg.cazareFixa).toLocaleString('ro-RO') + ' lei' : lg.cazare}</strong></div>}
                     {lg.diurna && <div>Diurna / masa: <strong style={{color:UI.ink}}>{lg.diurna}</strong></div>}
                   </div>
                   {docs.length > 0 && (
