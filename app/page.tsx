@@ -14,9 +14,8 @@ export default function HomePage() {
             GIG<span style={{color:'#059669'}}>x</span>
           </div>
           <div style={{display:'flex', alignItems:'center', gap:'8px'}}>
-            <Link href="/login" style={{fontSize:'13px', fontWeight:600, color:'#78716c', textDecoration:'none', padding:'8px 16px'}}>Conectare</Link>
-            <Link href="/signup" style={{background:'#1c1917', color:'white', padding:'10px 22px', borderRadius:'12px', fontSize:'13px', fontWeight:700, textDecoration:'none', display:'flex', alignItems:'center', gap:'6px'}}>
-              Înregistrare <ArrowRight size={14} strokeWidth={2} />
+            <Link href="/roster" style={{background:'#1c1917', color:'white', padding:'10px 22px', borderRadius:'12px', fontSize:'13px', fontWeight:700, textDecoration:'none', display:'flex', alignItems:'center', gap:'6px'}}>
+              Vezi artiștii <ArrowRight size={14} strokeWidth={2} />
             </Link>
           </div>
         </div>
@@ -43,14 +42,14 @@ export default function HomePage() {
         <p style={{fontSize:'19px', color:'#57534e', maxWidth:'620px', margin:'0 auto 40px', lineHeight:1.6, fontWeight:400}}>
           Booking artistic, făcut cu rigoare.<br/>
           30 de minute până la prețul real.<br/>
-          20 de ani de relații în industrie.
+          21 de ani de relații în industrie.
         </p>
         <div style={{display:'flex', alignItems:'center', justifyContent:'center', gap:'12px', flexWrap:'wrap', marginBottom:'56px'}}>
-          <Link href="/dashboard/client" style={{background:'#1c1917', color:'white', padding:'16px 40px', borderRadius:'14px', fontSize:'15px', fontWeight:700, textDecoration:'none', display:'flex', alignItems:'center', gap:'8px', boxShadow:'0 8px 30px rgba(0,0,0,0.18)'}}>
-            Cere o ofertă <ArrowRight size={16} strokeWidth={2.5} />
+          <Link href="/roster" style={{background:'#1c1917', color:'white', padding:'16px 40px', borderRadius:'14px', fontSize:'15px', fontWeight:700, textDecoration:'none', display:'flex', alignItems:'center', gap:'8px', boxShadow:'0 8px 30px rgba(0,0,0,0.18)'}}>
+            Artiști Forward <ArrowRight size={16} strokeWidth={2.5} />
           </Link>
-          <Link href="#how" style={{background:'white', color:'#1c1917', padding:'16px 40px', borderRadius:'14px', fontSize:'15px', fontWeight:700, textDecoration:'none', border:'1.5px solid #e7e5e4'}}>
-            Vezi cum funcționează
+          <Link href="/prom" style={{background:'white', color:'#1c1917', padding:'16px 40px', borderRadius:'14px', fontSize:'15px', fontWeight:700, textDecoration:'none', border:'1.5px solid #e7e5e4'}}>
+            Baluri / Prom
           </Link>
         </div>
         <div style={{display:'flex', alignItems:'center', justifyContent:'center', gap:'28px', flexWrap:'wrap', fontSize:'12px', color:'#78716c', fontWeight:500}}>
@@ -116,7 +115,7 @@ export default function HomePage() {
           {[
             {n:'01', icon: Search, title:'Cere', desc:'Ne spui data, orașul, bugetul. Filtrăm artiștii potriviți.', color:'#059669'},
             {n:'02', icon: MessageCircle, title:'Primește', desc:'Răspundem în 30 de minute. Prețul real. Disponibilitatea reală.', color:'#7c3aed'},
-            {n:'03', icon: Award, title:'Confirmă', desc:'Artistul tău, blocat în calendar. Garantat de noi, livrat de o echipă cu 20 de ani în industrie.', color:'#eacda3'},
+            {n:'03', icon: Award, title:'Confirmă', desc:'Artistul tău, blocat în calendar. Garantat de noi, livrat de o echipă cu 21 de ani în industrie.', color:'#eacda3'},
           ].map((s, i) => {
             const Icon = s.icon
             return (
@@ -159,7 +158,7 @@ export default function HomePage() {
             ].map((cat, i) => {
               const Icon = cat.Icon
               return (
-                <Link key={i} href="/dashboard/client" style={{background:'rgba(255,255,255,0.05)', border:'1px solid rgba(255,255,255,0.1)', borderRadius:'16px', padding:'28px 24px', textAlign:'center', textDecoration:'none', transition:'all 0.2s'}}>
+                <Link key={i} href="/roster" style={{background:'rgba(255,255,255,0.05)', border:'1px solid rgba(255,255,255,0.1)', borderRadius:'16px', padding:'28px 24px', textAlign:'center', textDecoration:'none', transition:'all 0.2s'}}>
                   <div style={{display:'flex', justifyContent:'center', marginBottom:'14px'}}>
                     <Icon size={28} color='#eacda3' strokeWidth={1.5} />
                   </div>
@@ -208,7 +207,7 @@ export default function HomePage() {
           {[
             {q:'Costă să trimit o cerere?', a:'Nu. Cererea este gratuită. Plătești doar artistul confirmat.'},
             {q:'Ce înseamnă tier-ul A++ / A+ / A?', a:'Box Office Power. Indicator de impact al artistului la public. A++ Icon — Headliner (10.000€+). A+ Premium — Power Draw (5.000€–10.000€). A Select — Solid (până la 5.000€).'},
-            {q:'Cum sunt verificați artiștii?', a:'Manual. De echipă cu 20 de ani de experiență. Datele de performanță sunt agregate live de la platformele oficiale (Spotify, YouTube, TikTok, Instagram) prin parteneriat cu Chartex.'},
+            {q:'Cum sunt verificați artiștii?', a:'Manual. De echipă cu 21 de ani de experiență. Datele de performanță sunt agregate live de la platformele oficiale (Spotify, YouTube, TikTok, Instagram) prin parteneriat cu Chartex.'},
             {q:'Pot anula o cerere?', a:'Da, oricând înainte de confirmarea finală. Până atunci, totul este flexibil.'},
             {q:'De ce să nu sun direct artistul?', a:'Pentru că rapiditatea contează. Artiștii ne știu, lucrăm cu ei zilnic. Tu primești răspuns la preț, calendar și condiții când ai nevoie — 24/7, în 30 de minute.'},
           ].map((f, i) => (
@@ -230,7 +229,7 @@ export default function HomePage() {
           <p style={{fontSize:'16px', color:'rgba(255,255,255,0.85)', margin:'0 0 32px', lineHeight:1.5}}>
             30 de minute. Prețul real.<br/>Răspuns de la oameni reali, nu chatboți.
           </p>
-          <Link href="/dashboard/client" style={{background:'white', color:'#059669', padding:'16px 40px', borderRadius:'14px', fontSize:'15px', fontWeight:800, textDecoration:'none', display:'inline-flex', alignItems:'center', gap:'8px', boxShadow:'0 8px 30px rgba(0,0,0,0.15)'}}>
+          <Link href="/roster" style={{background:'white', color:'#059669', padding:'16px 40px', borderRadius:'14px', fontSize:'15px', fontWeight:800, textDecoration:'none', display:'inline-flex', alignItems:'center', gap:'8px', boxShadow:'0 8px 30px rgba(0,0,0,0.15)'}}>
             Cere o ofertă <ArrowRight size={16} strokeWidth={2.5} />
           </Link>
         </div>
@@ -247,16 +246,15 @@ export default function HomePage() {
             <div>
               <div style={{fontSize:'11px', fontWeight:700, color:'white', textTransform:'uppercase', letterSpacing:'0.1em', marginBottom:'14px'}}>Platformă</div>
               <div style={{display:'flex', flexDirection:'column', gap:'10px', fontSize:'13px'}}>
-                <Link href="/dashboard/client" style={{color:'rgba(255,255,255,0.7)', textDecoration:'none'}}>Caută artist</Link>
-                <Link href="/signup" style={{color:'rgba(255,255,255,0.7)', textDecoration:'none'}}>Înregistrare artist</Link>
-                <Link href="/login" style={{color:'rgba(255,255,255,0.7)', textDecoration:'none'}}>Conectare</Link>
+                <Link href="/roster" style={{color:'rgba(255,255,255,0.7)', textDecoration:'none'}}>Artiști Forward</Link>
+                <Link href="/prom" style={{color:'rgba(255,255,255,0.7)', textDecoration:'none'}}>Baluri / Prom</Link>
               </div>
             </div>
             <div>
               <div style={{fontSize:'11px', fontWeight:700, color:'white', textTransform:'uppercase', letterSpacing:'0.1em', marginBottom:'14px'}}>Legal</div>
               <div style={{display:'flex', flexDirection:'column', gap:'10px', fontSize:'13px'}}>
-                <Link href="/terms" style={{color:'rgba(255,255,255,0.7)', textDecoration:'none'}}>Termeni</Link>
-                <Link href="/privacy" style={{color:'rgba(255,255,255,0.7)', textDecoration:'none'}}>Confidențialitate</Link>
+                <Link href="/termeni" style={{color:'rgba(255,255,255,0.7)', textDecoration:'none'}}>Termeni</Link>
+                <Link href="/confidentialitate" style={{color:'rgba(255,255,255,0.7)', textDecoration:'none'}}>Confidențialitate</Link>
                 <Link href="/cookies" style={{color:'rgba(255,255,255,0.7)', textDecoration:'none'}}>Cookies</Link>
               </div>
             </div>
