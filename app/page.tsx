@@ -15,8 +15,11 @@ export default function HomePage() {
             <span>GIG<span style={{color:'#059669'}}>x</span></span>
           </div>
           <div style={{display:'flex', alignItems:'center', gap:'8px'}}>
-            <Link href="/roster" style={{background:'#101014', color:'white', padding:'10px 22px', borderRadius:'12px', fontSize:'13px', fontWeight:700, textDecoration:'none', display:'flex', alignItems:'center', gap:'6px'}}>
-              Vezi artiștii <ArrowRight size={14} strokeWidth={2} />
+            <Link href="/roster" style={{color:'#57534e', padding:'10px 14px', borderRadius:'12px', fontSize:'13px', fontWeight:700, textDecoration:'none'}}>
+              Artiști
+            </Link>
+            <Link href="/dashboard/client" style={{background:'#101014', color:'white', padding:'10px 22px', borderRadius:'12px', fontSize:'13px', fontWeight:700, textDecoration:'none', display:'flex', alignItems:'center', gap:'6px'}}>
+              Spune-ne ce eveniment ai <ArrowRight size={14} strokeWidth={2} />
             </Link>
           </div>
         </div>
@@ -232,8 +235,16 @@ export default function HomePage() {
           <p style={{fontSize:'16px', color:'rgba(255,255,255,0.85)', margin:'0 0 32px', lineHeight:1.5}}>
             30 de minute. Prețul real.<br/>Răspuns de la oameni reali, nu chatboți.
           </p>
-          <Link href="/roster" style={{background:'white', color:'#059669', padding:'16px 40px', borderRadius:'14px', fontSize:'15px', fontWeight:800, textDecoration:'none', display:'inline-flex', alignItems:'center', gap:'8px', boxShadow:'0 8px 30px rgba(0,0,0,0.15)'}}>
-            Cere o ofertă <ArrowRight size={16} strokeWidth={2.5} />
+          <div style={{display:'flex', gap:'10px', flexWrap:'wrap', justifyContent:'center', marginBottom:'22px'}}>
+              <Link href="/dashboard/client?tip=nunta" style={{background:'rgba(255,255,255,0.15)', border:'1px solid rgba(255,255,255,0.35)', color:'white', padding:'12px 20px', borderRadius:'12px', fontSize:'14px', fontWeight:700, textDecoration:'none'}}>Nuntă</Link>
+              <Link href="/dashboard/client?tip=corporate" style={{background:'rgba(255,255,255,0.15)', border:'1px solid rgba(255,255,255,0.35)', color:'white', padding:'12px 20px', borderRadius:'12px', fontSize:'14px', fontWeight:700, textDecoration:'none'}}>Corporate</Link>
+              <Link href="/dashboard/client?tip=festival" style={{background:'rgba(255,255,255,0.15)', border:'1px solid rgba(255,255,255,0.35)', color:'white', padding:'12px 20px', borderRadius:'12px', fontSize:'14px', fontWeight:700, textDecoration:'none'}}>Festival</Link>
+              <Link href="/dashboard/client?tip=clubnight" style={{background:'rgba(255,255,255,0.15)', border:'1px solid rgba(255,255,255,0.35)', color:'white', padding:'12px 20px', borderRadius:'12px', fontSize:'14px', fontWeight:700, textDecoration:'none'}}>Club Night</Link>
+              <Link href="/dashboard/client?tip=private" style={{background:'rgba(255,255,255,0.15)', border:'1px solid rgba(255,255,255,0.35)', color:'white', padding:'12px 20px', borderRadius:'12px', fontSize:'14px', fontWeight:700, textDecoration:'none'}}>Privat</Link>
+              <Link href="/dashboard/client?tip=gala" style={{background:'rgba(255,255,255,0.15)', border:'1px solid rgba(255,255,255,0.35)', color:'white', padding:'12px 20px', borderRadius:'12px', fontSize:'14px', fontWeight:700, textDecoration:'none'}}>Gală / Revelion</Link>
+          </div>
+          <Link href="/dashboard/client" style={{background:'white', color:'#059669', padding:'16px 40px', borderRadius:'14px', fontSize:'15px', fontWeight:800, textDecoration:'none', display:'inline-flex', alignItems:'center', gap:'8px', boxShadow:'0 8px 30px rgba(0,0,0,0.15)'}}>
+            Alt tip de eveniment <ArrowRight size={16} strokeWidth={2.5} />
           </Link>
         </div>
       </section>
