@@ -96,7 +96,8 @@ export default function ClientDashboard() {
   // tipul vine din butoanele de pe prima pagina: pornim direct de la pasul 2
   useEffect(() => {
     const tip = new URLSearchParams(window.location.search).get('tip')
-    if (tip && EVENT_TYPES.some(e => e.id === tip)) { setEventType(tip); setStep('atmosfera') }
+    // doar preselectam tipul; pasul 1 ramane, acolo se pun data, orasul, invitatii si bugetul
+    if (tip && EVENT_TYPES.some(e => e.id === tip)) setEventType(tip)
   }, [])
   const stepIndex = steps.indexOf(step)
 

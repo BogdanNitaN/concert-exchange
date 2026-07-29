@@ -102,7 +102,8 @@ export default function SummaryStep({ eventType, eventDate, guestCount, selected
   }
 
   const getDistanta = (artist: any) => {
-    if (!selectedCityLat || !selectedCityLng) return 200
+    // fara coordonate nu inventam o distanta: 0 inseamna necunoscut, nu se afiseaza transport
+    if (!selectedCityLat || !selectedCityLng) return 0
     const from = getArtistCoords(artist)
     return Math.round(haversineKm(from.lat, from.lng, selectedCityLat, selectedCityLng) * 1.35)
   }
