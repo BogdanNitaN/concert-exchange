@@ -146,15 +146,15 @@ export default function HomePage() {
           <div style={{display:'grid', gridTemplateColumns:'repeat(auto-fit, minmax(160px, 1fr))', gap:'14px'}}>
             {[
               {label:'Festival', id:'festival', Icon: Star},
-              {label:'Club Night', Icon: Disc3},
+              {label:'Club Night', id:'clubnight', Icon: Disc3},
               {label:'Nuntă', id:'nunta', Icon: Heart},
               {label:'Corporate', id:'corporate', Icon: Building2},
-              {label:'Beach Party', Icon: Sunset},
-              {label:'Pop-Up', Icon: Sparkles},
-              {label:'Day Party', Icon: Sun},
+              {label:'Beach Party', id:'beach', Icon: Sunset},
+              {label:'Pop-Up', id:'popup', Icon: Sparkles},
+              {label:'Day Party', id:'dayparty', Icon: Sun},
               {label:'Brand Activation', id:'corporate2', Icon: Rocket},
               {label:'City Days / Open Air', id:'citydays', Icon: Flame},
-              {label:'Dinner & Show', Icon: Wine},
+              {label:'Dinner & Show', id:'dinnershow', Icon: Wine},
               {label:'Privat', id:'private', Icon: PartyPopper},
             ].map((cat, i) => {
               const Icon = cat.Icon

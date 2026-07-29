@@ -23,6 +23,11 @@ const EVENT_TYPES = [
   { id: 'festival', icon: '\u{1F3AA}', label: 'Festival' },
   { id: 'citydays', icon: '\u{1F386}', label: 'City Days' },
   { id: 'corporate2', icon: '\u{1F680}', label: 'Lansare / Team Building' },
+  { id: 'clubnight', icon: '\u{1F3A7}', label: 'Club Night' },
+  { id: 'beach', icon: '\u{1F305}', label: 'Beach Party' },
+  { id: 'popup', icon: '\u{2728}', label: 'Pop-Up' },
+  { id: 'dayparty', icon: '\u{2600}', label: 'Day Party' },
+  { id: 'dinnershow', icon: '\u{1F377}', label: 'Dinner & Show' },
 ]
 
 const VENUE_TYPES_CLIENT = ["Toate", "Sală Evenimente", "Ballroom", "Restaurant", "Club", "Venue / Concert Hall", "Terasă", "Rooftop", "Hotel Conference", "Resort / Hotel", "Spațiu alternativ", "Beach Club", "Parc / Open Air", "Amfiteatru / Arene", "Stadion", "Arenă / Sală Polivalentă", "Filarmonică / Operă / Teatru", "Castel / Conac", "Cramă", "Casă de cultură", "Shopping Mall", "Muzeu / Galerie", "Centru expozițional", "Altele"]
