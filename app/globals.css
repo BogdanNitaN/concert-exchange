@@ -86,3 +86,8 @@
 .tier-legend-item:hover .tier-legend-tooltip {
   opacity: 1;
 }
+
+/* fara sageti sus/jos pe campurile numerice - se modificau din greseala */
+input[type=number]::-webkit-outer-spin-button,
+input[type=number]::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+input[type=number] { -moz-appearance: textfield; appearance: textfield; }

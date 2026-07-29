@@ -1002,9 +1002,9 @@ export default function OfertaPage() {
                   </select>
                 </div>
                 <div><label style={label}>Preț listă (€)</label>
-                  <input type="number" onWheel={e => (e.currentTarget as HTMLInputElement).blur()} value={l.feeLista || ''} onFocus={e => e.target.select()} onChange={e => updateLinie(l.key, { feeLista: Number(e.target.value) })} style={{...inputStyle, color:'#a8a29e'}} /></div>
+                  <input type="number" onWheel={e => (e.currentTarget as HTMLInputElement).blur()} value={l.feeLista || ''} onFocus={e => e.target.select()} onChange={e => updateLinie(l.key, { feeLista: Math.round(Number(e.target.value)) })} style={{...inputStyle, color:'#a8a29e'}} /></div>
                 <div><label style={{...label, color:UI.green}}>Ofertă (€)</label>
-                  <input type="number" onWheel={e => (e.currentTarget as HTMLInputElement).blur()} value={l.fee || ''} onFocus={e => e.target.select()} onChange={e => updateLinie(l.key, { fee: Number(e.target.value) })} style={{...inputStyle, fontWeight:800, fontSize:'17px', color:UI.green, borderColor:'#86efac', background:'#f0fdf4'}} /></div>
+                  <input type="number" onWheel={e => (e.currentTarget as HTMLInputElement).blur()} value={l.fee || ''} onFocus={e => e.target.select()} onChange={e => updateLinie(l.key, { fee: Math.round(Number(e.target.value)) })} style={{...inputStyle, fontWeight:800, fontSize:'17px', color:UI.green, borderColor:'#86efac', background:'#f0fdf4'}} /></div>
                 <div><label style={label}>Lei/km</label>
                   <input type="number" onWheel={e => (e.currentTarget as HTMLInputElement).blur()} step="0.1" value={l.leiKm || ''} onFocus={e => e.target.select()} onChange={e => updateLinie(l.key, { leiKm: Number(e.target.value) })} style={inputStyle} /></div>
                 <div><label style={label}>Durată</label>
@@ -1031,7 +1031,7 @@ export default function OfertaPage() {
                 {(l.allIn || l.landed) && (
                   <span style={{display:'inline-flex', alignItems:'center', gap:'6px', fontSize:'12px', fontWeight:700, color:'#7c3aed'}}>
                     Suma ALL IN (EUR):
-                    <input type="number" onWheel={e => (e.currentTarget as HTMLInputElement).blur()} value={l.allInSuma || ''} onChange={e => updateLinie(l.key, { allInSuma: Number(e.target.value) })} placeholder="0" style={{width:'90px', padding:'5px 8px', borderRadius:'8px', border:'1.5px solid #c4b5fd', fontSize:'13px', fontWeight:700, outline:'none'}} />
+                    <input type="number" onWheel={e => (e.currentTarget as HTMLInputElement).blur()} value={l.allInSuma || ''} onChange={e => updateLinie(l.key, { allInSuma: Math.round(Number(e.target.value)) })} placeholder="0" style={{width:'90px', padding:'5px 8px', borderRadius:'8px', border:'1.5px solid #c4b5fd', fontSize:'13px', fontWeight:700, outline:'none'}} />
                     <span style={{color:'#78716c'}}>Cazare (lei):</span>
                     <input type="number" onWheel={e => (e.currentTarget as HTMLInputElement).blur()} value={l.cazareFixa || ''} onChange={e => updateLinie(l.key, { cazareFixa: Number(e.target.value) })} placeholder="0" style={{width:'80px', padding:'5px 8px', borderRadius:'8px', border:'1.5px solid #c4b5fd', fontSize:'13px', fontWeight:700, outline:'none'}} />
                     <span style={{color:'#78716c'}}>Avion (lei):</span>
