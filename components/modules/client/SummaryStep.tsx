@@ -75,12 +75,17 @@ interface Props {
   selectedSeturi: Record<number, string>
   setSelectedSeturi: (artistId: number, val: string) => void
   requestSent: boolean
-  onTrimite: () => void
+  onTrimite: (contact: { nume: string; telefon: string; email: string }) => void
   onBack: () => void
   onPretExact: () => void
 }
 
 export default function SummaryStep({ eventType, eventDate, guestCount, selectedArtists, selectedVenues, selectedCity, selectedCityLat, selectedCityLng, budget, selectedSeturi, setSelectedSeturi, requestSent, onTrimite, onBack, onPretExact }: Props) {
+  const [nume, setNume] = useState('')
+  const [telefon, setTelefon] = useState('')
+  const [emailC, setEmailC] = useState('')
+  const [seTrimite, setSeTrimite] = useState(false)
+  const contactOk = nume.trim().length > 1 && telefon.trim().length > 5
   const [openArtistId, setOpenArtistId] = useState<number | null>(selectedArtists[0]?.id || null)
   const eventInfo = EVENT_TYPES.find(e => e.id === eventType)
 
@@ -286,10 +291,22 @@ export default function SummaryStep({ eventType, eventDate, guestCount, selected
         })}
       </div>
 
+      <div style={{background:'white', border:'1px solid #e7e5e4', borderRadius:'20px', padding:'24px', marginBottom:'14px', boxShadow:'0 1px 4px rgba(0,0,0,0.04)'}}>
+        <div style={{fontSize:'15px', fontWeight:800, color:'#1c1917', marginBottom:'4px'}}>Cum te contactăm</div>
+        <div style={{fontSize:'13px', color:'#78716c', marginBottom:'16px'}}>Îți răspundem în mai puțin de 30 de minute.</div>
+        <div style={{display:'grid', gridTemplateColumns:'1fr 1fr', gap:'10px', marginBottom:'10px'}}>
+          <input value={nume} onChange={e => setNume(e.target.value)} placeholder="Nume și prenume *" style={{padding:'11px 13px', borderRadius:'12px', border:'1.5px solid #e7e5e4', fontSize:'14px', fontFamily:'Montserrat,sans-serif', boxSizing:'border-box', width:'100%', outline:'none'}} />
+          <input value={telefon} onChange={e => setTelefon(e.target.value)} placeholder="Telefon *" style={{padding:'11px 13px', borderRadius:'12px', border:'1.5px solid #e7e5e4', fontSize:'14px', fontFamily:'Montserrat,sans-serif', boxSizing:'border-box', width:'100%', outline:'none'}} />
+        </div>
+        <input value={emailC} onChange={e => setEmailC(e.target.value)} placeholder="Email (opțional)" style={{padding:'11px 13px', borderRadius:'12px', border:'1.5px solid #e7e5e4', fontSize:'14px', fontFamily:'Montserrat,sans-serif', boxSizing:'border-box', width:'100%', outline:'none'}} />
+      </div>
       <div style={{display:'flex', gap:'10px'}}>
         <button onClick={onBack} style={{padding:'13px 24px', borderRadius:'14px', border:'1.5px solid #e7e5e4', background:'white', color:'#78716c', fontSize:'13px', fontWeight:600, cursor:'pointer', fontFamily:'Montserrat,sans-serif'}}>Înapoi</button>
-        <button onClick={onTrimite} style={{flex:1, background:'#1c1917', color:'white', padding:'14px', borderRadius:'14px', border:'none', cursor:'pointer', fontSize:'14px', fontWeight:700, fontFamily:'Montserrat,sans-serif', display:'flex', alignItems:'center', justifyContent:'center', gap:'8px'}}>
-          Trimite cererea <ArrowRight size={16} strokeWidth={2} />
+        <button
+          onClick={async () => { if (!contactOk || seTrimite) return; setSeTrimite(true); await onTrimite({ nume, telefon, email: emailC }); setSeTrimite(false) }}
+          disabled={!contactOk || seTrimite}
+          style={{flex:1, background: contactOk ? '#1c1917' : '#d6d3d1', color:'white', padding:'14px', borderRadius:'14px', border:'none', cursor: contactOk && !seTrimite ? 'pointer' : 'not-allowed', fontSize:'14px', fontWeight:700, fontFamily:'Montserrat,sans-serif', display:'flex', alignItems:'center', justifyContent:'center', gap:'8px'}}>
+          {seTrimite ? 'Se trimite...' : 'Trimite cererea'} <ArrowRight size={16} strokeWidth={2} />
         </button>
       </div>
     </div>

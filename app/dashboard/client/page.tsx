@@ -216,12 +216,28 @@ export default function ClientDashboard() {
     return true
   })
 
-  const handleTrimite = () => {
-    const parts = ['Cerere GIGx', 'Artisti: ' + selectedArtists.map((a) => a.name).join(', '), 'Data: ' + eventDate, 'Oras: ' + selectedCity, 'Locatie: ' + (selectedVenues[0]?.name || 'nespecificata'), 'Participanti: ' + guestCount, 'Seturi: ' + (Object.values(selectedSeturi).length > 0 ? Object.values(selectedSeturi).join(', ') : 'la cerere'), 'Buget eveniment: ' + budget + ' EUR']
-    const msg = encodeURIComponent(parts.join('\n'))
-    const subject = encodeURIComponent('Cerere GIGx')
-    window.open('mailto:me@bogdannita.ro?subject=' + subject + '&body=' + msg, '_blank')
-    setRequestSent(true)
+  const handleTrimite = async (contact: { nume: string; telefon: string; email: string }) => {
+    try {
+      const r = await fetch('/api/client-request', {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          ...contact,
+          tipEveniment: EVENT_TYPES.find(e => e.id === eventType)?.label || eventType,
+          data: eventDate,
+          oras: selectedCity,
+          locatie: selectedVenues[0]?.name || '',
+          participanti: guestCount,
+          buget: budget,
+          artisti: selectedArtists.map((a) => a.name),
+          seturi: Object.values(selectedSeturi),
+        }),
+      })
+      const d = await r.json()
+      if (!d.ok) { alert('Nu s-a putut trimite cererea. Incearca din nou sau suna la +40 751 144 109.'); return }
+      setRequestSent(true)
+    } catch {
+      alert('Nu s-a putut trimite cererea. Incearca din nou sau suna la +40 751 144 109.')
+    }
   }
 
   const eventTypeLabel = EVENT_TYPES.find(e => e.id === eventType)?.label || ''
