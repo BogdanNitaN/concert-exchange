@@ -76,8 +76,12 @@ export default function ArtistStep({ budget, setBudget, eventTypeLabel, atmosfer
       .catch(() => setArtists([]))
   }, [])
   const filteredByType = ARTISTS.filter(a => matchesEntertainment(a.genres, tipEntertainment))
-  const inBudgetArtists = budget > 0 ? filteredByType.filter(a => a.feeMax <= budget) : filteredByType
-  const overBudgetArtists = budget > 0 ? filteredByType.filter(a => a.feeMax > budget && a.feeMin <= budget * 1.5) : []
+  const [cautare, setCautare] = useState('')
+  const q = cautare.trim().toLowerCase()
+  const dupaNume = q ? filteredByType.filter(a => (a.name || '').toLowerCase().includes(q)) : filteredByType
+  // cand cauti dupa nume, bugetul nu mai filtreaza: vrei artistul, indiferent de pret
+  const inBudgetArtists = q ? dupaNume : (budget > 0 ? dupaNume.filter(a => a.feeMax <= budget) : dupaNume)
+  const overBudgetArtists = q ? [] : (budget > 0 ? dupaNume.filter(a => a.feeMax > budget && a.feeMin <= budget * 1.5) : [])
 
   const toggleArtist = (a: any) => {
     const isSelected = selectedArtists.some(s => s.id === a.id)
@@ -171,6 +175,15 @@ export default function ArtistStep({ budget, setBudget, eventTypeLabel, atmosfer
           </div>
         )}
 
+        <div style={{position:'relative', marginBottom:'18px'}}>
+          <input value={cautare} onChange={e => setCautare(e.target.value)} placeholder="Caută artist după nume..."
+            style={{width:'100%', boxSizing:'border-box', padding:'12px 38px 12px 14px', borderRadius:'12px', border:'1.5px solid #e7e5e4', fontSize:'14px', fontFamily:'Montserrat,sans-serif', color:'#1c1917', outline:'none', background:'white'}} />
+          {cautare && (
+            <button onClick={() => setCautare('')}
+              style={{position:'absolute', right:'10px', top:'50%', transform:'translateY(-50%)', background:'none', border:'none', cursor:'pointer', color:'#a8a29e', fontSize:'16px', lineHeight:1}}>×</button>
+          )}
+          {q && <div style={{fontSize:'11px', color:'#78716c', marginTop:'6px'}}>{inBudgetArtists.length} {inBudgetArtists.length === 1 ? 'rezultat' : 'rezultate'} · bugetul nu filtrează în timpul căutării</div>}
+        </div>
         {inBudgetArtists.length > 0 && (
           <div style={{marginBottom:'28px'}}>
             <div style={{display:'flex', alignItems:'center', gap:'8px', marginBottom:'12px', padding:'8px 14px', background:'#f5f5f4', borderRadius:'10px'}}>
