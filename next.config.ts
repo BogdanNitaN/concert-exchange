@@ -5,6 +5,7 @@ const nextConfig: NextConfig = {
     return [
       { source: "/", destination: "/prom", permanent: false },
       { source: "/transport", destination: "/calcul", permanent: true },
+      { source: "/calculator", destination: "/calcul", permanent: true },
     ];
   },
   async headers() {
