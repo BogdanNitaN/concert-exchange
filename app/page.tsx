@@ -145,21 +145,21 @@ export default function HomePage() {
           </div>
           <div style={{display:'grid', gridTemplateColumns:'repeat(auto-fit, minmax(160px, 1fr))', gap:'14px'}}>
             {[
-              {label:'Festival', Icon: Star},
+              {label:'Festival', id:'festival', Icon: Star},
               {label:'Club Night', Icon: Disc3},
-              {label:'Nuntă', Icon: Heart},
-              {label:'Corporate', Icon: Building2},
+              {label:'Nuntă', id:'nunta', Icon: Heart},
+              {label:'Corporate', id:'corporate', Icon: Building2},
               {label:'Beach Party', Icon: Sunset},
               {label:'Pop-Up', Icon: Sparkles},
               {label:'Day Party', Icon: Sun},
-              {label:'Brand Activation', Icon: Rocket},
-              {label:'City Days / Open Air', Icon: Flame},
+              {label:'Brand Activation', id:'corporate2', Icon: Rocket},
+              {label:'City Days / Open Air', id:'citydays', Icon: Flame},
               {label:'Dinner & Show', Icon: Wine},
-              {label:'Privat', Icon: PartyPopper},
+              {label:'Privat', id:'private', Icon: PartyPopper},
             ].map((cat, i) => {
               const Icon = cat.Icon
               return (
-                <Link key={i} href="/dashboard/client" style={{background:'rgba(255,255,255,0.05)', border:'1px solid rgba(255,255,255,0.1)', borderRadius:'16px', padding:'28px 24px', textAlign:'center', textDecoration:'none', transition:'all 0.2s'}}>
+                <Link key={i} href={'/dashboard/client' + ((cat as any).id ? '?tip=' + (cat as any).id : '')} style={{background:'rgba(255,255,255,0.05)', border:'1px solid rgba(255,255,255,0.1)', borderRadius:'16px', padding:'28px 24px', textAlign:'center', textDecoration:'none', transition:'all 0.2s'}}>
                   <div style={{display:'flex', justifyContent:'center', marginBottom:'14px'}}>
                     <Icon size={28} color='#eacda3' strokeWidth={1.5} />
                   </div>

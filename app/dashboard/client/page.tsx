@@ -88,6 +88,11 @@ export default function ClientDashboard() {
   const [selectedSeturi, setSelectedSeturi] = useState<Record<number,string>>({})
 
   const steps = ['event', 'atmosfera', 'artist', 'venue', 'summary']
+  // tipul vine din butoanele de pe prima pagina: pornim direct de la pasul 2
+  useEffect(() => {
+    const tip = new URLSearchParams(window.location.search).get('tip')
+    if (tip && EVENT_TYPES.some(e => e.id === tip)) { setEventType(tip); setStep('atmosfera') }
+  }, [])
   const stepIndex = steps.indexOf(step)
 
   const totalMin = Math.round(((selectedArtists[0]?.feeMin || 0) + (selectedArtists[0]?.transport || 0)) * 1.05)
