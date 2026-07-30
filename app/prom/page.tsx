@@ -399,7 +399,7 @@ export default function PromPage() {
             <div style={{fontSize:'14px', fontWeight:700, color:'white', marginBottom:'2px'}}>Bogdan Niță</div>
             <div style={{fontSize:'12px', color:'#78716c', marginBottom:'10px'}}>Talent Manager</div>
             <div style={{fontSize:'13px', color:'#a8a29e'}}>
-              <a href="mailto:bogdan@gigx.ro" style={{color:'#a8a29e', textDecoration:'none'}}>bogdan@gigx.ro</a>
+              <a href="mailto:booking@gigx.ro" style={{color:'#a8a29e', textDecoration:'none'}}>booking@gigx.ro</a>
               <span style={{margin:'0 6px', color:'#57534e'}}>|</span>
               <a href="mailto:bogdan@forward.ro" style={{color:'#a8a29e', textDecoration:'none'}}>bogdan@forward.ro</a>
             </div>

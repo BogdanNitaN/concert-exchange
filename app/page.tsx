@@ -274,7 +274,7 @@ export default function HomePage() {
             </div>
             <div>
               <div style={{fontSize:'11px', fontWeight:700, color:'white', textTransform:'uppercase', letterSpacing:'0.1em', marginBottom:'14px'}}>Contact</div>
-              <div style={{fontSize:'13px', lineHeight:1.6, color:'rgba(255,255,255,0.7)'}}>hello@gigx.ro</div>
+              <div style={{fontSize:'13px', lineHeight:1.6, color:'rgba(255,255,255,0.7)'}}>booking@gigx.ro</div>
             </div>
           </div>
           <div style={{borderTop:'1px solid rgba(255,255,255,0.1)', paddingTop:'28px', fontSize:'12px', textAlign:'center', color:'rgba(255,255,255,0.5)'}}>
