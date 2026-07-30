@@ -102,7 +102,9 @@ const PROM_MAP: { name: string; genre: GenreKey; promTier: string; display?: str
 type PromArtist = {
   id: number; name: string; genre: GenreKey; tier: string
   cazare: string; nrBileteAvion: number; costPerKm: number; setType: string
+  transportMoneda?: string
 }
+const normProm = (x: string) => (x || '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-z0-9]/g, '')
 
 const PROM_ARTISTS: PromArtist[] = PROM_MAP.map(m => {
   const a: any = ARTISTS_DATA.find((x: any) => x.name === m.name)
@@ -234,11 +236,33 @@ export default function PromPage() {
     setExpertOpen(true)
   }
 
+  // datele de logistica vin din roster; clasificarile de bal raman cele din PROM_MAP
+  const [artistiDb, setArtistiDb] = useState<any[]>([])
+  useEffect(() => {
+    fetch('/api/artisti-client')
+      .then(r => r.json())
+      .then(d => setArtistiDb(d.artisti || []))
+      .catch(() => {})
+  }, [])
   const byGenre = useMemo(() => {
     const map: Record<GenreKey, PromArtist[]> = { trap: [], urban: [], pop_dance: [], balcanic: [] }
-    PROM_ARTISTS.forEach(a => map[a.genre].push(a))
+    PROM_ARTISTS.forEach(a => {
+      const n = normProm(a.name)
+      const d = artistiDb.find((x: any) => {
+        const dn = normProm(x.name)
+        return dn === n || dn.includes(n) || n.includes(dn)
+      })
+      map[a.genre].push(d ? {
+        ...a,
+        cazare: d.cazare || a.cazare,
+        nrBileteAvion: typeof d.nrBileteAvion === 'number' ? d.nrBileteAvion : a.nrBileteAvion,
+        costPerKm: typeof d.costPerKm === 'number' ? d.costPerKm : a.costPerKm,
+        transportMoneda: d.transportMoneda || 'lei',
+        setType: d.setType || a.setType,
+      } : a)
+    })
     return map
-  }, [])
+  }, [artistiDb])
 
   // contactul adultului trebuie sa aiba nume (min 3 litere) SI telefon (min 9 cifre)
   const parentValid = (() => {
