@@ -20,7 +20,8 @@ function checkRate(ip: string): boolean {
 
 // destinatarul cererilor. Cu cont Resend neverificat, trebuie sa fie
 // adresa ta de inregistrare. Dupa ce verifici domeniul gigx.ro, schimba in bogdan@gigx.ro
-const TO = 'bogdanitan@gmail.com'
+const TO = 'booking@gigx.ro'
+const BCC = ['scmabsrl@gmail.com', 'alexandra.stefan@forward.ro']
 
 export async function POST(req: Request) {
   try {
@@ -72,8 +73,9 @@ export async function POST(req: Request) {
     `
 
     const { error } = await resend.emails.send({
-      from: 'GIGx Prom <onboarding@resend.dev>',
+      from: 'GIGx Prom <oferte@gigx.ro>',
       to: TO,
+      bcc: BCC,
       replyTo: d.organizer_email || undefined,
       subject: `Cerere bal: ${d.institution_name || 'nou'} — ${d.city || ''}`,
       html,
