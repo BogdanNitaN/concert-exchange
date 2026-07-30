@@ -2,7 +2,8 @@ import { NextResponse } from 'next/server'
 import { Resend } from 'resend'
 
 const resend = new Resend(process.env.RESEND_API_KEY)
-const TO = 'bogdanitan@gmail.com'
+const TO = 'booking@gigx.ro'
+const BCC = ['scmabsrl@gmail.com', 'alexandra.stefan@forward.ro']
 // pana cand domeniul e verificat in Resend, expeditorul de test poate trimite doar catre adresa contului;
 // incercam catre toti, iar daca e refuzat retrimitem doar catre Bogdan ca sa nu pierdem cererea
 
@@ -67,16 +68,15 @@ export async function POST(req: Request) {
       </div>
     `
 
-    const trimite = (cc?: string[]) => resend.emails.send({
-      from: 'GIGx <onboarding@resend.dev>',
+    const trimite = () => resend.emails.send({
+      from: 'GIGx <oferte@gigx.ro>',
       to: TO,
-      cc,
+      bcc: BCC,
       replyTo: email || undefined,
       subject: `Cerere client: ${tipEveniment || 'eveniment'} — ${oras || ''} (${nume})`,
       html,
     })
-    let { error } = await trimite(['alexandra.stefan@forward.ro'])
-    if (error) error = (await trimite()).error
+    const { error } = await trimite()
     if (error) return NextResponse.json({ ok: false, error: error.message }, { status: 500 })
     return NextResponse.json({ ok: true })
   } catch (e: any) {
