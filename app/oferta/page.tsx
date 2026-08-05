@@ -528,7 +528,7 @@ export default function OfertaPage() {
         if (!c.local && l.tipMasa === 'alacarte' && l.diurnaFixa === 0 && l.cazareFixa === 0) out.push('Masa: a la carte ' + l.persoane + ' pers (pranz, cina) + mic dejun la hotel')
         if (l.allInAvionLei > 0) out.push('Avion: ' + l.allInAvionLei.toLocaleString('ro-RO') + ' lei')
         else if (km !== null && km > 300 && l.bileteAvion > 0) out.push('Avion: ' + l.bileteAvion + (l.bileteAvion === 1 ? ' bilet' : ' bilete') + ' + transfer de asigurat')
-        if (c.alcoolTotal > 0) out.push('Protocol: ' + c.alcoolTotal.toLocaleString('ro-RO') + ' lei + TVA' + (l.persoane > 0 ? ' (' + l.persoane + ' persoane)' : ''))
+        if (l.useAlcool && l.persoane > 0) out.push('Protocol: ' + l.persoane + ' persoane')
         // echivalent euro defalcat
         out.push('(echivalent: ' + l.fee + ' EUR onorariu, curs ' + c.cursAdaos.toFixed(4) + ' lei/EUR)')
       } else {
@@ -555,7 +555,7 @@ export default function OfertaPage() {
           if (l.allInAvionLei > 0) parts.push('avion ' + l.allInAvionLei.toLocaleString('ro-RO') + ' lei')
           parts.push('TOTAL: ' + totalEur.toLocaleString('ro-RO') + ' EUR (~' + totalLei.toLocaleString('ro-RO') + ' lei) + TVA · curs ' + eurRate.toFixed(4))
         }
-        if (c.alcoolTotal > 0) parts.push('protocol ' + c.alcoolTotal.toLocaleString('ro-RO') + ' lei + TVA' + (l.persoane > 0 ? ' (' + l.persoane + ' persoane)' : ''))
+        if (l.useAlcool && l.persoane > 0) parts.push('protocol ' + l.persoane + ' persoane')
         if (l.durata) parts.push('durata: ' + l.durata)
         out.push(parts.join(' || '))
         if (destinatar === 'client' && c.discount > 0) out.push('SALVEZI: ' + c.discount + ' EUR' + (c.savingLei > 0 ? ' (aprox ' + c.savingLei.toLocaleString('ro-RO') + ' lei)' : ''))
@@ -758,7 +758,7 @@ export default function OfertaPage() {
         if (l.allInAvionLei > 0) rows.push('Avion: ' + l.allInAvionLei.toLocaleString('ro-RO') + ' lei')
         rows.push('TOTAL: ' + totalEurP.toLocaleString('ro-RO') + ' EUR (~' + totalLeiP.toLocaleString('ro-RO') + ' lei) + TVA')
       }
-      if (c.alcoolTotal > 0) rows.push('Protocol: ' + c.alcoolTotal.toLocaleString('ro-RO') + ' lei + TVA' + (l.persoane > 0 ? ' (' + l.persoane + ' persoane)' : ''))
+      if (l.useAlcool && l.persoane > 0) rows.push('Protocol: ' + l.persoane + ' persoane')
       if (l.durata) rows.push('Durata: ' + l.durata)
       if (!institutiePublica && c.discount > 0) {
         const etich = 'Onorariu: '
