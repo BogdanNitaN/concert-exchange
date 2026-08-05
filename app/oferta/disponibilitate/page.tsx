@@ -123,10 +123,14 @@ export default function DisponibilitatePage() {
   function trimiteLiberiInOferta() {
     const liberi = liberiBifati()
     if (liberi.length === 0) return
+    // ambele date cautate ajung in oferta ca optiuni
+    const dateAlese = [dataArtist, dataArtist2].filter(Boolean)
+    const zileText = dateAlese.map((d: string) => lunaData(d)).join(', ')
     const linii_complete = liberi.map((ra: any) => {
       const rd = ra.rosterData || {}
       return {
         artistNume: ra.artist,
+        dateOptiuni: dateAlese.length > 1 ? zileText : '',
         formatSelectat: '', durata: rd.durata_default || '40 min',
         tipPret: 'Standard', feeLista: rd.fee_standard || 0, fee: rd.fee_standard || 0,
         leiKm: rd.lei_km || 0, useMarja: true, cazare: rd.cazare || '', persoane: rd.nr_persoane || 0,
@@ -135,7 +139,7 @@ export default function DisponibilitatePage() {
         useCag: false, cagProcent: 0, cagSuma: 0, cagMod: 'procent',
       }
     })
-    const oferta = { oras: oras || null, data_eveniment: dataArtist || null, linii_complete }
+    const oferta = { oras: oras || null, data_eveniment: dateAlese.length === 1 ? dateAlese[0] : null, linii_complete }
     try { localStorage.setItem('oferta_edit', JSON.stringify(oferta)) } catch {}
     arataToast('Se trimite în ofertă...')
     setTimeout(() => { window.location.href = '/oferta' }, 500)
@@ -525,14 +529,10 @@ export default function DisponibilitatePage() {
 
   function trimiteInOferta() {
     if (bifatiLista.length === 0) return
-    // ambele date cautate ajung in oferta, ca la modul pe perioada
-    const dateAlese = [dataArtist, dataArtist2].filter(Boolean)
-    const zileText = dateAlese.map((d: string) => lunaData(d)).join(', ')
     const linii_complete = bifatiLista.map(b => {
       const rd = b.rosterData || {}
       return {
         artistNume: b.artist,
-        dateOptiuni: dateAlese.length > 1 ? zileText : '',
         formatSelectat: '', durata: '40 min',
         tipPret: 'Standard', feeLista: rd.fee_standard || 0, fee: rd.fee_standard || 0,
         leiKm: rd.lei_km || 0, useMarja: true, cazare: rd.cazare || '', persoane: rd.nr_persoane || 0,
@@ -541,7 +541,7 @@ export default function DisponibilitatePage() {
         useCag: false, cagProcent: 0, cagSuma: 0, cagMod: 'procent',
       }
     })
-    const oferta = { oras: oras || null, data_eveniment: dateAlese.length === 1 ? dateAlese[0] : (data || null), linii_complete }
+    const oferta = { oras: oras || null, data_eveniment: data || null, linii_complete }
     try { localStorage.setItem('oferta_edit', JSON.stringify(oferta)) } catch {}
     arataToast('Se trimite în ofertă...')
     setTimeout(() => { window.location.href = '/oferta' }, 500)
