@@ -21,6 +21,7 @@ export default function CoduriPage() {
   const [nouAscunde, setNouAscunde] = useState(false)
   const [nouScop, setNouScop] = useState('roster')
   const [cautaCod, setCautaCod] = useState('')
+  const [toateExpira, setToateExpira] = useState(false)
 
   async function faLogin() {
     setLoggingIn(true); setLoginErr('')
@@ -104,7 +105,7 @@ export default function CoduriPage() {
           <div style={{background:'#fffbeb', border:'1.5px solid #fcd34d', borderRadius:'12px', padding:'14px 16px', marginBottom:'16px'}}>
             <div style={{fontSize:'13px', fontWeight:800, color:'#92400e'}}>Atentie: {expira.length === 1 ? 'un cod expira' : expira.length + ' coduri expira'} in curand</div>
             <div style={{fontSize:'12px', color:'#a16207', marginTop:'6px', display:'grid', gap:'3px'}}>
-              {[...expira].sort((a, b) => new Date(a.expira_la).getTime() - new Date(b.expira_la).getTime()).map(c => (
+              {[...expira].sort((a, b) => new Date(a.expira_la).getTime() - new Date(b.expira_la).getTime()).slice(0, toateExpira ? 99 : 2).map(c => (
                 <div key={c.token} style={{display:'flex', alignItems:'center', gap:'8px', flexWrap:'wrap', padding:'3px 0'}}>
                   <strong style={{minWidth:'120px'}}>{c.token}</strong>
                   <span style={{flex:'1 1 140px'}}>{c.destinatar || '—'}</span>
@@ -113,6 +114,11 @@ export default function CoduriPage() {
                   <button onClick={() => patch(c.token, { activ: false })} style={{padding:'4px 9px', background:'white', color:'#a16207', border:'1px solid #fcd34d', borderRadius:'7px', fontSize:'11px', fontWeight:700, cursor:'pointer', fontFamily:F}}>Lasa sa expire</button>
                 </div>
               ))}
+              {expira.length > 2 && (
+                <button onClick={() => setToateExpira(!toateExpira)} style={{marginTop:'4px', padding:'4px 0', background:'none', border:'none', color:'#92400e', fontSize:'12px', fontWeight:800, cursor:'pointer', fontFamily:F, textAlign:'left'}}>
+                  {toateExpira ? 'Ascunde' : '+ ' + (expira.length - 2) + ' coduri'}
+                </button>
+              )}
             </div>
           </div>
         )}
@@ -121,11 +127,14 @@ export default function CoduriPage() {
           <div style={{fontSize:'13px', fontWeight:800, color:UI.ink, marginBottom:'10px'}}>Cod nou pentru roster</div>
           <div style={{display:'flex', gap:'8px', flexWrap:'wrap', alignItems:'center'}}>
             <input value={nouDest} onChange={e => setNouDest(e.target.value)} placeholder="Destinatar" style={{...inputStyle, flex:'1 1 200px'}} />
-            <select value={nouScop} onChange={e => setNouScop(e.target.value)} style={{...inputStyle, width:'150px'}}>
-              <option value="roster">Roster standard</option>
-              <option value="revelion">Revelion</option>
-              <option value="bal">Baluri</option>
-            </select>
+            <div style={{display:'flex', gap:'6px'}}>
+              {[{id:'roster', et:'Roster', c:UI.green}, {id:'revelion', et:'Revelion', c:'#b8860b'}, {id:'bal', et:'Baluri', c:UI.purple}].map(o => (
+                <button key={o.id} onClick={() => setNouScop(o.id)}
+                  style={{padding:'9px 14px', borderRadius:'9px', border:'1.5px solid ' + (nouScop === o.id ? o.c : UI.line), background: nouScop === o.id ? o.c : 'white', color: nouScop === o.id ? 'white' : UI.sub, fontSize:'13px', fontWeight:800, cursor:'pointer', fontFamily:F, transition:'all 0.15s'}}>
+                  {o.et}
+                </button>
+              ))}
+            </div>
             <input value={nouToken} onChange={e => setNouToken(e.target.value)} placeholder="Cod (gol = generat)" style={{...inputStyle, width:'170px'}} />
             <input type="number" value={nouZile} onChange={e => setNouZile(Number(e.target.value))} style={{...inputStyle, width:'90px'}} />
             <label style={{display:'flex', alignItems:'center', gap:'6px', fontSize:'12px', fontWeight:700, color:UI.sub, cursor:'pointer'}}><input type="checkbox" checked={nouAscunde} onChange={e => setNouAscunde(e.target.checked)} style={{width:'15px', height:'15px', accentColor:UI.green}} />fara contacte</label>
