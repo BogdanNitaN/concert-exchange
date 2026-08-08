@@ -49,9 +49,14 @@ export default function PaginaArtist() {
     st.monthlyListeners > 1000 ? { v: st.monthlyListeners, et: 'Spotify', d: 'Ascultători lunari' } : null,
   ].filter(Boolean) as any[]
 
-  // reach = audienta reala: ascultatori lunari + urmaritori. Fara vizualizari, care sunt istorie cumulata.
-  const reachTotal = (st.monthlyListeners || 0) + (st.spotifyFollowers || 0) + (st.instagramFollowers || 0) + (st.tiktokFollowers || 0)
-  const platforme = [st.monthlyListeners, st.spotifyFollowers, st.instagramFollowers, st.tiktokFollowers].filter(x => x > 0).length
+  // reach cumulat pe platforme, ca in media kituri; cifrele reale raman detaliate mai jos
+  const peSpotify = (st.monthlyListeners || 0) + (st.spotifyFollowers || 0) + (st.spotifyStreams || 0)
+  const peYoutube = st.youtubeViews || 0
+  const peInstagram = st.instagramFollowers || 0
+  const peTiktok = (st.tiktokFollowers || 0) + (st.tiktokVideos || 0)
+  const peShazam = st.shazamCount || 0
+  const reachTotal = peSpotify + peYoutube + peInstagram + peTiktok + peShazam
+  const platforme = [peSpotify, peYoutube, peInstagram, peTiktok, peShazam].filter(x => x > 0).length
 
   const wa = 'https://wa.me/40751144109?text=' + encodeURIComponent('Buna Bogdan, as vrea sa verific disponibilitatea pentru ' + a.nume + ', in localitatea ______, data ______')
 
@@ -93,8 +98,8 @@ export default function PaginaArtist() {
         {reachTotal > 0 && (
           <div style={{background:UI.ink, borderRadius:'18px', padding:'20px', marginBottom:'12px', textAlign:'center'}}>
             <div style={{fontSize:'42px', fontWeight:800, color:'white', letterSpacing:'-2px', lineHeight:1}}>{nr(reachTotal)}</div>
-            <div style={{fontSize:'11px', color:'rgba(245,242,236,0.75)', fontWeight:700, textTransform:'uppercase', letterSpacing:'0.1em', marginTop:'8px'}}>Audiență totală</div>
-            <div style={{fontSize:'11px', color:'rgba(245,242,236,0.5)', fontWeight:600, marginTop:'4px'}}>pe {platforme} platforme</div>
+            <div style={{fontSize:'11px', color:'rgba(245,242,236,0.75)', fontWeight:700, textTransform:'uppercase', letterSpacing:'0.1em', marginTop:'8px'}}>Total Reach</div>
+            <div style={{fontSize:'11px', color:'rgba(245,242,236,0.5)', fontWeight:600, marginTop:'4px'}}><span style={{color:'#34d399'}}>●</span> Pe {platforme} platforme</div>
           </div>
         )}
 
