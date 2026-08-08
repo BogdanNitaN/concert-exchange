@@ -41,9 +41,9 @@ function textOferta(a: any, audienta: string, tab: string) {
     if (audienta === 'b2b') {
       const pret = tab === 'prom' ? a.preturi.prom : a.preturi.standard
       const sufix = tab === 'prom' ? ' (Baluri / Prom)' : ''
-      t += '\n' + 'Onorariu: ' + fmtEur(pret) + ' + TVA' + sufix + '\n'
+      t += 'Onorariu: ' + fmtEur(pret) + ' + TVA' + sufix + '\n'
     } else {
-      t += '\n' + 'Onorariu: ' + fmtEur(a.preturi.deLa) + ' + TVA' + '\n'
+      t += 'Onorariu: ' + fmtEur(a.preturi.deLa) + ' + TVA' + '\n'
     }
   }
   if (!a.revelion) t += 'Corporate / Private (la cerere)' + '\n'
