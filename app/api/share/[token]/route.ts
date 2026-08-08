@@ -40,10 +40,12 @@ export async function GET(req: Request, ctx: { params: Promise<{ token: string }
       const sh = shareMap[a.nume] || {}
       // pe linkurile de revelion, pretul si logistica vin din profilul de sarbatori
       const rev: any = link.scop === 'revelion' ? a.revelion : null
-      const fee = (rev && typeof rev.baza === 'number') ? rev.baza : (a.fee_standard || 0)
+      const balP: any = link.scop === 'bal' ? a.bal : null
+      const prof: any = rev || balP
+      const fee = prof ? (typeof prof.baza === 'number' ? prof.baza : (typeof prof.fee === 'number' ? prof.fee : 0)) : (a.fee_standard || 0)
       let preturi: any = null
       if (link.arata_preturi && fee > 0) {
-        if (rev) {
+        if (prof) {
           preturi = { standard: fee, deLa: fee }
         } else if (link.tip_audienta === 'b2b') {
           preturi = { standard: fee, revelion: Math.round(fee * (sh.mult_revelion ?? 2)), prom: Math.round(fee * (sh.mult_prom ?? 1)) }
@@ -54,6 +56,7 @@ export async function GET(req: Request, ctx: { params: Promise<{ token: string }
       return {
         nume: a.nume, genuri: genuriPentru(a.nume, meta?.genres || []), tier: tierPentru(a.nume, meta?.tier || null, fee),
         revelion: !!rev,
+        special: !!prof,
         poza: imgMap[a.nume] || null,
         epk: sh.epk_url || null, riderTehnic: sh.rider_tehnic_url || null, riderAcomodare: sh.rider_acomodare_url || null, ucmr: sh.ucmr_url || null, docs: sh.docs_url || null,
         logistica: {
@@ -61,20 +64,24 @@ export async function GET(req: Request, ctx: { params: Promise<{ token: string }
           persoane: a.nr_persoane || null,
           format: a.format_show || null,
           durata: a.set_type === 'dj' ? '90-120 min' : (a.durata_default || null),
-          leiKm: rev ? (rev.eurKm ?? null) : (a.lei_km || null),
-          transportMoneda: rev ? 'euro' : (a.transport_moneda || 'lei'),
-          bileteAvion: rev ? (rev.bilete ?? null) : (a.bilete_avion || null),
-          cazare: rev ? (rev.cazare || null) : (a.cazare || null),
-          cazareFixa: rev ? (rev.cazareFixa ?? null) : (a.cazare_fixa || null),
-          diurna: rev ? (rev.diurna ?? null) : (a.diurna_fixa || null),
-          nota: rev ? (rev.nota || null) : null,
+          leiKm: prof ? (prof.eurKm ?? prof.leiKm ?? null) : (a.lei_km || null),
+          transportMoneda: prof ? (prof.moneda || 'lei') : (a.transport_moneda || 'lei'),
+          bileteAvion: prof ? (prof.bilete ?? null) : (a.bilete_avion || null),
+          cazare: prof ? (prof.cazare || null) : (a.cazare || null),
+          cazareFixa: prof ? (prof.cazareFixa ?? null) : (a.cazare_fixa || null),
+          diurna: prof ? (prof.diurna ?? null) : (a.diurna_fixa || null),
+          nota: prof ? (prof.nota || null) : null,
         },
         preturi,
       }
     }
 
     let payload: any
-    if (link.scop === 'revelion') {
+    if (link.scop === 'bal') {
+      const { data: toti } = await supabase.from('oferta_artisti').select('*')
+      const lista = (toti || []).filter(a => a.bal && !esteAscuns(a.nume))
+      payload = { tip: 'roster', artisti: lista.map(fa).sort((a, b) => (b.preturi?.standard || 0) - (a.preturi?.standard || 0)) }
+    } else if (link.scop === 'revelion') {
       const { data: toti } = await supabase.from('oferta_artisti').select('*')
       const lista = (toti || []).filter(a => a.revelion && !esteAscuns(a.nume))
       payload = { tip: 'roster', revelion: true, artisti: lista.map(fa).sort((a, b) => (b.preturi?.standard || 0) - (a.preturi?.standard || 0)) }
