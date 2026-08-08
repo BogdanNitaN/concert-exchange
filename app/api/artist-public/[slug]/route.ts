@@ -57,6 +57,7 @@ export async function GET(req: Request, ctx: { params: Promise<{ slug: string }>
         durata: a.durata_default || null,
         orasResedinta: a.oras_rezidenta || null,
         bio: a.bio || null,
+        spotifyId: img?.spotify_id ? String(img.spotify_id).split('-')[0] : null,
         setType: a.set_type || null,
         // public: doar media kit. Riderul si UCMR raman pe linkurile cu cod.
         mediaKit: sh?.epk_url || null,

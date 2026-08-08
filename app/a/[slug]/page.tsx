@@ -66,12 +66,10 @@ export default function PaginaArtist() {
           <div style={{display:'flex', gap:'18px', alignItems:'center', flexWrap:'wrap'}}>
             {a.poza && <img src={a.poza} alt={a.nume} style={{width:'116px', height:'116px', objectFit:'cover', borderRadius:'18px', display:'block', flexShrink:0}} />}
             <div style={{minWidth:0, flex:'1 1 240px'}}>
-              <div style={{display:'flex', alignItems:'center', gap:'8px', flexWrap:'wrap', marginBottom:'6px'}}>
+              <div style={{display:'flex', alignItems:'center', gap:'8px', flexWrap:'wrap', marginBottom:'10px'}}>
                 <h1 style={{fontSize:'28px', fontWeight:800, color:UI.ink, letterSpacing:'-1px', lineHeight:1.1, margin:0}}>{a.nume}</h1>
+                <CheckCircle2 size={17} color={UI.green} strokeWidth={2.4} />
                 {t && <span style={{fontSize:'10px', fontWeight:800, color:'white', background:t.c, padding:'3px 9px', borderRadius:'6px', letterSpacing:'0.06em'}}>{t.et}</span>}
-              </div>
-              <div style={{display:'flex', alignItems:'center', gap:'5px', fontSize:'12px', color:UI.green, fontWeight:700, marginBottom:'8px'}}>
-                <CheckCircle2 size={13} strokeWidth={2.2} /> Reprezentat de Forward Agency
               </div>
               <div style={{display:'flex', alignItems:'center', gap:'14px', flexWrap:'wrap', fontSize:'12px', color:UI.sub, fontWeight:600}}>
                 {a.genuri?.length > 0 && <span>{a.genuri.join(' · ')}</span>}
@@ -99,6 +97,17 @@ export default function PaginaArtist() {
                 </div>
               ))}
             </div>
+            <div style={{textAlign:'center', marginTop:'10px', fontSize:'9px', color:UI.faint, fontWeight:500}}>Analytics provided by chartex.com</div>
+          </div>
+        )}
+
+        {a.spotifyId && (
+          <div style={{background:'white', border:'1px solid '+UI.line, borderRadius:'18px', padding:'14px', marginBottom:'12px', boxShadow:'0 2px 8px rgba(0,0,0,0.04)'}}>
+            <iframe
+              src={'https://open.spotify.com/embed/artist/' + a.spotifyId + '?utm_source=generator&theme=0'}
+              width="100%" height="352" frameBorder="0" loading="lazy"
+              allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
+              style={{borderRadius:'12px', display:'block'}} />
           </div>
         )}
 
