@@ -337,7 +337,7 @@ function ListaRoster({ artisti, audienta, token, ascundeContacte }: { artisti: a
         doc.text(randuriLog, tx, y)
         y += 14 + Math.max(0, randuriLog.length - 1) * 4
       }
-      y += 8
+      y += 15
     }
     doc.setFont('helvetica', 'italic'); doc.setFontSize(8); doc.setTextColor(140,140,140)
     if (y > 220) { deseneazaFooterForward(doc, W, M); doc.addPage(); deseneazaHeaderForward(doc, W, M, logo); y = 52 }
