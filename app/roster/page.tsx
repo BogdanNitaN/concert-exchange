@@ -29,16 +29,19 @@ const TIERS = [
 ]
 const ordTier = (t: string | null) => (t && TIER_MAP[t]) ? TIER_MAP[t].ord : 3
 const rangeTier = (t: string) => t === 'Premium' ? 'A++' : t
+const slugA = (n: string) => (n || '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '')
 
 function Card({ a, onTier }: { a: any, onTier: (r: string) => void }) {
   const tier = a.tier ? TIER_MAP[a.tier] : null
   return (
     <div style={{background:'white', border:'1px solid '+UI.line, borderRadius:'16px', overflow:'hidden', boxShadow:'0 2px 8px rgba(0,0,0,0.04)'}}>
+      <Link href={'/a/' + slugA(a.nume)} style={{display:'block'}}>
       {a.poza
         ? <img src={a.poza} alt={a.nume} loading="lazy" width={300} height={300} style={{width:'100%', aspectRatio:'1', objectFit:'cover', display:'block'}} />
         : <div style={{width:'100%', aspectRatio:'1', background:UI.bg, display:'flex', alignItems:'center', justifyContent:'center', fontSize:'34px', fontWeight:800, color:UI.faint}}>{a.nume.charAt(0)}</div>}
+      </Link>
       <div style={{padding:'12px 13px 13px'}}>
-        <div style={{fontSize:'14px', fontWeight:800, color:UI.ink, letterSpacing:'-0.3px', lineHeight:1.2}}>{a.nume}</div>
+        <Link href={'/a/' + slugA(a.nume)} style={{fontSize:'14px', fontWeight:800, color:UI.ink, letterSpacing:'-0.3px', lineHeight:1.2, textDecoration:'none', display:'block'}}>{a.nume}</Link>
         {a.genuri.length > 0 && <div style={{fontSize:'11px', color:UI.faint, fontWeight:600, marginTop:'3px'}}>{a.genuri.slice(0, 2).join(' · ')}</div>}
         {tier && <span title={tier.tip} onClick={() => onTier(rangeTier(a.tier))} style={{display:'inline-block', marginTop:'8px', fontSize:'9px', fontWeight:800, color:tier.text, background:tier.color, padding:'3px 8px', borderRadius:'5px', letterSpacing:'0.06em', cursor:'pointer'}}>{rangeTier(a.tier)} · {tier.label}</span>}
         <a href={'https://wa.me/40751144109?text=' + encodeURIComponent('Buna Bogdan, as vrea o oferta pentru ' + a.nume + ' - catalog GIGx')} target="_blank"
