@@ -139,7 +139,7 @@ export default function PaginaArtist() {
             style={{display:'block', textAlign:'center', padding:'14px', background:UI.ink, color:'white', borderRadius:'12px', fontSize:'14px', fontWeight:700, textDecoration:'none'}}>
             Verifică disponibilitatea
             <span style={{display:'block', fontSize:'10.5px', fontWeight:600, color:'rgba(245,242,236,0.7)', marginTop:'3px'}}>
-              <span style={{color:'#34d399'}}>●</span> răspuns garantat în mai puțin de 30 min
+              <span style={{color:'#34d399'}}>●</span> Bogdan Niță îți răspunde în mai puțin de 30 min
             </span>
           </a>
         </div>
