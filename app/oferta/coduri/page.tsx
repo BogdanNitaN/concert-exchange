@@ -19,6 +19,7 @@ export default function CoduriPage() {
   const [nouZile, setNouZile] = useState(30)
   const [nouToken, setNouToken] = useState('')
   const [nouAscunde, setNouAscunde] = useState(false)
+  const [nouScop, setNouScop] = useState('roster')
 
   async function faLogin() {
     setLoggingIn(true); setLoginErr('')
@@ -54,7 +55,7 @@ export default function CoduriPage() {
     setLoading(false)
   }
   async function genereaza() {
-    const r = await fetch('/api/roster-coduri', { method:'POST', headers: { 'Content-Type':'application/json', authorization: 'Bearer ' + await tok() }, body: JSON.stringify({ destinatar: nouDest, zile: nouZile, token: nouToken, ascunde_contacte: nouAscunde }) })
+    const r = await fetch('/api/roster-coduri', { method:'POST', headers: { 'Content-Type':'application/json', authorization: 'Bearer ' + await tok() }, body: JSON.stringify({ destinatar: nouDest, zile: nouZile, token: nouToken, ascunde_contacte: nouAscunde, scop: nouScop }) })
     const d = await r.json()
     if (d.ok) { setMsg('Cod nou: ' + d.token); setNouToken(''); load() } else setMsg('Eroare: ' + (d.error || ''))
     setTimeout(() => setMsg(''), 6000)
@@ -109,6 +110,10 @@ export default function CoduriPage() {
           <div style={{fontSize:'13px', fontWeight:800, color:UI.ink, marginBottom:'10px'}}>Cod nou pentru roster</div>
           <div style={{display:'flex', gap:'8px', flexWrap:'wrap', alignItems:'center'}}>
             <input value={nouDest} onChange={e => setNouDest(e.target.value)} placeholder="Destinatar" style={{...inputStyle, flex:'1 1 200px'}} />
+            <select value={nouScop} onChange={e => setNouScop(e.target.value)} style={{...inputStyle, width:'150px'}}>
+              <option value="roster">Roster standard</option>
+              <option value="revelion">Revelion</option>
+            </select>
             <input value={nouToken} onChange={e => setNouToken(e.target.value)} placeholder="Cod (gol = generat)" style={{...inputStyle, width:'170px'}} />
             <input type="number" value={nouZile} onChange={e => setNouZile(Number(e.target.value))} style={{...inputStyle, width:'90px'}} />
             <label style={{display:'flex', alignItems:'center', gap:'6px', fontSize:'12px', fontWeight:700, color:UI.sub, cursor:'pointer'}}><input type="checkbox" checked={nouAscunde} onChange={e => setNouAscunde(e.target.checked)} style={{width:'15px', height:'15px', accentColor:UI.green}} />fara contacte</label>
