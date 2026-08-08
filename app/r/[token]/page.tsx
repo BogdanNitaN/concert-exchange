@@ -49,7 +49,7 @@ function textOferta(a: any, audienta: string, tab: string) {
   t += 'Corporate / Private (la cerere)' + '\n' + '\n'
   const ll: string[] = []
   if (lg.persoane) ll.push('- Persoane in deplasare: ' + lg.persoane)
-  if (lg.format) ll.push('- Format: ' + lg.format + ' (' + (lg.durata || '45 min') + ')')
+  if (lg.format) ll.push('- Format: ' + String(lg.format).replace(/_/g, ' ') + ' (' + (lg.durata || '45 min') + ')')
   else ll.push('- Durata show: ' + (lg.durata || '45 min'))
   if (lg.landed) ll.push('- Transport: inclus in onorariu (oriunde in RO)')
   else if (lg.leiKm) ll.push('- Transport: ' + lg.leiKm + ' ' + (lg.transportMoneda || 'lei') + '/km + TVA')
@@ -58,7 +58,7 @@ function textOferta(a: any, audienta: string, tab: string) {
   else if (lg.cazare) ll.push('- Cazare: ' + lg.cazare)
   if (lg.diurna) ll.push('- Diurna / masa: ' + Number(lg.diurna).toLocaleString('ro-RO') + ' lei')
   if (ll.length) t += '*DETALII LOGISTICE:*' + '\n' + ll.join('\n') + '\n' + '\n'
-  t += lg.landed ? 'Onorariul nu include cazare si masa.' : 'Onorariul nu include transport, cazare si masa.'
+  t += a.revelion ? 'Transportul, cazarea si diurna sunt cele de mai sus.' : (lg.landed ? 'Onorariul nu include cazare si masa.' : 'Onorariul nu include transport, cazare si masa.')
   return t
 }
 
@@ -140,11 +140,13 @@ function CardArtist({ a, audienta, token, tabInitial, destinatar, ascundeContact
               <div style={{fontSize:'33px', fontWeight:800, color:UI.ink, letterSpacing:'-1.5px', lineHeight:1}}>
                 {fmtEur(a.preturi.standard)}
               </div>
-              <div style={{fontSize:'11px', color:UI.faint, fontWeight:600, marginTop:'8px'}}>{a.logistica?.landed ? 'Transport inclus · onorariul nu include cazare si masa' : 'Onorariul nu include transport, cazare si masa'}</div>
+              <div style={{fontSize:'11px', color:UI.faint, fontWeight:600, marginTop:'8px'}}>{a.revelion ? 'Transportul, cazarea si diurna sunt cele de mai jos' : (a.logistica?.landed ? 'Transport inclus · onorariul nu include cazare si masa' : 'Onorariul nu include transport, cazare si masa')}</div>
             </div>
+            {!a.revelion && (
             <div style={{textAlign:'center', fontSize:'12px', color:UI.faint, fontWeight:600, padding:'10px 0', borderTop:'1px solid '+UI.line, marginTop:'12px'}}>
               Corporate · Private · Festival <span style={{color:UI.green, fontWeight:700}}>(la cerere)</span>
             </div>
+            )}
           </div>
         )}
         {a.preturi && audienta !== 'b2b' && (
@@ -199,6 +201,7 @@ function CardArtist({ a, audienta, token, tabInitial, destinatar, ascundeContact
 
 
 function ListaRoster({ artisti, audienta, token, ascundeContacte }: { artisti: any[], audienta: string, token: string, ascundeContacte?: boolean }) {
+  const eRevelion = artisti.some((x: any) => x.revelion)
   const [q, setQ] = useState('')
   const [gen, setGen] = useState('')
   const [deschis, setDeschis] = useState('')
@@ -369,20 +372,25 @@ function ListaRoster({ artisti, audienta, token, ascundeContacte }: { artisti: a
         <span style={{fontSize:'10px', color:'#78716c', fontWeight:700, textTransform:'uppercase', letterSpacing:'0.08em'}}>Tier</span>
         <span className="tier-legend-item" style={{fontSize:'11px', color:'#d6d3d1', fontWeight:600, display:'flex', alignItems:'center', gap:'6px', position:'relative', cursor:'help'}}>
           <span style={{background:'#eacda3', fontSize:'10px', fontWeight:700, padding:'2px 8px', borderRadius:'6px', color:'white'}}>A++ · Icon</span>
-          <span>10.000€+</span>
+          {!eRevelion && <span>10.000€+</span>}
           <span className="tier-legend-tooltip">Top tier — vinde singur orice eveniment</span>
         </span>
         <span className="tier-legend-item" style={{fontSize:'11px', color:'#d6d3d1', fontWeight:600, display:'flex', alignItems:'center', gap:'6px', position:'relative', cursor:'help'}}>
           <span style={{background:'#7c3aed', fontSize:'10px', fontWeight:700, padding:'2px 8px', borderRadius:'6px', color:'white'}}>A+ · Premium</span>
-          <span>5.000–10.000€</span>
+          {!eRevelion && <span>5.000–10.000€</span>}
           <span className="tier-legend-tooltip">Tracțiune puternică — vânzări consistente</span>
         </span>
         <span className="tier-legend-item" style={{fontSize:'11px', color:'#d6d3d1', fontWeight:600, display:'flex', alignItems:'center', gap:'6px', position:'relative', cursor:'help'}}>
           <span style={{background:'#78716c', fontSize:'10px', fontWeight:700, padding:'2px 8px', borderRadius:'6px', color:'white'}}>A · Select</span>
-          <span>până la 5.000€</span>
+          {!eRevelion && <span>până la 5.000€</span>}
           <span className="tier-legend-tooltip">Atracție solidă — fan base loial</span>
         </span>
       </div>
+      )}
+      {eRevelion && (
+        <div style={{background:'#fffbeb', border:'1px solid #fcd34d', borderRadius:'12px', padding:'12px 14px', marginBottom:'12px', fontSize:'12px', color:'#92400e', lineHeight:1.5}}>
+          <strong>Prețurile afișate sunt cele pentru intervalul 22:30 – 01:00.</strong> Pentru ferestrele 20:00 – 22:30 și 01:30 – 04:00 există prețuri mai mici, valabile doar dacă în aceeași noapte artistul are un al doilea eveniment la maximum 60 km. Altfel ziua rămâne blocată integral și se aplică prețul de mai sus.
+        </div>
       )}
       <input value={q} onChange={e => setQ(e.target.value)} placeholder="Cauta artist..."
         style={{width:'100%', boxSizing:'border-box', padding:'12px 16px', borderRadius:'12px', border:'1.5px solid '+UI.line, fontSize:'14px', fontFamily:F, outline:'none', background:'white', marginBottom:'10px'}} />
@@ -466,7 +474,9 @@ function ListaRoster({ artisti, audienta, token, ascundeContacte }: { artisti: a
                 <div style={{padding:'4px 14px 16px', background:'#fafaf9'}}>
                   {a.preturi && audienta === 'b2b' && (
                     <div style={{display:'grid', gap:'5px', fontSize:'13px', marginBottom:'12px'}}>
+                      {!a.revelion && (
                       <div style={{display:'flex', justifyContent:'space-between'}}><span style={{color:UI.sub, fontWeight:600}}>Corporate · Private · Festival</span><span style={{color:UI.green, fontWeight:700}}>(la cerere)</span></div>
+                      )}
                     </div>
                   )}
                   <div style={{display:'grid', gap:'4px', fontSize:'12px', color:UI.sub, marginBottom: docs.length ? '12px' : '0'}}>

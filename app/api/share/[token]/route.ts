@@ -53,6 +53,7 @@ export async function GET(req: Request, ctx: { params: Promise<{ token: string }
       }
       return {
         nume: a.nume, genuri: genuriPentru(a.nume, meta?.genres || []), tier: tierPentru(a.nume, meta?.tier || null, fee),
+        revelion: !!rev,
         poza: imgMap[a.nume] || null,
         epk: sh.epk_url || null, riderTehnic: sh.rider_tehnic_url || null, riderAcomodare: sh.rider_acomodare_url || null, ucmr: sh.ucmr_url || null, docs: sh.docs_url || null,
         logistica: {
