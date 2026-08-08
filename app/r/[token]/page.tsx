@@ -200,7 +200,7 @@ function CardArtist({ a, audienta, token, tabInitial, destinatar, ascundeContact
 }
 
 
-function ListaRoster({ artisti, audienta, token, ascundeContacte }: { artisti: any[], audienta: string, token: string, ascundeContacte?: boolean }) {
+function ListaRoster({ artisti, audienta, token, ascundeContacte, destinatar }: { artisti: any[], audienta: string, token: string, ascundeContacte?: boolean, destinatar?: string }) {
   const eRevelion = artisti.some((x: any) => x.revelion)
   const [q, setQ] = useState('')
   const [gen, setGen] = useState('')
@@ -358,8 +358,11 @@ function ListaRoster({ artisti, audienta, token, ascundeContacte }: { artisti: a
       doc.text(dr, M, y)
       y += dr.length * 3.6
     }
-    deseneazaFooterForward(doc, W, M)
-    doc.save(gen ? 'roster-forward-' + gen.toLowerCase().replace(/[^a-z0-9]/g, '-') + '.pdf' : 'roster-forward.pdf')
+    subsolCuNota()
+    const slug = (x: string) => (x || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-zA-Z0-9]+/g, '-').replace(/^-|-$/g, '')
+    const eBal = tinta.some((x: any) => x.special && !x.revelion)
+    const bazaNume = eRev ? 'Oferta-Revelion-2027' : (eBal ? 'Oferta-Baluri-2027' : ('Roster-Forward' + (gen ? '-' + slug(gen) : '')))
+    doc.save([bazaNume, slug(destinatar || '')].filter(Boolean).join('-') + '.pdf')
   }
 
   function copiazaCatalog() {
@@ -583,7 +586,7 @@ export default function ShareView() {
           <>
             <div style={{fontSize:'13px', color:UI.sub, marginBottom:'16px'}}>Pregatit pentru <strong style={{color:UI.ink}}>{d.destinatar}</strong></div>
             {d.tip === 'artist' && <CardArtist a={d.artist} audienta={d.audienta} token={token} tabInitial="standard" destinatar={d.destinatar} ascundeContacte={d.ascundeContacte} />}
-            {d.tip === 'roster' && <ListaRoster artisti={d.artisti} audienta={d.audienta} token={token} ascundeContacte={d.ascundeContacte} />}
+            {d.tip === 'roster' && <ListaRoster artisti={d.artisti} audienta={d.audienta} token={token} ascundeContacte={d.ascundeContacte} destinatar={d.destinatar} />}
             {d.audienta !== 'b2b' && (
             <a href="/roster" target="_blank" style={{display:'block', textAlign:'center', marginTop:'24px', padding:'12px', background:'white', color:UI.sub, border:'1.5px solid '+UI.line, borderRadius:'11px', fontSize:'11px', fontWeight:800, letterSpacing:'0.08em', textDecoration:'none'}}>
               CATALOG ARTISTI FORWARD
