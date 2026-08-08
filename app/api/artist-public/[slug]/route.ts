@@ -11,6 +11,7 @@ const supabase = createClient(
 export function slugArtist(nume: string): string {
   return (nume || '').toLowerCase()
     .normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+    .replace(/['\u2018\u2019\u0060]/g, '')
     .replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '')
 }
 
@@ -19,8 +20,10 @@ export async function GET(req: Request, ctx: { params: Promise<{ slug: string }>
     const { slug } = await ctx.params
     const cautat = slugArtist(slug)
     const { data: toti } = await supabase.from('oferta_artisti').select('*')
+    const fara = (x: string) => x.replace(/-/g, '')
     const a = (toti || []).find((x: any) =>
-      x.tip !== 'intermediere' && !esteAscuns(x.nume) && slugArtist(x.nume) === cautat)
+      x.tip !== 'intermediere' && !esteAscuns(x.nume) &&
+      (slugArtist(x.nume) === cautat || fara(slugArtist(x.nume)) === fara(cautat)))
     if (!a) return NextResponse.json({ ok: false, error: 'Artist negasit.' }, { status: 404 })
 
     const { data: sh } = await supabase.from('artist_share').select('*').eq('nume', a.nume).maybeSingle()

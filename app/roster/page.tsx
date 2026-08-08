@@ -29,7 +29,7 @@ const TIERS = [
 ]
 const ordTier = (t: string | null) => (t && TIER_MAP[t]) ? TIER_MAP[t].ord : 3
 const rangeTier = (t: string) => t === 'Premium' ? 'A++' : t
-const slugA = (n: string) => (n || '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '')
+const slugA = (n: string) => (n || '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/['\u2018\u2019\u0060]/g, '').replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '')
 
 function Card({ a, onTier }: { a: any, onTier: (r: string) => void }) {
   const tier = a.tier ? TIER_MAP[a.tier] : null
