@@ -80,7 +80,11 @@ export async function GET(req: Request, ctx: { params: Promise<{ token: string }
     if (link.scop === 'bal') {
       const { data: toti } = await supabase.from('oferta_artisti').select('*')
       const lista = (toti || []).filter(a => a.bal && !esteAscuns(a.nume))
-      payload = { tip: 'roster', artisti: lista.map(fa).sort((a, b) => (b.preturi?.standard || 0) - (a.preturi?.standard || 0)) }
+      // ordinea din PDF-ul de baluri: urban (trap inclus), pop, DJs, special act
+      const ordCat: Record<string, number> = { urban: 0, pop: 1, dj: 2, special: 3 }
+      const cheie = (a: any) => (ordCat[a.bal?.cat] ?? 9) * 1000 + (a.bal?.ord ?? 999)
+      const sortate = [...lista].sort((x, y) => cheie(x) - cheie(y))
+      payload = { tip: 'roster', artisti: sortate.map(fa) }
     } else if (link.scop === 'revelion') {
       const { data: toti } = await supabase.from('oferta_artisti').select('*')
       const lista = (toti || []).filter(a => a.revelion && !esteAscuns(a.nume))
