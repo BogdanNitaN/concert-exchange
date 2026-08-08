@@ -37,6 +37,10 @@ export async function GET(req: Request, ctx: { params: Promise<{ slug: string }>
       stats = {
         monthlyListeners: d.spotifyMonthlyListeners || 0,
         spotifyFollowers: d.spotifyFollowers || 0,
+        spotifyStreams: d.spotifyStreams || 0,
+        youtubeViews: d.youtubeViews || 0,
+        shazamCount: d.shazamCount || 0,
+        tiktokVideos: d.totalTiktokVideos || 0,
         tiktokFollowers: d.tiktokFollowers || 0,
         instagramFollowers: d.instagramFollowers || 0,
       }
@@ -51,6 +55,8 @@ export async function GET(req: Request, ctx: { params: Promise<{ slug: string }>
         tier: tierPentru(a.nume, null, a.fee_standard || 0),
         poza: img?.image_url || null,
         durata: a.durata_default || null,
+        orasResedinta: a.oras_rezidenta || null,
+        bio: a.bio || null,
         setType: a.set_type || null,
         // public: doar media kit. Riderul si UCMR raman pe linkurile cu cod.
         mediaKit: sh?.epk_url || null,
