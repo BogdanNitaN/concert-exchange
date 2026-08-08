@@ -342,6 +342,13 @@ function ListaRoster({ artisti, audienta, token, ascundeContacte }: { artisti: a
     doc.setFont('helvetica', 'italic'); doc.setFontSize(8); doc.setTextColor(140,140,140)
     if (y > 220) { deseneazaFooterForward(doc, W, M); doc.addPage(); deseneazaHeaderForward(doc, W, M, logo); y = 52 }
     doc.text(noDia('Onorariile nu includ cazare si masa; transportul conform detaliilor per artist. Oferta confidentiala.'), M, y)
+    if (tinta.some((x: any) => x.revelion)) {
+      y += 4
+      const dr = doc.splitTextToSize('Preturile afisate sunt pentru intervalul 22:30 - 01:00, cand artistul iti dedica intreaga noapte. Pentru ferestrele 20:00 - 22:30 si 01:30 - 04:00 se poate aplica un tarif de noapte impartita, posibil doar daca artistul are in aceeasi noapte un al doilea eveniment la maximum 60 km. Fara acesta, ziua ramane alocata integral evenimentului tau.', W - 2 * M)
+      if (y + dr.length * 3.6 > 275) { deseneazaFooterForward(doc, W, M); doc.addPage(); deseneazaHeaderForward(doc, W, M, logo); y = 52 }
+      doc.text(dr, M, y)
+      y += dr.length * 3.6
+    }
     deseneazaFooterForward(doc, W, M)
     doc.save(gen ? 'roster-forward-' + gen.toLowerCase().replace(/[^a-z0-9]/g, '-') + '.pdf' : 'roster-forward.pdf')
   }
@@ -390,7 +397,7 @@ function ListaRoster({ artisti, audienta, token, ascundeContacte }: { artisti: a
       )}
       {eRevelion && (
         <div style={{background:'#fffbeb', border:'1px solid #fcd34d', borderRadius:'12px', padding:'12px 14px', marginBottom:'12px', fontSize:'12px', color:'#92400e', lineHeight:1.5}}>
-          <strong>Prețurile afișate sunt cele pentru intervalul 22:30 – 01:00.</strong> Pentru ferestrele 20:00 – 22:30 și 01:30 – 04:00 există prețuri mai mici, valabile doar dacă în aceeași noapte artistul are un al doilea eveniment la maximum 60 km. Altfel ziua rămâne blocată integral și se aplică prețul de mai sus.
+          <strong>Prețurile afișate sunt pentru intervalul 22:30 – 01:00,</strong> când artistul îți dedică întreaga noapte. Pentru ferestrele 20:00 – 22:30 și 01:30 – 04:00 se poate aplica un tarif de noapte împărțită, posibil doar dacă artistul are în aceeași noapte un al doilea eveniment la maximum 60 km. Fără acesta, ziua rămâne alocată integral evenimentului tău.
         </div>
       )}
       <input value={q} onChange={e => setQ(e.target.value)} placeholder="Cauta artist..."
