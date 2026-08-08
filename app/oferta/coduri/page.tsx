@@ -157,12 +157,13 @@ export default function CoduriPage() {
               <div key={c.token} style={{padding:'12px 14px', borderTop: i ? '1px solid #f0f0ef' : 'none', display:'flex', alignItems:'center', gap:'12px', flexWrap:'wrap'}}>
                 <div style={{flex:'1 1 220px', minWidth:0}}>
                   <div style={{fontSize:'13px', fontWeight:800, color:UI.ink}}>{c.destinatar || '—'}</div>
-                  <div style={{fontSize:'11px', color:UI.sub, marginTop:'2px'}}>{c.scop === 'roster' ? 'Roster complet' : c.scop} · {c.tip_audienta} · {c.creat_de || '—'}</div>
+                  <div style={{fontSize:'11px', color:UI.sub, marginTop:'2px'}}>{({ roster: 'Roster complet', revelion: 'Revelion 2027', bal: 'Baluri 2027' } as any)[c.scop] || c.scop} · {c.tip_audienta} · {c.creat_de || '—'}</div>
                 </div>
                 <code style={{fontSize:'12px', fontWeight:700, background:UI.bg, padding:'4px 8px', borderRadius:'6px'}}>{c.token}</code>
                 <span style={{fontSize:'11px', fontWeight:800, color:st.col, minWidth:'86px'}}>{st.txt}</span>
                 <span style={{fontSize:'11px', color:UI.sub, minWidth:'70px'}}>{c.vizualizari} vizualizari</span>
                 <button onClick={() => { navigator.clipboard.writeText('https://gigx.ro/r/' + c.token); setMsg('Link copiat'); setTimeout(() => setMsg(''), 2000) }} style={{padding:'6px 10px', background:'white', color:UI.ink, border:'1.5px solid '+UI.line, borderRadius:'8px', fontSize:'11px', fontWeight:700, cursor:'pointer', fontFamily:F}}>Copiaza</button>
+                <a href={'/r/' + c.token} target="_blank" rel="noreferrer" style={{padding:'6px 10px', background:UI.ink, color:'white', borderRadius:'8px', fontSize:'11px', fontWeight:700, textDecoration:'none'}}>Deschide</a>
                 <button onClick={() => patch(c.token, { prelungesteZile: 30 })} style={{padding:'6px 10px', background:'white', color:UI.ink, border:'1.5px solid '+UI.line, borderRadius:'8px', fontSize:'11px', fontWeight:700, cursor:'pointer', fontFamily:F}}>+30z</button>
                 <button onClick={() => patch(c.token, { activ: !c.activ })} style={{padding:'6px 10px', background: c.activ ? 'white' : UI.green, color: c.activ ? UI.red : 'white', border:'1.5px solid '+(c.activ ? UI.line : UI.green), borderRadius:'8px', fontSize:'11px', fontWeight:700, cursor:'pointer', fontFamily:F}}>{c.activ ? 'Opreste' : 'Repune'}</button>
               </div>
