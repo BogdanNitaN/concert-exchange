@@ -15,7 +15,7 @@ export default function CoduriPage() {
   const [coduri, setCoduri] = useState<any[]>([])
   const [loading, setLoading] = useState(false)
   const [msg, setMsg] = useState('')
-  const [nouDest, setNouDest] = useState('Parteneri Forward')
+  const [nouDest, setNouDest] = useState('')
   const [nouZile, setNouZile] = useState(30)
   const [nouToken, setNouToken] = useState('')
   const [nouAscunde, setNouAscunde] = useState(false)
@@ -102,7 +102,11 @@ export default function CoduriPage() {
         {expira.length > 0 && (
           <div style={{background:'#fffbeb', border:'1.5px solid #fcd34d', borderRadius:'12px', padding:'14px 16px', marginBottom:'16px'}}>
             <div style={{fontSize:'13px', fontWeight:800, color:'#92400e'}}>Atentie: {expira.length === 1 ? 'un cod expira' : expira.length + ' coduri expira'} in curand</div>
-            <div style={{fontSize:'12px', color:'#a16207', marginTop:'4px'}}>{expira.map(c => c.token + ' (' + stare(c).txt + ')').join(' · ')} — genereaza unul nou si trimite-l partenerilor.</div>
+            <div style={{fontSize:'12px', color:'#a16207', marginTop:'6px', display:'grid', gap:'3px'}}>
+              {[...expira].sort((a, b) => new Date(a.expira_la).getTime() - new Date(b.expira_la).getTime()).map(c => (
+                <div key={c.token}><strong>{c.token}</strong> · {c.destinatar || '—'} · {stare(c).txt}</div>
+              ))}
+            </div>
           </div>
         )}
 

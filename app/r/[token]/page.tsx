@@ -289,7 +289,7 @@ function ListaRoster({ artisti, audienta, token, ascundeContacte }: { artisti: a
         const dr = doc.splitTextToSize('Preturile afisate sunt cele pentru intervalul 22:30 - 01:00. Pentru ferestrele 20:00 - 22:30 si 01:30 - 04:00 exista un pret mai accesibil, valabil doar daca in aceeasi noapte artistul are un al doilea eveniment la maximum 60 km. Altfel ziua ramane blocata integral si se aplica pretul de mai sus.', W - 2 * M)
         doc.text(dr, M, 272 - dr.length * 2.6)
       }
-      subsolCuNota()
+      deseneazaFooterForward(doc, W, M)
     }
     const W = 210, M = 16
     deseneazaHeaderForward(doc, W, M, logo)
