@@ -344,7 +344,7 @@ function ListaRoster({ artisti, audienta, token, ascundeContacte }: { artisti: a
     doc.text(noDia('Onorariile nu includ cazare si masa; transportul conform detaliilor per artist. Oferta confidentiala.'), M, y)
     if (tinta.some((x: any) => x.revelion)) {
       y += 4
-      const dr = doc.splitTextToSize('Preturile afisate sunt pentru intervalul 22:30 - 01:00, cand artistul iti dedica intreaga noapte. Pentru ferestrele 20:00 - 22:30 si 01:30 - 04:00 se poate aplica un tarif de noapte impartita, posibil doar daca artistul are in aceeasi noapte un al doilea eveniment la maximum 60 km. Fara acesta, ziua ramane alocata integral evenimentului tau.', W - 2 * M)
+      const dr = doc.splitTextToSize('Preturile afisate sunt cele pentru intervalul 22:30 - 01:00. Pentru ferestrele 20:00 - 22:30 si 01:30 - 04:00 exista un pret mai accesibil, valabil doar daca in aceeasi noapte artistul are un al doilea eveniment la maximum 60 km. Altfel ziua ramane blocata integral si se aplica pretul de mai sus.', W - 2 * M)
       if (y + dr.length * 3.6 > 275) { deseneazaFooterForward(doc, W, M); doc.addPage(); deseneazaHeaderForward(doc, W, M, logo); y = 52 }
       doc.text(dr, M, y)
       y += dr.length * 3.6
@@ -397,7 +397,7 @@ function ListaRoster({ artisti, audienta, token, ascundeContacte }: { artisti: a
       )}
       {eRevelion && (
         <div style={{background:'#fffbeb', border:'1px solid #fcd34d', borderRadius:'12px', padding:'12px 14px', marginBottom:'12px', fontSize:'12px', color:'#92400e', lineHeight:1.5}}>
-          <strong>Prețurile afișate sunt pentru intervalul 22:30 – 01:00,</strong> când artistul îți dedică întreaga noapte. Pentru ferestrele 20:00 – 22:30 și 01:30 – 04:00 se poate aplica un tarif de noapte împărțită, posibil doar dacă artistul are în aceeași noapte un al doilea eveniment la maximum 60 km. Fără acesta, ziua rămâne alocată integral evenimentului tău.
+          <strong>Prețurile afișate sunt cele pentru intervalul 22:30 – 01:00.</strong> Pentru ferestrele 20:00 – 22:30 și 01:30 – 04:00 există un preț mai accesibil, valabil doar dacă în aceeași noapte artistul are un al doilea eveniment la maximum 60 km. Altfel ziua rămâne blocată integral și se aplică prețul de mai sus.
         </div>
       )}
       <input value={q} onChange={e => setQ(e.target.value)} placeholder="Cauta artist..."
