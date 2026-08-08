@@ -333,8 +333,9 @@ function ListaRoster({ artisti, audienta, token, ascundeContacte }: { artisti: a
         else if (lg.cazare) li.push('Cazare: ' + lg.cazare)
         if (lg.diurna) li.push('Diurna / masa: ' + Number(lg.diurna).toLocaleString('ro-RO') + ' lei')
         doc.setTextColor(140,140,140)
-        doc.text(noDia(li.join('  ·  ')), tx, y)
-        y += 14
+        const randuriLog = doc.splitTextToSize(noDia(li.join('  ·  ')), W - M - (tx - M) - 2)
+        doc.text(randuriLog, tx, y)
+        y += 14 + Math.max(0, randuriLog.length - 1) * 4
       }
       y += 8
     }
