@@ -113,6 +113,7 @@ export default function CoduriPage() {
             <select value={nouScop} onChange={e => setNouScop(e.target.value)} style={{...inputStyle, width:'150px'}}>
               <option value="roster">Roster standard</option>
               <option value="revelion">Revelion</option>
+              <option value="bal">Baluri</option>
             </select>
             <input value={nouToken} onChange={e => setNouToken(e.target.value)} placeholder="Cod (gol = generat)" style={{...inputStyle, width:'170px'}} />
             <input type="number" value={nouZile} onChange={e => setNouZile(Number(e.target.value))} style={{...inputStyle, width:'90px'}} />
