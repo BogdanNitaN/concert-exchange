@@ -46,7 +46,7 @@ function textOferta(a: any, audienta: string, tab: string) {
       t += fmtEur(a.preturi.deLa) + ' + TVA' + '\n'
     }
   }
-  t += 'Corporate / Private (la cerere)' + '\n' + '\n'
+  if (!a.revelion) t += 'Corporate / Private (la cerere)' + '\n' + '\n'
   const ll: string[] = []
   if (lg.persoane) ll.push('- Persoane in deplasare: ' + lg.persoane)
   if (lg.format) ll.push('- Format: ' + String(lg.format).replace(/_/g, ' ') + ' (' + (lg.durata || '45 min') + ')')
@@ -318,7 +318,7 @@ function ListaRoster({ artisti, audienta, token, ascundeContacte }: { artisti: a
         }
         y += 5.5
         doc.setFont('helvetica', 'normal'); doc.setFontSize(8.5); doc.setTextColor(90,90,90)
-        if (a.preturi && audienta === 'b2b') {
+        if (a.preturi && audienta === 'b2b' && !a.revelion) {
           doc.text(noDia('Corporate / Private / Festival (la cerere)'), tx, y)
           y += 5
         }
