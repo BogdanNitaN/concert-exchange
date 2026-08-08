@@ -41,12 +41,12 @@ function textOferta(a: any, audienta: string, tab: string) {
     if (audienta === 'b2b') {
       const pret = tab === 'prom' ? a.preturi.prom : a.preturi.standard
       const sufix = tab === 'prom' ? ' (Baluri / Prom)' : ''
-      t += fmtEur(pret) + ' + TVA' + sufix + '\n'
+      t += '\n' + 'Onorariu: ' + fmtEur(pret) + ' + TVA' + sufix + '\n'
     } else {
-      t += fmtEur(a.preturi.deLa) + ' + TVA' + '\n'
+      t += '\n' + 'Onorariu: ' + fmtEur(a.preturi.deLa) + ' + TVA' + '\n'
     }
   }
-  if (!a.revelion) t += 'Corporate / Private (la cerere)' + '\n' + '\n'
+  if (!a.revelion) t += 'Corporate / Private (la cerere)' + '\n'
   const ll: string[] = []
   if (lg.persoane) ll.push('- Persoane in deplasare: ' + lg.persoane)
   if (lg.format) ll.push('- Format: ' + String(lg.format).replace(/_/g, ' ') + ' (' + (lg.durata || '45 min') + ')')
@@ -57,7 +57,7 @@ function textOferta(a: any, audienta: string, tab: string) {
   if (lg.cazareFixa > 0) ll.push('- Cazare: ' + Number(lg.cazareFixa).toLocaleString('ro-RO') + ' lei')
   else if (lg.cazare) ll.push('- Cazare: ' + lg.cazare)
   if (lg.diurna) ll.push('- Diurna / masa: ' + Number(lg.diurna).toLocaleString('ro-RO') + ' lei')
-  if (ll.length) t += '*DETALII LOGISTICE:*' + '\n' + ll.join('\n') + '\n' + '\n'
+  if (ll.length) t += '\n' + '*DETALII LOGISTICE:*' + '\n' + ll.join('\n') + '\n' + '\n'
   t += a.revelion ? 'Transportul, cazarea si diurna sunt cele de mai sus.' : (lg.landed ? 'Onorariul nu include cazare si masa.' : 'Onorariul nu include transport, cazare si masa.')
   return t
 }
