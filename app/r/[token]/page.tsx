@@ -229,6 +229,19 @@ function ListaRoster({ artisti, audienta, token, ascundeContacte, destinatar }: 
   const randuri = useMemo(() => {
     if (gen || q.trim()) return filtrati
     const ordT: Record<string, number> = { 'A++': 0, 'Premium': 0, 'A+': 1, 'A': 2 }
+    // pe linkurile de bal pastrez ordinea din PDF: urban, pop, DJs, special act
+    const eBalLista = filtrati.some((a: any) => a.catBal)
+    if (eBalLista) {
+      const et: Record<string, string> = { urban: 'Urban & Trap', pop: 'Pop', dj: 'DJs', special: 'Special act' }
+      const o: any[] = []
+      for (const c of ['urban', 'pop', 'dj', 'special']) {
+        const l = filtrati.filter((a: any) => a.catBal === c)
+        if (l.length) { o.push({ _h: et[c], _n: l.length }); o.push(...l) }
+      }
+      const rest = filtrati.filter((a: any) => !a.catBal)
+      if (rest.length) { o.push({ _h: 'Alti artisti', _n: rest.length }); o.push(...rest) }
+      return o
+    }
     const ot = (t: string | null) => (t && ordT[t] !== undefined) ? ordT[t] : 3
     const top = filtrati.filter(a => ot(a.tier) === 0 && !esteFaraTop(a.nume)).sort((a, b) => ot(a.tier) - ot(b.tier))
     const topSet = new Set(top.map(a => a.nume))
