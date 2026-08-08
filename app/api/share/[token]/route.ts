@@ -38,10 +38,14 @@ export async function GET(req: Request, ctx: { params: Promise<{ token: string }
     const fa = (a: any) => {
       const meta = (ARTISTS_DATA as unknown as any[]).find(x => (x.name || '').toLowerCase() === (a.nume || '').toLowerCase())
       const sh = shareMap[a.nume] || {}
-      const fee = a.fee_standard || 0
+      // pe linkurile de revelion, pretul si logistica vin din profilul de sarbatori
+      const rev: any = link.scop === 'revelion' ? a.revelion : null
+      const fee = (rev && typeof rev.baza === 'number') ? rev.baza : (a.fee_standard || 0)
       let preturi: any = null
       if (link.arata_preturi && fee > 0) {
-        if (link.tip_audienta === 'b2b') {
+        if (rev) {
+          preturi = { standard: fee, deLa: fee }
+        } else if (link.tip_audienta === 'b2b') {
           preturi = { standard: fee, revelion: Math.round(fee * (sh.mult_revelion ?? 2)), prom: Math.round(fee * (sh.mult_prom ?? 1)) }
         } else {
           preturi = { deLa: fee }
@@ -56,19 +60,24 @@ export async function GET(req: Request, ctx: { params: Promise<{ token: string }
           persoane: a.nr_persoane || null,
           format: a.format_show || null,
           durata: a.set_type === 'dj' ? '90-120 min' : (a.durata_default || null),
-          leiKm: a.lei_km || null,
-          transportMoneda: a.transport_moneda || 'lei',
-          bileteAvion: a.bilete_avion || null,
-          cazare: a.cazare || null,
-          cazareFixa: a.cazare_fixa || null,
-          diurna: a.diurna_fixa || null,
+          leiKm: rev ? (rev.eurKm ?? null) : (a.lei_km || null),
+          transportMoneda: rev ? 'euro' : (a.transport_moneda || 'lei'),
+          bileteAvion: rev ? (rev.bilete ?? null) : (a.bilete_avion || null),
+          cazare: rev ? (rev.cazare || null) : (a.cazare || null),
+          cazareFixa: rev ? (rev.cazareFixa ?? null) : (a.cazare_fixa || null),
+          diurna: rev ? (rev.diurna ?? null) : (a.diurna_fixa || null),
+          nota: rev ? (rev.nota || null) : null,
         },
         preturi,
       }
     }
 
     let payload: any
-    if (link.scop === 'roster') {
+    if (link.scop === 'revelion') {
+      const { data: toti } = await supabase.from('oferta_artisti').select('*')
+      const lista = (toti || []).filter(a => a.revelion && !esteAscuns(a.nume))
+      payload = { tip: 'roster', revelion: true, artisti: lista.map(fa).sort((a, b) => (b.preturi?.standard || 0) - (a.preturi?.standard || 0)) }
+    } else if (link.scop === 'roster') {
       const { data: toti } = await supabase.from('oferta_artisti').select('*')
       let lista = (toti || []).filter(a => a.tip !== 'intermediere' && !esteAscuns(a.nume) && (shareMap[a.nume]?.afisabil ?? true))
       if (link.filtru_gen) {
