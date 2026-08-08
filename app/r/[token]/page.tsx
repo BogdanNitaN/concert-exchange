@@ -282,6 +282,15 @@ function ListaRoster({ artisti, audienta, token, ascundeContacte }: { artisti: a
     const poze: Record<string, string | null> = {}
     await Promise.all(tinta.map(async (a: any) => { poze[a.nume] = a.poza ? await toCompressedPoza(a.poza) : null }))
     const doc = new jsPDF({ unit: 'mm', format: 'a4', compress: true })
+    const eRev = tinta.some((x: any) => x.revelion)
+    const subsolCuNota = () => {
+      if (eRev) {
+        doc.setFont('helvetica', 'italic'); doc.setFontSize(6.5); doc.setTextColor(150,150,150)
+        const dr = doc.splitTextToSize('Preturile afisate sunt cele pentru intervalul 22:30 - 01:00. Pentru ferestrele 20:00 - 22:30 si 01:30 - 04:00 exista un pret mai accesibil, valabil doar daca in aceeasi noapte artistul are un al doilea eveniment la maximum 60 km. Altfel ziua ramane blocata integral si se aplica pretul de mai sus.', W - 2 * M)
+        doc.text(dr, M, 272 - dr.length * 2.6)
+      }
+      subsolCuNota()
+    }
     const W = 210, M = 16
     deseneazaHeaderForward(doc, W, M, logo)
     let y = 52
@@ -296,14 +305,14 @@ function ListaRoster({ artisti, audienta, token, ascundeContacte }: { artisti: a
       grupe[g].push(a)
     }
     for (const [g, lista] of Object.entries(grupe)) {
-      if (y > 200) { deseneazaFooterForward(doc, W, M); doc.addPage(); deseneazaHeaderForward(doc, W, M, logo); y = 52 }
+      if (y > 200) { subsolCuNota(); doc.addPage(); deseneazaHeaderForward(doc, W, M, logo); y = 52 }
       if (!gen) {
         doc.setFont('helvetica', 'bold'); doc.setFontSize(10.5); doc.setTextColor(120,113,108)
         doc.text(noDia(g.toUpperCase()), M, y)
         y += 6
       }
       for (const a of lista) {
-        if (y > 210) { deseneazaFooterForward(doc, W, M); doc.addPage(); deseneazaHeaderForward(doc, W, M, logo); y = 52 }
+        if (y > 210) { subsolCuNota(); doc.addPage(); deseneazaHeaderForward(doc, W, M, logo); y = 52 }
         doc.setFont('helvetica', 'bold'); doc.setFontSize(11.5); doc.setTextColor(28,25,23)
         const ph = poze[a.nume]
         if (ph) { try { doc.addImage(ph, 'JPEG', M, y - 4, 18, 18) } catch {} }
@@ -340,12 +349,12 @@ function ListaRoster({ artisti, audienta, token, ascundeContacte }: { artisti: a
       y += 8
     }
     doc.setFont('helvetica', 'italic'); doc.setFontSize(8); doc.setTextColor(140,140,140)
-    if (y > 220) { deseneazaFooterForward(doc, W, M); doc.addPage(); deseneazaHeaderForward(doc, W, M, logo); y = 52 }
+    if (y > 220) { subsolCuNota(); doc.addPage(); deseneazaHeaderForward(doc, W, M, logo); y = 52 }
     doc.text(noDia('Onorariile nu includ cazare si masa; transportul conform detaliilor per artist. Oferta confidentiala.'), M, y)
     if (tinta.some((x: any) => x.revelion)) {
       y += 4
       const dr = doc.splitTextToSize('Preturile afisate sunt cele pentru intervalul 22:30 - 01:00. Pentru ferestrele 20:00 - 22:30 si 01:30 - 04:00 exista un pret mai accesibil, valabil doar daca in aceeasi noapte artistul are un al doilea eveniment la maximum 60 km. Altfel ziua ramane blocata integral si se aplica pretul de mai sus.', W - 2 * M)
-      if (y + dr.length * 3.6 > 275) { deseneazaFooterForward(doc, W, M); doc.addPage(); deseneazaHeaderForward(doc, W, M, logo); y = 52 }
+      if (y + dr.length * 3.6 > 275) { subsolCuNota(); doc.addPage(); deseneazaHeaderForward(doc, W, M, logo); y = 52 }
       doc.text(dr, M, y)
       y += dr.length * 3.6
     }
