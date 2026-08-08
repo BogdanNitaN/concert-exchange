@@ -487,6 +487,19 @@ export default function OfertaPage() {
   }
   function aplicaTipEveniment(tip: string) {
     setLinii(prev => prev.map(l => {
+      // revelionul are profil propriu: pret, transport in euro, cazare, diurna, bilete
+      const r: any = tip === 'Revelion' ? (l.artist as any)?.revelion : null
+      if (r) {
+        const fee = typeof r.baza === 'number' ? r.baza : l.fee
+        return { ...l, tipPret: tip, feeLista: fee, fee,
+          leiKm: typeof r.eurKm === 'number' ? r.eurKm : l.leiKm,
+          artist: { ...l.artist, transport_moneda: 'euro' },
+          bileteAvion: typeof r.bilete === 'number' ? r.bilete : l.bileteAvion,
+          cazare: r.cazare || l.cazare,
+          diurnaFixa: typeof r.diurna === 'number' ? r.diurna : l.diurnaFixa,
+          cazareFixa: typeof r.cazareFixa === 'number' ? r.cazareFixa : l.cazareFixa,
+        }
+      }
       const p = pretPentruTip(l.artist, tip)
       return p ? { ...l, tipPret: tip, feeLista: p, fee: p } : { ...l, tipPret: tip }
     }))
