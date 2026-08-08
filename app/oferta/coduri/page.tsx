@@ -20,6 +20,7 @@ export default function CoduriPage() {
   const [nouToken, setNouToken] = useState('')
   const [nouAscunde, setNouAscunde] = useState(false)
   const [nouScop, setNouScop] = useState('roster')
+  const [cautaCod, setCautaCod] = useState('')
 
   async function faLogin() {
     setLoggingIn(true); setLoginErr('')
@@ -104,7 +105,13 @@ export default function CoduriPage() {
             <div style={{fontSize:'13px', fontWeight:800, color:'#92400e'}}>Atentie: {expira.length === 1 ? 'un cod expira' : expira.length + ' coduri expira'} in curand</div>
             <div style={{fontSize:'12px', color:'#a16207', marginTop:'6px', display:'grid', gap:'3px'}}>
               {[...expira].sort((a, b) => new Date(a.expira_la).getTime() - new Date(b.expira_la).getTime()).map(c => (
-                <div key={c.token}><strong>{c.token}</strong> · {c.destinatar || '—'} · {stare(c).txt}</div>
+                <div key={c.token} style={{display:'flex', alignItems:'center', gap:'8px', flexWrap:'wrap', padding:'3px 0'}}>
+                  <strong style={{minWidth:'120px'}}>{c.token}</strong>
+                  <span style={{flex:'1 1 140px'}}>{c.destinatar || '—'}</span>
+                  <span style={{fontWeight:700}}>{stare(c).txt}</span>
+                  <button onClick={() => patch(c.token, { prelungesteZile: 30 })} style={{padding:'4px 9px', background:'white', color:'#92400e', border:'1px solid #fcd34d', borderRadius:'7px', fontSize:'11px', fontWeight:700, cursor:'pointer', fontFamily:F}}>+30 zile</button>
+                  <button onClick={() => patch(c.token, { activ: false })} style={{padding:'4px 9px', background:'white', color:'#a16207', border:'1px solid #fcd34d', borderRadius:'7px', fontSize:'11px', fontWeight:700, cursor:'pointer', fontFamily:F}}>Lasa sa expire</button>
+                </div>
               ))}
             </div>
           </div>
@@ -129,7 +136,15 @@ export default function CoduriPage() {
 
         <div style={{background:'white', border:'1px solid '+UI.line, borderRadius:'14px', overflow:'hidden'}}>
           {loading && <div style={{padding:'20px', fontSize:'13px', color:UI.sub}}>Se incarca...</div>}
-          {!loading && coduri.map((c, i) => {
+          {!loading && coduri.length > 6 && (
+            <div style={{padding:'10px 14px', borderBottom:'1px solid #f0f0ef'}}>
+              <input value={cautaCod} onChange={e => setCautaCod(e.target.value)} placeholder="Cauta dupa cod sau destinatar..." style={{...inputStyle, width:'100%'}} />
+            </div>
+          )}
+          {!loading && coduri.filter(c => {
+            const q = cautaCod.trim().toLowerCase()
+            return !q || (c.token || '').toLowerCase().includes(q) || (c.destinatar || '').toLowerCase().includes(q)
+          }).map((c, i) => {
             const st = stare(c)
             return (
               <div key={c.token} style={{padding:'12px 14px', borderTop: i ? '1px solid #f0f0ef' : 'none', display:'flex', alignItems:'center', gap:'12px', flexWrap:'wrap'}}>
