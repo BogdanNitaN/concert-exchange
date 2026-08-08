@@ -1,6 +1,16 @@
 {
   "crons": [
-    { "path": "/api/curata-teste", "schedule": "0 15 * * *" },
-    { "path": "/api/curata-teste", "schedule": "59 20 * * *" }
+    {
+      "path": "/api/curata-teste",
+      "schedule": "0 15 * * *"
+    },
+    {
+      "path": "/api/curata-teste",
+      "schedule": "59 20 * * *"
+    },
+    {
+      "path": "/api/cron-metrici",
+      "schedule": "0 6 * * 1"
+    }
   ]
 }
