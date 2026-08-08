@@ -127,14 +127,12 @@ export default function CoduriPage() {
           <div style={{fontSize:'13px', fontWeight:800, color:UI.ink, marginBottom:'10px'}}>Cod nou pentru roster</div>
           <div style={{display:'flex', gap:'8px', flexWrap:'wrap', alignItems:'center'}}>
             <input value={nouDest} onChange={e => setNouDest(e.target.value)} placeholder="Destinatar" style={{...inputStyle, flex:'1 1 200px'}} />
-            <div style={{display:'flex', gap:'6px'}}>
-              {[{id:'roster', et:'Roster', c:UI.green}, {id:'revelion', et:'Revelion', c:'#b8860b'}, {id:'bal', et:'Baluri', c:UI.purple}].map(o => (
-                <button key={o.id} onClick={() => setNouScop(o.id)}
-                  style={{padding:'9px 14px', borderRadius:'9px', border:'1.5px solid ' + (nouScop === o.id ? o.c : UI.line), background: nouScop === o.id ? o.c : 'white', color: nouScop === o.id ? 'white' : UI.sub, fontSize:'13px', fontWeight:800, cursor:'pointer', fontFamily:F, transition:'all 0.15s'}}>
-                  {o.et}
-                </button>
-              ))}
-            </div>
+            <select value={nouScop} onChange={e => setNouScop(e.target.value)}
+              style={{...inputStyle, width:'160px', border:'1.5px solid '+UI.green, color:UI.green, fontWeight:800, background:'#f0fdf4', cursor:'pointer'}}>
+              <option value="roster">Roster standard</option>
+              <option value="revelion">Revelion</option>
+              <option value="bal">Baluri</option>
+            </select>
             <input value={nouToken} onChange={e => setNouToken(e.target.value)} placeholder="Cod (gol = generat)" style={{...inputStyle, width:'170px'}} />
             <input type="number" value={nouZile} onChange={e => setNouZile(Number(e.target.value))} style={{...inputStyle, width:'90px'}} />
             <label style={{display:'flex', alignItems:'center', gap:'6px', fontSize:'12px', fontWeight:700, color:UI.sub, cursor:'pointer'}}><input type="checkbox" checked={nouAscunde} onChange={e => setNouAscunde(e.target.checked)} style={{width:'15px', height:'15px', accentColor:UI.green}} />fara contacte</label>
