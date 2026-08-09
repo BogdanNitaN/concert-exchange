@@ -502,7 +502,7 @@ function ListaRoster({ artisti, audienta, token, ascundeContacte, destinatar }: 
                 <div style={{textAlign:'right', flexShrink:0}}>
                   {a.preturi
                     ? <div style={{fontSize:'clamp(13.5px, 3.8vw, 16px)', fontWeight:800, color:UI.ink, letterSpacing:'-0.5px'}}>{fmtEur(audienta === 'b2b' ? a.preturi.standard : a.preturi.deLa)}<span style={{fontSize:'10px', color:UI.faint, fontWeight:700}}> +TVA</span></div>
-                    : <div style={{fontSize:'12px', fontWeight:700, color:UI.faint}}>la cerere</div>}
+                    : (audienta === 'privat' ? null : <div style={{fontSize:'12px', fontWeight:700, color:UI.faint}}>la cerere</div>)}
                   <div style={{fontSize:'10px', color:UI.green, fontWeight:800}}>{e ? 'închide ▲' : 'detalii ▼'}</div>
                 </div>
               </div>
