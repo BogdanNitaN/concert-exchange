@@ -878,7 +878,7 @@ export default function OfertaPage() {
             </div>
             {!isMobile && <div style={{fontSize:'13px', color:'#a8a29e', fontWeight:500, marginTop:'2px'}}>Generator deviz intern</div>}
           </div>
-          <a href="/oferta/fisa" style={{fontSize:'13px', fontWeight:700, color:'#059669', textDecoration:'none', background:'rgba(5,150,105,0.08)', padding:'8px 14px', borderRadius:'10px', whiteSpace:'nowrap'}}>Fișă eveniment →</a>
+          <a href="/oferta/fisa" style={{fontSize:'13px', fontWeight:700, color:'#059669', textDecoration:'none', background:'rgba(5,150,105,0.08)', padding:'8px 12px', borderRadius:'10px', whiteSpace:'nowrap', flexShrink:0}}>{isMobile ? 'Fișă →' : 'Fișă eveniment →'}</a>
           <div style={{display:'flex', gap:'8px', alignItems:'center', flexWrap:'nowrap', overflowX:'auto', WebkitOverflowScrolling:'touch', maxWidth: isMobile ? '58vw' : 'none', paddingBottom:'2px'}}>
             <Link href="/oferta/asistent" style={{display:'flex', alignItems:'center', gap:'6px', fontSize:'13px', color:'white', fontWeight:700, background:'#1c1917', border:'1.5px solid #1c1917', borderRadius:'10px', padding:'9px 12px', cursor:'pointer', fontFamily:F, textDecoration:'none', whiteSpace:'nowrap', flexShrink:0}}><Sparkles size={15} strokeWidth={2.2} />{!isMobile && ' Asistent'}</Link>
             <Link href="/oferta/disponibilitate" style={{display:'flex', alignItems:'center', gap:'6px', fontSize:'13px', color:'#1c1917', fontWeight:700, background:'white', border:'1.5px solid #ececec', borderRadius:'10px', padding:'9px 12px', cursor:'pointer', fontFamily:F, textDecoration:'none', whiteSpace:'nowrap', flexShrink:0}}><CalendarSearch size={15} strokeWidth={2.2} />{!isMobile && ' Calendar'}</Link>

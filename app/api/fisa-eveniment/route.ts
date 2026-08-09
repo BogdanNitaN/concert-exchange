@@ -53,9 +53,9 @@ export async function POST(req: Request) {
     if (b.actiune === 'test') {
       const html = fisaHTML(b)
       const { error } = await resend.emails.send({
-        from: 'Forward Agency <oferte@gigx.ro>',
+        from: 'Forward Agency - Itinerary <booking@gigx.ro>',
         to: ['bogdan@forward.ro'],
-        replyTo: b.reply_to || 'alexandra.stefan@forward.ro',
+        replyTo: 'alexandra.stefan@forward.ro',
         subject: `[TEST] Fișă eveniment · ${b.artist} · ${formatDataRo(b.data_eveniment)}${b.oras ? ', ' + b.oras : ''}`,
         html,
       })
@@ -68,8 +68,10 @@ export async function POST(req: Request) {
       const dest = [...String(b.email_productie || '').split(',').map((x: string) => x.trim()).filter(Boolean), ...(b.email_client ? [b.email_client.trim()] : [])]
       if (!dest.length) return NextResponse.json({ ok: false, error: 'Niciun destinatar' }, { status: 400 })
       const { error } = await resend.emails.send({
-        from: 'Forward Agency <noreply@forward.ro>',
+        from: 'Forward Agency - Itinerary <booking@gigx.ro>',
         to: dest,
+        cc: ['bogdan@forward.ro'],
+        replyTo: 'alexandra.stefan@forward.ro',
         subject: `Fișă eveniment · ${b.artist} · ${formatDataRo(b.data_eveniment)}${b.oras ? ', ' + b.oras : ''}`,
         html,
       })
