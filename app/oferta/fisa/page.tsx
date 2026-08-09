@@ -2,6 +2,7 @@
 import { useEffect, useState } from 'react'
 import { createClient } from '@supabase/supabase-js'
 import Link from 'next/link'
+import { jsPDF } from 'jspdf'
 
 const supabase = createClient(process.env.NEXT_PUBLIC_SUPABASE_URL!, process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!)
 const F = 'Montserrat,sans-serif'
@@ -74,6 +75,79 @@ export default function FisaEveniment() {
     const d = await r.json()
     setTrimit(false)
     setMsg(d.ok ? '✓ Trimisă către: ' + (d.trimisLa || []).join(', ') : 'Eroare: ' + (d.error || 'necunoscută'))
+  }
+
+  function genereazaPDF(): any {
+    const noDia = (t: string) => (t || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/ș/g,'s').replace(/Ș/g,'S').replace(/ț/g,'t').replace(/Ț/g,'T').replace(/ă/g,'a').replace(/Ă/g,'A').replace(/â/g,'a').replace(/Â/g,'A').replace(/î/g,'i').replace(/Î/g,'I')
+    const doc = new jsPDF({ unit: 'mm', format: 'a4' })
+    const M = 20, W = 210
+    let y = 22
+
+    // bara laterala verticala
+    doc.setFont('helvetica', 'bold'); doc.setFontSize(9); doc.setTextColor(160,160,160)
+    doc.text('B O O K I N G   D E T A I L S', 8, 150, { angle: 90 })
+
+    // SUMAR box
+    doc.setDrawColor(220,218,216); doc.setLineWidth(0.3)
+    doc.rect(M, y, W - 2*M, 22)
+    doc.setFont('helvetica', 'bold'); doc.setFontSize(9); doc.setTextColor(90,85,80)
+    doc.text('SUMAR', M + 4, y + 7)
+    doc.setFontSize(11); doc.setTextColor(28,25,23)
+    doc.text(noDia((f.artist || '').toUpperCase()), M + 30, y + 6)
+    doc.setFont('helvetica', 'normal'); doc.setFontSize(9); doc.setTextColor(90,85,80)
+    doc.text(noDia(dataRoPDF(f.data_eveniment) + (f.oras ? ', ' + f.oras.toUpperCase() : '')), M + 30, y + 12)
+    doc.setFont('helvetica', 'bold'); doc.setTextColor(28,25,23)
+    doc.text(noDia((f.locatie || '').toUpperCase()), M + 30, y + 18)
+    y += 34
+
+    const sectiune = (titlu: string, randuri: [string, string][]) => {
+      doc.setFillColor(245,245,244); doc.rect(M, y, W - 2*M, 9, 'F')
+      doc.setFont('helvetica', 'bold'); doc.setFontSize(11); doc.setTextColor(40,37,35)
+      doc.text(noDia(titlu), W/2, y + 6, { align: 'center' })
+      y += 13
+      doc.setDrawColor(230,228,226); doc.setLineWidth(0.2)
+      for (const [et, val] of randuri.filter(r => r[1])) {
+        doc.setFont('helvetica', 'bold'); doc.setFontSize(9.5); doc.setTextColor(90,85,80)
+        doc.text(noDia(et), M + 2, y + 5)
+        doc.setFont('helvetica', 'normal'); doc.setTextColor(28,25,23)
+        doc.text(noDia(val), M + 52, y + 5)
+        doc.line(M, y + 8, W - M, y + 8)
+        y += 9
+      }
+      y += 6
+    }
+
+    sectiune('DETALII EVENIMENT', [['DATA', dataRoPDF(f.data_eveniment)], ['ORAS', f.oras], ['LOCATIE', f.locatie], ['OBSERVATII', f.obs_eveniment]])
+    sectiune('TECHNICAL RIDER', [['ORA SOUNDCHECK', f.ora_soundcheck], ['ORA PERFORMANCE', f.ora_performance], ['DURATA', f.durata], ['CONTACT LOCATIE', f.contact_locatie], ['CONTACT TEHNIC', f.contact_tehnic]])
+    sectiune('ACCOMMODATION RIDER', [['HOTEL', f.hotel], ['CAMERE', f.camere], ['RESTAURANT', f.restaurant], ['OBSERVATII', f.obs_cazare]])
+
+    doc.setFont('helvetica', 'normal'); doc.setFontSize(8); doc.setTextColor(150,150,150)
+    doc.text('Forward Agency  ·  Ghetarilor no 2, sector 1, Bucuresti  ·  www.forward.ro', W/2, 285, { align: 'center' })
+
+    return doc
+  }
+
+  function dataRoPDF(d: string): string {
+    if (!d) return ''
+    const L = ['Ianuarie','Februarie','Martie','Aprilie','Mai','Iunie','Iulie','August','Septembrie','Octombrie','Noiembrie','Decembrie']
+    const m = d.slice(0,10).match(/^(\d{4})-(\d{2})-(\d{2})$/)
+    if (!m) return d
+    return parseInt(m[3],10) + ' ' + L[parseInt(m[2],10)-1] + ' ' + m[1]
+  }
+
+  async function trimiteWhatsApp() {
+    const doc = genereazaPDF()
+    const filename = `Fisa_${(f.artist||'eveniment').replace(/[^a-zA-Z0-9]/g,'_')}_${f.data_eveniment||''}.pdf`
+    const blob = doc.output('blob')
+    const file = new File([blob], filename, { type: 'application/pdf' })
+    if (navigator.share && navigator.canShare && navigator.canShare({ files: [file] })) {
+      try { await navigator.share({ files: [file], title: 'Fisa ' + f.artist }); return } catch {}
+    }
+    // desktop / fallback: descarca PDF + deschide WhatsApp
+    doc.save(filename)
+    const tel = waTel.replace(/[^0-9]/g, '')
+    const num = tel ? (tel.startsWith('40') ? tel : '40' + tel.replace(/^0/, '')) : ''
+    setTimeout(() => window.open(`https://wa.me/${num}?text=${encodeURIComponent('Fisa eveniment ' + f.artist + ' - atasez PDF-ul')}`, '_blank'), 400)
   }
 
   async function testeaza() {
@@ -157,7 +231,7 @@ export default function FisaEveniment() {
           <div style={{fontSize:'10.5px', color:UI.faint, margin:'6px 0 12px'}}>De la Forward Agency · reply către Alexandra · CC bogdan@forward.ro</div>
           <div style={{display:'flex', gap:'8px', alignItems:'flex-end'}}>
             <div style={{flex:1}}><label style={lbl}>WhatsApp (opțional)</label><input value={waTel} onChange={e => setWaTel(e.target.value)} placeholder="07…" style={inp} /></div>
-            <button onClick={whatsapp} style={{padding:'10px 14px', background:'#25D366', color:'white', border:'none', borderRadius:'10px', fontWeight:700, fontSize:'13px', cursor:'pointer', whiteSpace:'nowrap'}}>WhatsApp</button>
+            <button onClick={trimiteWhatsApp} style={{padding:'10px 14px', background:'#25D366', color:'white', border:'none', borderRadius:'10px', fontWeight:700, fontSize:'13px', cursor:'pointer', whiteSpace:'nowrap'}}>WhatsApp</button>
           </div>
         </div>
 
