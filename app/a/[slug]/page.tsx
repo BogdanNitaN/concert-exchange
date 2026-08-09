@@ -13,7 +13,7 @@ const TIER: Record<string, { et: string; c: string }> = {
   'A':   { et: 'A · Select', c: '#78716c' },
 }
 const SET_ET: Record<string, string> = { dj: 'DJ set', cover: 'Cover band', vocal: 'Show vocal', band: 'Live band' }
-const nr = (n: number) => n >= 1000000 ? (n/1000000).toFixed(1).replace('.0','') + 'M' : n >= 1000 ? Math.round(n/1000) + 'K' : String(n)
+const nr = (n: number) => n >= 1000000000 ? (n/1000000000).toFixed(2).replace('.00','') + ' mld' : n >= 1000000 ? Math.round(n/1000000).toLocaleString('ro-RO') + 'M' : n >= 1000 ? Math.round(n/1000) + 'K' : String(n)
 
 export default function PaginaArtist() {
   const { slug } = useParams<{ slug: string }>()
