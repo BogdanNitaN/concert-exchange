@@ -70,7 +70,7 @@ export default function DatePicker({ value, onChange, placeholder = 'Selectează
       </div>
 
       {open && (
-        <div style={{position:'absolute', top:'calc(100% + 6px)', left:0, right:0, background:'white', border:'1.5px solid #e7e5e4', borderRadius:'16px', zIndex:300, boxShadow:'0 8px 32px rgba(0,0,0,0.12)', padding:'16px'}}>
+        <div style={{position:'fixed', top:'50%', left:'50%', transform:'translate(-50%, -50%)', width:'min(340px, calc(100vw - 32px))', background:'white', border:'1.5px solid #e7e5e4', borderRadius:'16px', zIndex:300, boxShadow:'0 12px 48px rgba(0,0,0,0.25)', padding:'16px'}}>
           <div style={{display:'flex', alignItems:'center', justifyContent:'space-between', marginBottom:'16px'}}>
             <button onClick={prevMonth} style={{background:'none', border:'none', cursor:'pointer', padding:'6px', borderRadius:'8px', display:'flex'}}>
               <ChevronLeft size={18} color='#1c1917' strokeWidth={2} />
@@ -106,7 +106,7 @@ export default function DatePicker({ value, onChange, placeholder = 'Selectează
         </div>
       )}
 
-      {open && <div style={{position:'fixed', inset:0, zIndex:299}} onClick={() => setOpen(false)} />}
+      {open && <div style={{position:'fixed', inset:0, zIndex:299, background:'rgba(0,0,0,0.35)'}} onClick={() => setOpen(false)} />}
     </div>
   )
 }
