@@ -19,6 +19,7 @@ export default function CoduriPage() {
   const [nouZile, setNouZile] = useState(30)
   const [nouToken, setNouToken] = useState('')
   const [nouAscunde, setNouAscunde] = useState(false)
+  const [nouPrivat, setNouPrivat] = useState(false)
   const [nouScop, setNouScop] = useState('roster')
   const [cautaCod, setCautaCod] = useState('')
   const [toateExpira, setToateExpira] = useState(false)
@@ -57,7 +58,7 @@ export default function CoduriPage() {
     setLoading(false)
   }
   async function genereaza() {
-    const r = await fetch('/api/roster-coduri', { method:'POST', headers: { 'Content-Type':'application/json', authorization: 'Bearer ' + await tok() }, body: JSON.stringify({ destinatar: nouDest, zile: nouZile, token: nouToken, ascunde_contacte: nouAscunde, scop: nouScop }) })
+    const r = await fetch('/api/roster-coduri', { method:'POST', headers: { 'Content-Type':'application/json', authorization: 'Bearer ' + await tok() }, body: JSON.stringify({ destinatar: nouDest, zile: nouZile, token: nouToken, ascunde_contacte: nouAscunde, scop: nouScop, tip_audienta: nouPrivat ? 'privat' : 'b2b' }) })
     const d = await r.json()
     if (d.ok) { setMsg('Cod nou: ' + d.token); setNouToken(''); load() } else setMsg('Eroare: ' + (d.error || ''))
     setTimeout(() => setMsg(''), 6000)
@@ -136,6 +137,7 @@ export default function CoduriPage() {
             <input value={nouToken} onChange={e => setNouToken(e.target.value)} placeholder="Cod (gol = generat)" style={{...inputStyle, width:'170px'}} />
             <input type="number" value={nouZile} onChange={e => setNouZile(Number(e.target.value))} style={{...inputStyle, width:'90px'}} />
             <label style={{display:'flex', alignItems:'center', gap:'6px', fontSize:'12px', fontWeight:700, color:UI.sub, cursor:'pointer'}}><input type="checkbox" checked={nouAscunde} onChange={e => setNouAscunde(e.target.checked)} style={{width:'15px', height:'15px', accentColor:UI.green}} />fara contacte</label>
+            <label style={{display:'flex', alignItems:'center', gap:'6px', fontSize:'12px', fontWeight:700, color:UI.sub, cursor:'pointer'}}><input type="checkbox" checked={nouPrivat} onChange={e => setNouPrivat(e.target.checked)} style={{width:'15px', height:'15px', accentColor:UI.green}} />privat (fara preturi)</label>
             <button onClick={genereaza} style={{padding:'10px 18px', background:UI.green, color:'white', border:'none', borderRadius:'9px', fontSize:'13px', fontWeight:800, cursor:'pointer', fontFamily:F}}>Genereaza</button>
           </div>
           {msg && <div style={{fontSize:'12px', fontWeight:700, color:UI.green, marginTop:'10px'}}>{msg}</div>}

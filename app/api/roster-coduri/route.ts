@@ -54,9 +54,10 @@ export async function POST(req: Request) {
   const zile = Number(b.zile) || 30
   const { error } = await supa.from('roster_links').insert({
     token, destinatar: b.destinatar || 'Parteneri Forward',
-    tip_audienta: b.tip_audienta === 'direct' ? 'direct' : 'b2b',
+    tip_audienta: b.tip_audienta === 'direct' ? 'direct' : (b.tip_audienta === 'privat' ? 'privat' : 'b2b'),
     scop: b.scop || 'roster', filtru_gen: b.filtru_gen || null,
     ascunde_contacte: !!b.ascunde_contacte,
+    ...(b.tip_audienta === 'privat' ? { arata_preturi: false } : {}),
     expira_la: new Date(Date.now() + zile * 86400000).toISOString(), activ: true, creat_de: 'admin',
   })
   if (error) return NextResponse.json({ ok: false, error: error.message }, { status: 400 })
