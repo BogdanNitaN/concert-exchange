@@ -164,7 +164,7 @@ export default function FisaEveniment() {
 
     // ===== FOOTER cu powered by gigx (x verde) =====
     doc.setFont('helvetica', 'normal'); doc.setFontSize(8); doc.setTextColor(GREY[0], GREY[1], GREY[2])
-    doc.text('Forward Agency  \u00b7  Ghetarilor no 2, sector 1, Bucuresti  \u00b7  Bucuresti, PO 014106', M, 285)
+    doc.text('Forward Agency  \u00b7  Ghetarilor no 2, sector 1  \u00b7  Bucuresti, PO 014106', M, 285)
     // powered by gig + x verde + .ro
     doc.setFontSize(8); doc.setTextColor(150, 148, 145)
     const pref = 'powered by gig'
