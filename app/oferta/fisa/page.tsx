@@ -140,14 +140,17 @@ export default function FisaEveniment() {
     const filename = `Fisa_${(f.artist||'eveniment').replace(/[^a-zA-Z0-9]/g,'_')}_${f.data_eveniment||''}.pdf`
     const blob = doc.output('blob')
     const file = new File([blob], filename, { type: 'application/pdf' })
-    if (navigator.share && navigator.canShare && navigator.canShare({ files: [file] })) {
-      try { await navigator.share({ files: [file], title: 'Fisa ' + f.artist }); return } catch {}
+    const eMobil = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent)
+    if (eMobil && navigator.share && navigator.canShare && navigator.canShare({ files: [file] })) {
+      // telefon: share nativ cu PDF atasat, o singura data
+      try { await navigator.share({ files: [file], title: 'Fisa ' + f.artist }) } catch {}
+      return
     }
-    // desktop / fallback: descarca PDF + deschide WhatsApp
+    // desktop: descarca PDF O SINGURA DATA + deschide WhatsApp Web
     doc.save(filename)
     const tel = waTel.replace(/[^0-9]/g, '')
     const num = tel ? (tel.startsWith('40') ? tel : '40' + tel.replace(/^0/, '')) : ''
-    setTimeout(() => window.open(`https://wa.me/${num}?text=${encodeURIComponent('Fisa eveniment ' + f.artist + ' - atasez PDF-ul')}`, '_blank'), 400)
+    setTimeout(() => window.open(`https://web.whatsapp.com/send?${num ? 'phone=' + num + '&' : ''}text=${encodeURIComponent('Fisa eveniment ' + f.artist + ' - atasez PDF-ul (descarcat)')}`, '_blank'), 400)
   }
 
   async function testeaza() {
