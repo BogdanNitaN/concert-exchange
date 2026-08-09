@@ -96,98 +96,92 @@ export default function FisaEveniment() {
   function genereazaPDF(): any {
     const noDia = (t: string) => (t || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/\u0219/g,'s').replace(/\u0218/g,'S').replace(/\u021b/g,'t').replace(/\u021a/g,'T').replace(/\u0103/g,'a').replace(/\u0102/g,'A').replace(/\u00e2/g,'a').replace(/\u00c2/g,'A').replace(/\u00ee/g,'i').replace(/\u00ce/g,'I')
     const doc = new jsPDF({ unit: 'mm', format: 'a4' })
-    const M = 22, W = 210, R = W - M
-    const GREEN = [5, 150, 105], INK = [28, 25, 23], GREY = [140, 138, 135], LIGHT = [175, 173, 170]
+    const M = 20, W = 210, R = W - M
+    const GREEN = [5, 150, 105], INK = [28, 25, 23], GREY = [130, 128, 125], LIGHT = [165, 163, 160]
     let y = 24
 
-    // ===== SUMAR: numele artistului ca ancora, mare =====
-    doc.setFont('helvetica', 'bold'); doc.setFontSize(26); doc.setTextColor(INK[0], INK[1], INK[2])
+    // ===== NUME ARTIST mare (ancora) =====
+    doc.setFont('helvetica', 'bold'); doc.setFontSize(24); doc.setTextColor(INK[0], INK[1], INK[2])
     doc.text(noDia((f.artist || '').toUpperCase()), M, y)
-    y += 8
-    doc.setFont('helvetica', 'normal'); doc.setFontSize(11); doc.setTextColor(GREY[0], GREY[1], GREY[2])
-    const sub = [dataRoPDF(f.data_eveniment), f.oras, f.locatie].filter(Boolean).map(noDia).join('   ·   ')
-    doc.text(sub, M, y)
-    y += 6
-    // linie de accent verde sub sumar
-    doc.setDrawColor(GREEN[0], GREEN[1], GREEN[2]); doc.setLineWidth(1.2)
-    doc.line(M, y, M + 32, y)
-    y += 12
+    y += 7
+    doc.setFont('helvetica', 'normal'); doc.setFontSize(10.5); doc.setTextColor(GREY[0], GREY[1], GREY[2])
+    doc.text([dataRoPDF(f.data_eveniment), f.oras, f.locatie].filter(Boolean).map(noDia).join('   \u00b7   '), M, y)
+    y += 10
 
+    // titlu sectiune cu BANDA gri (structura clara, ca in email)
     const titluSectiune = (t: string) => {
-      doc.setFont('helvetica', 'bold'); doc.setFontSize(9); doc.setTextColor(GREEN[0], GREEN[1], GREEN[2])
-      doc.text(noDia(t.toUpperCase()), M, y)
-      doc.setDrawColor(230, 228, 226); doc.setLineWidth(0.3)
-      doc.line(M, y + 2.5, R, y + 2.5)
-      y += 9
+      doc.setFillColor(242, 241, 239); doc.rect(M, y, R - M, 8.5, 'F')
+      doc.setFont('helvetica', 'bold'); doc.setFontSize(9.5); doc.setTextColor(INK[0], INK[1], INK[2])
+      doc.text(noDia(t.toUpperCase()), W / 2, y + 5.7, { align: 'center' })
+      y += 13
     }
 
-    // rand normal: eticheta gri stanga, valoare bold inchis dreapta
-    const rand = (et: string, val: string, mare = false) => {
+    // rand: eticheta gri stanga, valoare dreapta. accent=true -> verde mare (ore critice)
+    const rand = (et: string, val: string, accent = false) => {
       if (!val) return
-      doc.setFont('helvetica', 'normal'); doc.setFontSize(8.5); doc.setTextColor(LIGHT[0], LIGHT[1], LIGHT[2])
-      doc.text(noDia(et.toUpperCase()), M, y + 1)
-      const liniiVal = doc.splitTextToSize(noDia(val), R - M - 46)
-      if (mare) {
-        doc.setFont('helvetica', 'bold'); doc.setFontSize(15); doc.setTextColor(GREEN[0], GREEN[1], GREEN[2])
+      doc.setFont('helvetica', 'bold'); doc.setFontSize(8); doc.setTextColor(LIGHT[0], LIGHT[1], LIGHT[2])
+      doc.text(noDia(et.toUpperCase()), M + 1, y + 1)
+      const liniiVal = doc.splitTextToSize(noDia(val), R - M - 50)
+      if (accent) {
+        doc.setFont('helvetica', 'bold'); doc.setFontSize(13); doc.setTextColor(GREEN[0], GREEN[1], GREEN[2])
       } else {
         doc.setFont('helvetica', 'bold'); doc.setFontSize(10.5); doc.setTextColor(INK[0], INK[1], INK[2])
       }
-      doc.text(liniiVal, M + 46, y + (mare ? 2 : 1))
-      y += Math.max(liniiVal.length * (mare ? 6 : 5.5), mare ? 9 : 7) + 2
+      doc.text(liniiVal, M + 50, y + (accent ? 1.5 : 1))
+      const h = Math.max(liniiVal.length * (accent ? 5.5 : 5), accent ? 8 : 6.5)
+      doc.setDrawColor(236, 234, 232); doc.setLineWidth(0.2)
+      doc.line(M, y + h, R, y + h)
+      y += h + 3.5
     }
 
     // ===== DETALII EVENIMENT =====
     titluSectiune('Detalii eveniment')
     rand('Data', dataRoPDF(f.data_eveniment))
-    rand('Oras', f.oras)
-    rand('Locatie', f.locatie)
+    rand('Oras', (f.oras || '').toUpperCase())
+    rand('Locatie', (f.locatie || '').toUpperCase())
     rand('Observatii', f.obs_eveniment)
-    y += 6
+    y += 5
 
-    // ===== TECHNICAL RIDER — ora performance evidentiata =====
+    // ===== TECHNICAL RIDER — orele critice evidentiate =====
     titluSectiune('Technical rider')
-    rand('Ora soundcheck', f.ora_soundcheck)
+    rand('Ora soundcheck', f.ora_soundcheck, true)   // EVIDENTIAT
     rand('Ora performance', f.ora_performance, true)  // EVIDENTIAT
     rand('Durata', f.durata)
-    y += 6
+    y += 3
 
-    // contacte intr-un bloc distinct
+    // contacte in bloc gri distinct
     if (f.contact_locatie || f.contact_tehnic) {
-      doc.setFillColor(248, 247, 245); doc.roundedRect(M, y, R - M, (f.contact_locatie && f.contact_tehnic ? 20 : 13), 3, 3, 'F')
+      const nC = (f.contact_locatie ? 1 : 0) + (f.contact_tehnic ? 1 : 0)
+      doc.setFillColor(246, 245, 243); doc.roundedRect(M, y, R - M, nC * 8 + 6, 3, 3, 'F')
       y += 7
-      if (f.contact_locatie) {
-        doc.setFont('helvetica', 'normal'); doc.setFontSize(8); doc.setTextColor(LIGHT[0], LIGHT[1], LIGHT[2])
-        doc.text('CONTACT LOCATIE', M + 4, y)
-        doc.setFont('helvetica', 'bold'); doc.setFontSize(10); doc.setTextColor(INK[0], INK[1], INK[2])
-        doc.text(noDia(f.contact_locatie), M + 46, y)
-        y += 7
+      const contact = (et: string, val: string) => {
+        if (!val) return
+        doc.setFont('helvetica', 'bold'); doc.setFontSize(8); doc.setTextColor(LIGHT[0], LIGHT[1], LIGHT[2])
+        doc.text(noDia(et.toUpperCase()), M + 4, y)
+        doc.setFont('helvetica', 'bold'); doc.setFontSize(10.5); doc.setTextColor(INK[0], INK[1], INK[2])
+        doc.text(noDia(val), M + 50, y)
+        y += 8
       }
-      if (f.contact_tehnic) {
-        doc.setFont('helvetica', 'normal'); doc.setFontSize(8); doc.setTextColor(LIGHT[0], LIGHT[1], LIGHT[2])
-        doc.text('CONTACT TEHNIC', M + 4, y)
-        doc.setFont('helvetica', 'bold'); doc.setFontSize(10); doc.setTextColor(INK[0], INK[1], INK[2])
-        doc.text(noDia(f.contact_tehnic), M + 46, y)
-        y += 7
-      }
+      contact('Contact locatie', f.contact_locatie)
+      contact('Contact tehnic', f.contact_tehnic)
       y += 5
     }
 
-    // ===== ACCOMMODATION RIDER (doar daca e completat) =====
+    // ===== ACCOMMODATION RIDER =====
     if (f.hotel || f.camere || f.restaurant || f.obs_cazare) {
       titluSectiune('Accommodation rider')
-      rand('Hotel', f.hotel)
+      rand('Hotel', (f.hotel || '').toUpperCase())
       rand('Camere', f.camere)
       rand('Restaurant', f.restaurant)
       rand('Observatii', f.obs_cazare)
     }
 
     // ===== FOOTER =====
-    doc.setDrawColor(230, 228, 226); doc.setLineWidth(0.3)
-    doc.line(M, 280, R, 280)
+    doc.setDrawColor(230, 228, 226); doc.setLineWidth(0.3); doc.line(M, 282, R, 282)
     doc.setFont('helvetica', 'normal'); doc.setFontSize(7.5); doc.setTextColor(GREY[0], GREY[1], GREY[2])
-    doc.text('Forward Agency  ·  Ghetarilor no 2, sector 1, Bucuresti', M, 285)
+    doc.text('Forward Agency  \u00b7  Ghetarilor no 2, sector 1, Bucuresti', M, 287)
     doc.setFontSize(7); doc.setTextColor(190, 188, 185)
-    doc.text('powered by gigx.ro', R, 285, { align: 'right' })
+    doc.text('powered by gigx.ro', R, 287, { align: 'right' })
 
     return doc
   }
