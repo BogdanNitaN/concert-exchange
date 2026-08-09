@@ -83,6 +83,8 @@ export default function FisaEveniment() {
 
   async function trimite() {
     if (!f.email_productie && !f.email_client) { setMsg('Adaugă cel puțin un email.'); return }
+    const dest = [...String(f.email_productie || '').split(',').map(x => x.trim()).filter(Boolean), ...(f.email_client ? [f.email_client.trim()] : [])]
+    if (!confirm('Trimiți fișa REALĂ către:\n\n' + dest.join('\n') + '\n\n(pentru probe folosește butonul TEST)')) return
     setTrimit(true); setMsg('')
     // salveaza emailul artistului si locatia pentru data viitoare
     if (f.artist && f.email_productie) fetch('/api/fisa-eveniment', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ actiune:'salveaza_email_artist', artist:f.artist, email_productie:f.email_productie }) })
