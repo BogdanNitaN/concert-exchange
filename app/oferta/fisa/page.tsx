@@ -33,11 +33,8 @@ export default function FisaEveniment() {
 
   async function incarca() {
     setChecking(false)
-    const [ra, rl] = await Promise.all([
-      fetch('/api/artisti-client').then(r => r.json()).catch(() => ({ artisti: [] })),
-      fetch('/api/fisa-eveniment').then(r => r.json()).catch(() => ({ locatii: [] })),
-    ])
-    setArtists(ra.artisti || ra.data || [])
+    const rl = await fetch('/api/fisa-eveniment').then(r => r.json()).catch(() => ({ locatii: [], artisti: [] }))
+    setArtists(rl.artisti || [])
     setLocatii(rl.locatii || [])
   }
 
@@ -99,10 +96,8 @@ export default function FisaEveniment() {
         <div style={card}>
           <div style={{fontSize:'12px', fontWeight:800, color:UI.green, marginBottom:'12px', textTransform:'uppercase', letterSpacing:'0.05em'}}>Artist</div>
           <label style={lbl}>Artist</label>
-          <select value={f.artist} onChange={e => alegeArtist(e.target.value)} style={inp}>
-            <option value="">Alege artistul…</option>
-            {artists.map(a => <option key={a.nume} value={a.nume}>{a.nume}</option>)}
-          </select>
+          <input list="artisti-list" value={f.artist} onChange={e => alegeArtist(e.target.value)} placeholder="Caută artistul… (ex: rar → rareș)" style={inp} />
+          <datalist id="artisti-list">{artists.map(a => <option key={a.nume} value={a.nume} />)}</datalist>
           <div style={{marginTop:'10px'}}>
             <label style={lbl}>Email echipă artist (separate prin virgulă)</label>
             <input value={f.email_productie} onChange={e => set('email_productie', e.target.value)} placeholder="tehnic@…, manager@…" style={inp} />

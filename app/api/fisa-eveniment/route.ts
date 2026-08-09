@@ -73,5 +73,6 @@ export async function POST(req: Request) {
 
 export async function GET() {
   const { data: locatii } = await supabase.from('locatii').select('*').order('nume')
-  return NextResponse.json({ ok: true, locatii: locatii || [] })
+  const { data: art } = await supabase.from('oferta_artisti').select('nume, cazare, nr_persoane, diurna_fixa, set_type, email_productie').eq('tip', 'propriu').order('nume')
+  return NextResponse.json({ ok: true, locatii: locatii || [], artisti: art || [] })
 }
