@@ -123,6 +123,9 @@ function CardArtist({ a, audienta, token, tabInitial, destinatar, ascundeContact
         </div>
       </div>
       <div style={{padding:'18px 20px 20px'}}>
+        {a.bio && (
+          <p style={{fontSize:'14px', color:'#44403c', lineHeight:1.7, margin:'0 0 16px'}}>{a.bio}</p>
+        )}
         {statCards.length > 0 && (
           <div style={{display:'grid', gridTemplateColumns:'repeat(auto-fit, minmax(118px, 1fr))', gap:'10px', marginBottom:'16px'}}>
             {statCards.map(sc => (
@@ -156,7 +159,7 @@ function CardArtist({ a, audienta, token, tabInitial, destinatar, ascundeContact
             <div style={{fontSize:'11px', color:UI.faint, fontWeight:600, marginTop:'8px'}}>Corporate · Private — la cerere</div>
           </div>
         )}
-        {!a.preturi && <div style={{textAlign:'center', padding:'14px 0', fontSize:'14px', color:UI.sub, fontWeight:600}}>Onorariu la cerere</div>}
+        {!a.preturi && audienta !== 'privat' && <div style={{textAlign:'center', padding:'14px 0', fontSize:'14px', color:UI.sub, fontWeight:600}}>Onorariu la cerere</div>}
 
         {logi.length > 0 && (
           <div style={{marginTop:'14px', background:UI.bg, borderRadius:'14px', padding:'14px 16px'}}>

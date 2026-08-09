@@ -105,6 +105,7 @@ export async function GET(req: Request, ctx: { params: Promise<{ token: string }
       const { data: a } = await supabase.from('oferta_artisti').select('*').eq('nume', link.scop).single()
       if (!a) return NextResponse.json({ ok: false, error: 'Artist negasit.' }, { status: 404 })
       const artist: any = fa(a)
+      artist.bio = a.bio || null
       // statistici live (doar pe pagina de un artist)
       try {
         const origin = new URL(req.url).origin
