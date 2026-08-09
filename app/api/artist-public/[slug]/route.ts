@@ -18,6 +18,7 @@ export function slugArtist(nume: string): string {
 export async function GET(req: Request, ctx: { params: Promise<{ slug: string }> }) {
   try {
     const { slug } = await ctx.params
+    const vreaDocs = new URL(req.url).searchParams.get('docs') === '1'
     const cautat = slugArtist(slug)
     const { data: toti } = await supabase.from('oferta_artisti').select('*')
     const fara = (x: string) => x.replace(/-/g, '')
@@ -64,6 +65,7 @@ export async function GET(req: Request, ctx: { params: Promise<{ slug: string }>
         setType: a.set_type || null,
         // public: doar media kit. Riderul si UCMR raman pe linkurile cu cod.
         mediaKit: sh?.epk_url || null,
+        ...(vreaDocs ? { riderTehnic: sh?.rider_tehnic_url || null, riderAcomodare: sh?.rider_acomodare_url || null, ucmr: sh?.ucmr_url || null } : {}),
         stats,
       },
     })
