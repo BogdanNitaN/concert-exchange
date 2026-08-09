@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import { formatDataRo } from '@/lib/format-data'
 import { X, MessageCircle, Mail, CheckCircle2, Shield } from 'lucide-react'
 
 interface Props {
@@ -38,7 +39,7 @@ export default function PriceExactModal({ isOpen, onClose, artists = [], eventDa
       artistNames,
       '',
       'DETALII EVENIMENT:',
-      `Data: ${eventDate || 'nespecificata'}`,
+      `Data: ${eventDate ? formatDataRo(eventDate) : 'nespecificata'}`,
       `Locatie: ${location || 'nespecificata'}${locationCity ? ' — ' + locationCity : ''}`,
       `Nr invitati: ${guestCount || 'nespecificat'}`,
       `Buget client: ${budget ? budget.toLocaleString() + ' EUR' : 'nespecificat'}`,
@@ -109,7 +110,7 @@ export default function PriceExactModal({ isOpen, onClose, artists = [], eventDa
                   })}
                 </div>
                 <div style={{borderTop:'1px solid #f0f0ef', marginTop:'10px', paddingTop:'10px', display:'flex', flexDirection:'column', gap:'4px'}}>
-                  {eventDate && <div style={{fontSize:'12px', color:'#78716c'}}>Data: <strong>{eventDate}</strong></div>}
+                  {eventDate && <div style={{fontSize:'12px', color:'#78716c'}}>Data: <strong>{formatDataRo(eventDate)}</strong></div>}
                   {location && <div style={{fontSize:'12px', color:'#78716c'}}>Locație: <strong>{location}{locationCity ? ' — ' + locationCity : ''}</strong></div>}
                   {guestCount && <div style={{fontSize:'12px', color:'#78716c'}}>Invitați: <strong>{guestCount}</strong></div>}
                   {budget && <div style={{fontSize:'12px', color:'#78716c'}}>Buget: <strong>{budget.toLocaleString()} EUR</strong></div>}

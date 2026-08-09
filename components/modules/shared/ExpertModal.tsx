@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import { X, CheckCircle2, MessageCircle, Mail } from 'lucide-react'
+import { formatDataRo } from '@/lib/format-data'
 
 interface Props {
   isOpen: boolean
@@ -36,7 +37,7 @@ export default function ExpertModal({ isOpen, onClose, eventDate, guestCount, se
       'DETALII EVENIMENT:',
       eventLabel ? `Tip: ${eventLabel}` : '',
       artists && artists.length ? `Artiști: ${artists.join(', ')}` : '',
-      eventDate ? `Data: ${eventDate}` : '',
+      eventDate ? `Data: ${formatDataRo(eventDate)}` : '',
       `Oras: ${city || selectedCity || 'nespecificat'}`,
       guestCount ? `Participanti: ${guestCount}` : '',
       desc ? `Descriere: ${desc}` : '',
@@ -102,7 +103,7 @@ export default function ExpertModal({ isOpen, onClose, eventDate, guestCount, se
               </div>
               {eventDate && (
                 <div style={{background:'#f5f5f4', borderRadius:'10px', padding:'10px 14px', fontSize:'12px', color:'#78716c'}}>
-                  Data evenimentului: <strong style={{color:'#1c1917'}}>{eventDate}</strong>
+                  Data evenimentului: <strong style={{color:'#1c1917'}}>{formatDataRo(eventDate)}</strong>
                   {guestCount ? ` · ${guestCount} participanți` : ''}
                 </div>
               )}
