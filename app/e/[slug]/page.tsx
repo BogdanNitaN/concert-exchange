@@ -19,6 +19,7 @@ export default function PaginaArtist() {
   const { slug } = useParams<{ slug: string }>()
   const [a, setA] = useState<any>(null)
   const [stare, setStare] = useState<'incarc' | 'gata' | 'lipsa'>('incarc')
+  const [tip, setTip] = useState(false)
 
   useEffect(() => {
     fetch('/api/artist-public/' + slug + '?docs=1')
@@ -99,7 +100,14 @@ export default function PaginaArtist() {
           <div style={{background:UI.ink, borderRadius:'18px', padding:'20px', marginBottom:'12px', textAlign:'center'}}>
             <div style={{fontSize:'42px', fontWeight:800, color:'white', letterSpacing:'-2px', lineHeight:1}}>{nr(reachTotal)}</div>
             <div style={{fontSize:'11px', color:'rgba(245,242,236,0.75)', fontWeight:700, textTransform:'uppercase', letterSpacing:'0.1em', marginTop:'8px'}}>Total Reach</div>
-            <div title="Cumulat pe Spotify, YouTube, TikTok, Instagram și Shazam" style={{fontSize:'11px', color:'rgba(245,242,236,0.5)', fontWeight:600, marginTop:'4px', borderBottom:'1px dotted rgba(245,242,236,0.35)', display:'inline-block', cursor:'help'}}><span style={{color:'#34d399'}}>●</span> Pe {platforme} platforme</div>
+            <div onClick={() => setTip(!tip)} style={{position:'relative', fontSize:'11px', color:'rgba(245,242,236,0.5)', fontWeight:600, marginTop:'4px', borderBottom:'1px dotted rgba(245,242,236,0.35)', display:'inline-block', cursor:'pointer'}}>
+              <span style={{color:'#34d399'}}>●</span> Pe {platforme} platforme
+              {tip && (
+                <div style={{position:'absolute', bottom:'calc(100% + 8px)', left:'50%', transform:'translateX(-50%)', background:'white', color:UI.ink, fontSize:'11px', fontWeight:600, padding:'8px 12px', borderRadius:'8px', boxShadow:'0 4px 16px rgba(0,0,0,0.18)', whiteSpace:'nowrap', zIndex:10}}>
+                  Spotify · YouTube · TikTok · Instagram · Shazam
+                </div>
+              )}
+            </div>
           </div>
         )}
 
