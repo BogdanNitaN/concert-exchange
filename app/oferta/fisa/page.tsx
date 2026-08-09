@@ -27,6 +27,8 @@ export default function FisaEveniment() {
   const [trimit, setTrimit] = useState(false)
   const [waTel, setWaTel] = useState('')
   const [artQuery, setArtQuery] = useState('')
+  const [orasSugestii, setOrasSugestii] = useState<{description: string}[]>([])
+  const [showOrasSugg, setShowOrasSugg] = useState(false)
   const [artOpen, setArtOpen] = useState(false)
 
   useEffect(() => {
@@ -43,6 +45,17 @@ export default function FisaEveniment() {
   }
 
   function set(k: string, v: string) { setF((p: any) => ({ ...p, [k]: v })); setPreview('') }
+
+  async function cautaOras(q: string) {
+    set('oras', q)
+    if (q.length < 2) { setOrasSugestii([]); setShowOrasSugg(false); return }
+    try {
+      const r = await fetch('/api/places?input=' + encodeURIComponent(q) + '&type=cities')
+      const d = await r.json()
+      setOrasSugestii(d.predictions || d.suggestions || [])
+      setShowOrasSugg(true)
+    } catch { setOrasSugestii([]) }
+  }
 
   async function alegeArtist(nume: string) {
     const a = artists.find(x => x.nume === nume)
@@ -256,7 +269,15 @@ export default function FisaEveniment() {
           <div style={{fontSize:'12px', fontWeight:800, color:UI.green, marginBottom:'12px', textTransform:'uppercase', letterSpacing:'0.05em'}}>Eveniment</div>
           <div style={{display:'grid', gridTemplateColumns:'1fr 1fr', gap:'10px'}}>
             <div><label style={lbl}>Data</label><DatePicker value={f.data_eveniment} onChange={(v: string) => set('data_eveniment', v)} placeholder="Alege data" /></div>
-            <div><label style={lbl}>Oraș</label><input value={f.oras} onChange={e => set('oras', e.target.value)} style={inp} /></div>
+            <div style={{position:'relative'}}><label style={lbl}>Oraș</label><input value={f.oras} onChange={e => cautaOras(e.target.value)} onBlur={() => setTimeout(() => setShowOrasSugg(false), 150)} style={inp} />
+              {showOrasSugg && orasSugestii.length > 0 && (
+                <div style={{position:'absolute', top:'calc(100% + 4px)', left:0, right:0, background:'white', border:'1.5px solid '+UI.line, borderRadius:'10px', boxShadow:'0 6px 20px rgba(0,0,0,0.1)', zIndex:20, maxHeight:'200px', overflowY:'auto'}}>
+                  {orasSugestii.slice(0, 6).map((sg, i) => (
+                    <div key={i} onClick={() => { set('oras', sg.description); setShowOrasSugg(false) }} style={{padding:'9px 12px', cursor:'pointer', fontSize:'13px', color:UI.ink, borderBottom: i < Math.min(orasSugestii.length,6)-1 ? '1px solid '+UI.bg : 'none'}}>{sg.description}</div>
+                  ))}
+                </div>
+              )}
+              </div>
           </div>
           <div style={{marginTop:'10px'}}>
             <label style={lbl}>Locație (alege salvată sau scrie nouă)</label>
