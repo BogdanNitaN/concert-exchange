@@ -97,7 +97,7 @@ export default function FisaEveniment() {
           <div style={{fontSize:'12px', fontWeight:800, color:UI.green, marginBottom:'12px', textTransform:'uppercase', letterSpacing:'0.05em'}}>Artist</div>
           <label style={lbl}>Artist</label>
           <input list="artisti-list" value={f.artist} onChange={e => alegeArtist(e.target.value)} placeholder="Caută artistul… (ex: rar → rareș)" style={inp} />
-          <datalist id="artisti-list">{artists.map(a => <option key={a.nume} value={a.nume} />)}</datalist>
+          <datalist id="artisti-list">{artists.map(a => <option key={a.nume} value={a.nume}>{a.tip === 'intermediere' ? a.nume + ' (extern)' : a.nume}</option>)}</datalist>
           <div style={{marginTop:'10px'}}>
             <label style={lbl}>Email echipă artist (separate prin virgulă)</label>
             <input value={f.email_productie} onChange={e => set('email_productie', e.target.value)} placeholder="tehnic@…, manager@…" style={inp} />
