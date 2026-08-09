@@ -76,7 +76,15 @@ export default function FisaEveniment() {
     setMsg(d.ok ? '✓ Trimisă către: ' + (d.trimisLa || []).join(', ') : 'Eroare: ' + (d.error || 'necunoscută'))
   }
 
-  function whatsapp() {
+  async function testeaza() {
+    setTrimit(true); setMsg('')
+    const r = await fetch('/api/fisa-eveniment', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ ...f, actiune:'test' }) })
+    const d = await r.json()
+    setTrimit(false)
+    setMsg(d.ok ? '✓ TEST trimis către bogdan@forward.ro (nimic salvat)' : 'Eroare test: ' + (d.error || 'necunoscută'))
+  }
+
+    function whatsapp() {
     const txt = `Fișă eveniment ${f.artist}\n${f.data_eveniment}${f.oras ? ', ' + f.oras : ''}\n${f.locatie}\n\nPerformance: ${f.ora_performance} (${f.durata})\nSoundcheck: ${f.ora_soundcheck}\nContact tehnic: ${f.contact_tehnic}\nHotel: ${f.hotel} — ${f.camere}`
     const tel = waTel.replace(/[^0-9]/g, '')
     window.open(`https://wa.me/${tel ? (tel.startsWith('40') ? tel : '40' + tel.replace(/^0/, '')) : ''}?text=${encodeURIComponent(txt)}`, '_blank')
@@ -157,6 +165,7 @@ export default function FisaEveniment() {
           <button onClick={vezi} style={{flex:1, padding:'13px', background:'white', color:UI.ink, border:'1.5px solid '+UI.line, borderRadius:'12px', fontWeight:700, fontSize:'14px', cursor:'pointer'}}>Vezi fișa</button>
           <button onClick={trimite} disabled={trimit} style={{flex:1, padding:'13px', background:UI.ink, color:'white', border:'none', borderRadius:'12px', fontWeight:700, fontSize:'14px', cursor:'pointer', opacity:trimit?0.6:1}}>{trimit ? 'Se trimite…' : 'Trimite pe email'}</button>
         </div>
+        <button onClick={testeaza} disabled={trimit} style={{width:'100%', marginTop:'10px', padding:'11px', background:'white', color:UI.sub, border:'1.5px dashed '+UI.line, borderRadius:'12px', fontWeight:700, fontSize:'13px', cursor:'pointer', opacity:trimit?0.6:1}}>🧪 Trimite TEST (doar la tine, nu salvează nimic)</button>
         {msg && <div style={{marginTop:'12px', padding:'12px', borderRadius:'10px', background:msg.startsWith('✓')?UI.greenSoft:'#fef2f2', color:msg.startsWith('✓')?UI.green:'#dc2626', fontSize:'13px', fontWeight:600}}>{msg}</div>}
 
         {preview && (

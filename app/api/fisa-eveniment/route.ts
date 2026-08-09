@@ -50,6 +50,19 @@ export async function POST(req: Request) {
       return NextResponse.json({ ok: true, html: fisaHTML(b) })
     }
 
+    if (b.actiune === 'test') {
+      const html = fisaHTML(b)
+      const { error } = await resend.emails.send({
+        from: 'Forward Agency <oferte@gigx.ro>',
+        to: ['bogdan@forward.ro'],
+        replyTo: b.reply_to || 'alexandra.stefan@forward.ro',
+        subject: `[TEST] Fișă eveniment · ${b.artist} · ${formatDataRo(b.data_eveniment)}${b.oras ? ', ' + b.oras : ''}`,
+        html,
+      })
+      if (error) return NextResponse.json({ ok: false, error: error.message }, { status: 400 })
+      return NextResponse.json({ ok: true, trimisLa: ['bogdan@forward.ro (TEST)'] })
+    }
+
     if (b.actiune === 'trimite') {
       const html = fisaHTML(b)
       const dest = [...String(b.email_productie || '').split(',').map((x: string) => x.trim()).filter(Boolean), ...(b.email_client ? [b.email_client.trim()] : [])]
