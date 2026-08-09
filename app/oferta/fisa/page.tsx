@@ -3,6 +3,7 @@ import { useEffect, useState } from 'react'
 import { createClient } from '@supabase/supabase-js'
 import Link from 'next/link'
 import { jsPDF } from 'jspdf'
+import DatePicker from '@/components/modules/shared/DatePicker'
 
 const supabase = createClient(process.env.NEXT_PUBLIC_SUPABASE_URL!, process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!)
 const F = 'Montserrat,sans-serif'
@@ -25,6 +26,8 @@ export default function FisaEveniment() {
   const [msg, setMsg] = useState('')
   const [trimit, setTrimit] = useState(false)
   const [waTel, setWaTel] = useState('')
+  const [artQuery, setArtQuery] = useState('')
+  const [artOpen, setArtOpen] = useState(false)
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data }) => {
@@ -173,16 +176,26 @@ export default function FisaEveniment() {
   return (
     <div style={{minHeight:'100vh', background:UI.bg, fontFamily:F, padding:'20px 14px 60px'}}>
       <div style={{maxWidth:'620px', margin:'0 auto'}}>
-        <div style={{display:'flex', alignItems:'center', justifyContent:'space-between', marginBottom:'16px'}}>
-          <div style={{fontSize:'21px', fontWeight:800, color:UI.ink}}>Fișă eveniment</div>
-          <Link href="/oferta" style={{fontSize:'13px', color:UI.green, fontWeight:700, textDecoration:'none'}}>← Deviz</Link>
+        <div style={{display:'flex', alignItems:'center', justifyContent:'space-between', gap:'10px', marginBottom:'16px', flexWrap:'wrap'}}>
+          <div style={{fontSize:'19px', fontWeight:800, color:UI.ink}}>Fișă eveniment</div>
+          <Link href="/oferta" style={{fontSize:'13px', color:UI.green, fontWeight:700, textDecoration:'none', whiteSpace:'nowrap'}}>← Înapoi la deviz</Link>
         </div>
 
         <div style={card}>
           <div style={{fontSize:'12px', fontWeight:800, color:UI.green, marginBottom:'12px', textTransform:'uppercase', letterSpacing:'0.05em'}}>Artist</div>
           <label style={lbl}>Artist</label>
-          <input list="artisti-list" value={f.artist} onChange={e => alegeArtist(e.target.value)} placeholder="Caută artistul… (ex: rar → rareș)" style={inp} />
-          <datalist id="artisti-list">{artists.map(a => <option key={a.nume} value={a.nume}>{a.tip === 'intermediere' ? a.nume + ' (extern)' : a.nume}</option>)}</datalist>
+          <div style={{position:'relative'}}>
+            <input value={f.artist} onChange={e => { set('artist', e.target.value); setArtQuery(e.target.value); setArtOpen(true) }} onFocus={() => setArtOpen(true)} placeholder="Caută artistul…" style={inp} />
+            {artOpen && artQuery.length > 0 && (
+              <div style={{position:'absolute', top:'calc(100% + 4px)', left:0, right:0, background:'white', border:'1.5px solid '+UI.line, borderRadius:'10px', boxShadow:'0 6px 20px rgba(0,0,0,0.1)', zIndex:20, maxHeight:'220px', overflowY:'auto'}}>
+                {artists.filter(a => a.nume.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').includes(artQuery.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,''))).slice(0, 6).map(a => (
+                  <div key={a.nume} onClick={() => { alegeArtist(a.nume); setArtOpen(false); setArtQuery('') }} style={{padding:'10px 12px', cursor:'pointer', fontSize:'14px', color:UI.ink, borderBottom:'1px solid '+UI.bg}}>
+                    {a.nume}{a.tip === 'intermediere' ? <span style={{color:UI.faint, fontSize:'11px'}}> · extern</span> : null}
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
           <div style={{marginTop:'10px'}}>
             <label style={lbl}>Email echipă artist (separate prin virgulă)</label>
             <input value={f.email_productie} onChange={e => set('email_productie', e.target.value)} placeholder="tehnic@…, manager@…" style={inp} />
@@ -193,7 +206,7 @@ export default function FisaEveniment() {
         <div style={card}>
           <div style={{fontSize:'12px', fontWeight:800, color:UI.green, marginBottom:'12px', textTransform:'uppercase', letterSpacing:'0.05em'}}>Eveniment</div>
           <div style={{display:'grid', gridTemplateColumns:'1fr 1fr', gap:'10px'}}>
-            <div><label style={lbl}>Data</label><input type="date" value={f.data_eveniment} onChange={e => set('data_eveniment', e.target.value)} style={inp} /></div>
+            <div><label style={lbl}>Data</label><DatePicker value={f.data_eveniment} onChange={(v: string) => set('data_eveniment', v)} placeholder="Alege data" /></div>
             <div><label style={lbl}>Oraș</label><input value={f.oras} onChange={e => set('oras', e.target.value)} style={inp} /></div>
           </div>
           <div style={{marginTop:'10px'}}>
