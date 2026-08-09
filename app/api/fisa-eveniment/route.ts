@@ -25,7 +25,7 @@ function fisaHTML(d: any): string {
       ${sectiune('DETALII EVENIMENT', rand('DATA', formatDataRo(d.data_eveniment)) + rand('ORAȘ', d.oras) + rand('LOCAȚIE', d.locatie) + rand('OBSERVAȚII', d.obs_eveniment))}
       ${sectiune('TECHNICAL RIDER', rand('ORA SOUNDCHECK', d.ora_soundcheck) + rand('ORA PERFORMANCE', d.ora_performance) + rand('DURATĂ', d.durata) + rand('CONTACT LOCAȚIE', d.contact_locatie) + rand('CONTACT TEHNIC', d.contact_tehnic))}
       ${sectiune('ACCOMMODATION RIDER', rand('HOTEL', d.hotel) + rand('CAMERE', d.camere) + rand('RESTAURANT', d.restaurant) + rand('OBSERVAȚII', d.obs_cazare))}
-      <div style="margin-top:26px;padding-top:16px;border-top:1px solid #e7e5e4;font-size:11px;color:#a8a29e;text-align:center;">Forward Agency · Ghețarilor no 2, sector 1, București · www.forward.ro</div>
+      <div style="margin-top:26px;padding-top:16px;border-top:1px solid #e7e5e4;font-size:11px;color:#a8a29e;text-align:center;">Forward Agency · Ghetarilor no 2, sector 1 · Bucuresti, PO 014106<div style="margin-top:6px;font-weight:700;color:#78716c;">powered by gig<span style="color:#059669;">x</span>.ro</div></div>
     </div>
   </body></html>`
 }
