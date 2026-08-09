@@ -172,7 +172,7 @@ export default function FisaEveniment() {
     doc.setDrawColor(230, 228, 226); doc.setLineWidth(0.3)
     doc.line(M, 280, R, 280)
     doc.setFont('helvetica', 'normal'); doc.setFontSize(7.5); doc.setTextColor(GREY[0], GREY[1], GREY[2])
-    doc.text('Forward Agency  ·  Ghetarilor no 2, sector 1, Bucuresti  ·  ' + "www.forward.ro", M, 285)
+    doc.text('Forward Agency  ·  Ghetarilor no 2, sector 1, Bucuresti', M, 285)
     doc.setFontSize(7); doc.setTextColor(190, 188, 185)
     doc.text('powered by gigx.ro', R, 285, { align: 'right' })
 
