@@ -99,7 +99,7 @@ export default function PaginaArtist() {
           <div style={{background:UI.ink, borderRadius:'18px', padding:'20px', marginBottom:'12px', textAlign:'center'}}>
             <div style={{fontSize:'42px', fontWeight:800, color:'white', letterSpacing:'-2px', lineHeight:1}}>{nr(reachTotal)}</div>
             <div style={{fontSize:'11px', color:'rgba(245,242,236,0.75)', fontWeight:700, textTransform:'uppercase', letterSpacing:'0.1em', marginTop:'8px'}}>Total Reach</div>
-            <div style={{fontSize:'11px', color:'rgba(245,242,236,0.5)', fontWeight:600, marginTop:'4px'}}><span style={{color:'#34d399'}}>●</span> Pe {platforme} platforme</div>
+            <div title="Cumulat pe Spotify, YouTube, TikTok, Instagram și Shazam" style={{fontSize:'11px', color:'rgba(245,242,236,0.5)', fontWeight:600, marginTop:'4px', borderBottom:'1px dotted rgba(245,242,236,0.35)', display:'inline-block', cursor:'help'}}><span style={{color:'#34d399'}}>●</span> Pe {platforme} platforme</div>
           </div>
         )}
 
@@ -132,7 +132,7 @@ export default function PaginaArtist() {
               {et}
             </a>
           ))}
-          <div style={{textAlign:'center', fontSize:'11.5px', color:UI.sub, fontWeight:600, padding:'6px 0 0'}}>Întrebări de producție? Scrie-ne pe booking@gigx.ro</div>
+          <div style={{textAlign:'center', fontSize:'11.5px', color:UI.sub, fontWeight:600, padding:'6px 0 0'}}>Pentru detalii de producție, contactează inginerul de sunet sau production managerul din documentele de mai sus.</div>
         </div>
 
         <div style={{textAlign:'center', fontSize:'11.5px', color:UI.faint, marginTop:'18px', lineHeight:1.6}}>
