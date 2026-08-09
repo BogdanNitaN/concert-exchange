@@ -19,7 +19,7 @@ export default function FisaEveniment() {
   const [locatii, setLocatii] = useState<any[]>([])
   const [f, setF] = useState<any>({
     artist:'', data_eveniment:'', oras:'', locatie:'', obs_eveniment:'',
-    ora_soundcheck:'Se stabilește împreună cu contactul tehnic', ora_performance:'', durata:'', contact_locatie:'', contact_tehnic:'',
+    ora_soundcheck:'', ora_performance:'', durata:'', contact_locatie:'', contact_tehnic:'',
     hotel:'', camere:'', restaurant:'', obs_cazare:'', email_productie:'', email_client:'', reply_to:'alexandra.stefan@forward.ro',
   })
   const [preview, setPreview] = useState('')
@@ -49,7 +49,7 @@ export default function FisaEveniment() {
     setF((p: any) => ({
       ...p, artist: nume,
       camere: a?.cazare || p.camere,
-      durata: a?.set_type === 'dj' ? '90-120 min' : (a?.durata_default || p.durata),
+      durata: a?.set_type === 'dj' ? '90 min' : '40 min',
       restaurant: a?.diurna_fixa ? `Diurnă ${a.diurna_fixa} lei/pers` : p.restaurant,
       email_productie: a?.email_productie || '',
     }))
@@ -176,9 +176,9 @@ export default function FisaEveniment() {
   return (
     <div style={{minHeight:'100vh', background:UI.bg, fontFamily:F, padding:'20px 14px 60px'}}>
       <div style={{maxWidth:'620px', margin:'0 auto'}}>
-        <div style={{display:'flex', alignItems:'center', justifyContent:'space-between', gap:'10px', marginBottom:'16px', flexWrap:'wrap'}}>
-          <div style={{fontSize:'19px', fontWeight:800, color:UI.ink}}>Fișă eveniment</div>
-          <Link href="/oferta" style={{fontSize:'13px', color:UI.green, fontWeight:700, textDecoration:'none', whiteSpace:'nowrap'}}>← Înapoi la deviz</Link>
+        <div style={{marginBottom:'18px'}}>
+          <Link href="/oferta" style={{fontSize:'13px', color:UI.green, fontWeight:700, textDecoration:'none'}}>← Înapoi la deviz</Link>
+          <div style={{fontSize:'22px', fontWeight:800, color:UI.ink, marginTop:'6px'}}>Fișă eveniment</div>
         </div>
 
         <div style={card}>
@@ -221,7 +221,7 @@ export default function FisaEveniment() {
           <div style={{fontSize:'12px', fontWeight:800, color:UI.green, marginBottom:'12px', textTransform:'uppercase', letterSpacing:'0.05em'}}>Show</div>
           <div style={{display:'grid', gridTemplateColumns:'1fr 1fr', gap:'10px'}}>
             <div><label style={lbl}>Ora performance</label><input value={f.ora_performance} onChange={e => set('ora_performance', e.target.value)} placeholder="21:30" style={inp} /></div>
-            <div><label style={lbl}>Durată</label><input value={f.durata} onChange={e => set('durata', e.target.value)} placeholder="20 min" style={inp} /></div>
+            <div><label style={lbl}>Durată</label><input value={f.durata} onChange={e => set('durata', e.target.value)} placeholder="40 min" style={inp} /></div>
           </div>
           <div style={{marginTop:'10px'}}><label style={lbl}>Ora soundcheck</label><input value={f.ora_soundcheck} onChange={e => set('ora_soundcheck', e.target.value)} style={inp} /></div>
           <div style={{display:'grid', gridTemplateColumns:'1fr 1fr', gap:'10px', marginTop:'10px'}}>
