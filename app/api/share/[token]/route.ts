@@ -106,6 +106,7 @@ export async function GET(req: Request, ctx: { params: Promise<{ token: string }
       if (!a) return NextResponse.json({ ok: false, error: 'Artist negasit.' }, { status: 404 })
       const artist: any = fa(a)
       artist.bio = a.bio || null
+      artist.spotifyId = idMap[a.nume.toLowerCase().trim()] || null
       // statistici live (doar pe pagina de un artist)
       try {
         const origin = new URL(req.url).origin
