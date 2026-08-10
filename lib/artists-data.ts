@@ -353,7 +353,7 @@ export const ARTISTS_DATA = [
     "tier": "A+",
     "cazare": "2 single + 4 duble",
     "nrBileteAvion": 2,
-    "costPerKm": 1.5
+    "costPerKm": 7.5
   , "setType": "vocal"},
   {
     "id": 28,
@@ -553,7 +553,7 @@ export const ARTISTS_DATA = [
     "tier": "A+",
     "cazare": "4 single + 2 duble",
     "nrBileteAvion": 0,
-    "costPerKm": 4
+    "costPerKm": 4.5
   , "setType": "vocal"},
   {
     "id": 43,
