@@ -122,14 +122,20 @@ export default function RosterPublic() {
         <div style={{background:'#101014', borderBottom:'1px solid #101014', padding:'12px 16px', position:'sticky', top:'56px', zIndex:50}}>
           <div style={{display:'flex', alignItems:'center', justifyContent:'space-between'}}>
             <div style={{display:'flex', alignItems:'center', gap:'8px'}}>
-              <span style={{background:'#eacda3', fontSize:'10px', fontWeight:800, padding:'3px 10px', borderRadius:'6px', color:'white', opacity: tierColapsat || tierRotativ === 0 ? 1 : 0.45, transition:'opacity 0.3s'}}>A++ · Icon</span>
-              <span style={{background:'#7c3aed', fontSize:'10px', fontWeight:800, padding:'3px 10px', borderRadius:'6px', color:'white', opacity: tierColapsat || tierRotativ === 1 ? 1 : 0.45, transition:'opacity 0.3s'}}>A+ · Premium</span>
-              <span style={{background:'#78716c', fontSize:'10px', fontWeight:800, padding:'3px 10px', borderRadius:'6px', color:'white', opacity: tierColapsat || tierRotativ === 2 ? 1 : 0.45, transition:'opacity 0.3s'}}>A · Select</span>
+              <span style={{background:'#eacda3', fontSize:'10px', fontWeight:800, padding:'3px 10px', borderRadius:'6px', color:'white', opacity: tierColapsat || tierRotativ === 0 ? 1 : 0.4, transition:'opacity 0.3s'}}>A++ · Icon</span>
+              <span style={{background:'#7c3aed', fontSize:'10px', fontWeight:800, padding:'3px 10px', borderRadius:'6px', color:'white', opacity: tierColapsat || tierRotativ === 1 ? 1 : 0.4, transition:'opacity 0.3s'}}>A+ · Premium</span>
+              <span style={{background:'#78716c', fontSize:'10px', fontWeight:800, padding:'3px 10px', borderRadius:'6px', color:'white', opacity: tierColapsat || tierRotativ === 2 ? 1 : 0.4, transition:'opacity 0.3s'}}>A · Select</span>
             </div>
-            <span onClick={() => setTierColapsat(c => !c)} style={{color:'#a8a29e', fontSize:'13px', fontWeight:700, marginLeft:'10px', flexShrink:0, cursor:'pointer', padding:'2px 4px'}}>{tierColapsat ? '▾' : '▴'}</span>
+            <span onClick={() => setTierColapsat(c => !c)} style={{color:'#a8a29e', fontSize:'13px', fontWeight:700, marginLeft:'10px', flexShrink:0, cursor:'pointer', padding:'2px 6px'}}>{tierColapsat ? '▴' : '▾'}</span>
           </div>
-          {!tierColapsat && (
-            <div style={{textAlign:'center', fontSize:'12px', color:'#d6d3d1', fontWeight:600, marginTop:'8px', transition:'opacity 0.3s'}}>
+          {tierColapsat ? (
+            <div style={{display:'flex', flexDirection:'column', gap:'6px', marginTop:'10px'}}>
+              <div style={{display:'flex', justifyContent:'space-between', alignItems:'center'}}><span style={{color:'#eacda3', fontSize:'11px', fontWeight:800}}>A++ · Icon</span><span style={{color:'#d6d3d1', fontSize:'11.5px', fontWeight:600}}>10.000€+</span></div>
+              <div style={{display:'flex', justifyContent:'space-between', alignItems:'center'}}><span style={{color:'#a78bfa', fontSize:'11px', fontWeight:800}}>A+ · Premium</span><span style={{color:'#d6d3d1', fontSize:'11.5px', fontWeight:600}}>5.000–10.000€</span></div>
+              <div style={{display:'flex', justifyContent:'space-between', alignItems:'center'}}><span style={{color:'#a8a29e', fontSize:'11px', fontWeight:800}}>A · Select</span><span style={{color:'#d6d3d1', fontSize:'11.5px', fontWeight:600}}>până la 5.000€</span></div>
+            </div>
+          ) : (
+            <div style={{textAlign:'center', fontSize:'12px', color:'#d6d3d1', fontWeight:600, marginTop:'8px'}}>
               {tierRotativ === 0 ? '10.000€+' : tierRotativ === 1 ? '5.000–10.000€' : 'până la 5.000€'}
             </div>
           )}
