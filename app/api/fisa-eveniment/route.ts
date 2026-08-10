@@ -20,11 +20,11 @@ function fisaHTML(d: any): string {
     <div style="max-width:620px;margin:0 auto;background:white;border-radius:12px;padding:26px 24px 30px;box-shadow:0 2px 12px rgba(0,0,0,0.05);">
       <table style="width:100%;border:1px solid #e7e5e4;border-collapse:collapse;margin-bottom:8px;"><tr>
         <td style="padding:12px 14px;background:#f5f5f4;font-size:12px;font-weight:800;letter-spacing:0.08em;color:#57534e;width:80px;vertical-align:top;">SUMAR</td>
-        <td style="padding:12px 14px;"><div style="font-size:16px;font-weight:800;color:#1c1917;">${d.artist || ''}</div><div style="font-size:13px;color:#57534e;margin-top:3px;">${formatDataRo(d.data_eveniment)}${d.oras ? ', ' + d.oras.toUpperCase() : ''}</div><div style="font-size:13px;font-weight:700;color:#1c1917;margin-top:2px;">${d.locatie || ''}</div></td>
+        <td style="padding:12px 14px;"><div style="font-size:16px;font-weight:800;color:#1c1917;">${d.artist || ''}</div><div style="font-size:13px;color:#57534e;margin-top:3px;">${formatDataRo(d.data_eveniment)}${d.oras ? ', ' + d.oras.toUpperCase() : ''}</div><div style="font-size:13px;font-weight:700;color:#1c1917;margin-top:2px;">${(d.locatie || '').toUpperCase()}</div></td>
       </tr></table>
-      ${sectiune('DETALII EVENIMENT', rand('DATA', formatDataRo(d.data_eveniment)) + rand('ORAȘ', d.oras) + rand('LOCAȚIE', d.locatie) + rand('OBSERVAȚII', d.obs_eveniment))}
+      ${sectiune('DETALII EVENIMENT', rand('DATA', formatDataRo(d.data_eveniment)) + rand('ORAȘ', (d.oras || '').toUpperCase()) + rand('LOCAȚIE', (d.locatie || '').toUpperCase()) + rand('OBSERVAȚII', d.obs_eveniment))}
       ${sectiune('TECHNICAL RIDER', rand('ORA SOUNDCHECK', d.ora_soundcheck) + rand('ORA PERFORMANCE', d.ora_performance) + rand('DURATĂ', d.durata) + rand('CONTACT LOCAȚIE', d.contact_locatie) + rand('CONTACT TEHNIC', d.contact_tehnic))}
-      ${sectiune('ACCOMMODATION RIDER', rand('HOTEL', d.hotel) + rand('CAMERE', d.camere) + rand('RESTAURANT', d.restaurant) + rand('OBSERVAȚII', d.obs_cazare))}
+      ${sectiune('ACCOMMODATION RIDER', rand('HOTEL', (d.hotel || '').toUpperCase()) + rand('CAMERE', d.camere) + rand('RESTAURANT', d.restaurant) + rand('OBSERVAȚII', d.obs_cazare))}
       <div style="margin-top:26px;padding-top:16px;border-top:1px solid #e7e5e4;font-size:11px;color:#a8a29e;text-align:center;">Forward Agency · Ghetarilor no 2, sector 1 · Bucuresti, PO 014106<div style="margin-top:6px;font-weight:700;color:#78716c;">powered by gig<span style="color:#059669;">x</span>.ro</div></div>
     </div>
   </body></html>`
