@@ -134,7 +134,7 @@ export default function PaginaArtist() {
               Descarcă media kit
             </a>
           )}
-          {[['Rider tehnic și ospitalitate', a.riderTehnic], ['Rider acomodare', a.riderAcomodare], ['UCMR', a.ucmr]].filter(d => d[1]).map(([et, url]: any) => (
+          {[['Rider tehnic și ospitalitate', a.riderTehnic], ['UCMR', a.ucmr]].filter(d => d[1]).map(([et, url]: any) => (
             <a key={et} href={url} target="_blank" rel="noreferrer"
               style={{display:'block', textAlign:'center', padding:'13px', background:'white', color:UI.ink, border:'1.5px solid '+UI.line, borderRadius:'12px', fontSize:'13px', fontWeight:700, textDecoration:'none', marginBottom:'10px'}}>
               {et}
