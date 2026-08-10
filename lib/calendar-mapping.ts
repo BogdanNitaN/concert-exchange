@@ -49,6 +49,7 @@ export const CALENDAR_TO_ROSTER: Record<string, string> = {
   "Carla's Dreams": "Carla's Dreams",
   'Eva Timush': 'Eva Timush',
   'Vescan Evenimente': 'Vescan',
+  'VESCAN FWD': 'Vescan',
   'Adrian Istrate': 'Adi Istrate',
   'Satra&Ochiu': 'Satra Benz',
 }
