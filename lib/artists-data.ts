@@ -170,7 +170,7 @@ export const ARTISTS_DATA = [
     "tier": "Premium",
     "cazare": "4 single",
     "nrBileteAvion": 2,
-    "costPerKm": 1
+    "costPerKm": 0
   , "setType": "vocal"},
   {
     "id": 14,
