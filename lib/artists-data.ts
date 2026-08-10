@@ -24,7 +24,7 @@ export const ARTISTS_DATA = [
     "tier": "Premium",
     "cazare": "3 duble",
     "nrBileteAvion": 1,
-    "costPerKm": 2
+    "costPerKm": 6.5
   , "setType": "vocal"},
   {
     "id": 3,
@@ -50,7 +50,7 @@ export const ARTISTS_DATA = [
     "tier": "Premium",
     "cazare": "7 single + 3 duble",
     "nrBileteAvion": 2,
-    "costPerKm": 2
+    "costPerKm": 10
   , "setType": "vocal"},
   {
     "id": 5,
@@ -142,7 +142,7 @@ export const ARTISTS_DATA = [
     "tier": "Premium",
     "cazare": "4 single",
     "nrBileteAvion": 4,
-    "costPerKm": 1
+    "costPerKm": 2
   , "setType": "vocal"},
   {
     "id": 12,
@@ -184,7 +184,7 @@ export const ARTISTS_DATA = [
     "tier": "Premium",
     "cazare": "3 single",
     "nrBileteAvion": 2,
-    "costPerKm": 2
+    "costPerKm": 3
   , "setType": "vocal"},
   {
     "id": 15,
@@ -340,7 +340,7 @@ export const ARTISTS_DATA = [
     "tier": "A+",
     "cazare": "3 duble + 2 single",
     "nrBileteAvion": 2,
-    "costPerKm": 1.5
+    "costPerKm": 5
   , "setType": "vocal"},
   {
     "id": 27,
@@ -432,7 +432,7 @@ export const ARTISTS_DATA = [
     "tier": "A+",
     "cazare": "4 duble + 1 single",
     "nrBileteAvion": 1,
-    "costPerKm": 1.5
+    "costPerKm": 6
   , "setType": "vocal"},
   {
     "id": 34,
@@ -499,7 +499,7 @@ export const ARTISTS_DATA = [
     "tier": "A+",
     "cazare": "5 duble + 2 single",
     "nrBileteAvion": 1,
-    "costPerKm": 1.5
+    "costPerKm": 6
   , "setType": "vocal"},
   {
     "id": 39,
@@ -525,7 +525,7 @@ export const ARTISTS_DATA = [
     "tier": "A+",
     "cazare": "4 duble + 2 single",
     "nrBileteAvion": 1,
-    "costPerKm": 1.5
+    "costPerKm": 6
   , "setType": "vocal"},
   {
     "id": 41,
@@ -619,7 +619,7 @@ export const ARTISTS_DATA = [
     "tier": "A+",
     "cazare": "5 single",
     "nrBileteAvion": 3,
-    "costPerKm": 1.5
+    "costPerKm": 6
   , "setType": "dj"},
   {
     "id": 48,
@@ -686,7 +686,7 @@ export const ARTISTS_DATA = [
     "tier": "A+",
     "cazare": "2 duble + 2 single",
     "nrBileteAvion": 1,
-    "costPerKm": 1.5
+    "costPerKm": 6
   , "setType": "vocal"},
   {
     "id": 53,
@@ -829,7 +829,7 @@ export const ARTISTS_DATA = [
     "tier": "A",
     "cazare": "3 duble + 1 single",
     "nrBileteAvion": 1,
-    "costPerKm": 1
+    "costPerKm": 4
   , "setType": "vocal"},
   {
     "id": 64,
@@ -949,7 +949,7 @@ export const ARTISTS_DATA = [
     "tier": "A",
     "cazare": "2 single + 1 dubla",
     "nrBileteAvion": 1,
-    "costPerKm": 1
+    "costPerKm": 3
   , "setType": "vocal"},
   {
     "id": 73,
