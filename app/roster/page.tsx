@@ -113,19 +113,26 @@ export default function RosterPublic() {
 
       {isMobile ? (
         <div style={{background:'#101014', borderBottom:'1px solid #101014', padding:'12px 16px', position:'sticky', top:'56px', zIndex:50}}>
-          <div style={{display:'flex', flexDirection:'column', gap:'8px'}}>
-            <div style={{display:'flex', alignItems:'center', gap:'10px'}}>
-              <span style={{background:'#eacda3', fontSize:'10px', fontWeight:800, padding:'3px 10px', borderRadius:'6px', color:'white', flexShrink:0, minWidth:'78px', textAlign:'center'}}>A++ · Icon</span>
-              <span style={{color:'#d6d3d1', fontSize:'11.5px', fontWeight:600}}>10.000€+</span>
+          <div onClick={() => setTierExplicat(tierExplicat === 'inchis' ? '' : 'inchis')} style={{display:'flex', alignItems:'flex-start', justifyContent:'space-between', cursor:'pointer'}}>
+            <div style={{display:'flex', flexDirection:'column', gap:'8px', flex:1}}>
+              <div style={{display:'flex', alignItems:'center', gap:'10px'}}>
+                <span style={{background:'#eacda3', fontSize:'10px', fontWeight:800, padding:'3px 10px', borderRadius:'6px', color:'white', flexShrink:0, minWidth:'78px', textAlign:'center'}}>A++ · Icon</span>
+                {tierExplicat !== 'inchis' && <span style={{color:'#d6d3d1', fontSize:'11.5px', fontWeight:600}}>10.000€+</span>}
+              </div>
+              {tierExplicat !== 'inchis' && (
+                <>
+                  <div style={{display:'flex', alignItems:'center', gap:'10px'}}>
+                    <span style={{background:'#7c3aed', fontSize:'10px', fontWeight:800, padding:'3px 10px', borderRadius:'6px', color:'white', flexShrink:0, minWidth:'78px', textAlign:'center'}}>A+ · Premium</span>
+                    <span style={{color:'#d6d3d1', fontSize:'11.5px', fontWeight:600}}>5.000–10.000€</span>
+                  </div>
+                  <div style={{display:'flex', alignItems:'center', gap:'10px'}}>
+                    <span style={{background:'#78716c', fontSize:'10px', fontWeight:800, padding:'3px 10px', borderRadius:'6px', color:'white', flexShrink:0, minWidth:'78px', textAlign:'center'}}>A · Select</span>
+                    <span style={{color:'#d6d3d1', fontSize:'11.5px', fontWeight:600}}>până la 5.000€</span>
+                  </div>
+                </>
+              )}
             </div>
-            <div style={{display:'flex', alignItems:'center', gap:'10px'}}>
-              <span style={{background:'#7c3aed', fontSize:'10px', fontWeight:800, padding:'3px 10px', borderRadius:'6px', color:'white', flexShrink:0, minWidth:'78px', textAlign:'center'}}>A+ · Premium</span>
-              <span style={{color:'#d6d3d1', fontSize:'11.5px', fontWeight:600}}>5.000–10.000€</span>
-            </div>
-            <div style={{display:'flex', alignItems:'center', gap:'10px'}}>
-              <span style={{background:'#78716c', fontSize:'10px', fontWeight:800, padding:'3px 10px', borderRadius:'6px', color:'white', flexShrink:0, minWidth:'78px', textAlign:'center'}}>A · Select</span>
-              <span style={{color:'#d6d3d1', fontSize:'11.5px', fontWeight:600}}>până la 5.000€</span>
-            </div>
+            <span style={{color:'#a8a29e', fontSize:'13px', fontWeight:700, marginLeft:'10px', marginTop:'2px', flexShrink:0}}>{tierExplicat === 'inchis' ? '▾' : '▴'}</span>
           </div>
         </div>
       ) : (
