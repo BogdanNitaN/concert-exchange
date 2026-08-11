@@ -129,7 +129,7 @@ export async function GET(req: Request, ctx: { params: Promise<{ token: string }
       user_agent: req.headers.get('user-agent') || null,
     })
 
-    return NextResponse.json({ ok: true, destinatar: link.destinatar, audienta: link.tip_audienta, expiraLa: link.expira_la, ascundeContacte: !!link.ascunde_contacte, ...payload })
+    return NextResponse.json({ ok: true, destinatar: link.destinatar, audienta: link.tip_audienta, scop: link.scop, expiraLa: link.expira_la, ascundeContacte: !!link.ascunde_contacte, ...payload })
   } catch {
     return NextResponse.json({ ok: false, error: 'Eroare tehnica.' }, { status: 500 })
   }

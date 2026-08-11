@@ -34,13 +34,14 @@ const TIER_MAP: Record<string, {label: string, color: string, tip: string}> = {
 }
 const TAB_LABEL: Record<string, string> = { standard: 'Standard', prom: 'Baluri / Prom' }
 
-function textOferta(a: any, audienta: string, tab: string) {
+function textOferta(a: any, audienta: string, tab: string, scop?: string) {
+  const eBal = tab === 'prom' || scop === 'bal'
   const lg = a.logistica || {}
   let t = '*' + a.nume.toUpperCase() + '*' + '\n'
   if (a.preturi) {
     if (audienta === 'b2b') {
-      const pret = tab === 'prom' ? a.preturi.prom : a.preturi.standard
-      const sufix = tab === 'prom' ? ' (Baluri / Prom)' : ''
+      const pret = eBal ? a.preturi.prom : a.preturi.standard
+      const sufix = eBal ? ' (Baluri / Prom)' : ''
       t += 'Onorariu: ' + fmtEur(pret) + ' + TVA' + sufix + '\n'
     } else {
       t += 'Onorariu: ' + fmtEur(a.preturi.deLa) + ' + TVA' + '\n'
@@ -62,7 +63,7 @@ function textOferta(a: any, audienta: string, tab: string) {
   return t
 }
 
-function CardArtist({ a, audienta, token, tabInitial, destinatar, ascundeContacte }: { a: any, audienta: string, token: string, tabInitial: string, destinatar?: string, ascundeContacte?: boolean }) {
+function CardArtist({ a, audienta, token, tabInitial, destinatar, ascundeContacte, scop }: { a: any, audienta: string, token: string, tabInitial: string, destinatar?: string, ascundeContacte?: boolean, scop?: string }) {
   const [tab, setTab] = useState(tabInitial)
   const [explTier, setExplTier] = useState(false)
   const [copiat, setCopiat] = useState(false)
@@ -73,12 +74,12 @@ function CardArtist({ a, audienta, token, tabInitial, destinatar, ascundeContact
   }
   function schimbaTab(t: string) { setTab(t); log('tap-' + t) }
   function copiaza() {
-    navigator.clipboard.writeText(textOferta(a, audienta, tab)).then(() => { setCopiat(true); setTimeout(() => setCopiat(false), 2000) })
+    navigator.clipboard.writeText(textOferta(a, audienta, tab, scop)).then(() => { setCopiat(true); setTimeout(() => setCopiat(false), 2000) })
     log('copy-' + tab)
   }
   function distribuie() {
     log('share')
-    const txt = textOferta(a, audienta, tab)
+    const txt = textOferta(a, audienta, tab, scop)
     if (navigator.share) navigator.share({ text: txt }).catch(() => {})
     else { navigator.clipboard.writeText(txt); setCopiat(true); setTimeout(() => setCopiat(false), 2000) }
   }
@@ -203,7 +204,7 @@ function CardArtist({ a, audienta, token, tabInitial, destinatar, ascundeContact
 }
 
 
-function ListaRoster({ artisti, audienta, token, ascundeContacte, destinatar }: { artisti: any[], audienta: string, token: string, ascundeContacte?: boolean, destinatar?: string }) {
+function ListaRoster({ artisti, audienta, token, ascundeContacte, destinatar, scop }: { artisti: any[], audienta: string, token: string, ascundeContacte?: boolean, destinatar?: string, scop?: string }) {
   const eRevelion = artisti.some((x: any) => x.revelion)
   const [q, setQ] = useState('')
   const [gen, setGen] = useState('')
@@ -383,7 +384,7 @@ function ListaRoster({ artisti, audienta, token, ascundeContacte, destinatar }: 
 
   function copiazaCatalog() {
     const titlu = gen ? '*ROSTER FORWARD - ' + gen.toUpperCase() + '*' : '*ROSTER FORWARD*'
-    const txt = titlu + String.fromCharCode(10) + String.fromCharCode(10) + tinta.map(a => textOferta(a, audienta, 'standard')).join(String.fromCharCode(10) + String.fromCharCode(10) + '----------' + String.fromCharCode(10) + String.fromCharCode(10))
+    const txt = titlu + String.fromCharCode(10) + String.fromCharCode(10) + tinta.map(a => textOferta(a, audienta, 'standard', scop)).join(String.fromCharCode(10) + String.fromCharCode(10) + '----------' + String.fromCharCode(10) + String.fromCharCode(10))
     copiazaText(txt, 'catalog', gen ? 'copy-catalog-' + gen : 'copy-catalog')
   }
 
@@ -532,11 +533,11 @@ function ListaRoster({ artisti, audienta, token, ascundeContacte, destinatar }: 
                     </div>
                   )}
                   <div style={{display:'flex', gap:'8px'}}>
-                    <button onClick={() => copiazaText(textOferta(a, audienta, 'standard'), a.nume, 'copy-standard', a.nume)}
+                    <button onClick={() => copiazaText(textOferta(a, audienta, 'standard', scop), a.nume, 'copy-standard', a.nume)}
                       style={{flex:1, padding:'10px', background: copiat === a.nume ? '#047857' : UI.green, color:'white', border:'none', borderRadius:'9px', fontSize:'12px', fontWeight:700, cursor:'pointer', fontFamily:F, transition:'background 0.15s'}}>
                       {copiat === a.nume ? '✓ Copiat' : 'Copiaza oferta'}
                     </button>
-                    <button onClick={() => { log('share', a.nume); const t = textOferta(a, audienta, 'standard'); if (navigator.share) navigator.share({ text: t }).catch(() => {}); else copiazaText(t, a.nume, 'copy-standard', a.nume) }}
+                    <button onClick={() => { log('share', a.nume); const t = textOferta(a, audienta, 'standard', scop); if (navigator.share) navigator.share({ text: t }).catch(() => {}); else copiazaText(t, a.nume, 'copy-standard', a.nume) }}
                       style={{flex:1, padding:'10px', background:'white', color:UI.ink, border:'1.5px solid '+UI.line, borderRadius:'9px', fontSize:'12px', fontWeight:700, cursor:'pointer', fontFamily:F}}>
                       Trimite mai departe
                     </button>
@@ -601,8 +602,8 @@ export default function ShareView() {
         {d && (
           <>
             <div style={{fontSize:'13px', color:UI.sub, marginBottom:'16px'}}>Pregatit pentru <strong style={{color:UI.ink}}>{d.destinatar}</strong></div>
-            {d.tip === 'artist' && <CardArtist a={d.artist} audienta={d.audienta} token={token} tabInitial="standard" destinatar={d.destinatar} ascundeContacte={d.ascundeContacte} />}
-            {d.tip === 'roster' && <ListaRoster artisti={d.artisti} audienta={d.audienta} token={token} ascundeContacte={d.ascundeContacte} destinatar={d.destinatar} />}
+            {d.tip === 'artist' && <CardArtist a={d.artist} audienta={d.audienta} token={token} tabInitial={d.scop === "bal" ? "prom" : "standard"} scop={d.scop} destinatar={d.destinatar} ascundeContacte={d.ascundeContacte} />}
+            {d.tip === 'roster' && <ListaRoster artisti={d.artisti} audienta={d.audienta} token={token} ascundeContacte={d.ascundeContacte} destinatar={d.destinatar} scop={d.scop} />}
             {d.audienta !== 'b2b' && (
             <a href="/roster" target="_blank" style={{display:'block', textAlign:'center', marginTop:'24px', padding:'12px', background:'white', color:UI.sub, border:'1.5px solid '+UI.line, borderRadius:'11px', fontSize:'11px', fontWeight:800, letterSpacing:'0.08em', textDecoration:'none'}}>
               CATALOG ARTISTI FORWARD
