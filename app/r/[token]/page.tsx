@@ -58,7 +58,7 @@ function textOferta(a: any, audienta: string, tab: string, scop?: string) {
   if (lg.cazareFixa > 0) ll.push('- Cazare: ' + Number(lg.cazareFixa).toLocaleString('ro-RO') + ' lei')
   else if (lg.cazare) ll.push('- Cazare: ' + lg.cazare)
   if (lg.diurna) ll.push('- Diurna / masa: ' + Number(lg.diurna).toLocaleString('ro-RO') + ' lei')
-  else if (eBal && !lg.landed) ll.push('- Diurna: 200 lei/pers sau masa a la carte')
+  else if (eBal && !lg.landed) ll.push('- Diurna: 200 lei/pers' + (lg.persoane ? ' x ' + lg.persoane + ' pers (' + (200 * lg.persoane).toLocaleString('ro-RO') + ' lei)' : '') + ' sau masa a la carte')
   if (ll.length) t += '\n' + '*DETALII LOGISTICE:*' + '\n' + ll.join('\n') + '\n' + '\n'
   t += a.revelion ? 'Transportul, cazarea si diurna sunt cele de mai sus.' : (lg.landed ? 'Onorariul nu include cazare si masa.' : 'Onorariul nu include transport, cazare si masa.')
   return t
