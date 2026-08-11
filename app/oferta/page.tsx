@@ -746,9 +746,10 @@ export default function OfertaPage() {
 
       doc.setFont('helvetica', 'normal'); doc.setFontSize(9.5); doc.setTextColor(60,60,60)
       const rows: string[] = []
+      let echivEurPdf = ''
       if (institutiePublica) {
         rows.push('Onorariu: ' + c.feeLeiConv.toLocaleString('ro-RO') + ' lei + TVA')
-        rows.push('(echivalent: ' + l.fee + ' EUR onorariu, curs ' + c.cursAdaos.toFixed(4) + ' lei/EUR)')
+        echivEurPdf = '(echivalent: ' + l.fee + ' EUR onorariu, curs ' + c.cursAdaos.toFixed(4) + ' lei/EUR)'
       } else {
         if (l.allIn) rows.push('Onorariu ALL IN: ' + l.allInSuma + ' EUR + TVA')
         else if (c.discount === 0) rows.push('Onorariu: ' + l.fee + ' EUR + TVA')
@@ -773,6 +774,7 @@ export default function OfertaPage() {
       }
       if (l.useAlcool && c.alcoolTotal > 0) rows.push('Protocol: ' + c.alcoolTotal.toLocaleString('ro-RO') + ' lei (alcool)')
       if (l.durata) rows.push('Durata: ' + l.durata)
+      if (echivEurPdf) rows.push(echivEurPdf)
       if (!institutiePublica && c.discount > 0) {
         const etich = 'Onorariu: '
         const vechi = l.feeLista + ' EUR'
