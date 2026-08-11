@@ -337,15 +337,16 @@ function ListaRoster({ artisti, audienta, token, ascundeContacte, destinatar, sc
         const tx = ph ? M + 22 : M
         doc.text(noDia(a.nume.toUpperCase()), tx, y)
         if (a.preturi) {
+          const pretBal = scop === 'bal' ? (a.preturi.prom ?? a.preturi.standard) : a.preturi.standard
           const pretTxt = audienta === 'b2b'
-            ? (a.preturi.standard >= 10000 ? a.preturi.standard.toLocaleString('ro-RO') : String(a.preturi.standard)) + ' EUR + TVA'
+            ? (pretBal >= 10000 ? pretBal.toLocaleString('ro-RO') : String(pretBal)) + ' EUR + TVA'
             : a.preturi.deLa.toLocaleString('ro-RO') + ' EUR + TVA'
           doc.setFontSize(11.5)
           doc.text(noDia(pretTxt), W - M, y, { align: 'right' })
         }
         y += 5.5
         doc.setFont('helvetica', 'normal'); doc.setFontSize(8.5); doc.setTextColor(90,90,90)
-        if (a.preturi && audienta === 'b2b' && !a.revelion) {
+        if (a.preturi && audienta === 'b2b' && !a.revelion && scop !== 'bal') {
           doc.text(noDia('Corporate / Private / Festival (la cerere)'), tx, y)
           y += 5
         }
