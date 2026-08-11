@@ -24,7 +24,7 @@ function formatNum(n: number) {
   if (n >= 1000) return (n/1000).toFixed(1) + 'K'
   return String(n)
 }
-function fmtEur(n: number) { return n.toLocaleString('ro-RO') + ' EUR' }
+function fmtEur(n: number) { return (n >= 10000 ? n.toLocaleString('ro-RO') : String(n)) + ' EUR' }
 
 const TIER_MAP: Record<string, {label: string, color: string, tip: string}> = {
   'A++': {label: 'A++ · Icon', color: '#eacda3', tip: 'Top tier — vinde singur orice eveniment'},
@@ -336,7 +336,7 @@ function ListaRoster({ artisti, audienta, token, ascundeContacte, destinatar }: 
         doc.text(noDia(a.nume.toUpperCase()), tx, y)
         if (a.preturi) {
           const pretTxt = audienta === 'b2b'
-            ? a.preturi.standard.toLocaleString('ro-RO') + ' EUR + TVA'
+            ? (a.preturi.standard >= 10000 ? a.preturi.standard.toLocaleString('ro-RO') : String(a.preturi.standard)) + ' EUR + TVA'
             : a.preturi.deLa.toLocaleString('ro-RO') + ' EUR + TVA'
           doc.setFontSize(11.5)
           doc.text(noDia(pretTxt), W - M, y, { align: 'right' })

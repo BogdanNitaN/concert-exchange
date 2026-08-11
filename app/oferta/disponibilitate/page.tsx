@@ -135,7 +135,7 @@ export default function DisponibilitatePage() {
         tipPret: 'Standard', feeLista: rd.fee_standard || 0, fee: rd.fee_standard || 0,
         leiKm: rd.lei_km || 0, useMarja: true, cazare: rd.cazare || '', persoane: rd.nr_persoane || 0,
         bileteAvion: rd.bilete_avion || 0, restulRutier: true, tipMasa: 'alacarte', zile: 1,
-        diurnaPerPers: 180, diurnaFixa: rd.diurna_fixa || 0, cazareFixa: rd.cazare_fixa || 0, useAlcool: false, alcool: rd.alcool_default || 0,
+        diurnaPerPers: 200, diurnaFixa: rd.diurna_fixa || 0, cazareFixa: rd.cazare_fixa || 0, useAlcool: false, alcool: rd.alcool_default || 0,
         useCag: false, cagProcent: 0, cagSuma: 0, cagMod: 'procent',
       }
     })
@@ -188,7 +188,7 @@ export default function DisponibilitatePage() {
         tipPret: 'Standard', feeLista: rd.fee_standard || 0, fee: rd.fee_standard || 0,
         leiKm: rd.lei_km || 0, useMarja: true, cazare: rd.cazare || '', persoane: rd.nr_persoane || 0,
         bileteAvion: rd.bilete_avion || 0, restulRutier: true, tipMasa: 'alacarte', zile: 1,
-        diurnaPerPers: 180, diurnaFixa: rd.diurna_fixa || 0, cazareFixa: rd.cazare_fixa || 0, useAlcool: false, alcool: rd.alcool_default || 0,
+        diurnaPerPers: 200, diurnaFixa: rd.diurna_fixa || 0, cazareFixa: rd.cazare_fixa || 0, useAlcool: false, alcool: rd.alcool_default || 0,
         useCag: false, cagProcent: 0, cagSuma: 0, cagMod: 'procent',
       }
     })
@@ -537,7 +537,7 @@ export default function DisponibilitatePage() {
         tipPret: 'Standard', feeLista: rd.fee_standard || 0, fee: rd.fee_standard || 0,
         leiKm: rd.lei_km || 0, useMarja: true, cazare: rd.cazare || '', persoane: rd.nr_persoane || 0,
         bileteAvion: rd.bilete_avion || 0, restulRutier: true, tipMasa: 'alacarte', zile: 1,
-        diurnaPerPers: 180, diurnaFixa: rd.diurna_fixa || 0, cazareFixa: rd.cazare_fixa || 0, useAlcool: false, alcool: rd.alcool_default || 0,
+        diurnaPerPers: 200, diurnaFixa: rd.diurna_fixa || 0, cazareFixa: rd.cazare_fixa || 0, useAlcool: false, alcool: rd.alcool_default || 0,
         useCag: false, cagProcent: 0, cagSuma: 0, cagMod: 'procent',
       }
     })
