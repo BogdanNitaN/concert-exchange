@@ -47,17 +47,18 @@ function textOferta(a: any, audienta: string, tab: string, scop?: string) {
       t += 'Onorariu: ' + fmtEur(a.preturi.deLa) + ' + TVA' + '\n'
     }
   }
-  if (!a.revelion) t += 'Corporate / Private (la cerere)' + '\n'
+  if (!a.revelion && !eBal) t += 'Corporate / Private (la cerere)' + '\n'
   const ll: string[] = []
   if (lg.persoane) ll.push('- Persoane in deplasare: ' + lg.persoane)
   if (lg.format) ll.push('- Format: ' + String(lg.format).replace(/_/g, ' ') + ' (' + (lg.durata || '45 min') + ')')
   else ll.push('- Durata show: ' + (lg.durata || '45 min'))
   if (lg.landed) ll.push('- Transport: inclus in onorariu (oriunde in RO)')
   else if (lg.leiKm) ll.push('- Transport: ' + lg.leiKm + ' ' + (lg.transportMoneda || 'lei') + '/km + TVA')
-  if (lg.bileteAvion) ll.push('- Bilete avion: ' + lg.bileteAvion + ' (distante mari)')
+  if (lg.bileteAvion) ll.push('- Bilete avion: ' + lg.bileteAvion)
   if (lg.cazareFixa > 0) ll.push('- Cazare: ' + Number(lg.cazareFixa).toLocaleString('ro-RO') + ' lei')
   else if (lg.cazare) ll.push('- Cazare: ' + lg.cazare)
   if (lg.diurna) ll.push('- Diurna / masa: ' + Number(lg.diurna).toLocaleString('ro-RO') + ' lei')
+  else if (eBal && !lg.landed) ll.push('- Diurna: 200 lei/pers sau masa a la carte')
   if (ll.length) t += '\n' + '*DETALII LOGISTICE:*' + '\n' + ll.join('\n') + '\n' + '\n'
   t += a.revelion ? 'Transportul, cazarea si diurna sunt cele de mai sus.' : (lg.landed ? 'Onorariul nu include cazare si masa.' : 'Onorariul nu include transport, cazare si masa.')
   return t
