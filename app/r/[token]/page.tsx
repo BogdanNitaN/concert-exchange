@@ -40,7 +40,7 @@ function textOferta(a: any, audienta: string, tab: string, scop?: string) {
   let t = '*' + a.nume.toUpperCase() + '*' + '\n'
   if (a.preturi) {
     if (audienta === 'b2b') {
-      const pret = eBal ? a.preturi.prom : a.preturi.standard
+      const pret = eBal ? (a.preturi.prom ?? a.preturi.standard) : a.preturi.standard
       const sufix = eBal ? ' (Baluri / Prom)' : ''
       t += 'Onorariu: ' + fmtEur(pret) + ' + TVA' + sufix + '\n'
     } else {
