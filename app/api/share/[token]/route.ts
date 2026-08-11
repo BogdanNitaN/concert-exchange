@@ -54,7 +54,7 @@ export async function GET(req: Request, ctx: { params: Promise<{ token: string }
         }
       }
       return {
-        nume: a.nume, genuri: genuriPentru(a.nume, meta?.genres || []), tier: tierPentru(a.nume, meta?.tier || null, fee),
+        nume: a.nume, genuri: genuriPentru(a.nume, meta?.genres || []), tier: (balP && balP.tier) ? balP.tier : tierPentru(a.nume, meta?.tier || null, fee),
         revelion: !!rev,
         special: !!prof,
         catBal: (balP && balP.cat) || null,
