@@ -1034,7 +1034,7 @@ export default function OfertaPage() {
               <div style={{display:'grid', gridTemplateColumns:'repeat(auto-fit, minmax(140px, 1fr))', gap:'12px', marginBottom:'12px'}}>
                 <div>
                   <label style={label}>Tip preț</label>
-                  <select value={l.tipPret} onChange={e => updateLinie(l.key, { tipPret: e.target.value })} style={inputStyle}>
+                  <select value={l.tipPret} onChange={e => { const tip = e.target.value; const p = pretPentruTip(l.artist, tip); updateLinie(l.key, p ? { tipPret: tip, feeLista: p, fee: p } : { tipPret: tip }) }} style={inputStyle}>
                     <option>Standard</option><option>Bal</option><option>Privat</option><option>Corporate</option><option>Revelion</option><option>Diaspora</option>
                   </select>
                 </div>
