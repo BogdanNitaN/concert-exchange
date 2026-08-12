@@ -489,24 +489,25 @@ export default function OfertaPage() {
     const v = camp ? art?.[camp] : null
     return (typeof v === 'number' && v > 0) ? v : null
   }
-  function aplicaTipEveniment(tip: string) {
-    setLinii(prev => prev.map(l => {
-      // revelionul are profil propriu: pret, transport in euro, cazare, diurna, bilete
-      const r: any = tip === 'Revelion' ? (l.artist as any)?.revelion : null
-      if (r) {
-        const fee = typeof r.baza === 'number' ? r.baza : l.fee
-        return { ...l, tipPret: tip, feeLista: fee, fee,
-          leiKm: typeof r.eurKm === 'number' ? r.eurKm : l.leiKm,
-          artist: { ...l.artist, transport_moneda: 'euro' },
-          bileteAvion: typeof r.bilete === 'number' ? r.bilete : l.bileteAvion,
-          cazare: r.cazare || l.cazare,
-          diurnaFixa: typeof r.diurna === 'number' ? r.diurna : l.diurnaFixa,
-          cazareFixa: typeof r.cazareFixa === 'number' ? r.cazareFixa : l.cazareFixa,
-        }
+  function aplicaTipLinie(l: any, tip: string): any {
+    // revelionul are profil propriu: pret, transport in euro, cazare, diurna, bilete
+    const r: any = tip === 'Revelion' ? (l.artist as any)?.revelion : null
+    if (r) {
+      const fee = typeof r.baza === 'number' ? r.baza : l.fee
+      return { ...l, tipPret: tip, feeLista: fee, fee,
+        leiKm: typeof r.eurKm === 'number' ? r.eurKm : l.leiKm,
+        artist: { ...l.artist, transport_moneda: 'euro' },
+        bileteAvion: typeof r.bilete === 'number' ? r.bilete : l.bileteAvion,
+        cazare: r.cazare || l.cazare,
+        diurnaFixa: typeof r.diurna === 'number' ? r.diurna : l.diurnaFixa,
+        cazareFixa: typeof r.cazareFixa === 'number' ? r.cazareFixa : l.cazareFixa,
       }
-      const p = pretPentruTip(l.artist, tip)
-      return p ? { ...l, tipPret: tip, feeLista: p, fee: p } : { ...l, tipPret: tip }
-    }))
+    }
+    const p = pretPentruTip(l.artist, tip)
+    return p ? { ...l, tipPret: tip, feeLista: p, fee: p } : { ...l, tipPret: tip }
+  }
+  function aplicaTipEveniment(tip: string) {
+    setLinii(prev => prev.map(l => aplicaTipLinie(l, tip)))
   }
 
   function calcLinie(l: Linie) {
@@ -1034,7 +1035,7 @@ export default function OfertaPage() {
               <div style={{display:'grid', gridTemplateColumns:'repeat(auto-fit, minmax(140px, 1fr))', gap:'12px', marginBottom:'12px'}}>
                 <div>
                   <label style={label}>Tip preț</label>
-                  <select value={l.tipPret} onChange={e => { const tip = e.target.value; const p = pretPentruTip(l.artist, tip); updateLinie(l.key, p ? { tipPret: tip, feeLista: p, fee: p } : { tipPret: tip }) }} style={inputStyle}>
+                  <select value={l.tipPret} onChange={e => { const tip = e.target.value; setLinii(prev => prev.map(x => x.key === l.key ? aplicaTipLinie(x, tip) : x)) }} style={inputStyle}>
                     <option>Standard</option><option>Bal</option><option>Privat</option><option>Corporate</option><option>Revelion</option><option>Diaspora</option>
                   </select>
                 </div>
