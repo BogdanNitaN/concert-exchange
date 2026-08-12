@@ -481,6 +481,10 @@ export default function OfertaPage() {
   }
   const CAMP_PRET: Record<string, string> = { Bal: 'fee_bal', Privat: 'fee_privat', Diaspora: 'fee_diaspora' }
   function pretPentruTip(art: any, tip: string): number | null {
+    if (tip === 'Bal') {
+      const v = art?.bal?.fee
+      return (typeof v === 'number' && v > 0) ? v : null
+    }
     const camp = CAMP_PRET[tip]
     const v = camp ? art?.[camp] : null
     return (typeof v === 'number' && v > 0) ? v : null
