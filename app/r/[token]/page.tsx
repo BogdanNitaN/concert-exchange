@@ -304,7 +304,7 @@ function ListaRoster({ artisti, audienta, token, ascundeContacte, destinatar, sc
     const subsolCuNota = () => {
       if (eRev) {
         doc.setFont('helvetica', 'italic'); doc.setFontSize(6.5); doc.setTextColor(150,150,150)
-        const dr = doc.splitTextToSize('Preturile afisate sunt cele pentru intervalul 22:30 - 01:00. Pentru ferestrele 20:00 - 22:30 si 01:30 - 04:00 exista un pret mai accesibil, valabil doar daca in aceeasi noapte artistul are un al doilea eveniment la maximum 60 km. Altfel ziua ramane blocata integral si se aplica pretul de mai sus.', W - 2 * M)
+        const dr = doc.splitTextToSize('Pretul afisat este pentru intervalul de varf, 22:30 - 01:00. Pentru ferestrele 20:00 - 22:30 sau 01:30 - 04:00 exista optiuni mai avantajoase, pe care le stabilim impreuna in functie de detaliile evenimentului.', W - 2 * M)
         doc.text(dr, M, 252 - (dr.length - 1) * 2.6)
       }
       deseneazaFooterForward(doc, W, M)
@@ -372,7 +372,7 @@ function ListaRoster({ artisti, audienta, token, ascundeContacte, destinatar, sc
     doc.text(noDia('Onorariile nu includ cazare si masa; transportul conform detaliilor per artist. Oferta confidentiala.'), M, y)
     if (tinta.some((x: any) => x.revelion)) {
       y += 4
-      const dr = doc.splitTextToSize('Preturile afisate sunt cele pentru intervalul 22:30 - 01:00. Pentru ferestrele 20:00 - 22:30 si 01:30 - 04:00 exista un pret mai accesibil, valabil doar daca in aceeasi noapte artistul are un al doilea eveniment la maximum 60 km. Altfel ziua ramane blocata integral si se aplica pretul de mai sus.', W - 2 * M)
+      const dr = doc.splitTextToSize('Pretul afisat este pentru intervalul de varf, 22:30 - 01:00. Pentru ferestrele 20:00 - 22:30 sau 01:30 - 04:00 exista optiuni mai avantajoase, pe care le stabilim impreuna in functie de detaliile evenimentului.', W - 2 * M)
       if (y + dr.length * 3.6 > 275) { subsolCuNota(); doc.addPage(); deseneazaHeaderForward(doc, W, M, logo); y = 52 }
       doc.text(dr, M, y)
       y += dr.length * 3.6
@@ -428,7 +428,7 @@ function ListaRoster({ artisti, audienta, token, ascundeContacte, destinatar, sc
       )}
       {eRevelion && (
         <div style={{background:'#fffbeb', border:'1px solid #fcd34d', borderRadius:'12px', padding:'12px 14px', marginBottom:'12px', fontSize:'12px', color:'#92400e', lineHeight:1.5}}>
-          <strong>Prețurile afișate sunt cele pentru intervalul 22:30 – 01:00.</strong> Pentru ferestrele 20:00 – 22:30 și 01:30 – 04:00 există un preț mai accesibil, valabil doar dacă în aceeași noapte artistul are un al doilea eveniment la maximum 60 km. Altfel ziua rămâne blocată integral și se aplică prețul de mai sus.
+          <strong>Prețul afișat este pentru intervalul de vârf, 22:30 – 01:00.</strong> Pentru ferestrele 20:00 – 22:30 sau 01:30 – 04:00 există opțiuni mai avantajoase, pe care le stabilim împreună în funcție de detaliile evenimentului.
         </div>
       )}
       <input value={q} onChange={e => setQ(e.target.value)} placeholder="Cauta artist..."
