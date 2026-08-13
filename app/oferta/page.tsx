@@ -83,6 +83,10 @@ interface Artist {
 interface Linie {
   key: string
   artist: Artist
+  // copie neatinsa a artistului din roster. Profilul de Revelion suprascrie `artist`
+  // (transport in euro, alte bilete/cazare), iar la revenirea pe alt tip de pret
+  // restauram din asta. Lipseste pe ofertele salvate inainte de introducerea ei.
+  artistBaza?: Artist
   formatSelectat: string
   durata: string
   dateOptiuni?: string
@@ -218,6 +222,7 @@ export default function OfertaPage() {
   const [esteTest, setEsteTest] = useState(false)
   const [km, setKm] = useState<number | null>(null)
   const [loadingKm, setLoadingKm] = useState(false)
+  const [eroareKm, setEroareKm] = useState('')
   const [eurRate, setEurRate] = useState<number | null>(null)
   const [toast, setToast] = useState<string>('')
   const [useAdaos, setUseAdaos] = useState(false)
@@ -395,6 +400,7 @@ export default function OfertaPage() {
     setLinii(prev => [...prev, {
       key: a.nume + '-' + Date.now(),
       artist: a,
+      artistBaza: a,
       formatSelectat: fmt ? fmt.nume : '',
       durata: (fmt && fmt.durata) ? fmt.durata : (a.durata_default || '40 min'),
       tipPret: 'Standard',
@@ -455,11 +461,19 @@ export default function OfertaPage() {
   async function calcTransport() {
     if (!toCity.trim()) return
     setLoadingKm(true)
+    setEroareKm('')
     try {
       const r = await fetch('/api/distance?to=' + encodeURIComponent(toCity) + '&from=' + encodeURIComponent(fromCity))
       const d = await r.json()
       if (d?.km) setKm(d.km)
-    } catch {}
+      // fara km, transportul iese 0 in tot devizul. Spunem asta explicit,
+      // altfel oferta pleaca fara transport si nimeni nu observa.
+      else if (d?.error === 'too many requests') setEroareKm('Prea multe calcule de distanță în ultimele 10 minute. Așteaptă puțin și reîncearcă — transportul NU e calculat.')
+      else if (d?.error === 'no route') setEroareKm('Nu am găsit ruta către "' + toCity + '". Verifică numele orașului — transportul NU e calculat.')
+      else setEroareKm('Nu am putut calcula distanța. Transportul NU e calculat în deviz.')
+    } catch {
+      setEroareKm('Nu am putut calcula distanța. Transportul NU e calculat în deviz.')
+    }
     setLoadingKm(false)
   }
 
@@ -503,8 +517,27 @@ export default function OfertaPage() {
         cazareFixa: typeof r.cazareFixa === 'number' ? r.cazareFixa : l.cazareFixa,
       }
     }
-    const p = pretPentruTip(l.artist, tip)
-    return p ? { ...l, tipPret: tip, feeLista: p, fee: p } : { ...l, tipPret: tip }
+    // orice tip in afara de Revelion pleaca de la datele de baza ale artistului.
+    // Fara asta, dupa o trecere prin Revelion raman agatate in linie transportul in
+    // euro, biletele si cazarea din profilul de sarbatori, iar Standard/Corporate
+    // (care nu au camp de pret propriu) pastrau pretul tipului anterior.
+    const baza = (l.artistBaza || l.artist) as any
+    const fmt = (baza?.formate || []).find((f: any) => f.nume === l.formatSelectat) || null
+    const p = pretPentruTip(baza, tip)
+    const feeBaza = fmt ? fmt.fee : (baza?.fee_standard ?? l.fee)
+    return {
+      ...l,
+      tipPret: tip,
+      artist: baza,
+      feeLista: p || feeBaza,
+      fee: p || feeBaza,
+      leiKm: fmt ? fmt.leiKm : (baza?.lei_km || 0),
+      bileteAvion: fmt ? fmt.bilete : (baza?.bilete_avion || 0),
+      cazare: fmt ? fmt.cazare : (baza?.cazare || ''),
+      persoane: fmt ? fmt.persoane : (baza?.nr_persoane || 0),
+      diurnaFixa: baza?.diurna_fixa || 0,
+      cazareFixa: baza?.cazare_fixa || 0,
+    }
   }
   function aplicaTipEveniment(tip: string) {
     setLinii(prev => prev.map(l => aplicaTipLinie(l, tip)))
@@ -951,6 +984,7 @@ export default function OfertaPage() {
             </button>
           </div>
           {km !== null && <div style={{display:'inline-flex', alignItems:'center', gap:'8px', fontSize:'13px', marginTop:'10px', padding:'7px 12px', background:UI.greenSoft, border:'1px solid '+UI.greenLine, borderRadius:'8px'}}><span style={{color:UI.sub, fontWeight:600}}>Distanță</span> <span style={{color:UI.green, fontWeight:800, fontSize:'14px'}}>{km} km</span> <span style={{color:UI.faint, fontSize:'12px'}}>dus-întors · {(km + Math.round(km*(km>300?0.065:0.115)))*2} km cu marjă</span></div>}
+          {eroareKm && <div style={{fontSize:'13px', marginTop:'10px', padding:'9px 12px', background:'#fef2f2', border:'1px solid #fecaca', borderRadius:'8px', color:'#b91c1c', fontWeight:600}}>{eroareKm}</div>}
           <div style={{display:'flex', gap:'16px', marginTop:'12px', alignItems:'center'}}>
             <label style={{display:'flex', alignItems:'center', gap:'8px', fontSize:'13px', cursor:'pointer', fontWeight:700}}>
               <input type="checkbox" checked={useAdaos} onChange={e => setUseAdaos(e.target.checked)} style={{width:'16px', height:'16px', accentColor:'#059669'}} />

@@ -292,7 +292,7 @@ async function ruleazaUnealta(nume: string, input: any, baseUrl: string, tokenAu
         tipPret: 'Standard', feeLista: input.feeLista || input.fee, fee: input.fee,
         leiKm: art.lei_km || 0, useMarja: true, cazare: art.cazare || '', persoane: art.nr_persoane || 0,
         bileteAvion: art.bilete_avion || 0, restulRutier: true, tipMasa: 'alacarte', zile: 1,
-        diurnaPerPers: 180, diurnaFixa: art.diurna_fixa || 0, cazareFixa: art.cazare_fixa || 0,
+        diurnaPerPers: 200, diurnaFixa: art.diurna_fixa || 0, cazareFixa: art.cazare_fixa || 0,
         useAlcool: false, alcool: 0, useCag: false, cagProcent: 10, cagSuma: 0, cagMod: 'procent',
       }
       const oferta = {
@@ -339,7 +339,7 @@ async function ruleazaUnealta(nume: string, input: any, baseUrl: string, tokenAu
         fee, feeLista: input.feeLista || fee,
         leiKm: art.lei_km || 0, useMarja: true, persoane: art.nr_persoane || 0,
         restulRutier: true, tipMasa: 'alacarte' as const, zile: 1,
-        diurnaPerPers: 180, diurnaFixa: art.diurna_fixa || 0, cazareFixa: art.cazare_fixa || 0,
+        diurnaPerPers: 200, diurnaFixa: art.diurna_fixa || 0, cazareFixa: art.cazare_fixa || 0,
         useAlcool: false, alcool: 0,
         useCag: !!input.cuCag, cagProcent: 10, cagSuma: 0, cagMod: 'procent' as const,
       }

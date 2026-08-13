@@ -34,8 +34,6 @@ function withCountry(city: string): string {
 
 export async function GET(req: Request) {
   const ip = req.headers.get('x-forwarded-for')?.split(',')[0] || 'unknown'
-  if (!checkRate(ip)) return NextResponse.json({ error: 'too many requests' }, { status: 429 })
-
   const { searchParams } = new URL(req.url)
   const to = (searchParams.get('to') || '').trim().slice(0, 80)
   const from = (searchParams.get('from') || 'Bucuresti').trim().slice(0, 80)
@@ -57,6 +55,11 @@ export async function GET(req: Request) {
       return NextResponse.json({ km: data.km, cached: true })
     }
   } catch {}
+
+  // limita se aplica doar apelurilor care ajung efectiv la Google (alea costa).
+  // Un oras deja in cache nu mai consuma din cota - altfel o echipa care lucreaza
+  // pe aceleasi orase ramanea fara transport in deviz, fara niciun mesaj.
+  if (!checkRate(ip)) return NextResponse.json({ error: 'too many requests' }, { status: 429 })
 
   // 2. cheama Google Distance Matrix
   try {
