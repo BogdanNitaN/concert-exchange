@@ -463,6 +463,15 @@ export default function OfertaPage() {
     } catch {}
     setLoadingKm(false)
   }
+  // auto-calcul km cand se schimba orasul (debounce), ca transportul sa apara fara click manual
+  useEffect(() => {
+    if (!toCity.trim()) { setKm(null); return }
+    const t = setTimeout(() => {
+      fetch('/api/distance?to=' + encodeURIComponent(toCity) + '&from=' + encodeURIComponent(fromCity))
+        .then(r => r.json()).then(d => { if (d?.km) setKm(d.km) }).catch(() => {})
+    }, 700)
+    return () => clearTimeout(t)
+  }, [toCity, fromCity])
 
   // calcule per linie
   const LOCALITATI_IF = ['bucuresti','voluntari','otopeni','buftea','pantelimon','popesti leordeni','popesti-leordeni','bragadiru','chitila','magurele','mogosoaia','balotesti','corbeanca','tunari','afumati','stefanestii de jos','stefanesti','domnesti','chiajna','dobroesti','glina','jilava','berceni','cornetu','snagov','peris','gruiu','ciolpani','dascalu','moara vlasiei','petrachioaia','branesti','cernica','ganeasa','vidra','1 decembrie','copaceni','darasti','gradistea','nuci','baloteanu','clinceni','cornetu','dragomiresti','ciorogarla','gradina','1 Decembrie']
