@@ -39,7 +39,9 @@ export function calcLinieOferta(l: LinieCalc, ctx: ContextCalc) {
   const transportEuro = l.artist.transport_moneda === 'euro'
   const transportRaw = local ? 0 : ((kmTotal > 0 && l.leiKm > 0 && !totiZboara) ? kmTotal * l.leiKm : 0)
   const transportLei = transportEuro ? 0 : Math.round(transportRaw / 10) * 10
-  const transportEur = transportEuro ? Math.round(transportRaw) : 0
+  // transportul in euro se rotunjeste MEREU in sus: la cel mai apropiat pierdeam
+  // cateva zeci de centi pe fiecare linie, sistematic in defavoarea noastra.
+  const transportEur = transportEuro ? Math.ceil(transportRaw) : 0
   const transportEurInLei = transportEuro && eurRate ? Math.round(transportEur * eurRate) : 0
   const diurnaTotal = l.diurnaFixa > 0 ? l.diurnaFixa : (l.tipMasa === 'diurna' ? l.persoane * l.diurnaPerPers * l.zile : 0)
   const alcoolTotal = l.useAlcool ? l.alcool : 0
