@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
+import { cerAcces } from '@/lib/auth-api'
 
 const noDia = (s: string) => s.normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/ș/g,'s').replace(/ț/g,'t').replace(/ă/g,'a').replace(/â/g,'a').replace(/î/g,'i').toLowerCase()
 
@@ -17,6 +18,8 @@ function persoane(c: string): number {
 }
 
 export async function POST(req: Request) {
+  const blocat = await cerAcces(req)
+  if (blocat) return blocat
   try {
     const supabase = createClient(
       process.env.NEXT_PUBLIC_SUPABASE_URL!,

@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
+import { cerAcces } from '@/lib/auth-api'
 
 function persoane(c: string): number {
   if (!c) return 0
@@ -15,6 +16,8 @@ function persoane(c: string): number {
 }
 
 export async function PATCH(req: Request) {
+  const blocat = await cerAcces(req)
+  if (blocat) return blocat
   try {
     const supabase = createClient(process.env.NEXT_PUBLIC_SUPABASE_URL!, process.env.SUPABASE_SECRET_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!)
     const b = await req.json()
@@ -46,6 +49,8 @@ export async function PATCH(req: Request) {
 }
 
 export async function DELETE(req: Request) {
+  const blocat = await cerAcces(req)
+  if (blocat) return blocat
   try {
     const supabase = createClient(process.env.NEXT_PUBLIC_SUPABASE_URL!, process.env.SUPABASE_SECRET_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!)
     const { searchParams } = new URL(req.url)

@@ -1,5 +1,6 @@
 'use client'
 import { deseneazaHeaderForward, deseneazaFooterForward } from '@/lib/pdf-forward'
+import { fetchAuth } from '@/lib/fetch-auth'
 import { calcLinieOferta } from '@/lib/calc-oferta'
 import { persoaneDinCazare } from '@/lib/persoane'
 import Link from 'next/link'
@@ -259,7 +260,7 @@ export default function OfertaPage() {
 
   useEffect(() => {
     if (!authed) return
-    fetch('/api/oferta-artist').then(r => r.json()).then(d => {
+    fetchAuth('/api/oferta-artist').then(r => r.json()).then(d => {
       const arts = d.artists || []
       setArtists(arts)
       // verific daca vine o oferta de editat din istoric
@@ -325,11 +326,11 @@ export default function OfertaPage() {
     }
     setSavingArtist(true)
     try {
-      const r = await fetch('/api/oferta-add-artist', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(newArtist) })
+      const r = await fetchAuth('/api/oferta-add-artist', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(newArtist) })
       const d = await r.json()
       if (d.ok) {
         // reincarc lista artisti
-        const ar = await fetch('/api/oferta-artist').then(x => x.json())
+        const ar = await fetchAuth('/api/oferta-artist').then(x => x.json())
         setArtists(ar.artists || [])
         setShowAddArtist(false)
         setNewArtist({ nume: '', categorie: 'pop', tip: 'propriu', durata: '40 min', fee: '', leiKm: '', transportMoneda: 'lei', cazare: '', bileteAvion: '', alcool: '', diurnaFixa: '', variante: [] })
@@ -595,7 +596,7 @@ export default function OfertaPage() {
       const totalFee = activi.reduce((s, l) => s + l.fee, 0)
       const totalDiscount = activi.reduce((s, l) => { const c = calcLinie(l); return s + c.discount }, 0)
       const totalCag = activi.reduce((s, l) => { const c = calcLinie(l); return s + c.cag }, 0)
-      const rezSalvare = await fetch('/api/oferta-save', {
+      const rezSalvare = await fetchAuth('/api/oferta-save', {
         method: 'POST', headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           cod: codOferta,

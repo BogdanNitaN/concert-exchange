@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
+import { cerAccesCron } from '@/lib/auth-api'
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -7,7 +8,9 @@ const supabase = createClient(
 )
 
 // Sterge automat ofertele marcate ca test. Chemat de Vercel Cron la 18:00 si 23:59 (ora RO).
-export async function GET() {
+export async function GET(req: Request) {
+  const blocat = await cerAccesCron(req)
+  if (blocat) return blocat
   try {
     const { data, error } = await supabase
       .from('oferte_generate')

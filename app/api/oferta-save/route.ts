@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
+import { cerAcces } from '@/lib/auth-api'
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -7,6 +8,8 @@ const supabase = createClient(
 )
 
 export async function POST(req: Request) {
+  const blocat = await cerAcces(req)
+  if (blocat) return blocat
   try {
     const body = await req.json()
     const { error } = await supabase.from('oferte_generate').upsert(body, { onConflict: 'cod' })
@@ -18,6 +21,8 @@ export async function POST(req: Request) {
 }
 
 export async function PATCH(req: Request) {
+  const blocat = await cerAcces(req)
+  if (blocat) return blocat
   try {
     const { cod, ...updates } = await req.json()
     const { error } = await supabase.from('oferte_generate').update(updates).eq('cod', cod)
@@ -29,6 +34,8 @@ export async function PATCH(req: Request) {
 }
 
 export async function DELETE(req: Request) {
+  const blocat = await cerAcces(req)
+  if (blocat) return blocat
   try {
     const { searchParams } = new URL(req.url)
     const cod = searchParams.get('cod')
@@ -42,6 +49,9 @@ export async function DELETE(req: Request) {
 }
 
 export async function GET(req: Request) {
+  const blocat = await cerAcces(req)
+  if (blocat) return blocat
+
   const { searchParams } = new URL(req.url)
   const cod = searchParams.get('cod')
   try {

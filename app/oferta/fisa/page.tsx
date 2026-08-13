@@ -1,5 +1,6 @@
 'use client'
 import { useEffect, useState } from 'react'
+import { fetchAuth } from '@/lib/fetch-auth'
 import { createClient } from '@supabase/supabase-js'
 import Link from 'next/link'
 import { jsPDF } from 'jspdf'
@@ -39,7 +40,7 @@ export default function FisaEveniment() {
 
   async function incarca() {
     setChecking(false)
-    const rl = await fetch('/api/fisa-eveniment').then(r => r.json()).catch(() => ({ locatii: [], artisti: [] }))
+    const rl = await fetchAuth('/api/fisa-eveniment').then(r => r.json()).catch(() => ({ locatii: [], artisti: [] }))
     setArtists(rl.artisti || [])
     setLocatii(rl.locatii || [])
   }
@@ -76,7 +77,7 @@ export default function FisaEveniment() {
   }
 
   async function vezi() {
-    const r = await fetch('/api/fisa-eveniment', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ ...f, actiune:'preview' }) })
+    const r = await fetchAuth('/api/fisa-eveniment', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ ...f, actiune:'preview' }) })
     const d = await r.json()
     if (d.ok) setPreview(d.html)
   }
@@ -87,9 +88,9 @@ export default function FisaEveniment() {
     if (!confirm('Trimiți fișa REALĂ către:\n\n' + dest.join('\n') + '\n\n(pentru probe folosește butonul TEST)')) return
     setTrimit(true); setMsg('')
     // salveaza emailul artistului si locatia pentru data viitoare
-    if (f.artist && f.email_productie) fetch('/api/fisa-eveniment', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ actiune:'salveaza_email_artist', artist:f.artist, email_productie:f.email_productie }) })
-    if (f.locatie) fetch('/api/fisa-eveniment', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ actiune:'salveaza_locatie', locatie:f.locatie, oras:f.oras, contact_locatie:f.contact_locatie, contact_tehnic:f.contact_tehnic }) })
-    const r = await fetch('/api/fisa-eveniment', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ ...f, actiune:'trimite' }) })
+    if (f.artist && f.email_productie) fetchAuth('/api/fisa-eveniment', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ actiune:'salveaza_email_artist', artist:f.artist, email_productie:f.email_productie }) })
+    if (f.locatie) fetchAuth('/api/fisa-eveniment', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ actiune:'salveaza_locatie', locatie:f.locatie, oras:f.oras, contact_locatie:f.contact_locatie, contact_tehnic:f.contact_tehnic }) })
+    const r = await fetchAuth('/api/fisa-eveniment', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ ...f, actiune:'trimite' }) })
     const d = await r.json()
     setTrimit(false)
     setMsg(d.ok ? '✓ Trimisă către: ' + (d.trimisLa || []).join(', ') : 'Eroare: ' + (d.error || 'necunoscută'))
@@ -210,7 +211,7 @@ export default function FisaEveniment() {
 
   async function testeaza() {
     setTrimit(true); setMsg('')
-    const r = await fetch('/api/fisa-eveniment', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ ...f, actiune:'test' }) })
+    const r = await fetchAuth('/api/fisa-eveniment', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ ...f, actiune:'test' }) })
     const d = await r.json()
     setTrimit(false)
     setMsg(d.ok ? '✓ TEST trimis către bogdan@forward.ro (nimic salvat)' : 'Eroare test: ' + (d.error || 'necunoscută'))

@@ -3,6 +3,7 @@ import { artistiLegati, clasificaEveniment } from '@/lib/clasificare'
 import { google } from 'googleapis'
 import { CALENDAR_TO_ROSTER, CALENDAR_EXCLUSE, normNume, ARTISTI_INACTIVI } from '@/lib/calendar-mapping'
 import { createClient } from '@supabase/supabase-js'
+import { cerAcces } from '@/lib/auth-api'
 
 function getCal() {
   const o = new google.auth.OAuth2(
@@ -15,6 +16,8 @@ function getCal() {
 }
 
 export async function GET(req: Request) {
+  const blocat = await cerAcces(req)
+  if (blocat) return blocat
   try {
     const url = new URL(req.url)
     const data = url.searchParams.get('data')

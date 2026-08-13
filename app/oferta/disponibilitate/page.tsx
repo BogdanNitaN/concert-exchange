@@ -1,5 +1,6 @@
 'use client'
 import { deseneazaHeaderForward, deseneazaFooterForward } from '@/lib/pdf-forward'
+import { fetchAuth } from '@/lib/fetch-auth'
 import Link from 'next/link'
 import { useState, useEffect } from 'react'
 import { supabase } from '@/lib/supabase'
@@ -419,7 +420,7 @@ export default function DisponibilitatePage() {
     if (!data) return
     setLoading(true); setRez(null); setBifati(new Set())
     try {
-      const r = await fetch('/api/calendar-disponibilitate?data=' + data)
+      const r = await fetchAuth('/api/calendar-disponibilitate?data=' + data)
       const dd = await r.json()
       if (dd.ok) setRez(dd)
     } catch {}

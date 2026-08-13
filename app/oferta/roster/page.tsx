@@ -1,5 +1,6 @@
 'use client'
 import Link from 'next/link'
+import { fetchAuth } from '@/lib/fetch-auth'
 import { Sparkles, FileText, CalendarSearch, History, Users } from 'lucide-react'
 import { useState, useEffect, useMemo } from 'react'
 import { supabase } from '@/lib/supabase'
@@ -81,7 +82,7 @@ export default function RosterPage() {
 
   useEffect(() => {
     if (!authed) return
-    fetch('/api/oferta-artist').then(r => r.json()).then(d => setArtists(d.artists || []))
+    fetchAuth('/api/oferta-artist').then(r => r.json()).then(d => setArtists(d.artists || []))
   }, [authed])
 
   const GENURI: { key: string; label: string; cats: string[] }[] = [
@@ -119,7 +120,7 @@ export default function RosterPage() {
     if (!edit) return
     if (!confirm('Sigur ștergi artistul ' + edit.nume + '? Nu se poate reveni.')) return
     setSaving(true); setMsg('')
-    const r = await fetch('/api/oferta-update-artist?nume=' + encodeURIComponent(edit.nume), { method: 'DELETE' })
+    const r = await fetchAuth('/api/oferta-update-artist?nume=' + encodeURIComponent(edit.nume), { method: 'DELETE' })
     const d = await r.json()
     if (d.ok) {
       setArtists(prev => prev.filter(a => a.nume !== edit.nume))
@@ -147,13 +148,13 @@ export default function RosterPage() {
   async function salveaza() {
     if (!edit) return
     setSaving(true); setMsg('')
-    const r = await fetch('/api/oferta-update-artist', {
+    const r = await fetchAuth('/api/oferta-update-artist', {
       method: 'PATCH', headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ ...edit, formate: edit.formate || null, format_show: edit.format_show || null, nume_original: edit.nume })
     })
     const d = await r.json()
     if (d.ok) {
-      const ar = await fetch('/api/oferta-artist').then(x => x.json())
+      const ar = await fetchAuth('/api/oferta-artist').then(x => x.json())
       setArtists(ar.artists || [])
       setMsg('Salvat!')
       setTimeout(() => { setEdit(null); setMsg('') }, 800)

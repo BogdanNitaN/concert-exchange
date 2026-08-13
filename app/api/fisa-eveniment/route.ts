@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
 import { Resend } from 'resend'
 import { formatDataRo } from '@/lib/format-data'
+import { cerAcces } from '@/lib/auth-api'
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -31,6 +32,9 @@ function fisaHTML(d: any): string {
 }
 
 export async function POST(req: Request) {
+  const blocat = await cerAcces(req)
+  if (blocat) return blocat
+
   try {
     const b = await req.json()
 
@@ -86,7 +90,10 @@ export async function POST(req: Request) {
   }
 }
 
-export async function GET() {
+export async function GET(req: Request) {
+  const blocat = await cerAcces(req)
+  if (blocat) return blocat
+
   const { data: locatii } = await supabase.from('locatii').select('*').order('nume')
   const { data: art } = await supabase.from('oferta_artisti').select('nume, cazare, nr_persoane, diurna_fixa, set_type, email_productie, tip').order('nume')
   return NextResponse.json({ ok: true, locatii: locatii || [], artisti: art || [] })

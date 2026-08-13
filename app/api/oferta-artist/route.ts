@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
+import { cerAcces } from '@/lib/auth-api'
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -7,6 +8,9 @@ const supabase = createClient(
 )
 
 export async function GET(req: Request) {
+  const blocat = await cerAcces(req)
+  if (blocat) return blocat
+
   const { searchParams } = new URL(req.url)
   const q = (searchParams.get('q') || '').trim().toLowerCase()
 

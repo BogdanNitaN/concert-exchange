@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
 import { verificaAcces } from '@/lib/auth-asistent'
+import { headereInterne } from '@/lib/auth-api'
 import { calcLinieOferta } from '@/lib/calc-oferta'
 import { areZborIntern } from '@/lib/zbor-intern'
 import { ARTISTS_DATA } from '@/lib/artists-data'
@@ -175,7 +176,7 @@ const TOOLS = [
 async function ruleazaUnealta(nume: string, input: any, baseUrl: string, tokenAuth: string = ''): Promise<string> {
   try {
     if (nume === 'artisti_liberi_pe_data') {
-      const r = await fetch(baseUrl + '/api/calendar-disponibilitate?data=' + encodeURIComponent(input.data), { cache: 'no-store' })
+      const r = await fetch(baseUrl + '/api/calendar-disponibilitate?data=' + encodeURIComponent(input.data), { cache: 'no-store', headers: headereInterne() })
       const d = await r.json()
       if (!d.ok) return JSON.stringify({ eroare: d.error || 'eroare calendar' })
       const mapArtist = (x: any) => ({
@@ -266,7 +267,7 @@ async function ruleazaUnealta(nume: string, input: any, baseUrl: string, tokenAu
       return JSON.stringify({ cautat: d.cautat, gasite: d.gasite, evenimente: (d.evenimente || []).slice(0, 40) })
     }
     if (nume === 'raport_oferte') {
-      const r = await fetch(baseUrl + '/api/oferta-save', { cache: 'no-store' })
+      const r = await fetch(baseUrl + '/api/oferta-save', { cache: 'no-store', headers: headereInterne() })
       const d = await r.json()
       let lista = d.oferte || d.data || []
       const nrTeste = lista.filter((o: any) => o.test).length
@@ -282,7 +283,7 @@ async function ruleazaUnealta(nume: string, input: any, baseUrl: string, tokenAu
     }
     if (nume === 'creeaza_oferta') {
       // iau datele artistului din roster pt linia completa
-      const ra = await fetch(baseUrl + '/api/oferta-artist?q=' + encodeURIComponent(input.artistNume), { cache: 'no-store' })
+      const ra = await fetch(baseUrl + '/api/oferta-artist?q=' + encodeURIComponent(input.artistNume), { cache: 'no-store', headers: headereInterne() })
       const rd = await ra.json()
       const art = gasesteArtist(rd.artists, input.artistNume)
       if (!art) return JSON.stringify({ eroare: 'artistul nu exista in roster: ' + input.artistNume })
@@ -303,7 +304,7 @@ async function ruleazaUnealta(nume: string, input: any, baseUrl: string, tokenAu
         linii_complete: [linie],
       }
       const sv = await fetch(baseUrl + '/api/oferta-save', {
-        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        method: 'POST', headers: { 'Content-Type': 'application/json', ...headereInterne() },
         body: JSON.stringify(oferta),
       })
       const dsv = await sv.json()
@@ -311,7 +312,7 @@ async function ruleazaUnealta(nume: string, input: any, baseUrl: string, tokenAu
       return JSON.stringify({ salvat: true, cod, mesaj: 'Oferta draft salvata. O gasesti in Istoric (gigx.ro/oferta/istoric), o deschizi cu Editeaza, verifici si o trimiti.' })
     }
     if (nume === 'calculeaza_deviz') {
-      const ra = await fetch(baseUrl + '/api/oferta-artist?q=' + encodeURIComponent(input.artistNume), { cache: 'no-store' })
+      const ra = await fetch(baseUrl + '/api/oferta-artist?q=' + encodeURIComponent(input.artistNume), { cache: 'no-store', headers: headereInterne() })
       const rd = await ra.json()
       const art = gasesteArtist(rd.artists, input.artistNume)
       if (!art) return JSON.stringify({ eroare: 'artistul nu exista in roster: ' + input.artistNume })
@@ -355,7 +356,7 @@ async function ruleazaUnealta(nume: string, input: any, baseUrl: string, tokenAu
       })
     }
     if (nume === 'calcul_landed') {
-      const ra = await fetch(baseUrl + '/api/oferta-artist?q=' + encodeURIComponent(input.artistNume), { cache: 'no-store' })
+      const ra = await fetch(baseUrl + '/api/oferta-artist?q=' + encodeURIComponent(input.artistNume), { cache: 'no-store', headers: headereInterne() })
       const rd = await ra.json()
       const art = gasesteArtist(rd.artists, input.artistNume)
       if (!art) return JSON.stringify({ eroare: 'artistul nu exista in roster: ' + input.artistNume })
@@ -390,7 +391,7 @@ async function ruleazaUnealta(nume: string, input: any, baseUrl: string, tokenAu
       })
     }
     if (nume === 'top_spotify_roster') {
-      const ra = await fetch(baseUrl + '/api/oferta-artist', { cache: 'no-store' })
+      const ra = await fetch(baseUrl + '/api/oferta-artist', { cache: 'no-store', headers: headereInterne() })
       const rd = await ra.json()
       let artisti = rd.artists || []
       if (input.gen) {
@@ -438,7 +439,7 @@ async function ruleazaUnealta(nume: string, input: any, baseUrl: string, tokenAu
       return JSON.stringify({ total: statistici.length, criteriu: 'spotify monthly listeners (fallback streams)', top: statistici })
     }
     if (nume === 'cauta_artisti_roster') {
-      const r = await fetch(baseUrl + '/api/oferta-artist' + (input.cauta ? '?q=' + encodeURIComponent(input.cauta) : ''), { cache: 'no-store' })
+      const r = await fetch(baseUrl + '/api/oferta-artist' + (input.cauta ? '?q=' + encodeURIComponent(input.cauta) : ''), { cache: 'no-store', headers: headereInterne() })
       const d = await r.json()
       const rez = (d.artists || []).map((a: any) => ({
         nume: a.nume, fee: a.fee_standard, categorie: a.categorie, tip: a.tip,

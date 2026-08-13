@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
 import { esteAscuns } from '@/lib/genuri-catalog'
+import { cerAccesCron } from '@/lib/auth-api'
 
 export const maxDuration = 300
 
@@ -11,6 +12,8 @@ const supabase = createClient(
 )
 
 export async function GET(req: Request) {
+  const blocat = await cerAccesCron(req)
+  if (blocat) return blocat
   try {
     const origin = new URL(req.url).origin
     const { data: toti } = await supabase.from('oferta_artisti').select('nume, tip')

@@ -1,5 +1,6 @@
 'use client'
 import Link from 'next/link'
+import { fetchAuth } from '@/lib/fetch-auth'
 
 import { useState, useEffect, useMemo } from 'react'
 import { supabase } from '@/lib/supabase'
@@ -78,7 +79,7 @@ export default function IstoricPage() {
     setOferte(prev => prev.filter(o => !selectate.has(o.cod)))
     setSelectate(new Set())
     for (const cod of coduri) {
-      try { await fetch('/api/oferta-save?cod=' + encodeURIComponent(cod), { method: 'DELETE' }) } catch {}
+      try { await fetchAuth('/api/oferta-save?cod=' + encodeURIComponent(cod), { method: 'DELETE' }) } catch {}
     }
   }
 
@@ -106,7 +107,7 @@ export default function IstoricPage() {
   async function load() {
     setLoading(true)
     try {
-      const r = await fetch('/api/oferta-save')
+      const r = await fetchAuth('/api/oferta-save')
       const d = await r.json()
       setOferte(d.oferte || [])
     } catch {}
@@ -116,24 +117,24 @@ export default function IstoricPage() {
   async function updateStatus(cod: string, status: string) {
     setOferte(prev => prev.map(o => o.cod === cod ? { ...o, status } : o))
     try {
-      await fetch('/api/oferta-save', { method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ cod, status }) })
+      await fetchAuth('/api/oferta-save', { method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ cod, status }) })
     } catch {}
   }
 
   async function toggleTest(cod: string, test: boolean) {
     setOferte(prev => prev.map(o => o.cod === cod ? { ...o, test } : o))
-    try { await fetch('/api/oferta-save', { method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ cod, test }) }) } catch {}
+    try { await fetchAuth('/api/oferta-save', { method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ cod, test }) }) } catch {}
   }
   async function stergeOferta(cod: string) {
     if (!confirm('Sigur ștergi oferta ' + cod + '? Nu se poate reveni.')) return
     setOferte(prev => prev.filter(o => o.cod !== cod))
-    try { await fetch('/api/oferta-save?cod=' + encodeURIComponent(cod), { method: 'DELETE' }) } catch {}
+    try { await fetchAuth('/api/oferta-save?cod=' + encodeURIComponent(cod), { method: 'DELETE' }) } catch {}
   }
 
   async function updateNegociere(cod: string, suma_finala: number | null, nota: string | null) {
     setOferte(prev => prev.map(o => o.cod === cod ? { ...o, suma_finala, nota } : o))
     try {
-      await fetch('/api/oferta-save', { method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ cod, suma_finala, nota }) })
+      await fetchAuth('/api/oferta-save', { method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ cod, suma_finala, nota }) })
     } catch {}
   }
 
