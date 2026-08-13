@@ -64,6 +64,7 @@ interface Artist {
   nume: string
   fee_standard: number
   lei_km: number
+  eur_km?: number
   cazare: string
   nr_persoane: number
   bilete_avion: number
@@ -400,7 +401,7 @@ export default function OfertaPage() {
       tipPret: 'Standard',
       feeLista: fmt ? fmt.fee : a.fee_standard,
       fee: fmt ? fmt.fee : a.fee_standard,
-      leiKm: fmt ? fmt.leiKm : a.lei_km,
+      leiKm: fmt ? fmt.leiKm : (a.eur_km ?? a.lei_km),
       useMarja: true,
       landed: false,
       allIn: false,

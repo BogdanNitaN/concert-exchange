@@ -65,7 +65,7 @@ export async function GET(req: Request, ctx: { params: Promise<{ token: string }
           persoane: a.nr_persoane || null,
           format: a.format_show || null,
           durata: a.set_type === 'dj' ? '90-120 min' : (a.durata_default || null),
-          leiKm: prof ? (prof.eurKm ?? prof.leiKm ?? null) : (a.lei_km || null),
+          leiKm: prof ? (prof.eurKm ?? prof.leiKm ?? null) : (a.eur_km ?? a.lei_km ?? null),
           transportMoneda: prof ? (prof.moneda || 'lei') : (a.transport_moneda || 'lei'),
           bileteAvion: prof ? (prof.bilete ?? null) : (a.bilete_avion || null),
           cazare: prof ? (prof.cazare || null) : (a.cazare || null),

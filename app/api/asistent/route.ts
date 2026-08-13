@@ -374,8 +374,9 @@ async function ruleazaUnealta(nume: string, input: any, baseUrl: string, tokenAu
       } catch {}
       const marjaProc = km !== null && km > 300 ? 0.065 : 0.115
       const kmTotal = km !== null ? (km + Math.round(km * marjaProc)) * 2 : 0
-      const transportLei = kmTotal > 0 && (art.lei_km || 0) > 0 ? Math.round(kmTotal * art.lei_km / 10) * 10 : 0
-      const transportEur = eurRate && transportLei > 0 ? Math.round(transportLei / eurRate) : 0
+      const eurKmVal = (art.eur_km ?? art.lei_km) || 0
+      const transportEur = kmTotal > 0 && eurKmVal > 0 ? Math.round(kmTotal * eurKmVal) : 0
+      const transportLei = eurRate && transportEur > 0 ? Math.round(transportEur * eurRate) : 0
       const feeNet = input.sumaLanded - transportEur
       const feeStandard = art.fee_standard || 0
       const zborPosibil = km !== null && km > 300 && (art.bilete_avion || 0) > 0 && areZborIntern(input.oras)
