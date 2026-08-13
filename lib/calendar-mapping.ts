@@ -62,6 +62,7 @@ export const CALENDAR_EXCLUSE = [
   'Helda', 'Alesta', 'Badd G', 'Chris Hype',
   'Sasha Lopez', 'Sickotoy', 'DJ PROJECT', 'Manuel Riva', 'Nuante Epicenter',
   'NICOLE CHERRY', 'Nicole Cherry',
+  'Îngeri Şi Corbi - Epicenter', 'Bruja', 'Dangerosu',
 ]
 
 export const ARTISTI_INACTIVI = ['Dara']
