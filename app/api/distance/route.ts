@@ -44,6 +44,11 @@ export async function GET(req: Request) {
 
   const fromKey = from.toLowerCase()
   const toKey = to.toLowerCase()
+  // acelasi oras (indiferent de diacritice) => 0 km, fara sa mai chemam Google
+  const faraDiac = (x: string) => x.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-z0-9]/g, '')
+  if (faraDiac(from) === faraDiac(to)) {
+    return NextResponse.json({ km: 0, sameCity: true })
+  }
 
   // 1. verifica cache-ul din Supabase
   try {
