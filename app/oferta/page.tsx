@@ -287,7 +287,8 @@ export default function OfertaPage() {
           // reconstruiesc liniile
           if (o.linii_complete && Array.isArray(o.linii_complete)) {
             const noiLinii = o.linii_complete.map((lc: any, i: number) => {
-              const art = arts.find((a: Artist) => a.nume === lc.artistNume) || { nume: lc.artistNume, fee_standard: lc.fee, lei_km: lc.leiKm, cazare: lc.cazare, nr_persoane: lc.persoane, bilete_avion: lc.bileteAvion, alcool_default: 0, categorie: '', tip: lc.tip }
+              const artGasit = arts.find((a: Artist) => a.nume === lc.artistNume)
+              const art = artGasit ? (lc.transportMoneda ? { ...artGasit, transport_moneda: lc.transportMoneda } : artGasit) : { nume: lc.artistNume, fee_standard: lc.fee, lei_km: lc.leiKm, cazare: lc.cazare, nr_persoane: lc.persoane, bilete_avion: lc.bileteAvion, alcool_default: 0, categorie: '', tip: lc.tip, transport_moneda: lc.transportMoneda || 'lei' }
               return {
                 key: lc.artistNume + '-' + Date.now() + '-' + i,
                 artist: art, formatSelectat: lc.formatSelectat || '', durata: lc.durata || '', dateOptiuni: lc.dateOptiuni || '',
