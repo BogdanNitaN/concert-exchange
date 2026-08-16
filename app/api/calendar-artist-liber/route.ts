@@ -60,6 +60,13 @@ export async function GET(req: Request) {
     // daca se cere perioada in trecut/viitor, extind fereastra de interogare
     if (dataStart) { const ds = new Date(dataStart + 'T00:00:00'); if (ds < min) min = ds }
     if (dataEnd) { const de = new Date(dataEnd + 'T23:59:59'); if (de > max) max = de }
+    // extind fereastra si pe baza datelor cautate exact (dataQuery/dataQuery2), altfel o data din alt an nu e citita
+    for (const dq of [dataQuery, dataQuery2]) {
+      if (!dq) continue
+      const d = new Date(dq + 'T12:00:00')
+      if (d < min) min = new Date(dq + 'T00:00:00')
+      if (d > max) max = new Date(dq + 'T23:59:59')
+    }
     const ev = await cal.events.list({
       calendarId: calArtist.id!, timeMin: min.toISOString(), timeMax: max.toISOString(),
       singleEvents: true, orderBy: 'startTime', maxResults: 300
