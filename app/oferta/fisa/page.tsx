@@ -225,9 +225,20 @@ export default function FisaEveniment() {
   if (checking) return <div style={{minHeight:'100vh', background:UI.bg, fontFamily:F, display:'flex', alignItems:'center', justifyContent:'center', color:UI.faint}}>Se încarcă…</div>
   if (!authed) return <div style={{minHeight:'100vh', background:UI.bg, fontFamily:F, display:'flex', alignItems:'center', justifyContent:'center'}}><div style={{textAlign:'center'}}><div style={{fontWeight:800, color:UI.ink, marginBottom:8}}>Autentificare necesară</div><Link href="/oferta" style={{color:UI.green, fontWeight:700, textDecoration:'none'}}>→ Mergi la /oferta</Link></div></div>
 
+  function enterUrmator(e: React.KeyboardEvent<HTMLDivElement>) {
+    if (e.key !== 'Enter') return
+    const t = e.target as HTMLElement
+    if (t.tagName !== 'INPUT') return
+    if ((t as HTMLInputElement).dataset.noenter === '1') return
+    e.preventDefault()
+    const box = e.currentTarget
+    const inputs = Array.from(box.querySelectorAll('input')).filter(i => !(i as HTMLInputElement).disabled && (i as HTMLInputElement).type !== 'hidden')
+    const idx = inputs.indexOf(t as HTMLInputElement)
+    if (idx >= 0 && idx < inputs.length - 1) (inputs[idx + 1] as HTMLInputElement).focus()
+  }
   return (
     <div style={{minHeight:'100vh', background:UI.bg, fontFamily:F, padding:'20px 14px 60px'}}>
-      <div style={{maxWidth:'620px', margin:'0 auto'}}>
+      <div style={{maxWidth:'620px', margin:'0 auto'}} onKeyDown={enterUrmator}>
         <div style={{marginBottom:'18px'}}>
           <Link href="/oferta" style={{fontSize:'13px', color:UI.green, fontWeight:700, textDecoration:'none'}}>← Înapoi la deviz</Link>
           <div style={{fontSize:'22px', fontWeight:800, color:UI.ink, marginTop:'6px'}}>Fișă eveniment</div>
@@ -237,7 +248,7 @@ export default function FisaEveniment() {
           <div style={{fontSize:'12px', fontWeight:800, color:UI.green, marginBottom:'12px', textTransform:'uppercase', letterSpacing:'0.05em'}}>Artist</div>
           <label style={lbl}>Artist</label>
           <div style={{position:'relative'}}>
-            <input value={f.artist} onChange={e => { set('artist', e.target.value); setArtQuery(e.target.value); setArtOpen(true) }} onFocus={() => setArtOpen(true)} placeholder="Caută artistul…" style={inp} />
+            <input data-noenter="1" value={f.artist} onChange={e => { set('artist', e.target.value); setArtQuery(e.target.value); setArtOpen(true) }} onFocus={() => setArtOpen(true)} placeholder="Caută artistul…" style={inp} />
             {artOpen && artQuery.length > 0 && (
               <div style={{position:'absolute', top:'calc(100% + 4px)', left:0, right:0, background:'white', border:'1.5px solid '+UI.line, borderRadius:'10px', boxShadow:'0 6px 20px rgba(0,0,0,0.1)', zIndex:20, maxHeight:'220px', overflowY:'auto'}}>
                 {artists.filter(a => a.nume.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').includes(artQuery.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,''))).slice(0, 6).map(a => (
@@ -259,7 +270,7 @@ export default function FisaEveniment() {
           <div style={{fontSize:'12px', fontWeight:800, color:UI.green, marginBottom:'12px', textTransform:'uppercase', letterSpacing:'0.05em'}}>Eveniment</div>
           <div style={{display:'grid', gridTemplateColumns:'1fr 1fr', gap:'10px'}}>
             <div><label style={lbl}>Data</label><DatePicker value={f.data_eveniment} onChange={(v: string) => set('data_eveniment', v)} placeholder="Alege data" /></div>
-            <div style={{position:'relative'}}><label style={lbl}>Oraș</label><input value={f.oras} onChange={e => cautaOras(e.target.value)} onBlur={() => setTimeout(() => setShowOrasSugg(false), 150)} style={inp} />
+            <div style={{position:'relative'}}><label style={lbl}>Oraș</label><input data-noenter="1" value={f.oras} onChange={e => cautaOras(e.target.value)} onBlur={() => setTimeout(() => setShowOrasSugg(false), 150)} style={inp} />
               {showOrasSugg && orasSugestii.length > 0 && (
                 <div style={{position:'absolute', top:'calc(100% + 4px)', left:0, right:0, background:'white', border:'1.5px solid '+UI.line, borderRadius:'10px', boxShadow:'0 6px 20px rgba(0,0,0,0.1)', zIndex:20, maxHeight:'200px', overflowY:'auto'}}>
                   {orasSugestii.slice(0, 6).map((sg, i) => (
