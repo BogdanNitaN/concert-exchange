@@ -226,7 +226,9 @@ export default function FisaEveniment() {
   if (!authed) return <div style={{minHeight:'100vh', background:UI.bg, fontFamily:F, display:'flex', alignItems:'center', justifyContent:'center'}}><div style={{textAlign:'center'}}><div style={{fontWeight:800, color:UI.ink, marginBottom:8}}>Autentificare necesară</div><Link href="/oferta" style={{color:UI.green, fontWeight:700, textDecoration:'none'}}>→ Mergi la /oferta</Link></div></div>
 
   function enterUrmator(e: React.KeyboardEvent<HTMLDivElement>) {
-    if (e.key !== 'Enter') return
+    // doar pe mobil: Enter sare la urmatorul camp (pe desktop ramane Tab nativ)
+    const eMobil = typeof window !== 'undefined' && window.matchMedia('(max-width: 768px)').matches
+    if (!eMobil || e.key !== 'Enter') return
     const t = e.target as HTMLElement
     if (t.tagName !== 'INPUT') return
     if ((t as HTMLInputElement).dataset.noenter === '1') return
