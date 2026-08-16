@@ -276,7 +276,7 @@ export default function OfertaPage() {
           if (o.oras) {
             setToCity(o.oras)
             // calculez km automat ca sa apara avion/transport fara click manual
-            fetch('/api/distance?to=' + encodeURIComponent(o.oras) + '&from=' + encodeURIComponent(o.from_city || 'Bucuresti')).then(r => r.json()).then(d => { if (d?.km) setKm(d.km) }).catch(() => {})
+            fetch('/api/distance?to=' + encodeURIComponent(o.oras) + '&from=' + encodeURIComponent(o.from_city || 'Bucuresti')).then(r => r.json()).then(d => { if (d && typeof d.km === 'number') setKm(d.km) }).catch(() => {})
           }
           if (o.locatie) setLocatie(o.locatie)
           if (o.data_eveniment) setDataEveniment(o.data_eveniment)
@@ -460,7 +460,7 @@ export default function OfertaPage() {
     try {
       const r = await fetch('/api/distance?to=' + encodeURIComponent(toCity) + '&from=' + encodeURIComponent(fromCity))
       const d = await r.json()
-      if (d?.km) setKm(d.km)
+      if (d && typeof d.km === 'number') setKm(d.km)
     } catch {}
     setLoadingKm(false)
   }
@@ -469,7 +469,7 @@ export default function OfertaPage() {
     if (!toCity.trim()) { setKm(null); return }
     const t = setTimeout(() => {
       fetch('/api/distance?to=' + encodeURIComponent(toCity) + '&from=' + encodeURIComponent(fromCity))
-        .then(r => r.json()).then(d => { if (d?.km) setKm(d.km) }).catch(() => {})
+        .then(r => r.json()).then(d => { if (d && typeof d.km === 'number') setKm(d.km) }).catch(() => {})
     }, 700)
     return () => clearTimeout(t)
   }, [toCity, fromCity])
