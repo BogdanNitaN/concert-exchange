@@ -402,7 +402,7 @@ export default function OfertaPage() {
       tipPret: 'Standard',
       feeLista: fmt ? fmt.fee : a.fee_standard,
       fee: fmt ? fmt.fee : a.fee_standard,
-      leiKm: fmt ? fmt.leiKm : (a.eur_km ?? a.lei_km),
+      leiKm: fmt ? fmt.leiKm : (a.transport_moneda === 'euro' ? (a.eur_km ?? a.lei_km) : a.lei_km),
       useMarja: true,
       landed: false,
       allIn: false,
