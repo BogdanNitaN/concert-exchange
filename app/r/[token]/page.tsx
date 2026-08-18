@@ -120,6 +120,7 @@ function CardArtist({ a, audienta, token, tabInitial, destinatar, ascundeContact
           <div style={{display:'flex', alignItems:'center', gap:'8px', marginTop:'6px', flexWrap:'wrap'}}>
             {a.genuri.length > 0 && <span style={{fontSize:'12px', color:UI.sub, fontWeight:600}}>{a.genuri.join(' · ')}</span>}
             {tier && <span onClick={() => setExplTier(!explTier)} style={{fontSize:'10px', fontWeight:800, color: 'white', background:tier.color, padding:'3px 9px', borderRadius:'6px', letterSpacing:'0.06em', cursor:'pointer'}}>{tier.label}</span>}
+            {a.esteFwd && <span style={{fontSize:'10px', fontWeight:800, color:'white', background:'#059669', padding:'3px 9px', borderRadius:'6px', letterSpacing:'0.06em'}}>FORWARD</span>}
           </div>
           {tier && explTier && <div style={{fontSize:'11px', color:UI.sub, fontWeight:600, marginTop:'6px', lineHeight:1.4}}>{tier.tip}</div>}
         </div>
@@ -248,6 +249,18 @@ function ListaRoster({ artisti, audienta, token, ascundeContacte, destinatar, sc
       return o
     }
     const ot = (t: string | null) => (t && ordT[t] !== undefined) ? ordT[t] : 3
+    // la piata: pastrez ordinea din API (gen fix, FWD primii, pret desc), doar pun header pe schimbare de gen
+    if (scop === 'piata') {
+      const etGen: Record<string, string> = { pop: 'Pop', trap: 'Trap', rap: 'Rap / Hip-Hop', rock: 'Rock', dance: 'Dance', dj: 'DJs', balcanic_pop: 'Balcanic Pop', manele: 'Manele', lautareasca: 'Lautareasca', latino: 'Latino', petrecere: 'Petrecere', cover: 'Covers', altele: 'Altele' }
+      const o: any[] = []
+      let gPrev = ''
+      for (const a of filtrati) {
+        const g = ((a.genuri && a.genuri[0]) || 'altele').toLowerCase()
+        if (g !== gPrev) { o.push({ _h: etGen[g] || g }); gPrev = g }
+        o.push(a)
+      }
+      return o
+    }
     const top = filtrati.filter(a => ot(a.tier) === 0 && !esteFaraTop(a.nume)).sort((a, b) => ot(a.tier) - ot(b.tier))
     const topSet = new Set(top.map(a => a.nume))
     const grupe: Record<string, any[]> = {}

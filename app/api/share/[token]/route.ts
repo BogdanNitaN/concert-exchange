@@ -54,7 +54,7 @@ export async function GET(req: Request, ctx: { params: Promise<{ token: string }
         }
       }
       return {
-        nume: a.nume, genuri: genuriPentru(a.nume, meta?.genres || []), tier: (balP && balP.tier) ? balP.tier : tierPentru(a.nume, meta?.tier || null, fee),
+        nume: a.nume, genuri: (genuriPentru(a.nume, meta?.genres || []).length ? genuriPentru(a.nume, meta?.genres || []) : (a.categorie ? [a.categorie] : [])), esteFwd: a.tip !== 'intermediere', tier: (balP && balP.tier) ? balP.tier : tierPentru(a.nume, meta?.tier || null, fee),
         revelion: !!rev,
         special: !!prof,
         catBal: (balP && balP.cat) || null,
@@ -92,12 +92,21 @@ export async function GET(req: Request, ctx: { params: Promise<{ token: string }
       payload = { tip: 'roster', revelion: true, artisti: lista.map(fa).sort((a, b) => (b.preturi?.standard || 0) - (a.preturi?.standard || 0)) }
     } else if (link.scop === 'piata') {
       const { data: toti } = await supabase.from('oferta_artisti').select('*')
-      let lista = (toti || []).filter(a => a.tip === 'intermediere' && !esteAscuns(a.nume))
+      let lista = (toti || []).filter(a => !esteAscuns(a.nume))
       if (link.filtru_gen) {
         const g = link.filtru_gen.toLowerCase()
         lista = lista.filter(a => (a.categorie || '').toLowerCase() === g)
       }
-      payload = { tip: 'roster', artisti: lista.map(fa).sort((a, b) => (b.preturi?.standard || 0) - (a.preturi?.standard || 0)) }
+      const ordGen: Record<string, number> = { pop: 0, trap: 1, rap: 2, rock: 3, dance: 4, dj: 5, balcanic_pop: 6, manele: 7, lautareasca: 8, latino: 9, petrecere: 10, cover: 11, altele: 12 }
+      const mapate = lista.map(fa)
+      mapate.sort((a: any, b: any) => {
+        const ga = ordGen[(a.genuri?.[0] || 'altele').toLowerCase()] ?? 99
+        const gb = ordGen[(b.genuri?.[0] || 'altele').toLowerCase()] ?? 99
+        if (ga !== gb) return ga - gb
+        if (a.esteFwd !== b.esteFwd) return a.esteFwd ? -1 : 1
+        return (b.preturi?.standard || 0) - (a.preturi?.standard || 0)
+      })
+      payload = { tip: 'roster', piata: true, artisti: mapate }
     } else if (link.scop === 'roster') {
       const { data: toti } = await supabase.from('oferta_artisti').select('*')
       let lista = (toti || []).filter(a => a.tip !== 'intermediere' && !esteAscuns(a.nume) && (shareMap[a.nume]?.afisabil ?? true))
