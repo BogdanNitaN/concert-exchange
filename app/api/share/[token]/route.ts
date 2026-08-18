@@ -90,6 +90,14 @@ export async function GET(req: Request, ctx: { params: Promise<{ token: string }
       const { data: toti } = await supabase.from('oferta_artisti').select('*')
       const lista = (toti || []).filter(a => a.revelion && !esteAscuns(a.nume))
       payload = { tip: 'roster', revelion: true, artisti: lista.map(fa).sort((a, b) => (b.preturi?.standard || 0) - (a.preturi?.standard || 0)) }
+    } else if (link.scop === 'piata') {
+      const { data: toti } = await supabase.from('oferta_artisti').select('*')
+      let lista = (toti || []).filter(a => a.tip === 'intermediere' && !esteAscuns(a.nume))
+      if (link.filtru_gen) {
+        const g = link.filtru_gen.toLowerCase()
+        lista = lista.filter(a => (a.categorie || '').toLowerCase() === g)
+      }
+      payload = { tip: 'roster', artisti: lista.map(fa).sort((a, b) => (b.preturi?.standard || 0) - (a.preturi?.standard || 0)) }
     } else if (link.scop === 'roster') {
       const { data: toti } = await supabase.from('oferta_artisti').select('*')
       let lista = (toti || []).filter(a => a.tip !== 'intermediere' && !esteAscuns(a.nume) && (shareMap[a.nume]?.afisabil ?? true))
