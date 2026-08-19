@@ -15,7 +15,7 @@ const UI = {
 const GENURI = [
   { key: 'pop', label: 'Pop' }, { key: 'balcanic_pop', label: 'Balcanic Pop' },
   { key: 'manele', label: 'Manele' }, { key: 'trap', label: 'Trap' },
-  { key: 'rap', label: 'Rap/Hip-Hop' }, { key: 'dance', label: 'Dance' },
+  { key: 'rap', label: 'Rap/Hip-Hop' }, { key: 'dance', label: 'Dance' }, { key: 'dj', label: 'DJs' },
   { key: 'rock', label: 'Rock' }, { key: 'lautareasca', label: 'Lăutărească' },
   { key: 'petrecere', label: 'Petrecere' }, { key: 'cover', label: 'Cover' }, { key: 'altele', label: 'Altele' },
 ]
