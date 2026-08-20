@@ -533,7 +533,7 @@ export default function DisponibilitatePage() {
       const rd = b.rosterData || {}
       return {
         artistNume: b.artist,
-        formatSelectat: '', durata: '40 min',
+        formatSelectat: '', durata: rd.durata_default || '40 min',
         tipPret: 'Standard', feeLista: rd.fee_standard || 0, fee: rd.fee_standard || 0,
         leiKm: (rd.transport_moneda === 'euro' ? (rd.eur_km ?? rd.lei_km) : rd.lei_km) || 0, transportMoneda: rd.transport_moneda || 'lei', useMarja: true, cazare: rd.cazare || '', persoane: rd.nr_persoane || 0,
         bileteAvion: rd.bilete_avion || 0, restulRutier: true, tipMasa: 'alacarte', zile: 1,
