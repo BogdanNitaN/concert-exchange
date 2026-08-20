@@ -198,7 +198,7 @@ export default function DisponibilitatePage() {
     setTimeout(() => { window.location.href = '/oferta' }, 500)
   }
   function badgeCol(tip: string): string {
-    const m: Record<string,string> = { show: '#2563eb', indisponibil: '#dc2626', echipa: '#78716c', nota: '#a8a29e', blocat: '#dc2626' }
+    const m: Record<string,string> = { show: '#2563eb', indisponibil: '#dc2626', echipa: '#78716c', nota: '#ea580c', blocat: '#dc2626' }
     return m[tip] || '#a8a29e'
   }
   function badgeLabel(tip: string): string {
@@ -235,7 +235,11 @@ export default function DisponibilitatePage() {
     if (!pd) return null
     const st: string = pd.status || (pd.liber ? 'liber' : 'ocupat')
     const cfgMap: Record<string, any> = { liber: { bg:'#f0fdf4', bd:'#86efac', col:UI.green, txt:'✓ LIBER' }, ocupat: { bg:'#fef2f2', bd:'#fca5a5', col:'#dc2626', txt:'✗ OCUPAT' }, verifica: { bg:'#faf5ff', bd:'#d8b4fe', col:'#7c3aed', txt:'○ VERIFICĂ' } }
-    const cfg = cfgMap[st] || cfgMap.ocupat
+    let cfg = cfgMap[st] || cfgMap.ocupat
+    // liber dar cu evenimente notate (activare, nota) -> iese in evidenta galben, nu verde curat
+    if (st === 'liber' && pd.evenimente && pd.evenimente.length > 0) {
+      cfg = { bg:'#fffbeb', bd:'#fcd34d', col:'#b45309', txt:'✓ LIBER — dar ai ceva notat' }
+    }
     // context logistic: ziua -1 (de unde vine), +1 (unde merge)
     const ziMinus = ziRelativa(pd.data, -1), ziPlus = ziRelativa(pd.data, 1)
     const evMinus = (pd.context || []).filter((e: any) => e.data === ziMinus)
