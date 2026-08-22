@@ -1,6 +1,6 @@
 'use client';
-// app/kpi/admin/page.tsx — dashboard Bogdan: toti agentii, obiective, upload raport, agenti noi.
-// Login cu numele + parola de admin (rol='admin' in tabela agenti).
+// app/kpi/admin/page.tsx — dashboard admin v2
+// + Propus vs Confirmat S/L/T cu filtru agent, + editare tinte KPI individuali
 
 import { useEffect, useState } from 'react';
 
@@ -10,6 +10,15 @@ const C = {
   grey: '#78716c', green: '#059669', amber: '#d97706', red: '#dc2626',
 };
 const card: React.CSSProperties = { background: C.card, border: `1px solid ${C.border}`, borderRadius: 16, padding: 20 };
+const LUNI = ['Ian', 'Feb', 'Mar', 'Apr', 'Mai', 'Iun', 'Iul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+
+function lunaDinSaptamana(an: number, sapt: number): number {
+  const jan4 = new Date(Date.UTC(an, 0, 4));
+  const zi = jan4.getUTCDay() || 7;
+  const luni1 = new Date(jan4); luni1.setUTCDate(jan4.getUTCDate() - (zi - 1));
+  const joi = new Date(luni1); joi.setUTCDate(luni1.getUTCDate() + (sapt - 1) * 7 + 3);
+  return joi.getUTCMonth();
+}
 
 export default function KpiAdmin() {
   const [nume, setNume] = useState('');
@@ -22,6 +31,8 @@ export default function KpiAdmin() {
   const [fisier, setFisier] = useState<File | null>(null);
   const [nouNume, setNouNume] = useState('');
   const [nouParola, setNouParola] = useState('');
+  const [perioada, setPerioada] = useState<'S' | 'L' | 'T'>('S');
+  const [filtruAgent, setFiltruAgent] = useState<string>('toti');
 
   useEffect(() => {
     const s = typeof window !== 'undefined' ? sessionStorage.getItem('kpi_admin_sesiune') : null;
@@ -78,7 +89,7 @@ export default function KpiAdmin() {
     );
   }
 
-  const { curs, an, agenti, kpi, ultimulUpload } = data;
+  const { curs, an, agenti, kpi, kpiIndividuali, ultimulUpload } = data;
   const saptCurenta = Math.max(0, ...kpi.map((k: any) => k.saptamana));
   const ritmCalendar = (saptCurenta / 52) * 100;
 
@@ -100,6 +111,26 @@ export default function KpiAdmin() {
   }).sort((x: any, y: any) => y.confEur - x.confEur);
 
   const totalAgentie = perAgent.reduce((s: number, a: any) => s + a.confEur, 0);
+
+  // Propus vs Confirmat cu filtru
+  const kpiFiltrat = filtruAgent === 'toti' ? kpi : kpi.filter((k: any) => k.agent_id === filtruAgent);
+  type P = { eticheta: string; vOf: number; vConf: number };
+  const grup = new Map<number, P>();
+  for (const k of kpiFiltrat) {
+    let idx: number, et: string;
+    if (perioada === 'S') { idx = k.saptamana; et = `W${k.saptamana}`; }
+    else {
+      const luna = lunaDinSaptamana(an, k.saptamana);
+      idx = perioada === 'L' ? luna : Math.floor(luna / 3);
+      et = perioada === 'L' ? LUNI[luna] : `T${Math.floor(luna / 3) + 1}`;
+    }
+    const g = grup.get(idx) || { eticheta: et, vOf: 0, vConf: 0 };
+    g.vOf += Number(k.valoare_ofertata_ron); g.vConf += Number(k.valoare_confirmata_ron);
+    grup.set(idx, g);
+  }
+  let perioade = [...grup.entries()].sort((a, b) => a[0] - b[0]).map(e => e[1]);
+  if (perioada === 'S') perioade = perioade.slice(-10);
+  const maxP = Math.max(1, ...perioade.map(p => p.vOf));
 
   return (
     <div style={{ minHeight: '100vh', background: C.bg, fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif', padding: '24px 16px' }}>
@@ -129,7 +160,7 @@ export default function KpiAdmin() {
           </div>
           {preview && (
             <div style={{ marginTop: 14, padding: 14, background: '#fafaf9', borderRadius: 12, fontSize: 14 }}>
-              <div style={{ fontWeight: 700, marginBottom: 8 }}>Week {preview.saptamanaCurenta} · {preview.randuriDeScris} randuri de scris · carryover 2025: {preview.carryover2025} (ignorat)</div>
+              <div style={{ fontWeight: 700, marginBottom: 8 }}>Week {preview.saptamanaCurenta} · {preview.randuriDeScris} randuri · {preview.artistiAgregati} artisti agregati · carryover 2025: {preview.carryover2025} (ignorat)</div>
               {preview.agentiNecunoscuti?.length > 0 && (
                 <div style={{ color: C.amber, marginBottom: 8 }}>Agenti necunoscuti (ignorati): {preview.agentiNecunoscuti.join(', ')}</div>
               )}
@@ -151,27 +182,77 @@ export default function KpiAdmin() {
           )}
         </div>
 
-        {perAgent.filter((a: any) => a.activ).map((a: any) => (
-          <div key={a.id} style={card}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', flexWrap: 'wrap', gap: 8 }}>
-              <div style={{ fontSize: 17, fontWeight: 700, color: C.ink }}>{a.nume_afisat || a.nume}</div>
-              <div style={{ fontSize: 14, color: C.ink }}><b>{fmt(a.confEur)} EUR</b> confirmat · {a.conf} ev. · conversie {a.conversie.toFixed(1)}% · anulari <span style={{ color: a.anulare >= 8 ? C.red : a.anulare >= 4 ? C.amber : C.green }}>{a.anulare.toFixed(1)}%</span></div>
-            </div>
-            <div style={{ position: 'relative', height: 12, background: '#f0efee', borderRadius: 6, marginTop: 12, overflow: 'hidden' }}>
-              {a.ob ? (
-                <>
-                  <div style={{ position: 'absolute', inset: 0, width: `${a.progres}%`, background: a.progres! >= ritmCalendar - 2 ? C.green : C.amber, borderRadius: 6 }} />
-                  <div style={{ position: 'absolute', top: -2, bottom: -2, left: `${ritmCalendar}%`, width: 2, background: C.ink }} />
-                </>
-              ) : <div style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', paddingLeft: 8, fontSize: 11, color: C.grey }}>obiectiv nesetat</div>}
-            </div>
-            <div style={{ display: 'flex', gap: 10, alignItems: 'center', marginTop: 10, fontSize: 13, color: C.grey, flexWrap: 'wrap' }}>
-              <span>Obiectiv anual (EUR):</span>
-              <ObjInput initial={a.ob} onSave={(v: string) => actiune({ actiune: 'obiectiv', agentId: a.id, obiectivEur: v })} />
-              {a.ob && <span>{a.progres!.toFixed(1)}% · ritm {ritmCalendar.toFixed(0)}%</span>}
+        <div style={card}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12, flexWrap: 'wrap', gap: 8 }}>
+            <div style={{ fontSize: 15, fontWeight: 700, color: C.ink }}>Propus vs Confirmat</div>
+            <div style={{ display: 'flex', gap: 8, alignItems: 'center', flexWrap: 'wrap' }}>
+              <select value={filtruAgent} onChange={e => setFiltruAgent(e.target.value)}
+                style={{ padding: '6px 10px', borderRadius: 8, border: `1px solid ${C.border}`, fontSize: 13, background: '#fff' }}>
+                <option value="toti">Toti agentii</option>
+                {perAgent.filter((a: any) => a.activ).map((a: any) => <option key={a.id} value={a.id}>{a.nume}</option>)}
+              </select>
+              <div style={{ display: 'flex', gap: 4 }}>
+                {(['S', 'L', 'T'] as const).map(p => (
+                  <button key={p} onClick={() => setPerioada(p)}
+                    style={{ padding: '6px 12px', borderRadius: 8, border: 'none', fontSize: 13, fontWeight: 600, cursor: 'pointer', background: perioada === p ? C.ink : '#f0efee', color: perioada === p ? '#fff' : C.grey }}>
+                    {p === 'S' ? 'Sapt' : p === 'L' ? 'Lunar' : 'Trim'}
+                  </button>
+                ))}
+              </div>
             </div>
           </div>
-        ))}
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+            {perioade.map(p => (
+              <div key={p.eticheta}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 12, color: C.grey, marginBottom: 3 }}>
+                  <span style={{ fontWeight: 600 }}>{p.eticheta}</span>
+                  <span>{fmt(p.vConf / curs)} / {fmt(p.vOf / curs)} EUR{p.vOf > 0 ? ` · ${((p.vConf / p.vOf) * 100).toFixed(0)}%` : ''}</span>
+                </div>
+                <div style={{ position: 'relative', height: 16, background: '#f0efee', borderRadius: 8, overflow: 'hidden' }}>
+                  <div style={{ position: 'absolute', inset: 0, width: `${(p.vOf / maxP) * 100}%`, background: '#d6d3d1', borderRadius: 8 }} />
+                  <div style={{ position: 'absolute', inset: 0, width: `${(p.vConf / maxP) * 100}%`, background: C.green, borderRadius: 8 }} />
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {perAgent.filter((a: any) => a.activ).map((a: any) => {
+          const kpiAg = kpiIndividuali.filter((k: any) => k.agent_id === a.id);
+          return (
+            <div key={a.id} style={card}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', flexWrap: 'wrap', gap: 8 }}>
+                <div style={{ fontSize: 17, fontWeight: 700, color: C.ink }}>{a.nume_afisat || a.nume}</div>
+                <div style={{ fontSize: 14, color: C.ink }}><b>{fmt(a.confEur)} EUR</b> confirmat · {a.conf} ev. · conversie {a.conversie.toFixed(1)}% · anulari <span style={{ color: a.anulare >= 8 ? C.red : a.anulare >= 4 ? C.amber : C.green }}>{a.anulare.toFixed(1)}%</span></div>
+              </div>
+              <div style={{ position: 'relative', height: 12, background: '#f0efee', borderRadius: 6, marginTop: 12, overflow: 'hidden' }}>
+                {a.ob ? (
+                  <>
+                    <div style={{ position: 'absolute', inset: 0, width: `${a.progres}%`, background: a.progres! >= ritmCalendar - 2 ? C.green : C.amber, borderRadius: 6 }} />
+                    <div style={{ position: 'absolute', top: -2, bottom: -2, left: `${ritmCalendar}%`, width: 2, background: C.ink }} />
+                  </>
+                ) : <div style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', paddingLeft: 8, fontSize: 11, color: C.grey }}>obiectiv nesetat</div>}
+              </div>
+              <div style={{ display: 'flex', gap: 10, alignItems: 'center', marginTop: 10, fontSize: 13, color: C.grey, flexWrap: 'wrap' }}>
+                <span>Obiectiv anual (EUR):</span>
+                <ObjInput initial={a.ob} onSave={(v: string) => actiune({ actiune: 'obiectiv', agentId: a.id, obiectivEur: v })} />
+                {a.ob && <span>{a.progres!.toFixed(1)}% · ritm {ritmCalendar.toFixed(0)}%</span>}
+              </div>
+              {kpiAg.length > 0 && (
+                <div style={{ marginTop: 12, paddingTop: 12, borderTop: `1px solid ${C.border}`, display: 'flex', flexDirection: 'column', gap: 8 }}>
+                  {kpiAg.map((k: any) => (
+                    <div key={k.id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 10, fontSize: 13, flexWrap: 'wrap' }}>
+                      <span style={{ color: C.ink }}>{k.eticheta}</span>
+                      <span style={{ display: 'inline-flex', gap: 6, alignItems: 'center', color: C.grey }}>
+                        tinta: <ObjInput initial={k.tinta} onSave={(v: string) => actiune({ actiune: 'kpi-tinta', kpiId: k.id, tinta: v })} />
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          );
+        })}
 
         <div style={card}>
           <div style={{ fontSize: 15, fontWeight: 700, color: C.ink, marginBottom: 10 }}>Agent nou</div>
@@ -190,12 +271,12 @@ export default function KpiAdmin() {
 }
 
 function ObjInput({ initial, onSave }: { initial: number | null; onSave: (v: string) => void }) {
-  const [v, setV] = useState(initial ? String(initial) : '');
+  const [v, setV] = useState(initial !== null && initial !== undefined ? String(initial) : '');
   return (
     <span style={{ display: 'inline-flex', gap: 6 }}>
-      <input value={v} onChange={e => setV(e.target.value.replace(/[^\d]/g, ''))} placeholder="obiectiv" inputMode="numeric"
+      <input value={v} onChange={e => setV(e.target.value.replace(/[^\d.]/g, ''))} placeholder="valoare" inputMode="decimal"
         onWheel={e => (e.target as HTMLElement).blur()}
-        style={{ width: 110, padding: '6px 10px', borderRadius: 8, border: '1px solid #e7e5e4', fontSize: 13 }} />
+        style={{ width: 90, padding: '6px 10px', borderRadius: 8, border: '1px solid #e7e5e4', fontSize: 13 }} />
       <button onClick={() => onSave(v)} style={{ padding: '6px 12px', borderRadius: 8, border: 'none', background: '#101014', color: '#fff', fontSize: 12, cursor: 'pointer' }}>Salveaza</button>
     </span>
   );

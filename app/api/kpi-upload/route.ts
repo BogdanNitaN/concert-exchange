@@ -1,7 +1,6 @@
 // app/api/kpi-upload/route.ts
-// Upload Booking Reporting xlsx -> parseaza FWD {an} + FWD Ofertat {an} -> kpi_saptamanal
-// Doi pasi: POST cu doar fisierul => sumar de validare; POST cu confirm=true => scriere.
-// Auth: nume + parola in headere 'x-kpi-nume' / 'x-kpi-parola'.
+// Upload Booking Reporting xlsx -> kpi_saptamanal + kpi_artist
+// Doi pasi: preview -> confirm. Auth admin: 'x-kpi-nume' / 'x-kpi-parola'.
 
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
@@ -55,8 +54,15 @@ export async function POST(req: NextRequest) {
       if (!acc.has(k)) acc.set(k, { propuneri: 0, vOf: 0, conf: 0, vConf: 0, anul: 0, vAnul: 0 });
       fn(acc.get(k)!);
     };
+    type ArtRow = { propuneri: number; vOf: number; conf: number; vConf: number };
+    const accArt = new Map<string, ArtRow>();
+    const bumpArt = (agentId: string, artist: string, fn: (r: ArtRow) => void) => {
+      const k = `${agentId}|${artist}`;
+      if (!accArt.has(k)) accArt.set(k, { propuneri: 0, vOf: 0, conf: 0, vConf: 0 });
+      fn(accArt.get(k)!);
+    };
 
-    // FWD Ofertat: col A = saptamana, B = AGENT, H = FEE (RON)
+    // FWD Ofertat: A = saptamana, B = AGENT, C = ARTIST, H = FEE (RON)
     const ofer: any[][] = XLSX.utils.sheet_to_json(wb.Sheets[shOfer], { header: 1 });
     for (let i = 1; i < ofer.length; i++) {
       const r = ofer[i]; if (!r) continue;
@@ -65,10 +71,12 @@ export async function POST(req: NextRequest) {
       const ag = byNume.get(nm.toLowerCase());
       if (!ag) { necunoscuti.add(nm); continue; }
       const fee = Number(r[7]) || 0;
+      const artist = norm(r[2]);
       bump(ag.id, sapt, x => { x.propuneri++; x.vOf += fee; });
+      if (artist) bumpArt(ag.id, artist, x => { x.propuneri++; x.vOf += fee; });
     }
 
-    // FWD confirmate: A = ctr (sapt sau 2025), B = Agent, J = FEE, M = STATUS EVENIMENT
+    // FWD confirmate: A = ctr, B = Agent, C = ARTIST, J = FEE, M = STATUS
     const conf: any[][] = XLSX.utils.sheet_to_json(wb.Sheets[shConf], { header: 1 });
     let carryover = 0;
     for (let i = 1; i < conf.length; i++) {
@@ -80,9 +88,14 @@ export async function POST(req: NextRequest) {
       const ag = byNume.get(nm.toLowerCase());
       if (!ag) { necunoscuti.add(nm); continue; }
       const fee = Number(r[9]) || 0;
+      const artist = norm(r[2]);
       const status = norm(r[12]).toUpperCase();
-      if (status === 'CONFIRMAT') bump(ag.id, ctr, x => { x.conf++; x.vConf += fee; });
-      else if (status === 'ANULAT') bump(ag.id, ctr, x => { x.anul++; x.vAnul += fee; });
+      if (status === 'CONFIRMAT') {
+        bump(ag.id, ctr, x => { x.conf++; x.vConf += fee; });
+        if (artist) bumpArt(ag.id, artist, x => { x.conf++; x.vConf += fee; });
+      } else if (status === 'ANULAT') {
+        bump(ag.id, ctr, x => { x.anul++; x.vAnul += fee; });
+      }
     }
 
     const saptMax = Math.max(0, ...[...acc.keys()].map(k => Number(k.split('|')[1])));
@@ -102,7 +115,7 @@ export async function POST(req: NextRequest) {
       an, saptamanaCurenta: saptMax, carryover2025: carryover,
       agentiNecunoscuti: [...necunoscuti],
       ultimaSaptamana: sumarSapt, totalAn,
-      randuriDeScris: acc.size,
+      randuriDeScris: acc.size, artistiAgregati: accArt.size,
     };
 
     if (!confirm) return NextResponse.json({ preview: true, sumar });
@@ -119,6 +132,17 @@ export async function POST(req: NextRequest) {
     });
     const { error } = await supa.from('kpi_saptamanal').upsert(rows, { onConflict: 'agent_id,an,saptamana' });
     if (error) return NextResponse.json({ error: error.message }, { status: 500 });
+
+    const artRows = [...accArt.entries()].map(([k, v]) => {
+      const idx = k.indexOf('|');
+      return {
+        agent_id: k.slice(0, idx), an, artist: k.slice(idx + 1),
+        propuneri: v.propuneri, valoare_ofertata_ron: v.vOf,
+        confirmate: v.conf, valoare_confirmata_ron: v.vConf,
+      };
+    });
+    const { error: errArt } = await supa.from('kpi_artist').upsert(artRows, { onConflict: 'agent_id,an,artist' });
+    if (errArt) return NextResponse.json({ error: errArt.message }, { status: 500 });
 
     await supa.from('kpi_upload_log').insert({ an, saptamana: saptMax, fisier: file.name, sumar });
     return NextResponse.json({ ok: true, sumar });

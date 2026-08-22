@@ -1,7 +1,7 @@
 // app/api/kpi-data/route.ts
-// GET cu headere 'x-kpi-nume' + 'x-kpi-parola': agent -> propriul panou; admin -> toti agentii.
-// POST (admin): obiectiv | agent-nou | parola | toggle-activ
-// Valorile pleaca in RON + curs BNR al zilei; conversia se face in UI la acelasi curs peste tot.
+// GET: agent -> panoul lui (saptamanal + artisti + kpi individuali); admin -> tot.
+// POST (admin): obiectiv | agent-nou | parola | toggle-activ | kpi-tinta
+// Valorile in RON + curs BNR al zilei; conversia in UI.
 
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
@@ -56,6 +56,32 @@ export async function GET(req: NextRequest) {
   const { data: kpi } = await supa.from('kpi_saptamanal')
     .select('*').eq('an', an).in('agent_id', ids).order('saptamana');
 
+  // artisti: agentul primeste doar ai lui; adminul pe toti
+  const { data: artisti } = await supa.from('kpi_artist')
+    .select('agent_id, artist, propuneri, valoare_ofertata_ron, confirmate, valoare_confirmata_ron')
+    .eq('an', an).in('agent_id', ids)
+    .order('valoare_confirmata_ron', { ascending: false });
+
+  const { data: kpiInd } = await supa.from('kpi_individual')
+    .select('id, agent_id, eticheta, cheie, tinta, directie')
+    .in('agent_id', ids).eq('activ', true);
+
+  // media agentiei pe an (pentru reperul anonim de pe panoul agentului): toate randurile, nu doar ids
+  const { data: totiKpi } = await supa.from('kpi_saptamanal')
+    .select('agent_id, valoare_confirmata_ron, valoare_ofertata_ron, valoare_anulata_ron').eq('an', an);
+  const perAgentTot = new Map<string, { c: number; o: number; a: number }>();
+  for (const r of totiKpi || []) {
+    const t = perAgentTot.get(r.agent_id) || { c: 0, o: 0, a: 0 };
+    t.c += Number(r.valoare_confirmata_ron); t.o += Number(r.valoare_ofertata_ron); t.a += Number(r.valoare_anulata_ron);
+    perAgentTot.set(r.agent_id, t);
+  }
+  const activi = [...perAgentTot.values()].filter(t => t.o > 0 || t.c > 0);
+  const medieAgentie = {
+    confirmatRon: activi.length ? activi.reduce((s, t) => s + t.c, 0) / activi.length : 0,
+    totalConfirmatRon: activi.reduce((s, t) => s + t.c, 0),
+    conversie: (() => { const o = activi.reduce((s, t) => s + t.o, 0); const c = activi.reduce((s, t) => s + t.c, 0); return o > 0 ? (c / o) * 100 : 0; })(),
+  };
+
   const { data: log } = await supa.from('kpi_upload_log')
     .select('an, saptamana, incarcat_la').order('incarcat_la', { ascending: false }).limit(1);
 
@@ -64,6 +90,9 @@ export async function GET(req: NextRequest) {
     curs, an,
     agenti: agenti || [],
     kpi: kpi || [],
+    artisti: artisti || [],
+    kpiIndividuali: kpiInd || [],
+    medieAgentie,
     ultimulUpload: log?.[0] || null,
   });
 }
@@ -95,6 +124,13 @@ export async function POST(req: NextRequest) {
   if (body.actiune === 'toggle-activ') {
     const { data: a } = await supa.from('agenti').select('activ').eq('id', body.agentId).single();
     const { error } = await supa.from('agenti').update({ activ: !a?.activ }).eq('id', body.agentId);
+    if (error) return NextResponse.json({ error: error.message }, { status: 500 });
+    return NextResponse.json({ ok: true });
+  }
+  if (body.actiune === 'kpi-tinta') {
+    const { error } = await supa.from('kpi_individual')
+      .update({ tinta: body.tinta === '' ? null : Number(body.tinta) })
+      .eq('id', body.kpiId);
     if (error) return NextResponse.json({ error: error.message }, { status: 500 });
     return NextResponse.json({ ok: true });
   }
