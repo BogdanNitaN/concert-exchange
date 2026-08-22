@@ -10,14 +10,17 @@ import * as XLSX from 'xlsx';
 export const runtime = 'nodejs';
 export const maxDuration = 60;
 
-const supa = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.SUPABASE_SERVICE_ROLE_KEY!
-);
+function getSupa() {
+  return createClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    (process.env.SUPABASE_SECRET_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY)!
+  );
+}
 
 const norm = (s: any) => String(s ?? '').trim();
 
 export async function POST(req: NextRequest) {
+  const supa = getSupa();
   try {
     const nume = norm(req.headers.get('x-kpi-nume'));
     const parola = norm(req.headers.get('x-kpi-parola'));

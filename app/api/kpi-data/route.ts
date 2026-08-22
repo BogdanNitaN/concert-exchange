@@ -8,10 +8,12 @@ import { createClient } from '@supabase/supabase-js';
 
 export const runtime = 'nodejs';
 
-const supa = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.SUPABASE_SERVICE_ROLE_KEY!
-);
+function getSupa() {
+  return createClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    (process.env.SUPABASE_SECRET_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY)!
+  );
+}
 
 let cursCache: { curs: number; zi: string } | null = null;
 async function cursBNR(): Promise<number> {
@@ -28,6 +30,7 @@ async function cursBNR(): Promise<number> {
 }
 
 async function auth(req: NextRequest) {
+  const supa = getSupa();
   const nume = String(req.headers.get('x-kpi-nume') || '').trim();
   const parola = String(req.headers.get('x-kpi-parola') || '').trim();
   if (!nume || !parola) return null;
@@ -38,6 +41,7 @@ async function auth(req: NextRequest) {
 }
 
 export async function GET(req: NextRequest) {
+  const supa = getSupa();
   const eu = await auth(req);
   if (!eu) return NextResponse.json({ error: 'Nume sau parola gresite' }, { status: 401 });
   const curs = await cursBNR();
@@ -65,6 +69,7 @@ export async function GET(req: NextRequest) {
 }
 
 export async function POST(req: NextRequest) {
+  const supa = getSupa();
   const eu = await auth(req);
   if (!eu || eu.rol !== 'admin') return NextResponse.json({ error: 'Acces interzis' }, { status: 401 });
   const body = await req.json();
