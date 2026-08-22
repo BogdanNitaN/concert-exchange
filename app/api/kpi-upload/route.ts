@@ -1,5 +1,5 @@
 // app/api/kpi-upload/route.ts
-// Upload Booking Reporting xlsx -> kpi_saptamanal + kpi_artist
+// Upload Booking Reporting xlsx -> kpi_saptamanal + kpi_artist + kpi_segment
 // Doi pasi: preview -> confirm. Auth admin: 'x-kpi-nume' / 'x-kpi-parola'.
 
 import { NextRequest, NextResponse } from 'next/server';
@@ -17,6 +17,17 @@ function getSupa() {
 }
 
 const norm = (s: any) => String(s ?? '').trim();
+
+function segmentDin(tip: string): string {
+  const t = tip.toLowerCase().trim();
+  if (!t) return 'altele';
+  if (t.includes('venue')) return 'venue';
+  if (t.includes('open')) return 'open air';
+  if (t.includes('club')) return 'club';
+  if (t.includes('privat')) return 'privat';
+  if (t.includes('festival')) return 'festival';
+  return 'altele';
+}
 
 export async function POST(req: NextRequest) {
   const supa = getSupa();
@@ -54,15 +65,15 @@ export async function POST(req: NextRequest) {
       if (!acc.has(k)) acc.set(k, { propuneri: 0, vOf: 0, conf: 0, vConf: 0, anul: 0, vAnul: 0 });
       fn(acc.get(k)!);
     };
-    type ArtRow = { propuneri: number; vOf: number; conf: number; vConf: number };
-    const accArt = new Map<string, ArtRow>();
-    const bumpArt = (agentId: string, artist: string, fn: (r: ArtRow) => void) => {
-      const k = `${agentId}|${artist}`;
-      if (!accArt.has(k)) accArt.set(k, { propuneri: 0, vOf: 0, conf: 0, vConf: 0 });
-      fn(accArt.get(k)!);
+    type SubRow = { propuneri: number; vOf: number; conf: number; vConf: number };
+    const accArt = new Map<string, SubRow>();
+    const accSeg = new Map<string, SubRow>();
+    const bumpSub = (m: Map<string, SubRow>, cheie: string, fn: (r: SubRow) => void) => {
+      if (!m.has(cheie)) m.set(cheie, { propuneri: 0, vOf: 0, conf: 0, vConf: 0 });
+      fn(m.get(cheie)!);
     };
 
-    // FWD Ofertat: A = saptamana, B = AGENT, C = ARTIST, H = FEE (RON)
+    // FWD Ofertat: A = saptamana, B = AGENT, C = ARTIST, D = TIP EVENIMENT, H = FEE (RON)
     const ofer: any[][] = XLSX.utils.sheet_to_json(wb.Sheets[shOfer], { header: 1 });
     for (let i = 1; i < ofer.length; i++) {
       const r = ofer[i]; if (!r) continue;
@@ -72,11 +83,13 @@ export async function POST(req: NextRequest) {
       if (!ag) { necunoscuti.add(nm); continue; }
       const fee = Number(r[7]) || 0;
       const artist = norm(r[2]);
+      const seg = segmentDin(norm(r[3]));
       bump(ag.id, sapt, x => { x.propuneri++; x.vOf += fee; });
-      if (artist) bumpArt(ag.id, artist, x => { x.propuneri++; x.vOf += fee; });
+      if (artist) bumpSub(accArt, `${ag.id}|${artist}`, x => { x.propuneri++; x.vOf += fee; });
+      bumpSub(accSeg, `${ag.id}|${seg}`, x => { x.propuneri++; x.vOf += fee; });
     }
 
-    // FWD confirmate: A = ctr, B = Agent, C = ARTIST, J = FEE, M = STATUS
+    // FWD confirmate: A = ctr, B = Agent, C = ARTIST, G = TIP Ev, J = FEE, M = STATUS
     const conf: any[][] = XLSX.utils.sheet_to_json(wb.Sheets[shConf], { header: 1 });
     let carryover = 0;
     for (let i = 1; i < conf.length; i++) {
@@ -89,10 +102,12 @@ export async function POST(req: NextRequest) {
       if (!ag) { necunoscuti.add(nm); continue; }
       const fee = Number(r[9]) || 0;
       const artist = norm(r[2]);
+      const seg = segmentDin(norm(r[6]));
       const status = norm(r[12]).toUpperCase();
       if (status === 'CONFIRMAT') {
         bump(ag.id, ctr, x => { x.conf++; x.vConf += fee; });
-        if (artist) bumpArt(ag.id, artist, x => { x.conf++; x.vConf += fee; });
+        if (artist) bumpSub(accArt, `${ag.id}|${artist}`, x => { x.conf++; x.vConf += fee; });
+        bumpSub(accSeg, `${ag.id}|${seg}`, x => { x.conf++; x.vConf += fee; });
       } else if (status === 'ANULAT') {
         bump(ag.id, ctr, x => { x.anul++; x.vAnul += fee; });
       }
@@ -115,7 +130,7 @@ export async function POST(req: NextRequest) {
       an, saptamanaCurenta: saptMax, carryover2025: carryover,
       agentiNecunoscuti: [...necunoscuti],
       ultimaSaptamana: sumarSapt, totalAn,
-      randuriDeScris: acc.size, artistiAgregati: accArt.size,
+      randuriDeScris: acc.size, artistiAgregati: accArt.size, segmenteAgregate: accSeg.size,
     };
 
     if (!confirm) return NextResponse.json({ preview: true, sumar });
@@ -143,6 +158,17 @@ export async function POST(req: NextRequest) {
     });
     const { error: errArt } = await supa.from('kpi_artist').upsert(artRows, { onConflict: 'agent_id,an,artist' });
     if (errArt) return NextResponse.json({ error: errArt.message }, { status: 500 });
+
+    const segRows = [...accSeg.entries()].map(([k, v]) => {
+      const idx = k.indexOf('|');
+      return {
+        agent_id: k.slice(0, idx), an, segment: k.slice(idx + 1),
+        propuneri: v.propuneri, valoare_ofertata_ron: v.vOf,
+        confirmate: v.conf, valoare_confirmata_ron: v.vConf,
+      };
+    });
+    const { error: errSeg } = await supa.from('kpi_segment').upsert(segRows, { onConflict: 'agent_id,an,segment' });
+    if (errSeg) return NextResponse.json({ error: errSeg.message }, { status: 500 });
 
     await supa.from('kpi_upload_log').insert({ an, saptamana: saptMax, fisier: file.name, sumar });
     return NextResponse.json({ ok: true, sumar });

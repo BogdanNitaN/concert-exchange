@@ -137,7 +137,7 @@ export default function KpiAdmin() {
       <div style={{ maxWidth: 860, margin: '0 auto', display: 'flex', flexDirection: 'column', gap: 14 }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', flexWrap: 'wrap', gap: 8 }}>
           <div>
-            <div style={{ fontSize: 24, fontWeight: 700, color: C.ink }}>Dashboard agenti · {an}</div>
+            <div style={{ fontSize: 24, fontWeight: 800, color: C.ink }}>GIG<span style={{ color: C.green }}>x</span> <span style={{ fontWeight: 700 }}>· Dashboard agenti {an}</span></div>
             <div style={{ fontSize: 13, color: C.grey }}>
               Week {saptCurenta} · curs BNR {curs.toFixed(4)} · total agentie {fmt(totalAgentie)} EUR
               {ultimulUpload && ` · ultimul upload: Week ${ultimulUpload.saptamana}`}

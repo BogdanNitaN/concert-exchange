@@ -1,7 +1,6 @@
 // app/api/kpi-data/route.ts
-// GET: agent -> panoul lui (saptamanal + artisti + kpi individuali); admin -> tot.
+// GET: agent -> panoul lui (saptamanal + artisti + segmente + kpi individuali); admin -> tot.
 // POST (admin): obiectiv | agent-nou | parola | toggle-activ | kpi-tinta
-// Valorile in RON + curs BNR al zilei; conversia in UI.
 
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
@@ -20,10 +19,17 @@ async function cursBNR(): Promise<number> {
   const azi = new Date().toISOString().slice(0, 10);
   if (cursCache?.zi === azi) return cursCache.curs;
   try {
-    const r = await fetch('https://www.bnr.ro/nbrfxrates.xml', { next: { revalidate: 3600 } });
+    const r = await fetch('https://www.bnr.ro/nbrfxrates.xml', {
+      headers: {
+        'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0 Safari/537.36',
+        'Accept': 'application/xml,text/xml,*/*',
+      },
+      next: { revalidate: 3600 },
+    });
     const xml = await r.text();
     const m = xml.match(/<Rate currency="EUR">([\d.]+)<\/Rate>/);
-    const curs = m ? parseFloat(m[1]) : 5.1;
+    if (!m) throw new Error('fara EUR in XML');
+    const curs = parseFloat(m[1]);
     cursCache = { curs, zi: azi };
     return curs;
   } catch { return cursCache?.curs || 5.1; }
@@ -56,9 +62,13 @@ export async function GET(req: NextRequest) {
   const { data: kpi } = await supa.from('kpi_saptamanal')
     .select('*').eq('an', an).in('agent_id', ids).order('saptamana');
 
-  // artisti: agentul primeste doar ai lui; adminul pe toti
   const { data: artisti } = await supa.from('kpi_artist')
     .select('agent_id, artist, propuneri, valoare_ofertata_ron, confirmate, valoare_confirmata_ron')
+    .eq('an', an).in('agent_id', ids)
+    .order('valoare_confirmata_ron', { ascending: false });
+
+  const { data: segmente } = await supa.from('kpi_segment')
+    .select('agent_id, segment, propuneri, valoare_ofertata_ron, confirmate, valoare_confirmata_ron')
     .eq('an', an).in('agent_id', ids)
     .order('valoare_confirmata_ron', { ascending: false });
 
@@ -66,7 +76,6 @@ export async function GET(req: NextRequest) {
     .select('id, agent_id, eticheta, cheie, tinta, directie')
     .in('agent_id', ids).eq('activ', true);
 
-  // media agentiei pe an (pentru reperul anonim de pe panoul agentului): toate randurile, nu doar ids
   const { data: totiKpi } = await supa.from('kpi_saptamanal')
     .select('agent_id, valoare_confirmata_ron, valoare_ofertata_ron, valoare_anulata_ron').eq('an', an);
   const perAgentTot = new Map<string, { c: number; o: number; a: number }>();
@@ -91,6 +100,7 @@ export async function GET(req: NextRequest) {
     agenti: agenti || [],
     kpi: kpi || [],
     artisti: artisti || [],
+    segmente: segmente || [],
     kpiIndividuali: kpiInd || [],
     medieAgentie,
     ultimulUpload: log?.[0] || null,

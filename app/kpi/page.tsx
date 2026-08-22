@@ -1,6 +1,7 @@
 'use client';
-// app/kpi/page.tsx — panou individual agent v2
-// Propus vs Confirmat (S/L/T derivat din saptamana ISO), KPI individuali, top artisti, reper medie agentie.
+// app/kpi/page.tsx — panou agent v3, neurodesign
+// Navbar GIGx + banda sticky glass cu semafoare, numar dominant + verdict, delte vs media 4 sapt,
+// streak propuneri, segmente forta/slabiciune, proiectie an, Propus vs Confirmat S/L/T.
 
 import { useEffect, useState } from 'react';
 
@@ -10,9 +11,12 @@ const C = {
   grey: '#78716c', green: '#059669', amber: '#d97706', red: '#dc2626',
 };
 const card: React.CSSProperties = { background: C.card, border: `1px solid ${C.border}`, borderRadius: 16, padding: 20 };
+const glass: React.CSSProperties = {
+  background: 'rgba(255,255,255,0.72)', backdropFilter: 'blur(14px)', WebkitBackdropFilter: 'blur(14px)',
+  borderBottom: `1px solid ${C.border}`,
+};
 const LUNI = ['Ian', 'Feb', 'Mar', 'Apr', 'Mai', 'Iun', 'Iul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
 
-// luna in care cade joia saptamanii ISO — o singura axa a adevarului
 function lunaDinSaptamana(an: number, sapt: number): number {
   const jan4 = new Date(Date.UTC(an, 0, 4));
   const zi = jan4.getUTCDay() || 7;
@@ -21,15 +25,28 @@ function lunaDinSaptamana(an: number, sapt: number): number {
   return joi.getUTCMonth();
 }
 
-function Semafor({ val, tinta, directie }: { val: number; tinta: number | null; directie: string }) {
-  if (tinta === null || tinta === undefined) return null;
+function statusKpi(val: number, tinta: number | null, directie: string): 'ok' | 'aproape' | 'rau' | 'neutru' {
+  if (tinta === null || tinta === undefined) return 'neutru';
   let ok = false;
   if (directie === 'sub') ok = val < tinta;
   else if (directie === 'sub_egal') ok = val <= tinta;
   else ok = val >= tinta;
-  const aproape = !ok && (directie === 'peste' ? val >= tinta * 0.85 : val <= tinta * 1.2);
-  const col = ok ? C.green : aproape ? C.amber : C.red;
-  return <span style={{ display: 'inline-block', width: 10, height: 10, borderRadius: 5, background: col, marginRight: 8 }} />;
+  if (ok) return 'ok';
+  const aproape = directie === 'peste' ? val >= tinta * 0.85 : val <= tinta * 1.2;
+  return aproape ? 'aproape' : 'rau';
+}
+const culoareStatus = (s: string) => s === 'ok' ? C.green : s === 'aproape' ? C.amber : s === 'rau' ? C.red : '#d6d3d1';
+
+function Delta({ acum, medie, inversat }: { acum: number; medie: number; inversat?: boolean }) {
+  if (medie === 0) return null;
+  const dif = ((acum - medie) / medie) * 100;
+  if (Math.abs(dif) < 3) return <span style={{ fontSize: 11, color: C.grey }}>≈ media 4 sapt</span>;
+  const bine = inversat ? dif < 0 : dif > 0;
+  return (
+    <span style={{ fontSize: 11, fontWeight: 700, color: bine ? C.green : C.red }}>
+      {dif > 0 ? '▲' : '▼'} {Math.abs(dif).toFixed(0)}% vs media 4 sapt
+    </span>
+  );
 }
 
 export default function KpiPage() {
@@ -61,8 +78,8 @@ export default function KpiPage() {
     return (
       <div style={{ minHeight: '100vh', background: C.bg, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 20, fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif' }}>
         <div style={{ ...card, width: '100%', maxWidth: 380, padding: 32 }}>
-          <div style={{ fontSize: 22, fontWeight: 700, color: C.ink, marginBottom: 4 }}>KPI Forward</div>
-          <div style={{ fontSize: 14, color: C.grey, marginBottom: 20 }}>Intra cu numele si parola ta</div>
+          <div style={{ fontSize: 26, fontWeight: 800, color: C.ink, marginBottom: 2 }}>GIG<span style={{ color: C.green }}>x</span></div>
+          <div style={{ fontSize: 15, fontWeight: 600, color: C.grey, marginBottom: 20 }}>KPI Forward</div>
           <input value={nume} onChange={e => setNume(e.target.value)} placeholder="Nume"
             style={{ width: '100%', padding: '12px 14px', borderRadius: 10, border: `1px solid ${C.border}`, fontSize: 16, boxSizing: 'border-box', outline: 'none', marginBottom: 10 }} />
           <input value={parola} onChange={e => setParola(e.target.value)} placeholder="Parola" type="password"
@@ -78,10 +95,11 @@ export default function KpiPage() {
     );
   }
 
-  const { eu, curs, an, agenti, kpi, artisti, kpiIndividuali, medieAgentie } = data;
+  const { eu, curs, an, agenti, kpi, artisti, segmente, kpiIndividuali, medieAgentie } = data;
   const agent = agenti.find((a: any) => a.id === eu.id) || agenti[0];
   const alMeu = kpi.filter((k: any) => k.agent_id === agent.id);
   const artMei = artisti.filter((a: any) => a.agent_id === agent.id);
+  const segMele = (segmente || []).filter((s: any) => s.agent_id === agent.id);
   const saptCurenta = Math.max(0, ...alMeu.map((k: any) => k.saptamana));
 
   const tot = alMeu.reduce((t: any, k: any) => ({
@@ -96,15 +114,24 @@ export default function KpiPage() {
   const ritmCalendar = (saptCurenta / 52) * 100;
   const necesarSapt = obiectiv && saptCurenta < 52 ? Math.max(0, (obiectiv - confEur) / (52 - saptCurenta)) : 0;
   const peRitm = obiectiv ? progres >= ritmCalendar - 2 : null;
+  const proiectie = saptCurenta > 0 ? (confEur / saptCurenta) * 52 : 0;
 
   const conversie = tot.vOf > 0 ? (tot.vConf / tot.vOf) * 100 : 0;
   const rataAnulare = (tot.vConf + tot.vAnul) > 0 ? (tot.vAnul / (tot.vConf + tot.vAnul)) * 100 : 0;
+  const feeMediu = tot.conf > 0 ? confEur / tot.conf : 0;
 
-  let gapMax = 0, gap = 0;
-  const propPeSapt = new Map(alMeu.map((k: any) => [k.saptamana, k.propuneri]));
+  let gapMax = 0, gap = 0, streak = 0;
+  const propPeSapt = new Map<number, number>(alMeu.map((k: any) => [k.saptamana, k.propuneri] as [number, number]));
   for (let s = 1; s <= saptCurenta; s++) {
     if ((propPeSapt.get(s) || 0) === 0) { gap++; gapMax = Math.max(gapMax, gap); } else gap = 0;
   }
+  for (let s = saptCurenta; s >= 1; s--) {
+    if ((propPeSapt.get(s) || 0) > 0) streak++; else break;
+  }
+
+  const saptCur = alMeu.find((k: any) => k.saptamana === saptCurenta);
+  const ult4 = alMeu.filter((k: any) => k.saptamana >= saptCurenta - 4 && k.saptamana < saptCurenta);
+  const medie4 = (f: (k: any) => number) => ult4.length ? ult4.reduce((s: number, k: any) => s + f(k), 0) / ult4.length : 0;
 
   const top3 = artMei.slice(0, 3).reduce((s: number, a: any) => s + Number(a.valoare_confirmata_ron), 0);
   const top3Pct = tot.vConf > 0 ? (top3 / tot.vConf) * 100 : 0;
@@ -119,12 +146,18 @@ export default function KpiPage() {
   };
   const kpiMei = kpiIndividuali.filter((k: any) => k.agent_id === agent.id && valoriKpi[k.cheie]);
 
-  // Propus vs Confirmat pe perioada aleasa
+  // segmente: forta / slabiciune (minim 5 propuneri ca sa nu tragem concluzii din zgomot)
+  const segCuConv = segMele
+    .map((s: any) => ({ ...s, conv: Number(s.valoare_ofertata_ron) > 0 ? (Number(s.valoare_confirmata_ron) / Number(s.valoare_ofertata_ron)) * 100 : 0 }))
+    .filter((s: any) => s.propuneri >= 5);
+  const forta = segCuConv.length ? segCuConv.reduce((a: any, b: any) => a.conv >= b.conv ? a : b) : null;
+  const slab = segCuConv.length > 1 ? segCuConv.reduce((a: any, b: any) => a.conv <= b.conv ? a : b) : null;
+
   type P = { eticheta: string; vOf: number; vConf: number };
   const perioade: P[] = [];
   if (perioada === 'S') {
-    const ultimele = alMeu.filter((k: any) => k.saptamana > saptCurenta - 8);
-    for (const k of ultimele) perioade.push({ eticheta: `W${k.saptamana}`, vOf: Number(k.valoare_ofertata_ron), vConf: Number(k.valoare_confirmata_ron) });
+    for (const k of alMeu.filter((k: any) => k.saptamana > saptCurenta - 8))
+      perioade.push({ eticheta: `W${k.saptamana}`, vOf: Number(k.valoare_ofertata_ron), vConf: Number(k.valoare_confirmata_ron) });
   } else {
     const grup = new Map<number, P>();
     for (const k of alMeu) {
@@ -140,22 +173,41 @@ export default function KpiPage() {
   const maxP = Math.max(1, ...perioade.map(p => p.vOf));
 
   return (
-    <div style={{ minHeight: '100vh', background: C.bg, fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif', padding: '24px 16px' }}>
-      <div style={{ maxWidth: 720, margin: '0 auto', display: 'flex', flexDirection: 'column', gap: 14 }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline' }}>
-          <div>
-            <div style={{ fontSize: 24, fontWeight: 700, color: C.ink }}>{agent.nume_afisat || agent.nume}</div>
-            <div style={{ fontSize: 13, color: C.grey }}>Anul {an} · pana la Week {saptCurenta} · curs BNR {curs.toFixed(4)}</div>
-          </div>
+    <div style={{ minHeight: '100vh', background: C.bg, fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif' }}>
+      {/* Navbar GIGx */}
+      <div style={{ ...glass, position: 'sticky', top: 0, zIndex: 20 }}>
+        <div style={{ maxWidth: 720, margin: '0 auto', padding: '12px 16px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          <div style={{ fontSize: 19, fontWeight: 800, color: C.ink }}>GIG<span style={{ color: C.green }}>x</span> <span style={{ fontWeight: 600, color: C.grey, fontSize: 15 }}>· KPI</span></div>
           <button onClick={() => { sessionStorage.removeItem('kpi_sesiune'); setSesiune(null); setData(null); }}
             style={{ border: 'none', background: 'none', color: C.grey, fontSize: 13, cursor: 'pointer' }}>Iesire</button>
         </div>
+        {/* Banda sticky de status: mereu in ochi */}
+        <div style={{ maxWidth: 720, margin: '0 auto', padding: '0 16px 10px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 10 }}>
+          <div style={{ fontSize: 13, fontWeight: 700, color: C.ink, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+            {agent.nume_afisat || agent.nume}
+            {obiectiv && <span style={{ color: peRitm ? C.green : C.amber, marginLeft: 8 }}>{progres.toFixed(0)}% din obiectiv</span>}
+          </div>
+          <div style={{ display: 'flex', gap: 6 }}>
+            {kpiMei.map((k: any) => (
+              <span key={k.id} title={k.eticheta}
+                style={{ width: 12, height: 12, borderRadius: 6, background: culoareStatus(statusKpi(valoriKpi[k.cheie].val, k.tinta, k.directie)), border: '1px solid rgba(0,0,0,0.08)' }} />
+            ))}
+          </div>
+        </div>
+      </div>
 
-        <div style={card}>
-          <div style={{ fontSize: 13, color: C.grey, marginBottom: 6 }}>Rulaj confirmat {an}</div>
-          <div style={{ fontSize: 32, fontWeight: 700, color: C.ink }}>{fmt(confEur)} EUR</div>
+      <div style={{ maxWidth: 720, margin: '0 auto', padding: '18px 16px', display: 'flex', flexDirection: 'column', gap: 14 }}>
+        <div style={{ fontSize: 13, color: C.grey }}>Anul {an} · pana la Week {saptCurenta} · curs BNR {curs.toFixed(4)}</div>
+
+        {/* Numarul dominant + verdict */}
+        <div style={{ ...card, paddingTop: 24 }}>
+          <div style={{ fontSize: 13, color: C.grey }}>Rulaj confirmat {an}</div>
+          <div style={{ fontSize: 44, fontWeight: 800, color: C.ink, lineHeight: 1.1, letterSpacing: '-0.02em' }}>{fmt(confEur)} <span style={{ fontSize: 22, fontWeight: 600, color: C.grey }}>EUR</span></div>
           {obiectiv ? (
             <>
+              <div style={{ marginTop: 10, padding: '12px 14px', background: peRitm ? '#ecfdf5' : '#fffbeb', borderRadius: 10, fontSize: 15, color: C.ink }}>
+                <b>{peRitm ? 'Esti pe ritm.' : 'Sub ritm.'}</b> Iti trebuie <b>{fmt(necesarSapt)} EUR / saptamana</b> pana la finalul anului.
+              </div>
               <div style={{ position: 'relative', height: 14, background: '#f0efee', borderRadius: 7, marginTop: 14, overflow: 'hidden' }}>
                 <div style={{ position: 'absolute', inset: 0, width: `${progres}%`, background: peRitm ? C.green : C.amber, borderRadius: 7, transition: 'width .4s' }} />
                 <div style={{ position: 'absolute', top: -2, bottom: -2, left: `${ritmCalendar}%`, width: 2, background: C.ink }} />
@@ -164,31 +216,89 @@ export default function KpiPage() {
                 <span>{progres.toFixed(1)}% din {fmt(obiectiv)} EUR</span>
                 <span>ritm calendar: {ritmCalendar.toFixed(0)}%</span>
               </div>
-              <div style={{ marginTop: 12, padding: '10px 14px', background: peRitm ? '#ecfdf5' : '#fffbeb', borderRadius: 10, fontSize: 14, color: C.ink }}>
-                {peRitm ? 'Esti pe ritm.' : 'Sub ritm.'} Iti trebuie <b>{fmt(necesarSapt)} EUR / saptamana</b> pana la finalul anului.
-              </div>
             </>
           ) : (
-            <div style={{ marginTop: 12, fontSize: 14, color: C.grey }}>Obiectiv anual nesetat inca.</div>
+            <div style={{ marginTop: 10, fontSize: 14, color: C.grey }}>Obiectiv anual nesetat inca.</div>
           )}
+          <div style={{ marginTop: 12, fontSize: 13, color: C.grey }}>
+            In ritmul actual termini anul la <b style={{ color: obiectiv ? (proiectie >= obiectiv ? C.green : C.amber) : C.ink }}>{fmt(proiectie)} EUR</b>{obiectiv ? ` (obiectiv ${fmt(obiectiv)})` : ''}.
+          </div>
         </div>
 
+        {/* KPI-urile tale, cu bordura colorata si delta */}
         {kpiMei.length > 0 && (
           <div style={card}>
             <div style={{ fontSize: 15, fontWeight: 700, color: C.ink, marginBottom: 12 }}>KPI-urile tale</div>
             <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
-              {kpiMei.map((k: any) => (
-                <div key={k.id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '10px 14px', background: '#fafaf9', borderRadius: 10 }}>
-                  <div style={{ fontSize: 14, color: C.ink }}><Semafor val={valoriKpi[k.cheie].val} tinta={k.tinta} directie={k.directie} />{k.eticheta}</div>
-                  <div style={{ fontSize: 16, fontWeight: 700, color: C.ink }}>{valoriKpi[k.cheie].text}</div>
-                </div>
-              ))}
+              {kpiMei.map((k: any) => {
+                const st = statusKpi(valoriKpi[k.cheie].val, k.tinta, k.directie);
+                return (
+                  <div key={k.id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '12px 14px', background: '#fafaf9', borderRadius: 10, borderLeft: `4px solid ${culoareStatus(st)}` }}>
+                    <div style={{ fontSize: 14, color: C.ink }}>{k.eticheta}</div>
+                    <div style={{ textAlign: 'right' }}>
+                      <div style={{ fontSize: 18, fontWeight: 800, color: culoareStatus(st) === '#d6d3d1' ? C.ink : culoareStatus(st) }}>{valoriKpi[k.cheie].text}</div>
+                      {k.tinta !== null && <div style={{ fontSize: 11, color: C.grey }}>tinta: {k.directie === 'peste' ? 'peste' : 'sub'} {k.tinta}{k.cheie === 'gap' ? '' : '%'}</div>}
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+            {streak > 0 && (
+              <div style={{ marginTop: 12, padding: '10px 14px', background: '#ecfdf5', borderRadius: 10, fontSize: 13, color: C.ink }}>
+                🔥 <b>{streak} saptamani consecutive</b> cu propuneri noi. Nu rupe seria.
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* Saptamana curenta cu delte vs media 4 sapt */}
+        {saptCur && (
+          <div style={card}>
+            <div style={{ fontSize: 15, fontWeight: 700, color: C.ink, marginBottom: 12 }}>Week {saptCurenta}</div>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(150px, 1fr))', gap: 10 }}>
+              <div style={{ padding: '10px 14px', background: '#fafaf9', borderRadius: 10 }}>
+                <div style={{ fontSize: 12, color: C.grey }}>Propuneri</div>
+                <div style={{ fontSize: 20, fontWeight: 800, color: C.ink }}>{saptCur.propuneri}</div>
+                <Delta acum={saptCur.propuneri} medie={medie4((k: any) => k.propuneri)} />
+              </div>
+              <div style={{ padding: '10px 14px', background: '#fafaf9', borderRadius: 10 }}>
+                <div style={{ fontSize: 12, color: C.grey }}>Confirmat EUR</div>
+                <div style={{ fontSize: 20, fontWeight: 800, color: C.ink }}>{fmt(Number(saptCur.valoare_confirmata_ron) / curs)}</div>
+                <Delta acum={Number(saptCur.valoare_confirmata_ron)} medie={medie4((k: any) => Number(k.valoare_confirmata_ron))} />
+              </div>
+              <div style={{ padding: '10px 14px', background: '#fafaf9', borderRadius: 10 }}>
+                <div style={{ fontSize: 12, color: C.grey }}>Fee mediu an</div>
+                <div style={{ fontSize: 20, fontWeight: 800, color: C.ink }}>{fmt(feeMediu)} EUR</div>
+              </div>
             </div>
           </div>
         )}
 
+        {/* Segmente: forta si slabiciune */}
+        {forta && (
+          <div style={card}>
+            <div style={{ fontSize: 15, fontWeight: 700, color: C.ink, marginBottom: 12 }}>Segmentele tale</div>
+            <div style={{ display: 'grid', gridTemplateColumns: slab && slab.segment !== forta.segment ? '1fr 1fr' : '1fr', gap: 10 }}>
+              <div style={{ padding: '12px 14px', background: '#ecfdf5', borderRadius: 10, borderLeft: `4px solid ${C.green}` }}>
+                <div style={{ fontSize: 12, color: C.grey }}>Forta ta</div>
+                <div style={{ fontSize: 16, fontWeight: 800, color: C.ink, textTransform: 'capitalize' }}>{forta.segment}</div>
+                <div style={{ fontSize: 13, color: C.green, fontWeight: 700 }}>{forta.conv.toFixed(0)}% conversie valoare</div>
+              </div>
+              {slab && slab.segment !== forta.segment && (
+                <div style={{ padding: '12px 14px', background: '#fef2f2', borderRadius: 10, borderLeft: `4px solid ${C.red}` }}>
+                  <div style={{ fontSize: 12, color: C.grey }}>De lucrat</div>
+                  <div style={{ fontSize: 16, fontWeight: 800, color: C.ink, textTransform: 'capitalize' }}>{slab.segment}</div>
+                  <div style={{ fontSize: 13, color: C.red, fontWeight: 700 }}>{slab.conv.toFixed(0)}% conversie valoare</div>
+                </div>
+              )}
+            </div>
+            <div style={{ fontSize: 11, color: C.grey, marginTop: 8 }}>Doar segmente cu minim 5 propuneri.</div>
+          </div>
+        )}
+
+        {/* Propus vs Confirmat */}
         <div style={card}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12, flexWrap: 'wrap', gap: 8 }}>
             <div style={{ fontSize: 15, fontWeight: 700, color: C.ink }}>Propus vs Confirmat</div>
             <div style={{ display: 'flex', gap: 4 }}>
               {(['S', 'L', 'T'] as const).map(p => (
@@ -216,6 +326,7 @@ export default function KpiPage() {
           <div style={{ fontSize: 11, color: C.grey, marginTop: 8 }}>Gri = propus, verde = confirmat. Lunile derivate din saptamana de raportare.</div>
         </div>
 
+        {/* Top artisti */}
         {artMei.length > 0 && (
           <div style={card}>
             <div style={{ fontSize: 15, fontWeight: 700, color: C.ink, marginBottom: 4 }}>Top artisti (confirmat)</div>
@@ -231,17 +342,18 @@ export default function KpiPage() {
           </div>
         )}
 
+        {/* Tu vs media */}
         <div style={card}>
           <div style={{ fontSize: 15, fontWeight: 700, color: C.ink, marginBottom: 12 }}>Tu vs media agentiei</div>
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
             <div style={{ padding: '10px 14px', background: '#fafaf9', borderRadius: 10 }}>
               <div style={{ fontSize: 12, color: C.grey }}>Rulaj confirmat</div>
-              <div style={{ fontSize: 17, fontWeight: 700, color: C.ink }}>{fmt(confEur)} EUR</div>
+              <div style={{ fontSize: 17, fontWeight: 800, color: C.ink }}>{fmt(confEur)} EUR</div>
               <div style={{ fontSize: 12, color: C.grey }}>media: {fmt(medieAgentie.confirmatRon / curs)} EUR</div>
             </div>
             <div style={{ padding: '10px 14px', background: '#fafaf9', borderRadius: 10 }}>
               <div style={{ fontSize: 12, color: C.grey }}>Conversie valoare</div>
-              <div style={{ fontSize: 17, fontWeight: 700, color: C.ink }}>{conversie.toFixed(1)}%</div>
+              <div style={{ fontSize: 17, fontWeight: 800, color: C.ink }}>{conversie.toFixed(1)}%</div>
               <div style={{ fontSize: 12, color: C.grey }}>media: {medieAgentie.conversie.toFixed(1)}%</div>
             </div>
           </div>
