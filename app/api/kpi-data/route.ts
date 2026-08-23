@@ -19,14 +19,14 @@ async function cursBNR(): Promise<number> {
   const azi = new Date().toISOString().slice(0, 10);
   if (cursCache?.zi === azi) return cursCache.curs;
   try {
-    const r = await fetch('https://www.bnr.ro/nbrfxrates.xml', {
-      headers: {
-        'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0 Safari/537.36',
-        'Accept': 'application/xml,text/xml,*/*',
-      },
-      next: { revalidate: 3600 },
-    });
-    const xml = await r.text();
+    let xml = '';
+    for (const u of ['https://curs.bnr.ro/nbrfxrates.xml', 'https://www.bnr.ro/nbrfxrates.xml']) {
+      try {
+        const r = await fetch(u, { headers: { 'User-Agent': 'Mozilla/5.0' }, next: { revalidate: 21600 } });
+        const t = await r.text();
+        if (t.includes('<Rate currency="EUR"')) { xml = t; break; }
+      } catch {}
+    }
     const m = xml.match(/<Rate currency="EUR">([\d.]+)<\/Rate>/);
     if (!m) throw new Error('fara EUR in XML');
     const curs = parseFloat(m[1]);
@@ -91,6 +91,9 @@ export async function GET(req: NextRequest) {
     conversie: (() => { const o = activi.reduce((s, t) => s + t.o, 0); const c = activi.reduce((s, t) => s + t.c, 0); return o > 0 ? (c / o) * 100 : 0; })(),
   };
 
+  const { data: setari } = await supa.from('setari_kpi').select('cheie, valoare');
+  const obiectivAgentieEur = setari?.find(x => x.cheie === 'obiectiv_agentie_eur')?.valoare ?? null;
+
   const { data: log } = await supa.from('kpi_upload_log')
     .select('an, saptamana, incarcat_la').order('incarcat_la', { ascending: false }).limit(1);
 
@@ -103,6 +106,7 @@ export async function GET(req: NextRequest) {
     segmente: segmente || [],
     kpiIndividuali: kpiInd || [],
     medieAgentie,
+    obiectivAgentieEur,
     ultimulUpload: log?.[0] || null,
   });
 }
@@ -134,6 +138,12 @@ export async function POST(req: NextRequest) {
   if (body.actiune === 'toggle-activ') {
     const { data: a } = await supa.from('agenti').select('activ').eq('id', body.agentId).single();
     const { error } = await supa.from('agenti').update({ activ: !a?.activ }).eq('id', body.agentId);
+    if (error) return NextResponse.json({ error: error.message }, { status: 500 });
+    return NextResponse.json({ ok: true });
+  }
+  if (body.actiune === 'obiectiv-agentie') {
+    const { error } = await supa.from('setari_kpi')
+      .upsert({ cheie: 'obiectiv_agentie_eur', valoare: body.valoare === '' ? null : Number(body.valoare) });
     if (error) return NextResponse.json({ error: error.message }, { status: 500 });
     return NextResponse.json({ ok: true });
   }

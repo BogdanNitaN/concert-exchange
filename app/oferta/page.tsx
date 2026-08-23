@@ -255,6 +255,9 @@ export default function OfertaPage() {
         setAuthed(false)
       }
       setCheckingAuth(false)
+    }).catch(() => {
+      setAuthed(false)
+      setCheckingAuth(false)
     })
   }, [])
 
