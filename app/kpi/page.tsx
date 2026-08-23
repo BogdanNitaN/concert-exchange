@@ -17,7 +17,7 @@ const glass: React.CSSProperties = {
 const LUNI = ['Ian', 'Feb', 'Mar', 'Apr', 'Mai', 'Iun', 'Iul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
 
 const DEFINITII: Record<string, { titlu: string; text: string }> = {
-  rulaj: { titlu: 'Rulaj confirmat', text: 'Valoarea totala a evenimentelor tale cu status CONFIRMAT in acest an, convertita in EUR la cursul BNR al zilei. Sursa: Booking Reporting, sheet FWD.' },
+  rulaj: { titlu: 'Rulaj confirmat', text: 'Valoarea totala a evenimentelor tale cu status CONFIRMAT in acest an, in EUR, direct din Booking Reporting (sheet FWD).' },
   ritm: { titlu: 'Ritmul calendaristic', text: 'Linia neagra de pe bara arata unde ar trebui sa fii daca obiectivul anual s-ar imparti egal pe 52 de saptamani. Verde = esti peste linie. Chihlimbar = sub linie, verdictul iti spune cat iti trebuie pe saptamana ca sa recuperezi.' },
   proiectie: { titlu: 'Proiectia de final de an', text: 'Rulajul tau de pana acum, impartit la saptamanile trecute si inmultit cu 52. Arata unde termini anul daca tii ritmul actual. Nu tine cont de sezonalitate (Revelionul, de exemplu, o va impinge in sus).' },
   propus: { titlu: 'Propus', text: 'Valoarea tuturor ofertelor trimise in perioada respectiva, indiferent daca s-au confirmat sau nu. Sursa: sheet FWD Ofertat.' },
@@ -118,7 +118,8 @@ export default function KpiPage() {
     );
   }
 
-  const { eu, curs, an, agenti, kpi, artisti, segmente, kpiIndividuali, medieAgentie, obiectivAgentieEur } = data;
+  const { eu, an, agenti, kpi, artisti, segmente, kpiIndividuali, medieAgentie, obiectivAgentieEur } = data;
+  const curs = 1; // FEE din Booking Reporting e deja in EUR
   const agent = agenti.find((a: any) => a.id === eu.id) || agenti[0];
   const alMeu = kpi.filter((k: any) => k.agent_id === agent.id);
   const artMei = artisti.filter((a: any) => a.agent_id === agent.id);
@@ -228,7 +229,7 @@ export default function KpiPage() {
       </div>
 
       <div style={{ maxWidth: 720, margin: '0 auto', padding: '18px 16px', display: 'flex', flexDirection: 'column', gap: 14 }}>
-        <div style={{ fontSize: 13, color: C.grey }}>Anul {an} · pana la Week {saptCurenta} · curs BNR {curs.toFixed(4)}</div>
+        <div style={{ fontSize: 13, color: C.grey }}>Anul {an} · pana la Week {saptCurenta}</div>
 
         <Grupa t="ZBOR" />
         <div style={{ ...card, ...tap('rulaj'), paddingTop: 24 }} onClick={() => setExpl('rulaj')}>
@@ -446,7 +447,7 @@ export default function KpiPage() {
         )}
 
         <div style={{ fontSize: 12, color: C.grey, textAlign: 'center', paddingBottom: 8 }}>
-          Apasa pe orice card ca sa vezi ce inseamna. Valorile in EUR la cursul BNR al zilei.
+          Apasa pe orice card ca sa vezi ce inseamna. Valorile in EUR, direct din Booking Reporting.
         </div>
       </div>
 

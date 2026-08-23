@@ -89,7 +89,8 @@ export default function KpiAdmin() {
     );
   }
 
-  const { curs, an, agenti, kpi, kpiIndividuali, ultimulUpload, obiectivAgentieEur } = data;
+  const { an, agenti, kpi, kpiIndividuali, ultimulUpload, obiectivAgentieEur } = data;
+  const curs = 1; // FEE din Booking Reporting e deja in EUR
   const saptCurenta = Math.max(0, ...kpi.map((k: any) => k.saptamana));
   const ritmCalendar = (saptCurenta / 52) * 100;
 
@@ -139,7 +140,7 @@ export default function KpiAdmin() {
           <div>
             <div style={{ fontSize: 24, fontWeight: 800, color: C.ink }}>GIG<span style={{ color: C.green }}>x</span> <span style={{ fontWeight: 700 }}>· Dashboard agenti {an}</span></div>
             <div style={{ fontSize: 13, color: C.grey }}>
-              Week {saptCurenta} · curs BNR {curs.toFixed(4)} · total agentie {fmt(totalAgentie)} EUR
+              Week {saptCurenta} · total agentie {fmt(totalAgentie)} EUR
               {ultimulUpload && ` · ultimul upload: Week ${ultimulUpload.saptamana}`}
             </div>
           </div>
