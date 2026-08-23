@@ -89,7 +89,7 @@ export default function KpiAdmin() {
     );
   }
 
-  const { curs, an, agenti, kpi, kpiIndividuali, ultimulUpload } = data;
+  const { curs, an, agenti, kpi, kpiIndividuali, ultimulUpload, obiectivAgentieEur } = data;
   const saptCurenta = Math.max(0, ...kpi.map((k: any) => k.saptamana));
   const ritmCalendar = (saptCurenta / 52) * 100;
 
@@ -148,6 +148,16 @@ export default function KpiAdmin() {
         </div>
 
         {err && <div style={{ ...card, borderColor: C.red, color: C.red, fontSize: 14 }}>{err}</div>}
+
+        <div style={card}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 10 }}>
+            <div>
+              <div style={{ fontSize: 15, fontWeight: 700, color: C.ink }}>Obiectiv agentie {an} (EUR)</div>
+              <div style={{ fontSize: 12, color: C.grey, marginTop: 2 }}>Apare pe panoul fiecarui agent, in grupa AGENTIA.</div>
+            </div>
+            <ObjInput initial={obiectivAgentieEur ? Number(obiectivAgentieEur) : null} onSave={(v: string) => actiune({ actiune: 'obiectiv-agentie', valoare: v })} />
+          </div>
+        </div>
 
         <div style={card}>
           <div style={{ fontSize: 15, fontWeight: 700, color: C.ink, marginBottom: 10 }}>Incarca Booking Reporting</div>
