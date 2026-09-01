@@ -79,7 +79,7 @@ export async function GET(req: Request, ctx: { params: Promise<{ token: string }
 
     let payload: any
     if (link.scop === 'bal') {
-      const { data: toti } = await supabase.from('oferta_artisti').select('*')
+      const { data: toti } = await supabase.from('oferta_artisti').select('*').order('id')
       const lista = (toti || []).filter(a => a.bal && !esteAscuns(a.nume))
       // ordinea din PDF-ul de baluri: urban (trap inclus), pop, DJs, special act
       const ordCat: Record<string, number> = { urban: 0, pop: 1, dj: 2, special: 3 }
@@ -87,11 +87,11 @@ export async function GET(req: Request, ctx: { params: Promise<{ token: string }
       const sortate = [...lista].sort((x, y) => cheie(x) - cheie(y))
       payload = { tip: 'roster', artisti: sortate.map(fa) }
     } else if (link.scop === 'revelion') {
-      const { data: toti } = await supabase.from('oferta_artisti').select('*')
+      const { data: toti } = await supabase.from('oferta_artisti').select('*').order('id')
       const lista = (toti || []).filter(a => a.revelion && !esteAscuns(a.nume))
       payload = { tip: 'roster', revelion: true, artisti: lista.map(fa).sort((a, b) => (b.preturi?.standard || 0) - (a.preturi?.standard || 0)) }
     } else if (link.scop === 'piata') {
-      const { data: toti } = await supabase.from('oferta_artisti').select('*')
+      const { data: toti } = await supabase.from('oferta_artisti').select('*').order('id')
       let lista = (toti || []).filter(a => !esteAscuns(a.nume))
       if (link.filtru_gen) {
         const g = link.filtru_gen.toLowerCase()
@@ -108,7 +108,7 @@ export async function GET(req: Request, ctx: { params: Promise<{ token: string }
       })
       payload = { tip: 'roster', piata: true, artisti: mapate }
     } else if (link.scop === 'roster') {
-      const { data: toti } = await supabase.from('oferta_artisti').select('*')
+      const { data: toti } = await supabase.from('oferta_artisti').select('*').order('id')
       let lista = (toti || []).filter(a => a.tip !== 'intermediere' && !esteAscuns(a.nume) && (shareMap[a.nume]?.afisabil ?? true))
       if (link.filtru_gen) {
         const g = link.filtru_gen.toLowerCase()
@@ -119,7 +119,7 @@ export async function GET(req: Request, ctx: { params: Promise<{ token: string }
       }
       payload = { tip: 'roster', artisti: lista.map(fa).sort((a, b) => (b.preturi?.standard || 0) - (a.preturi?.standard || 0)) }
     } else {
-      const { data: a } = await supabase.from('oferta_artisti').select('*').eq('nume', link.scop).single()
+      const { data: a } = await supabase.from('oferta_artisti').select('*').order('id').eq('nume', link.scop).single()
       if (!a) return NextResponse.json({ ok: false, error: 'Artist negasit.' }, { status: 404 })
       const artist: any = fa(a)
       artist.bio = a.bio || null
