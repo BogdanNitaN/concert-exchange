@@ -25,7 +25,17 @@ export async function GET(req: Request) {
   const { data: linkuri } = await supa.from('roster_links')
     .select('token, destinatar, scop, tip_audienta, expira_la, activ, creat_de, created_at')
     .order('created_at', { ascending: false })
-  const { data: views } = await supa.from('roster_views').select('token, created_at')
+  // roster_views poate depasi 1000 randuri (limita default Supabase) -> paginez ca sa numar TOATE vizitele
+  let views: any[] = []
+  let de = 0
+  const pas = 1000
+  while (true) {
+    const { data: batch } = await supa.from('roster_views').select('token, created_at').range(de, de + pas - 1)
+    if (!batch || batch.length === 0) break
+    views = views.concat(batch)
+    if (batch.length < pas) break
+    de += pas
+  }
   const nrViz: Record<string, number> = {}
   const ultima: Record<string, string> = {}
   for (const v of (views || [])) {
