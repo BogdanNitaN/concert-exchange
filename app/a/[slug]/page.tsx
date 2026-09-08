@@ -122,7 +122,7 @@ export default function PaginaArtist() {
                 </div>
               ))}
             </div>
-            <div style={{textAlign:'center', marginTop:'10px', fontSize:'9px', color:UI.faint, fontWeight:500}}>Analytics provided by chartex.com</div>
+            <div style={{textAlign:'center', marginTop:'10px', fontSize:'9px', color:UI.faint, fontWeight:500}}>Analytics provided by <a href="https://chartex.com" target="_blank" rel="noopener" style={{color:'inherit', textDecoration:'none', fontWeight:'inherit'}}>chartex.com</a></div>
           </div>
         )}
 
