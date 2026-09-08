@@ -517,6 +517,17 @@ export default function OfertaPage() {
         cazareFixa: typeof r.cazareFixa === 'number' ? r.cazareFixa : l.cazareFixa,
       }
     }
+    // Bal: are profil propriu (transport in euro, cazare, bilete) - la fel ca revelionul
+    const b: any = tip === 'Bal' ? (l.artist as any)?.bal : null
+    if (b) {
+      const fee = (typeof b.fee === 'number' && b.fee > 0) ? b.fee : l.fee
+      return { ...l, tipPret: tip, feeLista: fee, fee,
+        leiKm: typeof b.eurKm === 'number' ? b.eurKm : (typeof b.leiKm === 'number' ? b.leiKm : l.leiKm),
+        artist: { ...l.artist, transport_moneda: (b.moneda || 'euro') },
+        bileteAvion: typeof b.bilete === 'number' ? b.bilete : l.bileteAvion,
+        cazare: b.cazare || l.cazare,
+      }
+    }
     const p = pretPentruTip(l.artist, tip)
     return p ? { ...l, tipPret: tip, feeLista: p, fee: p } : { ...l, tipPret: tip }
   }

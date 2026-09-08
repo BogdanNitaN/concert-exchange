@@ -30,7 +30,7 @@ export async function GET(req: Request) {
   let de = 0
   const pas = 1000
   while (true) {
-    const { data: batch } = await supa.from('roster_views').select('token, created_at').range(de, de + pas - 1)
+    const { data: batch } = await supa.from('roster_views').select('token, created_at, user_agent, artist_vazut').range(de, de + pas - 1)
     if (!batch || batch.length === 0) break
     views = views.concat(batch)
     if (batch.length < pas) break
@@ -38,13 +38,31 @@ export async function GET(req: Request) {
   }
   const nrViz: Record<string, number> = {}
   const ultima: Record<string, string> = {}
+  const prima: Record<string, string> = {}
+  const dispozitive: Record<string, Set<string>> = {}
+  const artisti: Record<string, Record<string, number>> = {}
   for (const v of (views || [])) {
-    nrViz[v.token] = (nrViz[v.token] || 0) + 1
-    if (!ultima[v.token] || v.created_at > ultima[v.token]) ultima[v.token] = v.created_at
+    const t = v.token
+    nrViz[t] = (nrViz[t] || 0) + 1
+    if (!ultima[t] || v.created_at > ultima[t]) ultima[t] = v.created_at
+    if (!prima[t] || v.created_at < prima[t]) prima[t] = v.created_at
+    if (v.user_agent) { (dispozitive[t] = dispozitive[t] || new Set()).add(v.user_agent) }
+    if (v.artist_vazut) { (artisti[t] = artisti[t] || {}); artisti[t][v.artist_vazut] = (artisti[t][v.artist_vazut] || 0) + 1 }
   }
-  const coduri = (linkuri || []).map((l: any) => ({
-    ...l, vizualizari: nrViz[l.token] || 0, ultimaVizualizare: ultima[l.token] || null,
-  }))
+  const coduri = (linkuri || []).map((l: any) => {
+    const topArtisti = Object.entries(artisti[l.token] || {})
+      .sort((a: any, b: any) => b[1] - a[1])
+      .slice(0, 8)
+      .map(([nume, n]) => ({ nume, n }))
+    return {
+      ...l,
+      vizualizari: nrViz[l.token] || 0,
+      vizualizariUnice: dispozitive[l.token]?.size || 0,
+      primaVizualizare: prima[l.token] || null,
+      ultimaVizualizare: ultima[l.token] || null,
+      topArtisti,
+    }
+  })
   return NextResponse.json({ ok: true, coduri })
 }
 
