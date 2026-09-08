@@ -22,6 +22,7 @@ export default function CoduriPage() {
   const [nouPrivat, setNouPrivat] = useState(false)
   const [nouScop, setNouScop] = useState('roster')
   const [cautaCod, setCautaCod] = useState('')
+  const [detaliuDeschis, setDetaliuDeschis] = useState<string | null>(null)
   const [toateExpira, setToateExpira] = useState(false)
 
   async function faLogin() {
@@ -68,6 +69,7 @@ export default function CoduriPage() {
     load()
   }
   function zileRamase(x: string) { return Math.ceil((new Date(x).getTime() - Date.now()) / 86400000) }
+  function dataScurta(x: string | null) { if (!x) return null; return new Date(x).toLocaleDateString('ro-RO', { day: 'numeric', month: 'short' }) }
   function stare(c: any) {
     if (!c.activ) return { txt:'oprit', col: UI.faint }
     const z = zileRamase(c.expira_la)
@@ -156,18 +158,43 @@ export default function CoduriPage() {
           }).map((c, i) => {
             const st = stare(c)
             return (
-              <div key={c.token} style={{padding:'12px 14px', borderTop: i ? '1px solid #f0f0ef' : 'none', display:'flex', alignItems:'center', gap:'12px', flexWrap:'wrap'}}>
+              <div key={c.token} style={{borderTop: i ? '1px solid #f0f0ef' : 'none'}}>
+              <div style={{padding:'12px 14px', display:'flex', alignItems:'center', gap:'12px', flexWrap:'wrap'}}>
                 <div style={{flex:'1 1 220px', minWidth:0}}>
                   <div style={{fontSize:'13px', fontWeight:800, color:UI.ink}}>{c.destinatar || '—'}</div>
                   <div style={{fontSize:'11px', color:UI.sub, marginTop:'2px'}}>{({ roster: 'Roster complet', revelion: 'Revelion 2027', bal: 'Baluri 2027' } as any)[c.scop] || c.scop} · {c.tip_audienta} · {c.creat_de || '—'}</div>
                 </div>
                 <code style={{fontSize:'12px', fontWeight:700, background:UI.bg, padding:'4px 8px', borderRadius:'6px'}}>{c.token}</code>
                 <span style={{fontSize:'11px', fontWeight:800, color:st.col, minWidth:'86px'}}>{st.txt}</span>
-                <span style={{fontSize:'11px', color:UI.sub, minWidth:'70px'}}>{c.vizualizari} vizualizari</span>
+                <button onClick={() => setDetaliuDeschis(detaliuDeschis === c.token ? null : c.token)} style={{fontSize:'11px', color: c.vizualizari > 0 ? UI.ink : UI.sub, fontWeight: c.vizualizari > 0 ? 700 : 400, minWidth:'150px', textAlign:'left', background:'none', border:'none', cursor:'pointer', fontFamily:F, padding:0}}>
+                  {c.vizualizari} vizite{c.vizualizariUnice > 0 ? ' · ' + c.vizualizariUnice + ' disp' : ''}{c.ultimaVizualizare ? ' · ' + dataScurta(c.ultimaVizualizare) : ''}{(c.topArtisti?.length || (c.primaVizualizare && c.primaVizualizare !== c.ultimaVizualizare)) ? (detaliuDeschis === c.token ? ' ▲' : ' ▼') : ''}
+                </button>
                 <button onClick={() => { navigator.clipboard.writeText('https://gigx.ro/r/' + c.token); setMsg('Link copiat'); setTimeout(() => setMsg(''), 2000) }} style={{padding:'6px 10px', background:'white', color:UI.ink, border:'1.5px solid '+UI.line, borderRadius:'8px', fontSize:'11px', fontWeight:700, cursor:'pointer', fontFamily:F}}>Copiaza</button>
                 <a href={'/r/' + c.token} target="_blank" rel="noreferrer" style={{padding:'6px 10px', background:UI.ink, color:'white', borderRadius:'8px', fontSize:'11px', fontWeight:700, textDecoration:'none'}}>Deschide</a>
                 <button onClick={() => patch(c.token, { prelungesteZile: 30 })} style={{padding:'6px 10px', background:'white', color:UI.ink, border:'1.5px solid '+UI.line, borderRadius:'8px', fontSize:'11px', fontWeight:700, cursor:'pointer', fontFamily:F}}>+30z</button>
                 <button onClick={() => patch(c.token, { activ: !c.activ })} style={{padding:'6px 10px', background: c.activ ? 'white' : UI.green, color: c.activ ? UI.red : 'white', border:'1.5px solid '+(c.activ ? UI.line : UI.green), borderRadius:'8px', fontSize:'11px', fontWeight:700, cursor:'pointer', fontFamily:F}}>{c.activ ? 'Opreste' : 'Repune'}</button>
+              </div>
+              {detaliuDeschis === c.token && (
+                <div style={{padding:'0 14px 14px 14px', fontSize:'12px', color:UI.sub}}>
+                  <div style={{background:UI.bg, borderRadius:'10px', padding:'12px 14px'}}>
+                    <div style={{marginBottom: (c.topArtisti && c.topArtisti.length) ? '10px' : 0}}>
+                      {c.primaVizualizare ? <span>Prima deschidere: <b style={{color:UI.ink}}>{dataScurta(c.primaVizualizare)}</b></span> : <span>Nicio vizualizare inca</span>}
+                      {c.ultimaVizualizare && c.ultimaVizualizare !== c.primaVizualizare ? <span> · Ultima: <b style={{color:UI.ink}}>{dataScurta(c.ultimaVizualizare)}</b></span> : null}
+                      {c.vizualizariUnice > 0 ? <span> · {c.vizualizariUnice} dispozitiv{c.vizualizariUnice === 1 ? '' : 'e'}</span> : null}
+                    </div>
+                    {c.topArtisti && c.topArtisti.length > 0 && (
+                      <div>
+                        <div style={{fontSize:'10px', fontWeight:800, textTransform:'uppercase', color:UI.sub, marginBottom:'6px'}}>Artisti deschisi</div>
+                        <div style={{display:'flex', flexWrap:'wrap', gap:'6px'}}>
+                          {c.topArtisti.map((a: any) => (
+                            <span key={a.nume} style={{background:'white', border:'1px solid '+UI.line, borderRadius:'6px', padding:'3px 8px', fontSize:'11px', color:UI.ink}}>{a.nume} <b style={{color:UI.green}}>{a.n}x</b></span>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              )}
               </div>
             )
           })}
