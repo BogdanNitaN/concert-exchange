@@ -101,7 +101,10 @@ export default function CoduriPage() {
             <div style={{fontSize:'24px', fontWeight:800, color:UI.ink}}>Coduri de acces</div>
             <div style={{fontSize:'13px', color:UI.sub}}>Linkuri de share si coduri pentru /rosterfwd</div>
           </div>
-          <Link href="/oferta" style={{fontSize:'13px', fontWeight:700, color:UI.purple, textDecoration:'none'}}>← Inapoi</Link>
+          <div style={{display:'flex', gap:'10px', alignItems:'center'}}>
+            <Link href="/oferta/analytics" style={{fontSize:'12px', fontWeight:700, color:'white', background:UI.green, textDecoration:'none', padding:'8px 14px', borderRadius:'10px'}}>Analytics</Link>
+            <Link href="/oferta" style={{fontSize:'13px', fontWeight:700, color:UI.purple, textDecoration:'none'}}>← Inapoi</Link>
+          </div>
         </div>
 
         {expira.length > 0 && (
