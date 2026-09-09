@@ -482,6 +482,12 @@ export default function OfertaPage() {
   function normOras(x: string): string {
     return (x || '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-z ]/g, '').trim()
   }
+  // orase la care se merge intotdeauna rutier, niciodata cu avionul (indiferent de km)
+  const ORASE_FARA_AVION = ['craiova', 'bacau', 'constanta', 'sibiu']
+  function esteOrasFaraAvion(): boolean {
+    const o = normOras(toCity)
+    return ORASE_FARA_AVION.some(x => o === x || o.includes(x))
+  }
   function esteLocalBucIlfov(l: Linie): boolean {
     const orasEv = normOras(toCity)
     const orasArtist = normOras(l.artist.oras_rezidenta || 'bucuresti')
@@ -570,7 +576,7 @@ export default function OfertaPage() {
         if (!c.local && c.diurnaTotal > 0) out.push('Diurna: ' + (l.diurnaFixa > 0 ? c.diurnaTotal.toLocaleString('ro-RO') + ' lei' : l.diurnaPerPers + ' lei/pers x ' + l.persoane + ' pers' + (l.zile > 1 ? ' x ' + l.zile + ' zile' : '') + ' (' + c.diurnaTotal.toLocaleString('ro-RO') + ' lei + TVA) sau masa a la carte'))
         if (!c.local && l.tipMasa === 'alacarte' && l.diurnaFixa === 0 && l.cazareFixa === 0) out.push('Masa: a la carte ' + l.persoane + ' pers (pranz, cina) + mic dejun la hotel')
         if (l.allInAvionLei > 0) out.push('Avion: ' + l.allInAvionLei.toLocaleString('ro-RO') + ' lei')
-        else if (km !== null && km > 300 && l.bileteAvion > 0) out.push('Avion: ' + l.bileteAvion + (l.bileteAvion === 1 ? ' bilet' : ' bilete') + ' + transfer de asigurat')
+        else if (km !== null && km > 300 && l.bileteAvion > 0 && !esteOrasFaraAvion()) out.push('Avion: ' + l.bileteAvion + (l.bileteAvion === 1 ? ' bilet' : ' bilete') + ' + transfer de asigurat')
         if (l.useAlcool && c.alcoolTotal > 0) out.push('Protocol: ' + c.alcoolTotal.toLocaleString('ro-RO') + ' lei (alcool)')
         // echivalent euro defalcat
         out.push('(echivalent: ' + l.fee + ' EUR onorariu, curs ' + c.cursAdaos.toFixed(4) + ' lei/EUR)')
@@ -582,7 +588,7 @@ export default function OfertaPage() {
         if (l.landed) parts.push('transport inclus')
         if (!l.landed && c.transportLei > 0) parts.push('transport ' + l.leiKm + ' lei/km x ' + c.kmTotal + ' km = ' + c.transportLei.toLocaleString('ro-RO') + ' lei + TVA')
         if (!l.landed && c.transportEur > 0) parts.push('transport ' + l.leiKm + ' EUR/km x ' + c.kmTotal + ' km = ' + c.transportEur.toLocaleString('ro-RO') + ' EUR + TVA' + (c.transportEurInLei > 0 ? ' (aprox ' + c.transportEurInLei.toLocaleString('ro-RO') + ' lei)' : ''))
-        if (km !== null && km > 300 && l.bileteAvion > 0 && !(l.allInAvionLei > 0)) {
+        if (km !== null && km > 300 && l.bileteAvion > 0 && !esteOrasFaraAvion() && !(l.allInAvionLei > 0)) {
           let av = l.bileteAvion + (l.bileteAvion === 1 ? ' bilet avion' : ' bilete avion')
           av += ' + transfer de asigurat'
           parts.push(av)
@@ -787,7 +793,7 @@ export default function OfertaPage() {
       if (l.landed) rows.push('Transport: inclus in onorariu')
       if (!l.landed && c.transportLei > 0) rows.push('Transport: ' + l.leiKm + ' lei/km x ' + c.kmTotal + ' km = ' + c.transportLei.toLocaleString('ro-RO') + ' lei + TVA')
       if (c.transportEur > 0) rows.push('Transport: ' + l.leiKm + ' EUR/km x ' + c.kmTotal + ' km = ' + c.transportEur.toLocaleString('ro-RO') + ' EUR + TVA' + (c.transportEurInLei > 0 ? ' (aprox ' + c.transportEurInLei.toLocaleString('ro-RO') + ' lei)' : ''))
-      if (km !== null && km > 300 && l.bileteAvion > 0 && !(l.allInAvionLei > 0)) {
+      if (km !== null && km > 300 && l.bileteAvion > 0 && !esteOrasFaraAvion() && !(l.allInAvionLei > 0)) {
         let av = 'Avion: ' + l.bileteAvion + (l.bileteAvion === 1 ? ' bilet' : ' bilete') + ' + transfer de asigurat'
         rows.push(av)
       }
@@ -1133,12 +1139,12 @@ export default function OfertaPage() {
               )}
 
               {l.cazareFixa > 0 ? (
-                <div style={{fontSize:'12px', color:'#78716c', marginBottom:'12px'}}>Cazare cu sumă fixă (editabilă mai jos){km !== null && km > 300 && l.bileteAvion > 0 ? ' · ' + l.bileteAvion + (l.bileteAvion === 1 ? ' bilet avion' : ' bilete avion') : ''}</div>
+                <div style={{fontSize:'12px', color:'#78716c', marginBottom:'12px'}}>Cazare cu sumă fixă (editabilă mai jos){km !== null && km > 300 && l.bileteAvion > 0 && !esteOrasFaraAvion() ? ' · ' + l.bileteAvion + (l.bileteAvion === 1 ? ' bilet avion' : ' bilete avion') : ''}</div>
               ) : (
               <div style={{marginBottom:'12px'}}>
                 <label style={label}>Cazare</label>
                 <input value={l.cazare} onChange={e => updateLinie(l.key, { cazare: e.target.value, persoane: persoaneDinCazare(e.target.value) })} style={inputStyle} />
-                <div style={{fontSize:'12px', color:'#78716c', marginTop:'4px'}}>Protocol: {l.persoane} persoane{km !== null && km > 300 && l.bileteAvion > 0 ? ' · ' + l.bileteAvion + (l.bileteAvion === 1 ? ' bilet avion' : ' bilete avion') : ''}</div>
+                <div style={{fontSize:'12px', color:'#78716c', marginTop:'4px'}}>Protocol: {l.persoane} persoane{km !== null && km > 300 && l.bileteAvion > 0 && !esteOrasFaraAvion() ? ' · ' + l.bileteAvion + (l.bileteAvion === 1 ? ' bilet avion' : ' bilete avion') : ''}</div>
               </div>
               )}
 
