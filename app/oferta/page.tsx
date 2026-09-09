@@ -578,6 +578,16 @@ export default function OfertaPage() {
         if (l.allInAvionLei > 0) out.push('Avion: ' + l.allInAvionLei.toLocaleString('ro-RO') + ' lei')
         else if (km !== null && km > 300 && l.bileteAvion > 0 && !esteOrasFaraAvion()) out.push('Avion: ' + l.bileteAvion + (l.bileteAvion === 1 ? ' bilet' : ' bilete') + ' + transfer de asigurat')
         if (l.useAlcool && c.alcoolTotal > 0) out.push('Protocol: ' + c.alcoolTotal.toLocaleString('ro-RO') + ' lei (alcool)')
+        // TOTAL cu TVA (cota standard 21% in 2026) - subtotal, TVA, total de plata
+        {
+          const subtotal = c.feeLeiConv + c.transportLei + c.transportEurInLei + (c.diurnaTotal || 0) + (l.cazareFixa || 0) + (l.allInAvionLei || 0)
+          const tva = Math.round(subtotal * 0.21)
+          const totalCuTva = subtotal + tva
+          out.push('')
+          out.push('Subtotal: ' + subtotal.toLocaleString('ro-RO') + ' lei')
+          out.push('TVA 21%: ' + tva.toLocaleString('ro-RO') + ' lei')
+          out.push('TOTAL de plata: ' + totalCuTva.toLocaleString('ro-RO') + ' lei (TVA inclus)')
+        }
         // echivalent euro defalcat
         out.push('(echivalent: ' + l.fee + ' EUR onorariu, curs ' + c.cursAdaos.toFixed(4) + ' lei/EUR)')
       } else {
