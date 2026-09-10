@@ -124,6 +124,23 @@ export async function GET(req: NextRequest) {
   if (eu.rol !== 'admin') qSint = qSint.eq('publicat', true).or(`agent_id.eq.${eu.id},agent_id.is.null`);
   const { data: sinteze } = await qSint;
 
+  // comparativ echipa: propus/confirmat pe an, toti agentii activi (vizibil tuturor - decizie 10.09)
+  const idsActivi = (agentiToti || []).map(a => a.id);
+  const { data: kpiToti } = await supa.from('kpi_saptamanal')
+    .select('agent_id, saptamana, propuneri, confirmate, valoare_ofertata_ron, valoare_confirmata_ron')
+    .eq('an', an).in('agent_id', idsActivi);
+  const comparativ = (agentiToti || []).map(a => {
+    const ale = (kpiToti || []).filter(k => k.agent_id === a.id && k.saptamana > 0);
+    return {
+      agentId: a.id,
+      nume: a.nume_afisat || a.nume,
+      prop: ale.reduce((x, k) => x + (k.propuneri || 0), 0),
+      conf: ale.reduce((x, k) => x + (k.confirmate || 0), 0),
+      vProp: ale.reduce((x, k) => x + Number(k.valoare_ofertata_ron || 0), 0),
+      vConf: ale.reduce((x, k) => x + Number(k.valoare_confirmata_ron || 0), 0),
+    };
+  }).filter(c => c.prop > 0 || c.conf > 0).sort((a, b) => b.vConf - a.vConf);
+
   const { data: log } = await supa.from('kpi_upload_log')
     .select('an, saptamana, incarcat_la').order('incarcat_la', { ascending: false }).limit(1);
 
@@ -141,6 +158,7 @@ export async function GET(req: NextRequest) {
     lunaExec: lunaExec || [],
     reusite,
     sinteze: sinteze || [],
+    comparativ,
     ultimulUpload: log?.[0] || null,
   });
 }

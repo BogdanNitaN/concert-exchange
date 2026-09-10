@@ -28,6 +28,7 @@ const DEFINITII: Record<string, { titlu: string; text: string }> = {
   agentie: { titlu: 'Obiectivele generale', text: 'Rulajul intregii echipe fata de obiectivul anual al agentiei, si rulajul tau anual fata de obiectivul tau. Partea ta conteaza in ambele bare.' },
   carry: { titlu: 'Vandut in 2025 pentru 2026', text: 'Evenimente contractate anul trecut cu executie anul acesta. Intra in rulaj si in gradul de realizare, dar nu in indicatorii de efort: conversie, anulari, ritm.' },
   segmente: { titlu: 'Segmentele tale', text: 'Conversia ta in valoare pe fiecare tip de eveniment. Doar segmentele cu minim 5 propuneri.' },
+  echipa: { titlu: 'Tu in echipa', text: 'Toti agentii activi, pe anul curent: bara gri = valoarea propusa, bara verde = valoarea confirmata, badge-ul = rata de confirmare pe numar. Randul tau e evidentiat. Cifrele sunt aceleasi din sinteza saptamanala a agentiei.' },
   istoric: { titlu: 'Istoric propus vs confirmat', text: 'Bara gri = cat ai propus in perioada. Bara verde = cat s-a confirmat, pe aceeasi scara. Badge-ul = rata de confirmare pe numar (confirmate/propuse, tinta 20%). Linia neagra = targetul lunii, unde exista.' },
 };
 
@@ -126,7 +127,7 @@ export default function KpiPage() {
     );
   }
 
-  const { eu, an, agenti, kpi, artisti, segmente, kpiIndividuali, medieAgentie, obiectivAgentieEur, tinteLunare, lunaExec, reusite, sinteze } = data;
+  const { eu, an, agenti, kpi, artisti, segmente, kpiIndividuali, medieAgentie, obiectivAgentieEur, tinteLunare, lunaExec, reusite, sinteze, comparativ } = data;
   const curs = 1;
   const agent = agenti.find((a: any) => a.id === eu.id) || agenti[0];
   const alMeu = kpi.filter((k: any) => k.agent_id === agent.id);
@@ -456,6 +457,39 @@ export default function KpiPage() {
             </button>
           )}
         </div>
+
+        {(comparativ || []).length > 1 && (
+          <>
+            <Grupa t="TU IN ECHIPA" />
+            <div style={{ ...card, cursor: 'pointer' }} onClick={() => setExpl('echipa')}>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
+                {(comparativ || []).map((c: any) => {
+                  const maxE = Math.max(1, ...(comparativ || []).map((x: any) => x.vProp));
+                  const eu2 = c.agentId === agent.id;
+                  const cv = c.prop > 0 ? (c.conf / c.prop) * 100 : 0;
+                  const col = cv >= 20 ? C.green : cv >= 15 ? C.amber : C.red;
+                  return (
+                    <div key={c.agentId} style={{ background: eu2 ? '#ecfdf5' : 'transparent', borderRadius: 10, padding: eu2 ? '10px 12px' : '0' }}>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 4 }}>
+                        <span style={{ fontWeight: 800, fontSize: 13, color: C.ink }}>{c.nume}{eu2 ? ' (tu)' : ''}</span>
+                        <span style={{ fontSize: 11, fontWeight: 800, color: col }}>{cv.toFixed(0)}% confirmare ({c.conf}/{c.prop})</span>
+                      </div>
+                      <div style={{ fontSize: 11, color: C.grey, marginBottom: 2 }}>Propus <b style={{ color: C.ink }}>{fmt(c.vProp)} EUR</b></div>
+                      <div style={{ height: 6, background: '#f0efee', borderRadius: 3, marginBottom: 4, overflow: 'hidden' }}>
+                        <div style={{ height: '100%', width: `${(c.vProp / maxE) * 100}%`, background: '#a8a29e', borderRadius: 3 }} />
+                      </div>
+                      <div style={{ fontSize: 11, color: C.grey, marginBottom: 2 }}>Confirmat <b style={{ color: C.green }}>{fmt(c.vConf)} EUR</b></div>
+                      <div style={{ height: 6, background: '#f0efee', borderRadius: 3, overflow: 'hidden' }}>
+                        <div style={{ height: '100%', width: `${(c.vConf / maxE) * 100}%`, background: C.green, borderRadius: 3 }} />
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+              <div style={{ fontSize: 11, color: C.grey, marginTop: 12 }}>Anul {an}, fara evenimentele vandute in 2025. Apasa pentru detalii.</div>
+            </div>
+          </>
+        )}
 
         <div style={{ fontSize: 12, color: C.grey, textAlign: 'center', paddingBottom: 8 }}>
           Apasa pe orice card ca sa vezi ce inseamna. Valorile in EUR, direct din Booking Reporting.
