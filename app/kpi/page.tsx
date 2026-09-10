@@ -72,6 +72,7 @@ export default function KpiPage() {
   const [loading, setLoading] = useState(false);
   const [perioada, setPerioada] = useState<'S' | 'L' | 'T'>('L');
   const [expl, setExpl] = useState<string | null>(null);
+  const [istoricTot, setIstoricTot] = useState(false);
 
   useEffect(() => {
     const salvat = typeof window !== 'undefined' ? sessionStorage.getItem('kpi_sesiune') : null;
@@ -209,8 +210,9 @@ export default function KpiPage() {
     }
     return [...grup.entries()].sort((a, b) => a[0] - b[0]).map(e => e[1]);
   }
-  const perioade = grupeaza(perioada);
-  const maxP = Math.max(1, ...perioade.map(p => p.vOf));
+  const perioadeToate = grupeaza(perioada).slice().reverse(); // cele mai recente sus
+  const perioade = istoricTot ? perioadeToate : perioadeToate.slice(0, 3);
+  const maxP = Math.max(1, ...perioadeToate.map(p => p.vOf));
 
   const tileStyle = (ok: boolean | null): React.CSSProperties => ({
     padding: '14px 16px', background: '#fafaf9', borderRadius: 12, cursor: 'pointer',
@@ -396,6 +398,12 @@ export default function KpiPage() {
               );
             })}
           </div>
+          {perioadeToate.length > 3 && (
+            <button onClick={() => setIstoricTot(!istoricTot)}
+              style={{ marginTop: 14, width: '100%', padding: '10px 0', borderRadius: 10, border: `1px solid ${C.border}`, background: '#fafaf9', color: C.ink, fontSize: 13, fontWeight: 600, cursor: 'pointer' }}>
+              {istoricTot ? 'Arata doar ultimele 3' : `Vezi tot anul (${perioadeToate.length} perioade)`}
+            </button>
+          )}
         </div>
 
         <div style={{ fontSize: 12, color: C.grey, textAlign: 'center', paddingBottom: 8 }}>
