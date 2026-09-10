@@ -102,6 +102,23 @@ export async function GET(req: NextRequest) {
   const { data: setari } = await supa.from('setari_kpi').select('cheie, valoare');
   const obiectivAgentieEur = setari?.find(x => x.cheie === 'obiectiv_agentie_eur')?.valoare ?? null;
 
+  // reusitele lunii curente - vizibile tuturor (doar pozitiv: cine si-a atins targetul)
+  const lunaCur = new Date().getMonth() + 1;
+  const { data: tinteToti } = await supa.from('tinte_lunare')
+    .select('agent_id, volum_t, nr_ev_t').eq('an', an).eq('luna', lunaCur);
+  const { data: execToti } = await supa.from('kpi_luna_executie')
+    .select('agent_id, valoare_executata, executate').eq('an', an).eq('luna', lunaCur);
+  const { data: agentiToti } = await supa.from('agenti').select('id, nume, nume_afisat').eq('activ', true);
+  const reusite = (tinteToti || []).flatMap(t => {
+    if (!t.volum_t) return [];
+    const e = (execToti || []).find(x => x.agent_id === t.agent_id);
+    if (!e || Number(e.valoare_executata) < Number(t.volum_t)) return [];
+    const ag = (agentiToti || []).find(a => a.id === t.agent_id);
+    if (!ag) return [];
+    const depasire = Number(e.valoare_executata) - Number(t.volum_t);
+    return [{ nume: ag.nume_afisat || ag.nume, agentId: t.agent_id, luna: lunaCur, depasireEur: depasire, procent: (Number(e.valoare_executata) / Number(t.volum_t)) * 100 }];
+  });
+
   const { data: log } = await supa.from('kpi_upload_log')
     .select('an, saptamana, incarcat_la').order('incarcat_la', { ascending: false }).limit(1);
 
@@ -117,6 +134,7 @@ export async function GET(req: NextRequest) {
     obiectivAgentieEur,
     tinteLunare: tinteLunare || [],
     lunaExec: lunaExec || [],
+    reusite,
     ultimulUpload: log?.[0] || null,
   });
 }

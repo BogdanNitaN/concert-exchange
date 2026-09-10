@@ -436,6 +436,10 @@ export default function KpiPage() {
               ))}
             </div>
           </div>
+          <div style={{ display: 'flex', gap: 14, alignItems: 'center', marginBottom: 10, fontSize: 12, color: C.grey }}>
+            <span style={{ display: 'inline-flex', alignItems: 'center', gap: 5 }}><span style={{ width: 11, height: 11, background: C.green, borderRadius: 3, display: 'inline-block' }} />Confirmat</span>
+            <span style={{ display: 'inline-flex', alignItems: 'center', gap: 5 }}><span style={{ width: 11, height: 11, border: '1.5px solid #d6d3d1', borderRadius: 3, display: 'inline-block', background: '#fff' }} />Propus (lungimea barei)</span>
+          </div>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
             {perioade.map(p => (
               <div key={p.eticheta} onClick={() => setExpl('conversie')} style={{ cursor: 'pointer' }}>
