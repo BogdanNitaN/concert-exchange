@@ -89,7 +89,7 @@ export default function KpiAdmin() {
     );
   }
 
-  const { an, agenti, kpi, kpiIndividuali, ultimulUpload, obiectivAgentieEur } = data;
+  const { an, agenti, kpi, kpiIndividuali, ultimulUpload, obiectivAgentieEur, tinteLunare, lunaExec } = data;
   const curs = 1; // FEE din Booking Reporting e deja in EUR
   const saptCurenta = Math.max(0, ...kpi.map((k: any) => k.saptamana));
   const ritmCalendar = (saptCurenta / 52) * 100;
@@ -112,6 +112,12 @@ export default function KpiAdmin() {
   }).sort((x: any, y: any) => y.confEur - x.confEur);
 
   const totalAgentie = perAgent.reduce((s: number, a: any) => s + a.confEur, 0);
+
+  const azi = new Date();
+  const lunaCur = azi.getMonth() + 1;
+  const zileLuna = new Date(azi.getFullYear(), lunaCur, 0).getDate();
+  const ritmLuna = (azi.getDate() / zileLuna) * 100;
+  const LUNI_A = ['Ian', 'Feb', 'Mar', 'Apr', 'Mai', 'Iun', 'Iul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
 
   // Propus vs Confirmat cu filtru
   const kpiFiltrat = filtruAgent === 'toti' ? kpi : kpi.filter((k: any) => k.agent_id === filtruAgent);
@@ -249,6 +255,40 @@ export default function KpiAdmin() {
                 <ObjInput initial={a.ob} onSave={(v: string) => actiune({ actiune: 'obiectiv', agentId: a.id, obiectivEur: v })} />
                 {a.ob && <span>{a.progres!.toFixed(1)}% · ritm {ritmCalendar.toFixed(0)}%</span>}
               </div>
+              {(() => {
+                const tL = (tinteLunare || []).find((t: any) => t.agent_id === a.id && t.luna === lunaCur);
+                const eL = (lunaExec || []).find((l: any) => l.agent_id === a.id && l.luna === lunaCur);
+                if (!tL || !tL.volum_t) return null;
+                const vT = Number(tL.volum_t);
+                const eV = eL ? Number(eL.valoare_executata) : 0;
+                const eN = eL ? eL.executate : 0;
+                const pr = Math.min(100, (eV / vT) * 100);
+                const ok = pr >= ritmLuna - 3;
+                return (
+                  <div style={{ marginTop: 12, paddingTop: 12, borderTop: `1px solid ${C.border}` }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 12, color: C.grey, marginBottom: 4 }}>
+                      <span style={{ fontWeight: 700, color: C.ink }}>Target {LUNI_A[lunaCur - 1]} (executie)</span>
+                      <span>{fmt(eV)} / {fmt(vT)} EUR · {eN}{tL.nr_ev_t ? `/${tL.nr_ev_t}` : ''} ev</span>
+                    </div>
+                    <div style={{ position: 'relative', height: 10, background: '#f0efee', borderRadius: 5, overflow: 'hidden' }}>
+                      <div style={{ position: 'absolute', inset: 0, width: `${pr}%`, background: ok ? C.green : C.amber, borderRadius: 5 }} />
+                      <div style={{ position: 'absolute', top: -2, bottom: -2, left: `${ritmLuna}%`, width: 2, background: C.ink }} />
+                    </div>
+                  </div>
+                );
+              })()}
+              {(() => {
+                const ale = (tinteLunare || []).filter((t: any) => t.agent_id === a.id && t.luna >= 9).sort((x: any, y: any) => x.luna - y.luna);
+                if (!ale.length) return null;
+                return (
+                  <div style={{ marginTop: 10, display: 'flex', gap: 8, flexWrap: 'wrap', alignItems: 'center', fontSize: 12, color: C.grey }}>
+                    <span style={{ fontWeight: 600 }}>Tinte lunare (ev / EUR):</span>
+                    {ale.map((t: any) => (
+                      <TintaLunara key={t.id} t={t} luni={LUNI_A} onSave={(nrEv: string, volum: string) => actiune({ actiune: 'tinta-lunara', tintaId: t.id, nrEv, volum })} />
+                    ))}
+                  </div>
+                );
+              })()}
               {kpiAg.length > 0 && (
                 <div style={{ marginTop: 12, paddingTop: 12, borderTop: `1px solid ${C.border}`, display: 'flex', flexDirection: 'column', gap: 8 }}>
                   {kpiAg.map((k: any) => (
@@ -278,6 +318,19 @@ export default function KpiAdmin() {
         </div>
       </div>
     </div>
+  );
+}
+
+function TintaLunara({ t, luni, onSave }: { t: any; luni: string[]; onSave: (nrEv: string, volum: string) => void }) {
+  const [ev, setEv] = useState(t.nr_ev_t ? String(t.nr_ev_t) : '');
+  const [vol, setVol] = useState(t.volum_t ? String(Math.round(Number(t.volum_t))) : '');
+  return (
+    <span style={{ display: 'inline-flex', gap: 4, alignItems: 'center', background: '#fafaf9', borderRadius: 8, padding: '4px 8px' }}>
+      <b style={{ color: '#101014' }}>{luni[t.luna - 1]}</b>
+      <input value={ev} onChange={e => setEv(e.target.value.replace(/[^\d]/g, ''))} style={{ width: 34, padding: '4px 6px', borderRadius: 6, border: '1px solid #e7e5e4', fontSize: 12 }} />
+      <input value={vol} onChange={e => setVol(e.target.value.replace(/[^\d]/g, ''))} style={{ width: 66, padding: '4px 6px', borderRadius: 6, border: '1px solid #e7e5e4', fontSize: 12 }} />
+      <button onClick={() => onSave(ev, vol)} style={{ padding: '4px 8px', borderRadius: 6, border: 'none', background: '#101014', color: '#fff', fontSize: 11, cursor: 'pointer' }}>OK</button>
+    </span>
   );
 }
 

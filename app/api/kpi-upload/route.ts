@@ -68,6 +68,7 @@ export async function POST(req: NextRequest) {
     type SubRow = { propuneri: number; vOf: number; conf: number; vConf: number };
     const accArt = new Map<string, SubRow>();
     const accSeg = new Map<string, SubRow>();
+    const accLuna = new Map<string, { n: number; v: number }>(); // `${agentId}|${luna}` - executie
     const bumpSub = (m: Map<string, SubRow>, cheie: string, fn: (r: SubRow) => void) => {
       if (!m.has(cheie)) m.set(cheie, { propuneri: 0, vOf: 0, conf: 0, vConf: 0 });
       fn(m.get(cheie)!);
@@ -94,10 +95,10 @@ export async function POST(req: NextRequest) {
     let carryover = 0;
     for (let i = 1; i < conf.length; i++) {
       const r = conf[i]; if (!r) continue;
-      const ctr = Number(r[0]); const nm = norm(r[1]);
+      let ctr = Number(r[0]); const nm = norm(r[1]);
       if (!nm) continue;
-      if (ctr > 100) { carryover++; continue; }
-      if (!Number.isInteger(ctr) || ctr < 1 || ctr > 53) continue;
+      if (ctr > 100) { carryover++; ctr = 0; } // vandut in 2025, executie 2026 -> saptamana 0 (strat livrare)
+      if (!Number.isInteger(ctr) || ctr < 0 || ctr > 53) continue;
       const ag = byNume.get(nm.toLowerCase());
       if (!ag) { necunoscuti.add(nm); continue; }
       const fee = Number(r[9]) || 0;
@@ -108,12 +109,21 @@ export async function POST(req: NextRequest) {
         bump(ag.id, ctr, x => { x.conf++; x.vConf += fee; });
         if (artist) bumpSub(accArt, `${ag.id}|${artist}`, x => { x.conf++; x.vConf += fee; });
         bumpSub(accSeg, `${ag.id}|${seg}`, x => { x.conf++; x.vConf += fee; });
+        const d = r[5];
+        let luna = 0;
+        if (d instanceof Date && d.getFullYear() === an) luna = d.getMonth() + 1;
+        else if (typeof d === 'string') { const m = d.match(/(\d{1,2})[.\/-](\d{1,2})[.\/-](\d{4})/); if (m && Number(m[3]) === an) luna = Number(m[2]); }
+        if (luna >= 1 && luna <= 12) {
+          const k = `${ag.id}|${luna}`;
+          const g = accLuna.get(k) || { n: 0, v: 0 };
+          g.n++; g.v += fee; accLuna.set(k, g);
+        }
       } else if (status === 'ANULAT') {
         bump(ag.id, ctr, x => { x.anul++; x.vAnul += fee; });
       }
     }
 
-    const saptMax = Math.max(0, ...[...acc.keys()].map(k => Number(k.split('|')[1])));
+    const saptMax = Math.max(0, ...[...acc.keys()].map(k => Number(k.split('|')[1])).filter(x => x > 0));
     const idToNume = new Map(agenti.map(a => [a.id, a.nume]));
 
     const sumarSapt: Record<string, any> = {};
@@ -130,7 +140,7 @@ export async function POST(req: NextRequest) {
       an, saptamanaCurenta: saptMax, carryover2025: carryover,
       agentiNecunoscuti: [...necunoscuti],
       ultimaSaptamana: sumarSapt, totalAn,
-      randuriDeScris: acc.size, artistiAgregati: accArt.size, segmenteAgregate: accSeg.size,
+      randuriDeScris: acc.size, artistiAgregati: accArt.size, segmenteAgregate: accSeg.size, luniAgregate: accLuna.size,
     };
 
     if (!confirm) return NextResponse.json({ preview: true, sumar });
@@ -169,6 +179,15 @@ export async function POST(req: NextRequest) {
     });
     const { error: errSeg } = await supa.from('kpi_segment').upsert(segRows, { onConflict: 'agent_id,an,segment' });
     if (errSeg) return NextResponse.json({ error: errSeg.message }, { status: 500 });
+
+    const lunaRows = [...accLuna.entries()].map(([k, g]) => {
+      const idx = k.indexOf('|');
+      return { agent_id: k.slice(0, idx), an, luna: Number(k.slice(idx + 1)), executate: g.n, valoare_executata: g.v };
+    });
+    if (lunaRows.length) {
+      const { error: errLuna } = await supa.from('kpi_luna_executie').upsert(lunaRows, { onConflict: 'agent_id,an,luna' });
+      if (errLuna) return NextResponse.json({ error: errLuna.message }, { status: 500 });
+    }
 
     await supa.from('kpi_upload_log').insert({ an, saptamana: saptMax, fisier: file.name, sumar });
     return NextResponse.json({ ok: true, sumar });

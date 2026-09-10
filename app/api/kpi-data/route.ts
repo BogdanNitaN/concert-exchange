@@ -91,6 +91,14 @@ export async function GET(req: NextRequest) {
     conversie: (() => { const o = activi.reduce((s, t) => s + t.o, 0); const c = activi.reduce((s, t) => s + t.c, 0); return o > 0 ? (c / o) * 100 : 0; })(),
   };
 
+  const { data: tinteLunare } = await supa.from('tinte_lunare')
+    .select('id, agent_id, luna, nr_ev_t, volum_t, rata_conf_t')
+    .eq('an', an).in('agent_id', ids).order('luna');
+
+  const { data: lunaExec } = await supa.from('kpi_luna_executie')
+    .select('agent_id, luna, executate, valoare_executata')
+    .eq('an', an).in('agent_id', ids).order('luna');
+
   const { data: setari } = await supa.from('setari_kpi').select('cheie, valoare');
   const obiectivAgentieEur = setari?.find(x => x.cheie === 'obiectiv_agentie_eur')?.valoare ?? null;
 
@@ -107,6 +115,8 @@ export async function GET(req: NextRequest) {
     kpiIndividuali: kpiInd || [],
     medieAgentie,
     obiectivAgentieEur,
+    tinteLunare: tinteLunare || [],
+    lunaExec: lunaExec || [],
     ultimulUpload: log?.[0] || null,
   });
 }
@@ -144,6 +154,16 @@ export async function POST(req: NextRequest) {
   if (body.actiune === 'obiectiv-agentie') {
     const { error } = await supa.from('setari_kpi')
       .upsert({ cheie: 'obiectiv_agentie_eur', valoare: body.valoare === '' ? null : Number(body.valoare) });
+    if (error) return NextResponse.json({ error: error.message }, { status: 500 });
+    return NextResponse.json({ ok: true });
+  }
+  if (body.actiune === 'tinta-lunara') {
+    const { error } = await supa.from('tinte_lunare')
+      .update({
+        nr_ev_t: body.nrEv === '' ? null : Number(body.nrEv),
+        volum_t: body.volum === '' ? null : Number(body.volum),
+      })
+      .eq('id', body.tintaId);
     if (error) return NextResponse.json({ error: error.message }, { status: 500 });
     return NextResponse.json({ ok: true });
   }

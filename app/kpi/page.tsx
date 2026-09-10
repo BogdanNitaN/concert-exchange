@@ -17,6 +17,8 @@ const glass: React.CSSProperties = {
 const LUNI = ['Ian', 'Feb', 'Mar', 'Apr', 'Mai', 'Iun', 'Iul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
 
 const DEFINITII: Record<string, { titlu: string; text: string }> = {
+  target_lunar: { titlu: 'Targetul lunar de executie', text: 'Se numara evenimentele care AU LOC in luna aceasta (data evenimentului in luna). O confirmare facuta azi pentru o luna viitoare apare la luna respectiva, nu aici. Targetul de volum e calculat din media ta de vanzare per eveniment, constant pana la finalul anului. Rata de confirmare = numarul evenimentelor confirmate impartit la numarul celor propuse, pe numar, nu pe valoare.' },
+  carry: { titlu: 'Vandut in 2025 pentru 2026', text: 'Evenimente contractate anul trecut cu executie anul acesta. Intra in rulaj si in gradul de realizare, dar nu in indicatorii de efort ai anului: conversie, anulari, ritm saptamanal.' },
   rulaj: { titlu: 'Rulaj confirmat', text: 'Valoarea totala a evenimentelor tale cu status CONFIRMAT in acest an, in EUR, direct din Booking Reporting (sheet FWD).' },
   ritm: { titlu: 'Ritmul calendaristic', text: 'Linia neagra de pe bara arata unde ar trebui sa fii daca obiectivul anual s-ar imparti egal pe 52 de saptamani. Verde = esti peste linie. Chihlimbar = sub linie, verdictul iti spune cat iti trebuie pe saptamana ca sa recuperezi.' },
   proiectie: { titlu: 'Proiectia de final de an', text: 'Rulajul tau de pana acum, impartit la saptamanile trecute si inmultit cu 52. Arata unde termini anul daca tii ritmul actual. Nu tine cont de sezonalitate (Revelionul, de exemplu, o va impinge in sus).' },
@@ -118,10 +120,13 @@ export default function KpiPage() {
     );
   }
 
-  const { eu, an, agenti, kpi, artisti, segmente, kpiIndividuali, medieAgentie, obiectivAgentieEur } = data;
+  const { eu, an, agenti, kpi, artisti, segmente, kpiIndividuali, medieAgentie, obiectivAgentieEur, tinteLunare, lunaExec } = data;
   const curs = 1; // FEE din Booking Reporting e deja in EUR
   const agent = agenti.find((a: any) => a.id === eu.id) || agenti[0];
   const alMeu = kpi.filter((k: any) => k.agent_id === agent.id);
+  const alMeuEfort = alMeu.filter((k: any) => k.saptamana > 0);
+  const carryRow = alMeu.find((k: any) => k.saptamana === 0);
+  const carryEur = carryRow ? Number(carryRow.valoare_confirmata_ron) : 0;
   const artMei = artisti.filter((a: any) => a.agent_id === agent.id);
   const segMele = (segmente || []).filter((s: any) => s.agent_id === agent.id);
   const saptCurenta = Math.max(0, ...alMeu.map((k: any) => k.saptamana));
@@ -138,10 +143,15 @@ export default function KpiPage() {
   const ritmCalendar = (saptCurenta / 52) * 100;
   const necesarSapt = obiectiv && saptCurenta < 52 ? Math.max(0, (obiectiv - confEur) / (52 - saptCurenta)) : 0;
   const peRitm = obiectiv ? progres >= ritmCalendar - 2 : null;
-  const proiectie = saptCurenta > 0 ? (confEur / saptCurenta) * 52 : 0;
+  const proiectie = saptCurenta > 0 ? carryEur + ((confEur - carryEur) / saptCurenta) * 52 : confEur;
 
-  const conversie = tot.vOf > 0 ? (tot.vConf / tot.vOf) * 100 : 0;
-  const rataAnulare = (tot.vConf + tot.vAnul) > 0 ? (tot.vAnul / (tot.vConf + tot.vAnul)) * 100 : 0;
+  const totE = alMeuEfort.reduce((t: any, k: any) => ({
+    prop: t.prop + k.propuneri, vOf: t.vOf + Number(k.valoare_ofertata_ron),
+    conf: t.conf + k.confirmate, vConf: t.vConf + Number(k.valoare_confirmata_ron),
+    anul: t.anul + k.anulate, vAnul: t.vAnul + Number(k.valoare_anulata_ron),
+  }), { prop: 0, vOf: 0, conf: 0, vConf: 0, anul: 0, vAnul: 0 });
+  const conversie = totE.vOf > 0 ? (totE.vConf / totE.vOf) * 100 : 0;
+  const rataAnulare = (totE.vConf + totE.vAnul) > 0 ? (totE.vAnul / (totE.vConf + totE.vAnul)) * 100 : 0;
   const feeMediu = tot.conf > 0 ? confEur / tot.conf : 0;
 
   let gapMax = 0, gap = 0, streak = 0;
@@ -153,8 +163,8 @@ export default function KpiPage() {
     if ((propPeSapt.get(s) || 0) > 0) streak++; else break;
   }
 
-  const saptCur = alMeu.find((k: any) => k.saptamana === saptCurenta);
-  const ult4 = alMeu.filter((k: any) => k.saptamana >= saptCurenta - 4 && k.saptamana < saptCurenta);
+  const saptCur = alMeuEfort.find((k: any) => k.saptamana === saptCurenta);
+  const ult4 = alMeuEfort.filter((k: any) => k.saptamana >= saptCurenta - 4 && k.saptamana < saptCurenta);
   const medie4 = (f: (k: any) => number) => ult4.length ? ult4.reduce((s: number, k: any) => s + f(k), 0) / ult4.length : 0;
 
   const top3 = artMei.slice(0, 3).reduce((s: number, a: any) => s + Number(a.valoare_confirmata_ron), 0);
@@ -182,14 +192,14 @@ export default function KpiPage() {
   type P = { eticheta: string; vOf: number; vConf: number; prop: number; conf: number; vAnul: number };
   function grupeaza(mod: 'S' | 'L' | 'T', limita?: number): P[] {
     if (mod === 'S') {
-      const list = alMeu.map((k: any) => ({
+      const list = alMeuEfort.map((k: any) => ({
         eticheta: `W${k.saptamana}`, vOf: Number(k.valoare_ofertata_ron), vConf: Number(k.valoare_confirmata_ron),
         prop: k.propuneri, conf: k.confirmate, vAnul: Number(k.valoare_anulata_ron),
       }));
       return limita ? list.slice(-limita) : list;
     }
     const grup = new Map<number, P>();
-    for (const k of alMeu) {
+    for (const k of alMeuEfort) {
       const luna = lunaDinSaptamana(an, k.saptamana);
       const idx = mod === 'L' ? luna : Math.floor(luna / 3);
       const et = mod === 'L' ? LUNI[luna] : `T${Math.floor(luna / 3) + 1}`;
@@ -203,6 +213,24 @@ export default function KpiPage() {
   const perioade = grupeaza(perioada, perioada === 'S' ? 8 : undefined);
   const maxP = Math.max(1, ...perioade.map(p => p.vOf));
   const tabel = grupeaza(tabelMod, tabelMod === 'S' ? 10 : undefined).slice().reverse();
+
+  const azi = new Date();
+  const lunaCur = azi.getMonth() + 1;
+  const zileLuna = new Date(azi.getFullYear(), lunaCur, 0).getDate();
+  const ritmLuna = (azi.getDate() / zileLuna) * 100;
+  const tintaLuna = (tinteLunare || []).find((t: any) => t.agent_id === agent.id && t.luna === lunaCur);
+  const execLuna = (lunaExec || []).find((l: any) => l.agent_id === agent.id && l.luna === lunaCur);
+  const execN = execLuna ? execLuna.executate : 0;
+  const execV = execLuna ? Number(execLuna.valoare_executata) : 0;
+  const propLuna = alMeuEfort.filter((k: any) => lunaDinSaptamana(an, k.saptamana) === lunaCur).reduce((s: number, k: any) => s + k.propuneri, 0);
+  const confLuna = alMeuEfort.filter((k: any) => lunaDinSaptamana(an, k.saptamana) === lunaCur).reduce((s: number, k: any) => s + k.confirmate, 0);
+  const rataConfLuna = propLuna > 0 ? (confLuna / propLuna) * 100 : 0;
+  const volumT = tintaLuna?.volum_t ? Number(tintaLuna.volum_t) : null;
+  const nrEvT = tintaLuna?.nr_ev_t ? Number(tintaLuna.nr_ev_t) : null;
+  const rataT = tintaLuna?.rata_conf_t ? Number(tintaLuna.rata_conf_t) : 20;
+  const progresLuna = volumT ? Math.min(100, (execV / volumT) * 100) : 0;
+  const ramasLuna = volumT ? Math.max(0, volumT - execV) : 0;
+  const peRitmLuna = volumT ? progresLuna >= ritmLuna - 3 : null;
 
   const tap = (cheie: string): React.CSSProperties => ({ cursor: 'pointer' });
 
@@ -232,6 +260,40 @@ export default function KpiPage() {
         <div style={{ fontSize: 13, color: C.grey }}>Anul {an} · pana la Week {saptCurenta}</div>
 
         <Grupa t="ZBOR" />
+        {tintaLuna && volumT && (
+          <div style={{ ...card, borderTop: `3px solid ${peRitmLuna ? C.green : C.amber}` }} onClick={() => setExpl('target_lunar')}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', flexWrap: 'wrap', gap: 6 }}>
+              <div style={{ fontSize: 15, fontWeight: 700, color: C.ink }}>Target {LUNI[lunaCur - 1]}</div>
+              <div style={{ fontSize: 13, color: C.grey }}>ziua {azi.getDate()} din {zileLuna}</div>
+            </div>
+            <div style={{ fontSize: 30, fontWeight: 800, color: C.ink, marginTop: 6 }}>{fmt(execV)} <span style={{ fontSize: 16, fontWeight: 600, color: C.grey }}>/ {fmt(volumT)} EUR executat</span></div>
+            <div style={{ position: 'relative', height: 22, background: '#f0efee', borderRadius: 11, marginTop: 12, overflow: 'hidden' }}>
+              <div style={{ position: 'absolute', inset: 0, width: `${progresLuna}%`, background: peRitmLuna ? C.green : C.amber, borderRadius: 11, transition: 'width .5s' }} />
+              <div style={{ position: 'absolute', top: -2, bottom: -2, left: `${ritmLuna}%`, width: 2, background: C.ink }} />
+              <div style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 12, fontWeight: 800, color: progresLuna > 55 ? '#fff' : C.ink }}>{progresLuna.toFixed(0)}%</div>
+            </div>
+            <div style={{ marginTop: 10, padding: '10px 14px', background: peRitmLuna ? '#ecfdf5' : '#fffbeb', borderRadius: 10, fontSize: 14, color: C.ink }}>
+              {ramasLuna > 0 ? (<span>Mai ai <b>{fmt(ramasLuna)} EUR</b> de executat pana pe {zileLuna} {LUNI[lunaCur - 1]}.</span>) : (<span><b>Target atins.</b> Tot ce executi in plus e depasire.</span>)}
+            </div>
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10, marginTop: 10 }}>
+              {nrEvT && (
+                <div style={{ padding: '10px 14px', background: '#fafaf9', borderRadius: 10 }}>
+                  <div style={{ fontSize: 12, color: C.grey }}>Evenimente executate</div>
+                  <div style={{ fontSize: 18, fontWeight: 800, color: C.ink }}>{execN} <span style={{ fontWeight: 400, color: C.grey }}>/ {nrEvT}</span></div>
+                  <div style={{ position: 'relative', height: 5, background: '#f0efee', borderRadius: 3, marginTop: 6, overflow: 'hidden' }}>
+                    <div style={{ position: 'absolute', inset: 0, width: `${Math.min(100, (execN / nrEvT) * 100)}%`, background: C.ink, borderRadius: 3 }} />
+                  </div>
+                </div>
+              )}
+              <div style={{ padding: '10px 14px', background: '#fafaf9', borderRadius: 10 }}>
+                <div style={{ fontSize: 12, color: C.grey }}>Rata confirmare (nr)</div>
+                <div style={{ fontSize: 18, fontWeight: 800, color: rataConfLuna >= rataT ? C.green : rataConfLuna >= rataT * 0.75 ? C.amber : C.red }}>{rataConfLuna.toFixed(0)}% <span style={{ fontWeight: 400, color: C.grey }}>/ tinta {rataT}%</span></div>
+                <div style={{ fontSize: 11, color: C.grey, marginTop: 4 }}>{confLuna} confirmate din {propLuna} propuse luna asta</div>
+              </div>
+            </div>
+            <div style={{ fontSize: 11, color: C.grey, marginTop: 10 }}>Se numara evenimentele care au loc in {LUNI[lunaCur - 1].toLowerCase()}, nu confirmarile pentru lunile viitoare. Apasa pentru detalii.</div>
+          </div>
+        )}
         <div style={{ ...card, ...tap('rulaj'), paddingTop: 24 }} onClick={() => setExpl('rulaj')}>
           <div style={{ fontSize: 13, color: C.grey }}>Rulaj confirmat {an}</div>
           <div style={{ fontSize: 44, fontWeight: 800, color: C.ink, lineHeight: 1.1, letterSpacing: '-0.02em' }}>{fmt(confEur)} <span style={{ fontSize: 22, fontWeight: 600, color: C.grey }}>EUR</span></div>
@@ -251,6 +313,11 @@ export default function KpiPage() {
             </>
           ) : (
             <div style={{ marginTop: 10, fontSize: 14, color: C.grey }}>Obiectiv anual nesetat inca.</div>
+          )}
+          {carryEur > 0 && (
+            <div onClick={e => { e.stopPropagation(); setExpl('carry'); }} style={{ marginTop: 10, fontSize: 12, color: C.grey, cursor: 'pointer' }}>
+              Include {fmt(carryEur)} EUR vanduti in 2025 pentru 2026.
+            </div>
           )}
           <div onClick={e => { e.stopPropagation(); setExpl('proiectie'); }} style={{ marginTop: 12, fontSize: 13, color: C.grey, cursor: 'pointer' }}>
             In ritmul actual termini anul la <b style={{ color: obiectiv ? (proiectie >= obiectiv ? C.green : C.amber) : C.ink }}>{fmt(proiectie)} EUR</b>{obiectiv ? ` (obiectiv ${fmt(obiectiv)})` : ''}.
