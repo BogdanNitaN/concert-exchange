@@ -223,22 +223,27 @@ export default function KpiAdmin() {
               <span style={{ display: 'inline-flex', alignItems: 'center', gap: 5 }}><span style={{ width: 11, height: 11, background: C.green, borderRadius: 3, display: 'inline-block' }} />Confirmat</span>
               <span style={{ display: 'inline-flex', alignItems: 'center', gap: 5 }}><span style={{ width: 11, height: 11, border: '1.5px solid #d6d3d1', borderRadius: 3, display: 'inline-block', background: '#fff' }} />Propus (lungimea barei)</span>
             </div>
-            {perioade.map(p => (
-              <div key={p.eticheta}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: 12, color: C.grey, marginBottom: 3, gap: 8 }}>
-                  <span style={{ fontWeight: 700, color: C.ink }}>{p.eticheta}</span>
-                  <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}>
-                    <span><b style={{ color: C.ink }}>{fmt(p.vConf / curs)}</b> / {fmt(p.vOf / curs)} EUR</span>
-                    {p.vOf > 0 && (() => { const cv = (p.vConf / p.vOf) * 100; const bg = cv >= 30 ? '#ecfdf5' : cv >= 20 ? '#fffbeb' : '#fef2f2'; const col = cv >= 30 ? C.green : cv >= 20 ? C.amber : C.red; return (
-                      <span style={{ background: bg, color: col, fontWeight: 800, fontSize: 11, padding: '2px 7px', borderRadius: 6 }}>{cv.toFixed(0)}%</span>
-                    ); })()}
-                  </span>
+            {perioade.map(p => {
+              const cv = p.vOf > 0 ? (p.vConf / p.vOf) * 100 : 0;
+              const bg = cv >= 30 ? '#ecfdf5' : cv >= 20 ? '#fffbeb' : '#fef2f2';
+              const col = cv >= 30 ? C.green : cv >= 20 ? C.amber : C.red;
+              return (
+                <div key={p.eticheta} style={{ marginBottom: 6 }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 4 }}>
+                    <span style={{ fontWeight: 800, fontSize: 13, color: C.ink }}>{p.eticheta}</span>
+                    {p.vOf > 0 && <span style={{ background: bg, color: col, fontWeight: 800, fontSize: 11, padding: '2px 7px', borderRadius: 6 }}>{cv.toFixed(0)}% conversie</span>}
+                  </div>
+                  <div style={{ fontSize: 11, color: C.grey, marginBottom: 2 }}>Propus <b style={{ color: C.ink }}>{fmt(p.vOf / curs)} EUR</b></div>
+                  <div style={{ height: 8, background: '#f0efee', borderRadius: 4, marginBottom: 5, overflow: 'hidden' }}>
+                    <div style={{ height: '100%', width: `${(p.vOf / maxP) * 100}%`, background: '#a8a29e', borderRadius: 4 }} />
+                  </div>
+                  <div style={{ fontSize: 11, color: C.grey, marginBottom: 2 }}>Confirmat <b style={{ color: C.green }}>{fmt(p.vConf / curs)} EUR</b></div>
+                  <div style={{ height: 8, background: '#f0efee', borderRadius: 4, overflow: 'hidden' }}>
+                    <div style={{ height: '100%', width: `${(p.vConf / maxP) * 100}%`, background: C.green, borderRadius: 4 }} />
+                  </div>
                 </div>
-                <div style={{ position: 'relative', height: 16, width: `${Math.max(8, (p.vOf / maxP) * 100)}%`, border: '1.5px solid #d6d3d1', background: '#fff', borderRadius: 8, overflow: 'hidden', boxSizing: 'border-box' }}>
-                  <div style={{ position: 'absolute', top: 0, bottom: 0, left: 0, width: `${p.vOf > 0 ? Math.min(100, (p.vConf / p.vOf) * 100) : 0}%`, background: C.green }} />
-                </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
         </div>
 
