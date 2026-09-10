@@ -13,7 +13,7 @@ export async function POST(req: NextRequest) {
     const supa = supaClient();
     const nume = req.headers.get('x-kpi-nume') || '';
     const parola = req.headers.get('x-kpi-parola') || '';
-    const { data: eu } = await supa.from('agenti').select('id, rol').eq('nume', nume).eq('parola', parola).single();
+    const { data: eu } = await supa.from('agenti').select('id, rol').ilike('nume', nume).eq('parola', parola).single();
     if (!eu || eu.rol !== 'admin') return NextResponse.json({ error: 'Doar admin' }, { status: 403 });
 
     const form = await req.formData();
