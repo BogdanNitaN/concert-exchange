@@ -50,6 +50,21 @@ function statusKpi(val: number, tinta: number | null, directie: string): 'ok' | 
 }
 const culoareStatus = (s: string) => s === 'ok' ? C.green : s === 'aproape' ? C.amber : s === 'rau' ? C.red : '#d6d3d1';
 
+function DonutConf({ conf, prop }: { conf: number; prop: number }) {
+  const cv = prop > 0 ? (conf / prop) * 100 : 0;
+  const R = 52, CIRC = 2 * Math.PI * R;
+  const col = cv >= 20 ? '#059669' : cv >= 15 ? '#d97706' : '#dc2626';
+  return (
+    <svg width="140" height="140" viewBox="0 0 140 140">
+      <circle cx="70" cy="70" r={R} fill="none" stroke="#f0efee" strokeWidth="16" />
+      <circle cx="70" cy="70" r={R} fill="none" stroke={col} strokeWidth="16" strokeLinecap="round"
+        strokeDasharray={`${(Math.min(100, cv) / 100) * CIRC} ${CIRC}`} transform="rotate(-90 70 70)" />
+      <text x="70" y="66" textAnchor="middle" fontSize="26" fontWeight="800" fill="#101014">{cv.toFixed(0)}%</text>
+      <text x="70" y="86" textAnchor="middle" fontSize="11" fill="#78716c">confirmare</text>
+    </svg>
+  );
+}
+
 function Grupa({ t }: { t: string }) {
   return <div style={{ fontSize: 11, fontWeight: 800, letterSpacing: '0.12em', color: C.grey, margin: '6px 2px -6px' }}>{t}</div>;
 }
@@ -70,7 +85,7 @@ export default function KpiPage() {
   const [data, setData] = useState<any>(null);
   const [err, setErr] = useState('');
   const [loading, setLoading] = useState(false);
-  const [perioada, setPerioada] = useState<'S' | 'L' | 'T'>('L');
+  const [perioada] = useState<'S' | 'L' | 'T'>('T'); // agentii vad doar trimestre
   const [expl, setExpl] = useState<string | null>(null);
   const [istoricTot, setIstoricTot] = useState(false);
 
@@ -379,18 +394,34 @@ export default function KpiPage() {
           </div>
         )}
 
+        {(() => {
+          const trimCur = Math.floor((lunaCur - 1) / 3);
+          const inTrim = alMeuEfort.filter((k: any) => Math.floor(lunaDinSaptamana(an, k.saptamana) / 3) === trimCur);
+          const propT = inTrim.reduce((x: number, k: any) => x + k.propuneri, 0);
+          const confT = inTrim.reduce((x: number, k: any) => x + k.confirmate, 0);
+          if (propT === 0) return null;
+          return (
+            <>
+              <Grupa t={`PROPUSE VS CONFIRMATE · T${trimCur + 1}`} />
+              <div style={{ ...card, display: 'flex', alignItems: 'center', gap: 20, cursor: 'pointer', flexWrap: 'wrap' }} onClick={() => setExpl('rata_conf')}>
+                <DonutConf conf={confT} prop={propT} />
+                <div style={{ flex: 1, minWidth: 180 }}>
+                  <div style={{ fontSize: 14, color: C.ink, lineHeight: 1.6 }}>
+                    Ai propus <b>{propT} evenimente</b> in trimestrul asta.<br />
+                    <b style={{ color: C.green }}>{confT} confirmate</b> · <span style={{ color: C.grey }}>{propT - confT} inca deschise sau pierdute</span>
+                  </div>
+                  <div style={{ fontSize: 12, color: C.grey, marginTop: 8 }}>Tinta: 20% din propuneri sa se confirme. Pe numar, nu pe valoare.</div>
+                </div>
+              </div>
+            </>
+          );
+        })()}
+
         <Grupa t="ISTORIC" />
         <div style={card}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 14, flexWrap: 'wrap', gap: 8 }}>
             <div style={{ fontSize: 15, fontWeight: 700, color: C.ink, cursor: 'pointer' }} onClick={() => setExpl('istoric')}>Propus vs Confirmat</div>
-            <div style={{ display: 'flex', gap: 4 }}>
-              {(['S', 'L', 'T'] as const).map(p => (
-                <button key={p} onClick={() => setPerioada(p)}
-                  style={{ padding: '6px 14px', borderRadius: 8, border: 'none', fontSize: 13, fontWeight: 600, cursor: 'pointer', background: perioada === p ? C.ink : '#f0efee', color: perioada === p ? '#fff' : C.grey }}>
-                  {p === 'S' ? 'Saptamanal' : p === 'L' ? 'Lunar' : 'Trimestrial'}
-                </button>
-              ))}
-            </div>
+            <div style={{ fontSize: 12, color: C.grey }}>pe trimestre</div>
           </div>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
             {perioade.map(p => {
