@@ -90,6 +90,7 @@ export default function KpiPage() {
   const [perioada] = useState<'S' | 'L' | 'T'>('T'); // agentii vad doar trimestre
   const [expl, setExpl] = useState<string | null>(null);
   const [istoricTot, setIstoricTot] = useState(false);
+  const [echipaExtins, setEchipaExtins] = useState<string | null>(null);
 
   useEffect(() => {
     const salvat = typeof window !== 'undefined' ? sessionStorage.getItem('kpi_sesiune') : null;
@@ -509,32 +510,39 @@ export default function KpiPage() {
         {(comparativ || []).length > 1 && (
           <>
             <Grupa t="TU IN ECHIPA" />
-            <div style={{ ...card, cursor: 'pointer' }} onClick={() => setExpl('echipa')}>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
+            <div style={card}>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
                 {(comparativ || []).map((c: any) => {
                   const maxE = Math.max(1, ...(comparativ || []).map((x: any) => x.vProp));
                   const eu2 = c.agentId === agent.id;
+                  const extins = echipaExtins === c.agentId;
                   const cv = c.prop > 0 ? (c.conf / c.prop) * 100 : 0;
                   const col = cv >= 20 ? C.green : cv >= 15 ? C.amber : C.red;
                   return (
-                    <div key={c.agentId} style={{ background: eu2 ? '#ecfdf5' : 'transparent', borderRadius: 10, padding: eu2 ? '10px 12px' : '0' }}>
-                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 4 }}>
-                        <span style={{ fontWeight: 800, fontSize: 13, color: C.ink }}>{c.nume}{eu2 ? ' (tu)' : ''}</span>
-                        <span style={{ fontSize: 11, fontWeight: 800, color: col }}>{cv.toFixed(0)}% confirmare ({c.conf}/{c.prop})</span>
+                    <div key={c.agentId} onClick={() => setEchipaExtins(extins ? null : c.agentId)}
+                      style={{ background: eu2 ? '#ecfdf5' : 'transparent', borderRadius: 10, padding: eu2 ? '10px 12px' : '2px 0', cursor: 'pointer' }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                        <span style={{ width: 64, flexShrink: 0, fontWeight: eu2 ? 800 : 600, fontSize: 13, color: C.ink, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{c.nume}{eu2 ? ' (tu)' : ''}</span>
+                        <div style={{ position: 'relative', flex: 1, height: 14, background: '#f0efee', borderRadius: 7, overflow: 'hidden' }}>
+                          <div style={{ position: 'absolute', top: 0, bottom: 0, left: 0, width: `${(c.vProp / maxE) * 100}%`, background: '#e0dedd', borderRadius: 7 }} />
+                          <div style={{ position: 'absolute', top: 0, bottom: 0, left: 0, width: `${(c.vConf / maxE) * 100}%`, background: eu2 ? C.green : '#6ee7b7', borderRadius: 7 }} />
+                        </div>
+                        {eu2 && !extins && <span style={{ fontSize: 12, fontWeight: 800, color: C.ink, whiteSpace: 'nowrap' }}>{fmt(c.vConf)}</span>}
                       </div>
-                      <div style={{ fontSize: 11, color: C.grey, marginBottom: 2 }}>Propus <b style={{ color: C.ink }}>{fmt(c.vProp)} EUR</b></div>
-                      <div style={{ height: 6, background: '#f0efee', borderRadius: 3, marginBottom: 4, overflow: 'hidden' }}>
-                        <div style={{ height: '100%', width: `${(c.vProp / maxE) * 100}%`, background: '#a8a29e', borderRadius: 3 }} />
-                      </div>
-                      <div style={{ fontSize: 11, color: C.grey, marginBottom: 2 }}>Confirmat <b style={{ color: C.green }}>{fmt(c.vConf)} EUR</b></div>
-                      <div style={{ height: 6, background: '#f0efee', borderRadius: 3, overflow: 'hidden' }}>
-                        <div style={{ height: '100%', width: `${(c.vConf / maxE) * 100}%`, background: C.green, borderRadius: 3 }} />
-                      </div>
+                      {extins && (
+                        <div style={{ display: 'flex', gap: 14, flexWrap: 'wrap', marginTop: 8, marginLeft: 74, fontSize: 12, color: C.grey }}>
+                          <span>Propus <b style={{ color: C.ink }}>{fmt(c.vProp)} EUR</b></span>
+                          <span>Confirmat <b style={{ color: C.green }}>{fmt(c.vConf)} EUR</b></span>
+                          <span style={{ background: cv >= 20 ? '#ecfdf5' : cv >= 15 ? '#fffbeb' : '#fef2f2', color: col, fontWeight: 800, padding: '1px 7px', borderRadius: 6 }}>{cv.toFixed(0)}% ({c.conf}/{c.prop})</span>
+                        </div>
+                      )}
                     </div>
                   );
                 })}
               </div>
-              <div style={{ fontSize: 11, color: C.grey, marginTop: 12 }}>Anul {an}, fara evenimentele vandute in 2025. Apasa pentru detalii.</div>
+              <div style={{ fontSize: 11, color: C.grey, marginTop: 12, cursor: 'pointer' }} onClick={() => setExpl('echipa')}>
+                Bara deschisa = propus, umplerea verde = confirmat, aceeasi scara pentru toti. Apasa pe un rand pentru cifre.
+              </div>
             </div>
           </>
         )}
