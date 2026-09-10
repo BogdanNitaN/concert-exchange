@@ -301,7 +301,7 @@ export default function KpiPage() {
             <div style={tileStyle(rataConfLuna >= rataT)} onClick={e => { e.stopPropagation(); setExpl('rata_conf'); }}>
               <div style={{ fontSize: 12, color: C.grey }}>Rata de confirmare (nr) · luna asta</div>
               <div style={{ fontSize: 22, fontWeight: 800, color: rataConfLuna >= rataT ? C.green : rataConfLuna >= rataT * 0.75 ? C.amber : C.red }}>{rataConfLuna.toFixed(0)}% <span style={{ fontSize: 13, fontWeight: 600, color: C.grey }}>/ tinta {rataT}%</span></div>
-              <div style={{ fontSize: 12, color: C.grey, marginTop: 6 }}>{confLunaCur} confirmate din {propLunaCur} propuse · anual: {rataConfAn.toFixed(0)}%</div>
+              <div style={{ fontSize: 12, color: C.grey, marginTop: 6 }}>{confLunaCur} evenimente confirmate din {propLunaCur} propuse luna asta · pe an: {rataConfAn.toFixed(0)}%</div>
             </div>
             <div style={tileStyle(rataAnulare < 4)} onClick={e => { e.stopPropagation(); setExpl('anulare'); }}>
               <div style={{ fontSize: 12, color: C.grey }}>Rata de anulare (nr) · an</div>
@@ -438,7 +438,7 @@ export default function KpiPage() {
                 <div key={p.eticheta} onClick={() => setExpl('istoric')} style={{ cursor: 'pointer' }}>
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 4 }}>
                     <span style={{ fontWeight: 800, fontSize: 13, color: C.ink }}>{p.eticheta}</span>
-                    {p.prop > 0 && <span style={{ background: bg, color: col, fontWeight: 800, fontSize: 11, padding: '2px 7px', borderRadius: 6 }}>{cv.toFixed(0)}% confirmare ({p.conf}/{p.prop})</span>}
+                    {p.prop > 0 && <span style={{ background: bg, color: col, fontWeight: 800, fontSize: 11, padding: '2px 7px', borderRadius: 6 }}>{cv.toFixed(0)}% — {p.conf} din {p.prop} propuse</span>}
                   </div>
                   <div style={{ fontSize: 11, color: C.grey, marginBottom: 2 }}>Propus <b style={{ color: C.ink }}>{fmt(p.vOf / curs)} EUR</b> ({p.prop} ev)</div>
                   <div style={{ height: 8, background: '#f0efee', borderRadius: 4, marginBottom: 5, overflow: 'hidden' }}>
@@ -533,7 +533,7 @@ export default function KpiPage() {
                         <div style={{ display: 'flex', gap: 14, flexWrap: 'wrap', marginTop: 8, marginLeft: 74, fontSize: 12, color: C.grey }}>
                           <span>Propus <b style={{ color: C.ink }}>{fmt(c.vProp)} EUR</b></span>
                           <span>Confirmat <b style={{ color: C.green }}>{fmt(c.vConf)} EUR</b></span>
-                          <span style={{ background: cv >= 20 ? '#ecfdf5' : cv >= 15 ? '#fffbeb' : '#fef2f2', color: col, fontWeight: 800, padding: '1px 7px', borderRadius: 6 }}>{cv.toFixed(0)}% ({c.conf}/{c.prop})</span>
+                          <span style={{ background: cv >= 20 ? '#ecfdf5' : cv >= 15 ? '#fffbeb' : '#fef2f2', color: col, fontWeight: 800, padding: '1px 7px', borderRadius: 6 }}>{cv.toFixed(0)}% confirmare — {c.conf} din {c.prop} evenimente propuse</span>
                         </div>
                       )}
                     </div>
