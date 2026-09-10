@@ -25,9 +25,14 @@ export async function GET(req: Request) {
   if (!await areAcces(req)) return NextResponse.json({ ok: false }, { status: 401 })
   const supa = db()
 
-  const { data: linkuri } = await supa.from('roster_links')
+  const url = new URL(req.url)
+  const scopFiltru = url.searchParams.get('scop') || 'toate'
+
+  const { data: toateLinkuri } = await supa.from('roster_links')
     .select('token, destinatar, scop, tip_audienta, activ, created_at')
     .order('created_at', { ascending: false })
+  const linkuri = scopFiltru === 'toate' ? (toateLinkuri || []) : (toateLinkuri || []).filter((l: any) => l.scop === scopFiltru)
+  const tokenuriScop = new Set((linkuri || []).map((l: any) => l.token))
 
   let views: any[] = []
   let de = 0
@@ -38,6 +43,7 @@ export async function GET(req: Request) {
     if (batch.length < 1000) break
     de += 1000
   }
+  if (scopFiltru !== 'toate') views = views.filter((v: any) => tokenuriScop.has(v.token))
 
   const acum = Date.now()
   const zi = 86400000

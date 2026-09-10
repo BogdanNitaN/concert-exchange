@@ -12,6 +12,7 @@ export default function AnalyticsPage() {
   const [authed, setAuthed] = useState(false)
   const [data, setData] = useState<any>(null)
   const [loading, setLoading] = useState(false)
+  const [scop, setScop] = useState('toate')
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data }) => {
@@ -19,12 +20,12 @@ export default function AnalyticsPage() {
       if (data.session && (role === 'oferta_admin' || role === 'oferta_user')) setAuthed(true)
     })
   }, [])
-  useEffect(() => { if (authed) load() }, [authed])
+  useEffect(() => { if (authed) load() }, [authed, scop])
   async function tok() { const { data } = await supabase.auth.getSession(); return data.session?.access_token || '' }
   async function load() {
     setLoading(true)
     try {
-      const r = await fetch('/api/roster-analytics', { headers: { authorization: 'Bearer ' + await tok() }, cache:'no-store' })
+      const r = await fetch('/api/roster-analytics?scop=' + scop, { headers: { authorization: 'Bearer ' + await tok() }, cache:'no-store' })
       const d = await r.json()
       if (d.ok) setData(d)
     } catch {}
@@ -49,6 +50,12 @@ export default function AnalyticsPage() {
             <div style={{fontSize:'13px', color:UI.sub, marginTop:'2px'}}>Ce se deschide, cine e interesat, pe cine sa suni</div>
           </div>
           <Link href="/oferta/coduri" style={{fontSize:'12px', fontWeight:700, color:UI.purple, textDecoration:'none', background:'white', padding:'8px 14px', borderRadius:'10px', border:'1px solid '+UI.line}}>Inapoi la coduri</Link>
+        </div>
+
+        <div style={{display:'flex', gap:'8px', marginBottom:'16px', flexWrap:'wrap'}}>
+          {[['toate','Toate'],['roster','Standard'],['bal','Baluri'],['revelion','Revelion'],['piata','Piata']].map(([k,label]) => (
+            <button key={k} onClick={() => setScop(k)} style={{fontSize:'13px', fontWeight:700, padding:'8px 16px', borderRadius:'10px', cursor:'pointer', fontFamily:F, border:'1.5px solid '+(scop===k?UI.green:UI.line), background: scop===k?UI.green:'white', color: scop===k?'white':UI.sub}}>{label}</button>
+          ))}
         </div>
 
         {loading && <div style={{textAlign:'center', color:UI.sub, padding:'40px'}}>Se incarca...</div>}
