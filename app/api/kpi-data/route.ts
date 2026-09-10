@@ -119,6 +119,11 @@ export async function GET(req: NextRequest) {
     return [{ nume: ag.nume_afisat || ag.nume, agentId: t.agent_id, luna: lunaCur, depasireEur: depasire, procent: (Number(e.valoare_executata) / Number(t.volum_t)) * 100 }];
   });
 
+  // sinteze saptamanale: admin vede tot; agentul doar publicatele lui + generale
+  let qSint = supa.from('sinteze').select('id, agent_id, an, saptamana, text, publicat').eq('an', an).order('saptamana', { ascending: false });
+  if (eu.rol !== 'admin') qSint = qSint.eq('publicat', true).or(`agent_id.eq.${eu.id},agent_id.is.null`);
+  const { data: sinteze } = await qSint;
+
   const { data: log } = await supa.from('kpi_upload_log')
     .select('an, saptamana, incarcat_la').order('incarcat_la', { ascending: false }).limit(1);
 
@@ -135,6 +140,7 @@ export async function GET(req: NextRequest) {
     tinteLunare: tinteLunare || [],
     lunaExec: lunaExec || [],
     reusite,
+    sinteze: sinteze || [],
     ultimulUpload: log?.[0] || null,
   });
 }
@@ -173,6 +179,25 @@ export async function POST(req: NextRequest) {
     const { error } = await supa.from('setari_kpi')
       .upsert({ cheie: 'obiectiv_agentie_eur', valoare: body.valoare === '' ? null : Number(body.valoare) });
     if (error) return NextResponse.json({ error: error.message }, { status: 500 });
+    return NextResponse.json({ ok: true });
+  }
+  if (body.actiune === 'sinteza-salveaza') {
+    const { error } = await supa.from('sinteze').upsert({
+      agent_id: body.agentId || null, an: body.an, saptamana: body.saptamana,
+      text: body.text || '', publicat: !!body.publicat, actualizat_la: new Date().toISOString(),
+    }, { onConflict: 'an,saptamana,agent_id' });
+    if (error) {
+      // fallback: upsert manual daca indexul cu coalesce nu e recunoscut de onConflict
+      const { data: ex } = await supa.from('sinteze').select('id').eq('an', body.an).eq('saptamana', body.saptamana)
+        [body.agentId ? 'eq' : 'is']('agent_id', body.agentId || null).limit(1);
+      if (ex && ex.length) {
+        const { error: e2 } = await supa.from('sinteze').update({ text: body.text || '', publicat: !!body.publicat, actualizat_la: new Date().toISOString() }).eq('id', ex[0].id);
+        if (e2) return NextResponse.json({ error: e2.message }, { status: 500 });
+      } else {
+        const { error: e3 } = await supa.from('sinteze').insert({ agent_id: body.agentId || null, an: body.an, saptamana: body.saptamana, text: body.text || '', publicat: !!body.publicat });
+        if (e3) return NextResponse.json({ error: e3.message }, { status: 500 });
+      }
+    }
     return NextResponse.json({ ok: true });
   }
   if (body.actiune === 'tinta-lunara') {

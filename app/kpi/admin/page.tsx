@@ -89,7 +89,7 @@ export default function KpiAdmin() {
     );
   }
 
-  const { an, agenti, kpi, kpiIndividuali, ultimulUpload, obiectivAgentieEur, tinteLunare, lunaExec } = data;
+  const { an, agenti, kpi, kpiIndividuali, ultimulUpload, obiectivAgentieEur, tinteLunare, lunaExec, sinteze } = data;
   const curs = 1; // FEE din Booking Reporting e deja in EUR
   const saptCurenta = Math.max(0, ...kpi.map((k: any) => k.saptamana));
   const ritmCalendar = (saptCurenta / 52) * 100;
@@ -218,6 +218,19 @@ export default function KpiAdmin() {
               </div>
             );
           })()}
+        </div>
+
+        <div style={card}>
+          <div style={{ fontSize: 15, fontWeight: 700, color: C.ink, marginBottom: 4 }}>Sinteze W{saptCurenta}</div>
+          <div style={{ fontSize: 12, color: C.grey, marginBottom: 14 }}>Scrii, salvezi ca draft, iar cand bifezi Publica apare pe panoul agentului. Nota generala o vad toti.</div>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+            <SintezaBox key={`gen-${saptCurenta}`} titlu="Nota generala (toti agentii)" existent={(sinteze || []).find((x: any) => x.saptamana === saptCurenta && !x.agent_id)}
+              onSave={(text: string, publicat: boolean) => actiune({ actiune: 'sinteza-salveaza', agentId: null, an, saptamana: saptCurenta, text, publicat })} />
+            {agenti.filter((a: any) => a.activ).map((a: any) => (
+              <SintezaBox key={`${a.id}-${saptCurenta}`} titlu={a.nume_afisat || a.nume} existent={(sinteze || []).find((x: any) => x.saptamana === saptCurenta && x.agent_id === a.id)}
+                onSave={(text: string, publicat: boolean) => actiune({ actiune: 'sinteza-salveaza', agentId: a.id, an, saptamana: saptCurenta, text, publicat })} />
+            ))}
+          </div>
         </div>
 
         <div style={card}>
@@ -393,6 +406,31 @@ export default function KpiAdmin() {
               style={{ padding: '10px 18px', borderRadius: 10, border: 'none', background: C.ink, color: '#fff', fontSize: 14, fontWeight: 600, cursor: 'pointer' }}>Adauga</button>
           </div>
         </div>
+      </div>
+    </div>
+  );
+}
+
+function SintezaBox({ titlu, existent, onSave }: { titlu: string; existent: any; onSave: (text: string, publicat: boolean) => void }) {
+  const [text, setText] = useState(existent?.text || '');
+  const [salvat, setSalvat] = useState<string | null>(null);
+  const publicat = !!existent?.publicat;
+  const marcheaza = (m: string) => { setSalvat(m); setTimeout(() => setSalvat(null), 2500); };
+  return (
+    <div style={{ background: '#fafaf9', borderRadius: 12, padding: 14, borderLeft: `4px solid ${publicat ? '#059669' : '#d6d3d1'}` }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8, flexWrap: 'wrap', gap: 6 }}>
+        <div style={{ fontSize: 13, fontWeight: 800, color: '#101014' }}>{titlu}</div>
+        <div style={{ fontSize: 11, fontWeight: 700, color: publicat ? '#059669' : '#78716c' }}>{salvat || (publicat ? 'PUBLICAT — agentul o vede' : 'draft — doar tu o vezi')}</div>
+      </div>
+      <textarea value={text} onChange={e => setText(e.target.value)} rows={4} placeholder="Scrie sinteza..."
+        style={{ width: '100%', boxSizing: 'border-box', padding: '10px 12px', borderRadius: 10, border: '1px solid #e7e5e4', fontSize: 13, fontFamily: 'inherit', lineHeight: 1.5, resize: 'vertical' }} />
+      <div style={{ display: 'flex', gap: 8, marginTop: 8 }}>
+        <button onClick={() => { onSave(text, false); marcheaza('salvat ca draft'); }}
+          style={{ padding: '8px 14px', borderRadius: 8, border: '1px solid #e7e5e4', background: '#fff', color: '#101014', fontSize: 12, fontWeight: 600, cursor: 'pointer' }}>Salveaza draft</button>
+        <button onClick={() => { onSave(text, true); marcheaza('publicat'); }}
+          style={{ padding: '8px 14px', borderRadius: 8, border: 'none', background: '#059669', color: '#fff', fontSize: 12, fontWeight: 700, cursor: 'pointer' }}>Publica ✓</button>
+        {publicat && <button onClick={() => { onSave(text, false); marcheaza('retras in draft'); }}
+          style={{ padding: '8px 14px', borderRadius: 8, border: 'none', background: '#f0efee', color: '#78716c', fontSize: 12, fontWeight: 600, cursor: 'pointer' }}>Retrage</button>}
       </div>
     </div>
   );

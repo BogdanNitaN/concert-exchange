@@ -111,7 +111,7 @@ export default function KpiPage() {
     );
   }
 
-  const { eu, an, agenti, kpi, artisti, segmente, kpiIndividuali, medieAgentie, obiectivAgentieEur, tinteLunare, lunaExec, reusite } = data;
+  const { eu, an, agenti, kpi, artisti, segmente, kpiIndividuali, medieAgentie, obiectivAgentieEur, tinteLunare, lunaExec, reusite, sinteze } = data;
   const curs = 1;
   const agent = agenti.find((a: any) => a.id === eu.id) || agenti[0];
   const alMeu = kpi.filter((k: any) => k.agent_id === agent.id);
@@ -240,6 +240,26 @@ export default function KpiPage() {
               : `${r.nume} si-a atins targetul pe ${LUNI[r.luna - 1]}`).join(' · ')}
           </div>
         )}
+
+        {(() => {
+          const ale = (sinteze || []).filter((x: any) => x.publicat && x.text && x.text.trim());
+          if (!ale.length) return null;
+          const sMax = Math.max(...ale.map((x: any) => x.saptamana));
+          const curente = ale.filter((x: any) => x.saptamana === sMax);
+          const personala = curente.find((x: any) => x.agent_id === agent.id);
+          const generala = curente.find((x: any) => !x.agent_id);
+          if (!personala && !generala) return null;
+          return (
+            <>
+              <Grupa t={`SINTEZA SAPTAMANII · W${sMax}`} />
+              <div style={{ ...card, borderLeft: `4px solid ${C.green}` }}>
+                {personala && <div style={{ fontSize: 14, color: C.ink, lineHeight: 1.6, whiteSpace: 'pre-wrap' }}>{personala.text}</div>}
+                {personala && generala && <div style={{ height: 1, background: C.border, margin: '12px 0' }} />}
+                {generala && <div style={{ fontSize: 13, color: C.grey, lineHeight: 1.6, whiteSpace: 'pre-wrap' }}><b style={{ color: C.ink }}>Echipa:</b> {generala.text}</div>}
+              </div>
+            </>
+          );
+        })()}
 
         <Grupa t={`OBIECTIVELE TALE · ${LUNI[lunaCur - 1].toUpperCase()}`} />
         <div style={{ ...card, padding: 16 }} onClick={() => setExpl('obiective')}>
