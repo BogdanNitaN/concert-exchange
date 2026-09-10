@@ -158,6 +158,69 @@ export default function KpiAdmin() {
         {err && <div style={{ ...card, borderColor: C.red, color: C.red, fontSize: 14 }}>{err}</div>}
 
         <div style={card}>
+          <div style={{ fontSize: 15, fontWeight: 700, color: C.ink, marginBottom: 4 }}>Overview echipa</div>
+          <div style={{ fontSize: 12, color: C.grey, marginBottom: 12 }}>Sortat pe urgenta: cine e cel mai sub ritmul lunii sta primul. Doar tu vezi tabelul asta.</div>
+          {(() => {
+            const azi2 = new Date();
+            const lunaC = azi2.getMonth() + 1;
+            const zileL = new Date(azi2.getFullYear(), lunaC, 0).getDate();
+            const ritmL = (azi2.getDate() / zileL) * 100;
+            const randuri = agenti.filter((a: any) => a.activ).map((a: any) => {
+              const kA = kpi.filter((k: any) => k.agent_id === a.id);
+              const kE = kA.filter((k: any) => k.saptamana > 0);
+              const confAn = kA.reduce((x: number, k: any) => x + Number(k.valoare_confirmata_ron), 0) / curs;
+              const prop = kE.reduce((x: number, k: any) => x + k.propuneri, 0);
+              const confN = kE.reduce((x: number, k: any) => x + k.confirmate, 0);
+              const vC = kE.reduce((x: number, k: any) => x + Number(k.valoare_confirmata_ron), 0);
+              const vA = kE.reduce((x: number, k: any) => x + Number(k.valoare_anulata_ron), 0);
+              const rConf = prop > 0 ? (confN / prop) * 100 : 0;
+              const rAnul = (vC + vA) > 0 ? (vA / (vC + vA)) * 100 : 0;
+              const tL = (tinteLunare || []).find((t: any) => t.agent_id === a.id && t.luna === lunaC);
+              const eL = (lunaExec || []).find((l: any) => l.agent_id === a.id && l.luna === lunaC);
+              const vT = tL?.volum_t ? Number(tL.volum_t) : null;
+              const eV = eL ? Number(eL.valoare_executata) : 0;
+              const pctLuna = vT ? (eV / vT) * 100 : null;
+              const urg = pctLuna === null ? 9999 : pctLuna - ritmL;
+              const ob = a.obiectiv_anual_eur ? Number(a.obiectiv_anual_eur) : null;
+              return { nume: a.nume_afisat || a.nume, eV, vT, pctLuna, urg, confAn, ob, rConf, rAnul };
+            }).sort((x: any, y: any) => x.urg - y.urg);
+            const pct = (v2: number | null) => v2 === null ? '—' : `${Math.round(v2)}%`;
+            const dot = (ok: boolean | null) => <span style={{ display: 'inline-block', width: 9, height: 9, borderRadius: 5, background: ok === null ? '#d6d3d1' : ok ? C.green : C.red, marginRight: 6 }} />;
+            return (
+              <div style={{ overflowX: 'auto' }}>
+                <table style={{ width: '100%', fontSize: 13, borderCollapse: 'collapse', minWidth: 560 }}>
+                  <thead>
+                    <tr style={{ color: C.grey, textAlign: 'right' }}>
+                      <th style={{ textAlign: 'left', padding: '4px 2px', fontWeight: 600 }}>Agent</th>
+                      <th style={{ padding: '4px 2px', fontWeight: 600 }}>Target {['Ian','Feb','Mar','Apr','Mai','Iun','Iul','Aug','Sep','Oct','Nov','Dec'][lunaC - 1]}</th>
+                      <th style={{ padding: '4px 2px', fontWeight: 600 }}>An</th>
+                      <th style={{ padding: '4px 2px', fontWeight: 600 }}>Conf. (nr)</th>
+                      <th style={{ padding: '4px 2px', fontWeight: 600 }}>Anulari</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {randuri.map((r: any) => (
+                      <tr key={r.nume} style={{ borderTop: `1px solid ${C.border}` }}>
+                        <td style={{ padding: '9px 2px', fontWeight: 800, color: C.ink }}>{r.nume}</td>
+                        <td style={{ padding: '9px 2px', textAlign: 'right', whiteSpace: 'nowrap' }}>
+                          {dot(r.pctLuna === null ? null : r.pctLuna >= ritmL - 3)}
+                          <b style={{ color: C.ink }}>{fmt(r.eV)}</b><span style={{ color: C.grey }}> / {r.vT ? fmt(r.vT) : '—'} · {pct(r.pctLuna)}</span>
+                        </td>
+                        <td style={{ padding: '9px 2px', textAlign: 'right', whiteSpace: 'nowrap' }}>
+                          <b style={{ color: C.ink }}>{fmt(r.confAn)}</b><span style={{ color: C.grey }}>{r.ob ? ` / ${fmt(r.ob)} · ${Math.round((r.confAn / r.ob) * 100)}%` : ''}</span>
+                        </td>
+                        <td style={{ padding: '9px 2px', textAlign: 'right', fontWeight: 700, color: r.rConf >= 20 ? C.green : r.rConf >= 15 ? C.amber : C.red }}>{r.rConf.toFixed(0)}%</td>
+                        <td style={{ padding: '9px 2px', textAlign: 'right', fontWeight: 700, color: r.rAnul < 4 ? C.green : r.rAnul < 6 ? C.amber : C.red }}>{r.rAnul.toFixed(1)}%</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            );
+          })()}
+        </div>
+
+        <div style={card}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 10 }}>
             <div>
               <div style={{ fontSize: 15, fontWeight: 700, color: C.ink }}>Obiectiv agentie {an} (EUR)</div>
