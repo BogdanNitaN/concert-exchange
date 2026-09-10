@@ -89,7 +89,7 @@ export default function KpiAdmin() {
     );
   }
 
-  const { an, agenti, kpi, kpiIndividuali, ultimulUpload, obiectivAgentieEur, tinteLunare, lunaExec, sinteze } = data;
+  const { an, agenti, kpi, kpiIndividuali, ultimulUpload, obiectivAgentieEur, tinteLunare, lunaExec, sinteze, solduri } = data;
   const curs = 1; // FEE din Booking Reporting e deja in EUR
   const saptCurenta = Math.max(0, ...kpi.map((k: any) => k.saptamana));
   const ritmCalendar = (saptCurenta / 52) * 100;
@@ -216,6 +216,64 @@ export default function KpiAdmin() {
                     ))}
                   </tbody>
                 </table>
+              </div>
+            );
+          })()}
+        </div>
+
+        <div style={card}>
+          <div style={{ fontSize: 15, fontWeight: 700, color: C.ink, marginBottom: 4 }}>Facturi clienti cu sold (colectare)</div>
+          <div style={{ fontSize: 12, color: C.grey, marginBottom: 12 }}>Fisierul saptamanal de solduri, in LEI cu TVA. Fiecare incarcare e un snapshot; miscarea se calculeaza automat fata de precedentul.</div>
+          <SolduriUpload sesiune={sesiune} onDone={() => incarca(sesiune!.nume, sesiune!.parola)} />
+          {solduri?.meta && (() => {
+            const m = solduri.meta;
+            const misc = m.totalPrecLei !== null ? m.totalLei - m.totalPrecLei : null;
+            return (
+              <div style={{ marginTop: 12 }}>
+                <div style={{ fontSize: 13, color: C.ink, marginBottom: 10 }}>
+                  Snapshot <b>{m.snapCur}</b>{m.snapPrec ? <span style={{ color: C.grey }}> · fata de {m.snapPrec}</span> : null} · total <b>{fmt(m.totalLei)} lei</b>
+                  {misc !== null && <span style={{ fontWeight: 800, color: misc > 0 ? C.red : C.green }}> ({misc > 0 ? '+' : ''}{fmt(misc)} lei)</span>}
+                </div>
+                <div style={{ overflowX: 'auto' }}>
+                  <table style={{ width: '100%', fontSize: 13, borderCollapse: 'collapse', minWidth: 520 }}>
+                    <thead>
+                      <tr style={{ color: C.grey, textAlign: 'right' }}>
+                        <th style={{ textAlign: 'left', padding: '4px 2px', fontWeight: 600 }}>Agent</th>
+                        <th style={{ padding: '4px 2px', fontWeight: 600 }}>Total lei</th>
+                        <th style={{ padding: '4px 2px', fontWeight: 600 }}>&lt;30z</th>
+                        <th style={{ padding: '4px 2px', fontWeight: 600 }}>&gt;30z</th>
+                        <th style={{ padding: '4px 2px', fontWeight: 600 }}>Legal</th>
+                        <th style={{ padding: '4px 2px', fontWeight: 600 }}>Miscare</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {(solduri.agenti || []).map((a: any) => {
+                        const mi = m.snapPrec ? a.total - a.prec : null;
+                        return (
+                          <tr key={a.nume} style={{ borderTop: `1px solid ${C.border}` }}>
+                            <td style={{ padding: '8px 2px', fontWeight: 800, color: C.ink }}>{a.nume}</td>
+                            <td style={{ padding: '8px 2px', textAlign: 'right', fontWeight: 700, color: C.ink }}>{fmt(a.total)}</td>
+                            <td style={{ padding: '8px 2px', textAlign: 'right', color: C.grey }}>{fmt(a.sub30)}</td>
+                            <td style={{ padding: '8px 2px', textAlign: 'right', fontWeight: 700, color: a.peste30 > 0 ? C.amber : C.grey }}>{fmt(a.peste30)}</td>
+                            <td style={{ padding: '8px 2px', textAlign: 'right', fontWeight: 700, color: a.legal > 0 ? C.red : C.grey }}>{fmt(a.legal)}</td>
+                            <td style={{ padding: '8px 2px', textAlign: 'right', fontWeight: 700, color: mi === null ? C.grey : mi > 0 ? C.red : C.green }}>{mi === null ? '—' : `${mi > 0 ? '+' : ''}${fmt(mi)}`}</td>
+                          </tr>
+                        );
+                      })}
+                    </tbody>
+                  </table>
+                </div>
+                {(solduri.blocInghetat || []).length > 0 && (
+                  <div style={{ marginTop: 12 }}>
+                    <div style={{ fontSize: 13, fontWeight: 700, color: C.ink, marginBottom: 6 }}>Blocul inghetat (clienti &gt;100.000 lei peste termen)</div>
+                    {(solduri.blocInghetat || []).map((c: any) => (
+                      <div key={c.client} style={{ display: 'flex', justifyContent: 'space-between', fontSize: 13, padding: '6px 0', borderTop: `1px solid ${C.border}` }}>
+                        <span style={{ color: C.ink }}>{c.client} <span style={{ color: C.grey }}>· {c.agent}</span></span>
+                        <span style={{ fontWeight: 700, color: C.red }}>{fmt(c.suma)} lei{c.zile > 0 ? <span style={{ color: C.grey, fontWeight: 400 }}> · {c.zile} zile</span> : null}</span>
+                      </div>
+                    ))}
+                  </div>
+                )}
               </div>
             );
           })()}
@@ -408,6 +466,42 @@ export default function KpiAdmin() {
           </div>
         </div>
       </div>
+    </div>
+  );
+}
+
+function SolduriUpload({ sesiune, onDone }: { sesiune: { nume: string; parola: string } | null; onDone: () => void }) {
+  const [fisier, setFisier] = useState<File | null>(null);
+  const [sumar, setSumar] = useState<any>(null);
+  const [stare, setStare] = useState('');
+  async function trimite(mod: string) {
+    if (!fisier || !sesiune) return;
+    setStare(mod === 'confirma' ? 'Se scrie...' : 'Se verifica...');
+    const fd = new FormData();
+    fd.append('file', fisier); fd.append('mod', mod);
+    const r = await fetch('/api/kpi-solduri-upload', { method: 'POST', headers: { 'x-kpi-nume': sesiune.nume, 'x-kpi-parola': sesiune.parola }, body: fd });
+    const j = await r.json();
+    if (!r.ok) { setStare('Eroare: ' + (j.error || '')); return; }
+    setSumar(j.sumar); setStare(j.scris ? 'Scris in baza de date.' : '');
+    if (j.scris) { setFisier(null); onDone(); }
+  }
+  return (
+    <div>
+      <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', alignItems: 'center' }}>
+        <input type="file" accept=".xlsx" onChange={e => { setFisier(e.target.files?.[0] || null); setSumar(null); setStare(''); }} style={{ fontSize: 13 }} />
+        <button onClick={() => trimite('verifica')} disabled={!fisier}
+          style={{ padding: '8px 14px', borderRadius: 8, border: '1px solid #e7e5e4', background: '#fff', color: '#101014', fontSize: 12, fontWeight: 600, cursor: fisier ? 'pointer' : 'default' }}>Verifica</button>
+        {sumar && <button onClick={() => trimite('confirma')}
+          style={{ padding: '8px 14px', borderRadius: 8, border: 'none', background: '#059669', color: '#fff', fontSize: 12, fontWeight: 700, cursor: 'pointer' }}>Confirm — scrie</button>}
+        {stare && <span style={{ fontSize: 12, color: '#78716c' }}>{stare}</span>}
+      </div>
+      {sumar && (
+        <div style={{ marginTop: 8, fontSize: 12, color: '#101014', background: '#fafaf9', borderRadius: 8, padding: '8px 12px' }}>
+          Snapshot <b>{sumar.dataSnapshot}</b> · {sumar.facturi} facturi + {sumar.facturiLegal} legal · {sumar.clientiUnici} clienti ·
+          total <b>{Math.round(sumar.totalLei).toLocaleString('ro-RO')} lei</b> (&lt;30z {Math.round(sumar.sub30Lei).toLocaleString('ro-RO')} · &gt;30z {Math.round(sumar.peste30Lei).toLocaleString('ro-RO')} · legal {Math.round(sumar.legalLei).toLocaleString('ro-RO')})
+          {sumar.randuriFaraAgentInRoster > 0 && <span style={{ color: '#d97706' }}> · {sumar.randuriFaraAgentInRoster} randuri cu agent negasit in roster</span>}
+        </div>
+      )}
     </div>
   );
 }

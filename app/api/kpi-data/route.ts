@@ -141,6 +141,46 @@ export async function GET(req: NextRequest) {
     };
   }).filter(c => c.prop > 0 || c.conf > 0).sort((a, b) => b.vConf - a.vConf);
 
+  // solduri: ultimele doua snapshoturi, agregate per agent + blocul inghetat
+  const { data: snapDates } = await supa.from('solduri')
+    .select('data_snapshot').order('data_snapshot', { ascending: false }).limit(2000);
+  const dateDistincte = [...new Set((snapDates || []).map(x => x.data_snapshot))].sort().reverse();
+  const snapCur = dateDistincte[0] || null;
+  const snapPrec = dateDistincte[1] || null;
+  let solduriAgenti: any[] = [], solduriEu: any[] = [], blocInghetat: any[] = [], solduriMeta: any = null;
+  if (snapCur) {
+    const { data: rCur } = await supa.from('solduri').select('agent_id, agent_nume, client, categorie, suma_lei, zile_max').eq('data_snapshot', snapCur);
+    const rPrec = snapPrec ? (await supa.from('solduri').select('agent_id, suma_lei').eq('data_snapshot', snapPrec)).data || [] : [];
+    const perAgent = new Map<string, any>();
+    for (const r of (rCur || [])) {
+      const k = r.agent_id || r.agent_nume;
+      const g = perAgent.get(k) || { agentId: r.agent_id, nume: r.agent_nume, total: 0, sub30: 0, peste30: 0, legal: 0, prec: 0 };
+      g.total += Number(r.suma_lei);
+      if (r.categorie === 'sub30') g.sub30 += Number(r.suma_lei);
+      else if (r.categorie === 'peste30') g.peste30 += Number(r.suma_lei);
+      else g.legal += Number(r.suma_lei);
+      perAgent.set(k, g);
+    }
+    for (const r of rPrec) {
+      const g = perAgent.get(r.agent_id);
+      if (g) g.prec += Number(r.suma_lei);
+    }
+    solduriAgenti = [...perAgent.values()].sort((a, b) => b.total - a.total);
+    solduriEu = (rCur || []).filter(r => r.agent_id === eu.id)
+      .sort((a, b) => b.zile_max - a.zile_max || Number(b.suma_lei) - Number(a.suma_lei));
+    const perClient = new Map<string, any>();
+    for (const r of (rCur || [])) {
+      if (r.categorie === 'sub30') continue;
+      const g = perClient.get(r.client) || { client: r.client, suma: 0, zile: 0, agent: r.agent_nume };
+      g.suma += Number(r.suma_lei); g.zile = Math.max(g.zile, r.zile_max === 9999 ? 0 : r.zile_max);
+      perClient.set(r.client, g);
+    }
+    blocInghetat = [...perClient.values()].filter(c => c.suma > 100000).sort((a, b) => b.suma - a.suma).slice(0, 8);
+    const totCur = (rCur || []).reduce((x, r) => x + Number(r.suma_lei), 0);
+    const totPrec = rPrec.reduce((x, r) => x + Number(r.suma_lei), 0);
+    solduriMeta = { snapCur, snapPrec, totalLei: totCur, totalPrecLei: snapPrec ? totPrec : null };
+  }
+
   const { data: log } = await supa.from('kpi_upload_log')
     .select('an, saptamana, incarcat_la').order('incarcat_la', { ascending: false }).limit(1);
 
@@ -159,6 +199,7 @@ export async function GET(req: NextRequest) {
     reusite,
     sinteze: sinteze || [],
     comparativ,
+    solduri: { meta: solduriMeta, agenti: solduriAgenti, ale_mele: solduriEu, blocInghetat },
     ultimulUpload: log?.[0] || null,
   });
 }

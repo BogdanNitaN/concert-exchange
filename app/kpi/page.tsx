@@ -28,6 +28,7 @@ const DEFINITII: Record<string, { titlu: string; text: string }> = {
   agentie: { titlu: 'Obiectivele generale', text: 'Rulajul intregii echipe fata de obiectivul anual al agentiei, si rulajul tau anual fata de obiectivul tau. Partea ta conteaza in ambele bare.' },
   carry: { titlu: 'Vandut in 2025 pentru 2026', text: 'Evenimente contractate anul trecut cu executie anul acesta. Intra in rulaj si in gradul de realizare, dar nu in indicatorii de efort: conversie, anulari, ritm.' },
   segmente: { titlu: 'Segmentele tale', text: 'Conversia ta in valoare pe fiecare tip de eveniment. Doar segmentele cu minim 5 propuneri.' },
+  colectare: { titlu: 'Colectarea ta', text: 'Facturile tale neincasate, din raportul saptamanal de solduri (sume in lei cu TVA, afisate in EUR la cursul BNR al zilei). Sub 30 de zile e normalul sezonului; peste 30 inseamna telefon de dat; Legal e la avocat. Banii confirmati dar neincasati nu sunt inca venit.' },
   echipa: { titlu: 'Tu in echipa', text: 'Toti agentii activi, pe anul curent: bara gri = valoarea propusa, bara verde = valoarea confirmata, badge-ul = rata de confirmare pe numar. Randul tau e evidentiat. Cifrele sunt aceleasi din sinteza saptamanala a agentiei.' },
   istoric: { titlu: 'Istoric propus vs confirmat', text: 'Bara gri = cat ai propus in perioada. Bara verde = cat s-a confirmat, pe aceeasi scara. Badge-ul = rata de confirmare pe numar (confirmate/propuse, tinta 20%). Linia neagra = targetul lunii, unde exista.' },
 };
@@ -127,7 +128,8 @@ export default function KpiPage() {
     );
   }
 
-  const { eu, an, agenti, kpi, artisti, segmente, kpiIndividuali, medieAgentie, obiectivAgentieEur, tinteLunare, lunaExec, reusite, sinteze, comparativ } = data;
+  const { eu, an, agenti, kpi, artisti, segmente, kpiIndividuali, medieAgentie, obiectivAgentieEur, tinteLunare, lunaExec, reusite, sinteze, comparativ, solduri } = data;
+  const cursBnr = Number(data.curs) || 5.07; // soldurile sunt in LEI cu TVA -> afisam EUR
   const curs = 1;
   const agent = agenti.find((a: any) => a.id === eu.id) || agenti[0];
   const alMeu = kpi.filter((k: any) => k.agent_id === agent.id);
@@ -457,6 +459,52 @@ export default function KpiPage() {
             </button>
           )}
         </div>
+
+        {solduri?.ale_mele?.length > 0 && (() => {
+          const ale = solduri.ale_mele;
+          const suma = (cat: string) => ale.filter((r: any) => r.categorie === cat).reduce((x: number, r: any) => x + Number(r.suma_lei), 0);
+          const sub30 = suma('sub30'), peste30 = suma('peste30'), legal = suma('legal');
+          const total = sub30 + peste30 + legal;
+          const eur = (lei: number) => fmt(lei / cursBnr);
+          const restante = ale.filter((r: any) => r.categorie !== 'sub30' && r.zile_max !== 9999).slice(0, 5);
+          return (
+            <>
+              <Grupa t="COLECTARE" />
+              <div style={{ ...card, cursor: 'pointer' }} onClick={() => setExpl('colectare')}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', flexWrap: 'wrap', gap: 6 }}>
+                  <div style={{ fontSize: 14, fontWeight: 700, color: C.ink }}>Neincasat · {solduri.meta?.snapCur}</div>
+                  <div style={{ fontSize: 16, fontWeight: 800, color: C.ink }}>{eur(total)} EUR</div>
+                </div>
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 8, marginTop: 12 }}>
+                  <div style={{ padding: '10px 12px', background: '#fafaf9', borderRadius: 10, borderTop: `3px solid ${C.green}` }}>
+                    <div style={{ fontSize: 11, color: C.grey }}>Sub 30 zile</div>
+                    <div style={{ fontSize: 15, fontWeight: 800, color: C.ink }}>{eur(sub30)}</div>
+                  </div>
+                  <div style={{ padding: '10px 12px', background: '#fafaf9', borderRadius: 10, borderTop: `3px solid ${peste30 > 0 ? C.amber : '#d6d3d1'}` }}>
+                    <div style={{ fontSize: 11, color: C.grey }}>Peste 30 zile</div>
+                    <div style={{ fontSize: 15, fontWeight: 800, color: peste30 > 0 ? C.amber : C.ink }}>{eur(peste30)}</div>
+                  </div>
+                  <div style={{ padding: '10px 12px', background: '#fafaf9', borderRadius: 10, borderTop: `3px solid ${legal > 0 ? C.red : '#d6d3d1'}` }}>
+                    <div style={{ fontSize: 11, color: C.grey }}>Legal</div>
+                    <div style={{ fontSize: 15, fontWeight: 800, color: legal > 0 ? C.red : C.ink }}>{eur(legal)}</div>
+                  </div>
+                </div>
+                {restante.length > 0 && (
+                  <div style={{ marginTop: 12 }}>
+                    <div style={{ fontSize: 12, fontWeight: 700, color: C.ink, marginBottom: 4 }}>De sunat primele:</div>
+                    {restante.map((r: any) => (
+                      <div key={r.client + r.categorie} style={{ display: 'flex', justifyContent: 'space-between', fontSize: 13, padding: '5px 0', borderTop: `1px solid ${C.border}` }}>
+                        <span style={{ color: C.ink }}>{r.client}</span>
+                        <span style={{ color: C.amber, fontWeight: 700 }}>{eur(Number(r.suma_lei))} EUR <span style={{ color: C.grey, fontWeight: 400 }}>· {r.zile_max} zile</span></span>
+                      </div>
+                    ))}
+                  </div>
+                )}
+                <div style={{ fontSize: 11, color: C.grey, marginTop: 10 }}>In EUR la cursul BNR ({cursBnr.toFixed(4)}). Apasa pentru detalii.</div>
+              </div>
+            </>
+          );
+        })()}
 
         {(comparativ || []).length > 1 && (
           <>
