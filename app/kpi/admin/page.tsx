@@ -121,7 +121,7 @@ export default function KpiAdmin() {
 
   // Propus vs Confirmat cu filtru
   const kpiFiltrat = filtruAgent === 'toti' ? kpi : kpi.filter((k: any) => k.agent_id === filtruAgent);
-  type P = { eticheta: string; vOf: number; vConf: number };
+  type P = { eticheta: string; vOf: number; vConf: number; prop: number; conf: number };
   const grup = new Map<number, P>();
   for (const k of kpiFiltrat) {
     let idx: number, et: string;
@@ -131,8 +131,9 @@ export default function KpiAdmin() {
       idx = perioada === 'L' ? luna : Math.floor(luna / 3);
       et = perioada === 'L' ? LUNI[luna] : `T${Math.floor(luna / 3) + 1}`;
     }
-    const g = grup.get(idx) || { eticheta: et, vOf: 0, vConf: 0 };
+    const g = grup.get(idx) || { eticheta: et, vOf: 0, vConf: 0, prop: 0, conf: 0 };
     g.vOf += Number(k.valoare_ofertata_ron); g.vConf += Number(k.valoare_confirmata_ron);
+    g.prop += k.propuneri; g.conf += k.confirmate;
     grup.set(idx, g);
   }
   let perioade = [...grup.entries()].sort((a, b) => a[0] - b[0]).map(e => e[1]);
@@ -224,14 +225,14 @@ export default function KpiAdmin() {
               <span style={{ display: 'inline-flex', alignItems: 'center', gap: 5 }}><span style={{ width: 11, height: 11, border: '1.5px solid #d6d3d1', borderRadius: 3, display: 'inline-block', background: '#fff' }} />Propus (lungimea barei)</span>
             </div>
             {perioade.map(p => {
-              const cv = p.vOf > 0 ? (p.vConf / p.vOf) * 100 : 0;
-              const bg = cv >= 30 ? '#ecfdf5' : cv >= 20 ? '#fffbeb' : '#fef2f2';
-              const col = cv >= 30 ? C.green : cv >= 20 ? C.amber : C.red;
+              const cv = p.prop > 0 ? (p.conf / p.prop) * 100 : 0;
+              const bg = cv >= 20 ? '#ecfdf5' : cv >= 15 ? '#fffbeb' : '#fef2f2';
+              const col = cv >= 20 ? C.green : cv >= 15 ? C.amber : C.red;
               return (
                 <div key={p.eticheta} style={{ marginBottom: 6 }}>
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 4 }}>
                     <span style={{ fontWeight: 800, fontSize: 13, color: C.ink }}>{p.eticheta}</span>
-                    {p.vOf > 0 && <span style={{ background: bg, color: col, fontWeight: 800, fontSize: 11, padding: '2px 7px', borderRadius: 6 }}>{cv.toFixed(0)}% conversie</span>}
+                    {p.vOf > 0 && <span style={{ background: bg, color: col, fontWeight: 800, fontSize: 11, padding: '2px 7px', borderRadius: 6 }}>{cv.toFixed(0)}% confirmare ({p.conf}/{p.prop})</span>}
                   </div>
                   <div style={{ fontSize: 11, color: C.grey, marginBottom: 2 }}>Propus <b style={{ color: C.ink }}>{fmt(p.vOf / curs)} EUR</b></div>
                   <div style={{ height: 8, background: '#f0efee', borderRadius: 4, marginBottom: 5, overflow: 'hidden' }}>
