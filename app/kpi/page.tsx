@@ -17,7 +17,7 @@ const glass: React.CSSProperties = {
 const LUNI = ['Ian', 'Feb', 'Mar', 'Apr', 'Mai', 'Iun', 'Iul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
 
 const DEFINITII: Record<string, { titlu: string; text: string }> = {
-  obiective: { titlu: 'Obiectivele lunii', text: 'Se numara evenimentele care AU LOC in luna aceasta (data evenimentului in luna). O confirmare facuta azi pentru o luna viitoare apare la luna respectiva. Eu incarc raportul saptamanal; barele se actualizeaza la fiecare incarcare.' },
+  obiective: { titlu: 'Obiectivele lunii', text: 'Se numara evenimentele care AU LOC in luna aceasta (data evenimentului in luna). O confirmare facuta azi pentru o luna viitoare apare la luna respectiva. Vanzarea in booking nu e liniara — vine in valuri — asa ca nu masuram ziua, ci luna: cat ai inchis din target si cate zile mai sunt. Eu incarc raportul saptamanal; barele se actualizeaza la fiecare incarcare.' },
   de_facut: { titlu: 'De facut', text: 'Cat mai ai de propus ca sa-ti atingi targetul lunii: restul de confirmat, impartit la conversia ta in valoare de anul asta, iti da volumul de propus. Numarul de evenimente e estimat la fee-ul tau mediu. E o estimare statistica, nu o garantie — dar e directia corecta a efortului.' },
   rata_conf: { titlu: 'Rata de confirmare', text: 'Numarul evenimentelor confirmate impartit la numarul celor propuse, pe numar, nu pe valoare. Tinta: 20%.' },
   anulare: { titlu: 'Rata de anulare', text: 'Valoarea anulata impartita la valoarea confirmata plus anulata, pe tot anul. Se masoara in VALOARE — o anulare de 20.000 EUR cantareste cat zece de 2.000. Tinta: sub 4%.' },
@@ -279,20 +279,20 @@ export default function KpiPage() {
         <Grupa t={`OBIECTIVELE TALE · ${LUNI[lunaCur - 1].toUpperCase()}`} />
         <div style={{ ...card, padding: 16 }} onClick={() => setExpl('obiective')}>
           <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 12, color: C.grey, marginBottom: 12 }}>
-            <span>ziua {azi.getDate()} din {zileLuna} · linia neagra = unde ar trebui sa fii azi</span>
+            <span>{zileLuna - azi.getDate()} zile ramase din {LUNI[lunaCur - 1]}</span>
           </div>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: 10 }}>
             <div style={tileStyle(peRitmV)} onClick={e => { e.stopPropagation(); setExpl('obiective'); }}>
               <div style={{ fontSize: 12, color: C.grey }}>Volum executat (vanzare bruta)</div>
               <div style={{ fontSize: 22, fontWeight: 800, color: C.ink }}>{fmt(execV)} <span style={{ fontSize: 13, fontWeight: 600, color: C.grey }}>/ {volumT ? fmt(volumT) : '—'} EUR</span></div>
-              {volumT ? <Bara val={execV} max={volumT} culoare={peRitmV ? C.green : C.amber} tinta={volumT * (ritmLuna / 100)} /> : <div style={{ fontSize: 12, color: C.grey, marginTop: 6 }}>Target nesetat.</div>}
-              {volumT && <div style={{ fontSize: 12, color: ramasV > 0 ? C.ink : C.green, marginTop: 6 }}>{ramasV > 0 ? <span>Mai ai <b>{fmt(ramasV)} EUR</b>.</span> : <b>Atins si depasit cu {fmt(execV - volumT)} EUR.</b>}</div>}
+              {volumT ? <Bara val={execV} max={volumT} culoare={peRitmV ? C.green : C.amber} /> : <div style={{ fontSize: 12, color: C.grey, marginTop: 6 }}>Target nesetat.</div>}
+              {volumT && <div style={{ fontSize: 12, color: ramasV > 0 ? C.ink : C.green, marginTop: 6 }}>{ramasV > 0 ? <span><b>{zileLuna - azi.getDate()} zile</b> ramase · mai ai <b>{fmt(ramasV)} EUR</b></span> : <b>Atins si depasit cu {fmt(execV - volumT)} EUR.</b>}</div>}
             </div>
             <div style={tileStyle(nrEvT ? execN / nrEvT * 100 >= ritmLuna - 3 : null)} onClick={e => { e.stopPropagation(); setExpl('obiective'); }}>
               <div style={{ fontSize: 12, color: C.grey }}>Evenimente executate</div>
               <div style={{ fontSize: 22, fontWeight: 800, color: C.ink }}>{execN} <span style={{ fontSize: 13, fontWeight: 600, color: C.grey }}>/ {nrEvT ?? '—'}</span></div>
-              {nrEvT ? <Bara val={execN} max={nrEvT} culoare={execN / nrEvT * 100 >= ritmLuna - 3 ? C.green : C.amber} tinta={nrEvT * (ritmLuna / 100)} /> : <div style={{ fontSize: 12, color: C.grey, marginTop: 6 }}>Target nesetat.</div>}
-              {nrEvT && <div style={{ fontSize: 12, color: ramasN > 0 ? C.ink : C.green, marginTop: 6 }}>{ramasN > 0 ? <span>Mai ai <b>{ramasN} evenimente</b>.</span> : <b>Atins.</b>}</div>}
+              {nrEvT ? <Bara val={execN} max={nrEvT} culoare={execN / nrEvT * 100 >= ritmLuna - 3 ? C.green : C.amber} /> : <div style={{ fontSize: 12, color: C.grey, marginTop: 6 }}>Target nesetat.</div>}
+              {nrEvT && <div style={{ fontSize: 12, color: ramasN > 0 ? C.ink : C.green, marginTop: 6 }}>{ramasN > 0 ? <span><b>{zileLuna - azi.getDate()} zile</b> ramase · mai ai <b>{ramasN} evenimente</b></span> : <b>Atins.</b>}</div>}
             </div>
             <div style={tileStyle(rataConfLuna >= rataT)} onClick={e => { e.stopPropagation(); setExpl('rata_conf'); }}>
               <div style={{ fontSize: 12, color: C.grey }}>Rata de confirmare (nr) · luna asta</div>
