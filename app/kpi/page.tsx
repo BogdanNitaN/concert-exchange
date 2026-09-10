@@ -20,7 +20,7 @@ const DEFINITII: Record<string, { titlu: string; text: string }> = {
   obiective: { titlu: 'Obiectivele lunii', text: 'Se numara evenimentele care AU LOC in luna aceasta (data evenimentului in luna). O confirmare facuta azi pentru o luna viitoare apare la luna respectiva. Vanzarea in booking nu e liniara — vine in valuri — asa ca nu masuram ziua, ci luna: cat ai inchis din target si cate zile mai sunt. Eu incarc raportul saptamanal; barele se actualizeaza la fiecare incarcare.' },
   de_facut: { titlu: 'De facut', text: 'Cat mai ai de propus ca sa-ti atingi targetul lunii: restul de confirmat, impartit la conversia ta in valoare de anul asta, iti da volumul de propus. Numarul de evenimente e estimat la fee-ul tau mediu. E o estimare statistica, nu o garantie — dar e directia corecta a efortului.' },
   rata_conf: { titlu: 'Rata de confirmare', text: 'Numarul evenimentelor confirmate impartit la numarul celor propuse, pe numar, nu pe valoare. Tinta: 20%.' },
-  anulare: { titlu: 'Rata de anulare', text: 'Valoarea anulata impartita la valoarea confirmata plus anulata, pe tot anul. Se masoara in VALOARE — o anulare de 20.000 EUR cantareste cat zece de 2.000. Tinta: sub 4%.' },
+  anulare: { titlu: 'Rata de anulare', text: 'Numarul evenimentelor anulate impartit la numarul celor confirmate, pe tot anul. Pe numar, ca si rata de confirmare. Tinta: sub 4%. Valoarea pierduta in EUR apare alaturi, ca sa se vada si greutatea anularilor, nu doar frecventa lor.' },
   gap: { titlu: 'Saptamani fara propuneri', text: 'Cea mai lunga serie de saptamani consecutive fara nicio propunere noua, de la inceputul anului. Pipeline-ul intermitent e cel mai bun predictor al lunilor slabe. Tinta: maxim 1.' },
   conversie: { titlu: 'Conversie valoare', text: 'Confirmat impartit la Propus, in valoare, pe tot anul. Peste 30% esti in media agentiei.' },
   top3: { titlu: 'Concentrarea pe top 3 artisti', text: 'Cat la suta din rulajul tau confirmat vine din primii 3 artisti. Peste 35-40% inseamna dependenta.' },
@@ -149,7 +149,7 @@ export default function KpiPage() {
   const confEur = tot.vConf / curs;
   const conversie = totE.vOf > 0 ? (totE.vConf / totE.vOf) * 100 : 0;
   const rataConfAn = totE.prop > 0 ? (totE.conf / totE.prop) * 100 : 0;
-  const rataAnulare = (totE.vConf + totE.vAnul) > 0 ? (totE.vAnul / (totE.vConf + totE.vAnul)) * 100 : 0;
+  const rataAnulare = totE.conf > 0 ? (totE.anul / totE.conf) * 100 : 0; // pe numar: anulate / confirmate
   const feeMediu = totE.conf > 0 ? (totE.vConf / curs) / totE.conf : 0;
 
   let gapMax = 0, gap = 0;
@@ -300,9 +300,9 @@ export default function KpiPage() {
               <div style={{ fontSize: 12, color: C.grey, marginTop: 6 }}>{confLunaCur} confirmate din {propLunaCur} propuse · anual: {rataConfAn.toFixed(0)}%</div>
             </div>
             <div style={tileStyle(rataAnulare < 4)} onClick={e => { e.stopPropagation(); setExpl('anulare'); }}>
-              <div style={{ fontSize: 12, color: C.grey }}>Rata de anulare (valoare) · an</div>
+              <div style={{ fontSize: 12, color: C.grey }}>Rata de anulare (nr) · an</div>
               <div style={{ fontSize: 22, fontWeight: 800, color: rataAnulare < 4 ? C.green : rataAnulare < 6 ? C.amber : C.red }}>{rataAnulare.toFixed(1)}% <span style={{ fontSize: 13, fontWeight: 600, color: C.grey }}>/ sub 4%</span></div>
-              <div style={{ fontSize: 12, color: C.grey, marginTop: 6 }}>{fmt(totE.vAnul / curs)} EUR anulati din {fmt((totE.vConf + totE.vAnul) / curs)}</div>
+              <div style={{ fontSize: 12, color: C.grey, marginTop: 6 }}>{totE.anul} anulate la {totE.conf} confirmate · {fmt(totE.vAnul / curs)} EUR pierduti</div>
             </div>
           </div>
         </div>

@@ -173,8 +173,9 @@ export default function KpiAdmin() {
               const confN = kE.reduce((x: number, k: any) => x + k.confirmate, 0);
               const vC = kE.reduce((x: number, k: any) => x + Number(k.valoare_confirmata_ron), 0);
               const vA = kE.reduce((x: number, k: any) => x + Number(k.valoare_anulata_ron), 0);
+              const anulN = kE.reduce((x: number, k: any) => x + k.anulate, 0);
               const rConf = prop > 0 ? (confN / prop) * 100 : 0;
-              const rAnul = (vC + vA) > 0 ? (vA / (vC + vA)) * 100 : 0;
+              const rAnul = confN > 0 ? (anulN / confN) * 100 : 0; // pe numar
               const tL = (tinteLunare || []).find((t: any) => t.agent_id === a.id && t.luna === lunaC);
               const eL = (lunaExec || []).find((l: any) => l.agent_id === a.id && l.luna === lunaC);
               const vT = tL?.volum_t ? Number(tL.volum_t) : null;
