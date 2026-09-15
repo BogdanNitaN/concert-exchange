@@ -570,8 +570,8 @@ export default function OfertaPage() {
         // format oficial in lei
         if (dataEveniment) out.push('Disponibilitate: ' + formatData(dataEveniment))
         out.push('Onorariu: ' + c.feeLeiConv.toLocaleString('ro-RO') + ' lei + TVA')
-        if (c.transportLei > 0) out.push('Transport: ' + c.transportLei.toLocaleString('ro-RO') + ' lei + TVA')
-        if (c.transportEur > 0) out.push('Transport: ' + c.transportEur.toLocaleString('ro-RO') + ' EUR + TVA' + (c.transportEurInLei > 0 ? ' (aprox ' + c.transportEurInLei.toLocaleString('ro-RO') + ' lei)' : ''))
+        if (c.transportLei > 0) out.push('Transport: ' + l.leiKm + ' lei/km x ' + c.kmTotal + ' km = ' + c.transportLei.toLocaleString('ro-RO') + ' lei + TVA')
+        if (c.transportEur > 0) out.push('Transport: ' + l.leiKm + ' EUR/km x ' + c.kmTotal + ' km = ' + c.transportEur.toLocaleString('ro-RO') + ' EUR + TVA' + (c.transportEurInLei > 0 ? ' (aprox ' + c.transportEurInLei.toLocaleString('ro-RO') + ' lei)' : ''))
         if (!c.local) out.push(l.cazareFixa > 0 ? 'Cazare: ' + l.cazareFixa.toLocaleString('ro-RO') + ' lei' : 'Cazare: ' + l.cazare)
         if (!c.local && c.diurnaTotal > 0) out.push('Diurna: ' + (l.diurnaFixa > 0 ? c.diurnaTotal.toLocaleString('ro-RO') + ' lei' : l.diurnaPerPers + ' lei/pers x ' + l.persoane + ' pers' + (l.zile > 1 ? ' x ' + l.zile + ' zile' : '') + ' (' + c.diurnaTotal.toLocaleString('ro-RO') + ' lei + TVA) sau masa a la carte'))
         if (!c.local && l.tipMasa === 'alacarte' && l.diurnaFixa === 0 && l.cazareFixa === 0) out.push('Masa: a la carte ' + l.persoane + ' pers (pranz, cina) + mic dejun la hotel')
