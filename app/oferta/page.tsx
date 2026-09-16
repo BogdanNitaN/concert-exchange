@@ -572,9 +572,9 @@ export default function OfertaPage() {
         out.push('Onorariu: ' + c.feeLeiConv.toLocaleString('ro-RO') + ' lei + TVA')
         if (c.transportLei > 0) out.push('Transport: ' + l.leiKm + ' lei/km x ' + c.kmTotal + ' km = ' + c.transportLei.toLocaleString('ro-RO') + ' lei + TVA')
         if (c.transportEur > 0) out.push('Transport: ' + l.leiKm + ' EUR/km x ' + c.kmTotal + ' km = ' + c.transportEur.toLocaleString('ro-RO') + ' EUR + TVA' + (c.transportEurInLei > 0 ? ' (aprox ' + c.transportEurInLei.toLocaleString('ro-RO') + ' lei)' : ''))
-        if (!c.local) out.push(l.cazareFixa > 0 ? 'Cazare: ' + l.cazareFixa.toLocaleString('ro-RO') + ' lei' : 'Cazare: ' + l.cazare)
-        if (!c.local && c.diurnaTotal > 0) out.push('Diurna: ' + (l.diurnaFixa > 0 ? c.diurnaTotal.toLocaleString('ro-RO') + ' lei' : l.diurnaPerPers + ' lei/pers x ' + l.persoane + ' pers' + (l.zile > 1 ? ' x ' + l.zile + ' zile' : '') + ' (' + c.diurnaTotal.toLocaleString('ro-RO') + ' lei + TVA) sau masa a la carte'))
-        if (!c.local && l.tipMasa === 'alacarte' && l.diurnaFixa === 0 && l.cazareFixa === 0) out.push('Masa: a la carte ' + l.persoane + ' pers (pranz, cina) + mic dejun la hotel')
+        if (!c.local) out.push(l.cazareFixa > 0 ? 'Cazare: ' + l.cazareFixa.toLocaleString('ro-RO') + ' lei' : 'Cazare: ' + (c.totiZboara ? c.persoaneEfective + ' sng' : l.cazare))
+        if (!c.local && c.diurnaTotal > 0) out.push('Diurna: ' + (l.diurnaFixa > 0 ? c.diurnaTotal.toLocaleString('ro-RO') + ' lei' : l.diurnaPerPers + ' lei/pers x ' + c.persoaneEfective + ' pers' + (l.zile > 1 ? ' x ' + l.zile + ' zile' : '') + ' (' + c.diurnaTotal.toLocaleString('ro-RO') + ' lei + TVA) sau masa a la carte'))
+        if (!c.local && l.tipMasa === 'alacarte' && l.diurnaFixa === 0 && l.cazareFixa === 0) out.push('Masa: a la carte ' + c.persoaneEfective + ' pers (pranz, cina) + mic dejun la hotel')
         if (l.allInAvionLei > 0) out.push('Avion: ' + l.allInAvionLei.toLocaleString('ro-RO') + ' lei')
         else if (km !== null && km > 300 && l.bileteAvion > 0 && !esteOrasFaraAvion()) out.push('Avion: ' + l.bileteAvion + (l.bileteAvion === 1 ? ' bilet' : ' bilete') + ' + transfer de asigurat')
         if (l.useAlcool && c.alcoolTotal > 0) out.push('Protocol: ' + c.alcoolTotal.toLocaleString('ro-RO') + ' lei (alcool)')
@@ -603,9 +603,9 @@ export default function OfertaPage() {
           av += ' + transfer de asigurat'
           parts.push(av)
         }
-        if (!c.local) parts.push(l.cazareFixa > 0 ? 'cazare ' + l.cazareFixa.toLocaleString('ro-RO') + ' lei' : 'cazare ' + l.cazare)
-        if (!c.local && c.diurnaTotal > 0) parts.push('diurna ' + (l.diurnaFixa > 0 ? c.diurnaTotal.toLocaleString('ro-RO') + ' lei' : l.diurnaPerPers + ' lei/pers x ' + l.persoane + ' pers' + (l.zile > 1 ? ' x ' + l.zile + ' zile' : '') + ' (' + c.diurnaTotal.toLocaleString('ro-RO') + ' lei + TVA) sau masa a la carte'))
-        if (!c.local && l.tipMasa === 'alacarte' && l.diurnaFixa === 0 && l.cazareFixa === 0) parts.push('masa a la carte ' + l.persoane + ' pers (pranz, cina) + mic dejun la hotel')
+        if (!c.local) parts.push(l.cazareFixa > 0 ? 'cazare ' + l.cazareFixa.toLocaleString('ro-RO') + ' lei' : 'cazare ' + (c.totiZboara ? c.persoaneEfective + ' sng' : l.cazare))
+        if (!c.local && c.diurnaTotal > 0) parts.push('diurna ' + (l.diurnaFixa > 0 ? c.diurnaTotal.toLocaleString('ro-RO') + ' lei' : l.diurnaPerPers + ' lei/pers x ' + c.persoaneEfective + ' pers' + (l.zile > 1 ? ' x ' + l.zile + ' zile' : '') + ' (' + c.diurnaTotal.toLocaleString('ro-RO') + ' lei + TVA) sau masa a la carte'))
+        if (!c.local && l.tipMasa === 'alacarte' && l.diurnaFixa === 0 && l.cazareFixa === 0) parts.push('masa a la carte ' + c.persoaneEfective + ' pers (pranz, cina) + mic dejun la hotel')
         if ((l.allIn || l.landed) && eurRate) {
           const bazaEur = l.allIn ? l.allInSuma : l.fee
           const transLei = l.landed ? 0 : c.transportLei + (c.transportEur > 0 ? Math.round(c.transportEur * eurRate) : 0)
@@ -807,9 +807,9 @@ export default function OfertaPage() {
         let av = 'Avion: ' + l.bileteAvion + (l.bileteAvion === 1 ? ' bilet' : ' bilete') + ' + transfer de asigurat'
         rows.push(av)
       }
-      if (!c.local) rows.push(l.cazareFixa > 0 ? 'Cazare: ' + l.cazareFixa.toLocaleString('ro-RO') + ' lei' : 'Cazare: ' + l.cazare + ' (' + l.persoane + ' persoane)')
-      if (!c.local && c.diurnaTotal > 0) rows.push('Diurna: ' + (l.diurnaFixa > 0 ? c.diurnaTotal.toLocaleString('ro-RO') + ' lei' : l.diurnaPerPers + ' lei/pers x ' + l.persoane + ' pers' + (l.zile > 1 ? ' x ' + l.zile + ' zile' : '') + ' (' + c.diurnaTotal.toLocaleString('ro-RO') + ' lei + TVA) sau masa a la carte'))
-      if (!c.local && l.tipMasa === 'alacarte' && l.diurnaFixa === 0 && l.cazareFixa === 0) rows.push('Masa: a la carte ' + l.persoane + ' pers (pranz, cina) + mic dejun la hotel')
+      if (!c.local) rows.push(l.cazareFixa > 0 ? 'Cazare: ' + l.cazareFixa.toLocaleString('ro-RO') + ' lei' : 'Cazare: ' + (c.totiZboara ? c.persoaneEfective + ' sng (' + c.persoaneEfective + ' persoane)' : l.cazare + ' (' + l.persoane + ' persoane)'))
+      if (!c.local && c.diurnaTotal > 0) rows.push('Diurna: ' + (l.diurnaFixa > 0 ? c.diurnaTotal.toLocaleString('ro-RO') + ' lei' : l.diurnaPerPers + ' lei/pers x ' + c.persoaneEfective + ' pers' + (l.zile > 1 ? ' x ' + l.zile + ' zile' : '') + ' (' + c.diurnaTotal.toLocaleString('ro-RO') + ' lei + TVA) sau masa a la carte'))
+      if (!c.local && l.tipMasa === 'alacarte' && l.diurnaFixa === 0 && l.cazareFixa === 0) rows.push('Masa: a la carte ' + c.persoaneEfective + ' pers (pranz, cina) + mic dejun la hotel')
       if ((l.allIn || l.landed) && eurRate) {
         const bazaEurP = l.allIn ? l.allInSuma : l.fee
         const transLeiP = l.landed ? 0 : c.transportLei + (c.transportEur > 0 ? Math.round(c.transportEur * eurRate) : 0)

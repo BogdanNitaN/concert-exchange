@@ -9,6 +9,7 @@ export type LinieCalc = {
   useMarja: boolean
   persoane: number
   restulRutier: boolean
+  bileteAvion?: number
   tipMasa: 'diurna' | 'alacarte'
   zile: number
   diurnaPerPers: number
@@ -43,7 +44,8 @@ export function calcLinieOferta(l: LinieCalc, ctx: ContextCalc) {
   // cateva zeci de centi pe fiecare linie, sistematic in defavoarea noastra.
   const transportEur = transportEuro ? Math.ceil(transportRaw) : 0
   const transportEurInLei = transportEuro && eurRate ? Math.round(transportEur * eurRate) : 0
-  const diurnaTotal = l.diurnaFixa > 0 ? l.diurnaFixa : (l.tipMasa === 'diurna' ? l.persoane * l.diurnaPerPers * l.zile : 0)
+  const persoaneEfective = totiZboara ? (l.bileteAvion || l.persoane) : l.persoane
+  const diurnaTotal = l.diurnaFixa > 0 ? l.diurnaFixa : (l.tipMasa === 'diurna' ? persoaneEfective * l.diurnaPerPers * l.zile : 0)
   const alcoolTotal = l.useAlcool ? l.alcool : 0
   const discount = l.feeLista > l.fee ? l.feeLista - l.fee : 0
   const cursAdaos = eurRate ? eurRate * (1 + (useAdaos ? adaosProcent : 0) / 100) : 0
@@ -58,5 +60,5 @@ export function calcLinieOferta(l: LinieCalc, ctx: ContextCalc) {
   // landed: transportul se scade din fee -> cat ramane net artistului
   const transportEurEchiv = transportEuro ? transportEur : (eurRate && transportLei > 0 ? Math.round(transportLei / eurRate) : 0)
   const feeNetLanded = l.landed ? l.fee - transportEurEchiv : null
-  return { kmTotal, transportLei, transportEur, transportEurInLei, transportEuro, diurnaTotal, alcoolTotal, discount, cursAdaos, savingLei, cag, netGigx, feeLeiConv, local, transportEurEchiv, feeNetLanded }
+  return { kmTotal, transportLei, transportEur, transportEurInLei, transportEuro, diurnaTotal, alcoolTotal, discount, cursAdaos, savingLei, cag, netGigx, feeLeiConv, local, transportEurEchiv, feeNetLanded, totiZboara, persoaneEfective }
 }
