@@ -15,6 +15,8 @@ const glass: React.CSSProperties = {
   borderBottom: `1px solid ${C.border}`,
 };
 const LUNI = ['Ian', 'Feb', 'Mar', 'Apr', 'Mai', 'Iun', 'Iul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+const LUNI_PLIN = ['ianuarie', 'februarie', 'martie', 'aprilie', 'mai', 'iunie', 'iulie', 'august', 'septembrie', 'octombrie', 'noiembrie', 'decembrie'];
+const fmtData = (iso: string) => { const d = new Date(iso); return isNaN(d.getTime()) ? iso : `${d.getDate()} ${LUNI_PLIN[d.getMonth()]} ${d.getFullYear()}`; };
 
 const DEFINITII: Record<string, { titlu: string; text: string }> = {
   obiective: { titlu: 'Obiectivele lunii', text: 'Se numara evenimentele care AU LOC in luna aceasta (data evenimentului in luna). O confirmare facuta azi pentru o luna viitoare apare la luna respectiva. Vanzarea in booking nu e liniara — vine in valuri — asa ca nu masuram ziua, ci luna: cat ai inchis din target si cate zile mai sunt. Eu incarc raportul saptamanal; barele se actualizeaza la fiecare incarcare.' },
@@ -91,6 +93,7 @@ export default function KpiPage() {
   const [expl, setExpl] = useState<string | null>(null);
   const [istoricTot, setIstoricTot] = useState(false);
   const [echipaExtins, setEchipaExtins] = useState<string | null>(null);
+  const [restanteToate, setRestanteToate] = useState(false);
 
   useEffect(() => {
     const salvat = typeof window !== 'undefined' ? sessionStorage.getItem('kpi_sesiune') : null;
@@ -280,6 +283,21 @@ export default function KpiPage() {
           );
         })()}
 
+        {obiectivAgentieEur && (
+          <div style={{ ...card, padding: '12px 16px', cursor: 'pointer' }} onClick={() => setExpl('agentie')}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', gap: 8, flexWrap: 'wrap' }}>
+              <span style={{ fontSize: 12, fontWeight: 800, letterSpacing: '0.1em', color: C.grey }}>FORWARD AGENCY {an}</span>
+              <span style={{ fontSize: 13, fontWeight: 800, color: progresAgentie !== null && progresAgentie >= ritmCalendar - 2 ? C.green : C.amber }}>
+                {progresAgentie !== null ? progresAgentie.toFixed(1) : 0}% <span style={{ color: C.grey, fontWeight: 600 }}>din {fmt(Number(obiectivAgentieEur))} EUR</span>
+              </span>
+            </div>
+            <div style={{ position: 'relative', height: 7, background: '#f0efee', borderRadius: 4, marginTop: 8, overflow: 'visible' }}>
+              <div style={{ position: 'absolute', top: 0, bottom: 0, left: 0, width: `${progresAgentie || 0}%`, background: progresAgentie !== null && progresAgentie >= ritmCalendar - 2 ? C.green : C.amber, borderRadius: 4 }} />
+              <div style={{ position: 'absolute', top: -2, bottom: -2, left: `${ritmCalendar}%`, width: 2, background: C.ink }} />
+            </div>
+          </div>
+        )}
+
         <Grupa t={`OBIECTIVELE TALE · ${LUNI[lunaCur - 1].toUpperCase()}`} />
         <div style={{ ...card, padding: 16 }} onClick={() => setExpl('obiective')}>
           <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 12, color: C.grey, marginBottom: 12 }}>
@@ -298,9 +316,9 @@ export default function KpiPage() {
               {nrEvT ? <Bara val={execN} max={nrEvT} culoare={execN / nrEvT * 100 >= ritmLuna - 3 ? C.green : C.amber} /> : <div style={{ fontSize: 12, color: C.grey, marginTop: 6 }}>Target nesetat.</div>}
               {nrEvT && <div style={{ fontSize: 12, color: ramasN > 0 ? C.ink : C.green, marginTop: 6 }}>{ramasN > 0 ? <span><b>{zileLuna - azi.getDate()} zile</b> ramase · mai ai <b>{ramasN} evenimente</b></span> : <b>Atins.</b>}</div>}
             </div>
-            <div style={tileStyle(rataConfLuna >= rataT)} onClick={e => { e.stopPropagation(); setExpl('rata_conf'); }}>
+            <div style={tileStyle(propLunaCur === 0 ? null : rataConfLuna >= rataT)} onClick={e => { e.stopPropagation(); setExpl('rata_conf'); }}>
               <div style={{ fontSize: 12, color: C.grey }}>Rata de confirmare (nr) · luna asta</div>
-              <div style={{ fontSize: 22, fontWeight: 800, color: rataConfLuna >= rataT ? C.green : rataConfLuna >= rataT * 0.75 ? C.amber : C.red }}>{rataConfLuna.toFixed(0)}% <span style={{ fontSize: 13, fontWeight: 600, color: C.grey }}>/ tinta {rataT}%</span></div>
+              <div style={{ fontSize: 22, fontWeight: 800, color: propLunaCur === 0 ? C.grey : rataConfLuna >= rataT ? C.green : rataConfLuna >= rataT * 0.75 ? C.amber : C.red }}>{propLunaCur === 0 ? '—' : `${rataConfLuna.toFixed(0)}%`} <span style={{ fontSize: 13, fontWeight: 600, color: C.grey }}>/ tinta {rataT}%</span></div>
               <div style={{ fontSize: 12, color: C.grey, marginTop: 6 }}>{confLunaCur} evenimente confirmate din {propLunaCur} propuse luna asta · pe an: {rataConfAn.toFixed(0)}%</div>
             </div>
             <div style={tileStyle(rataAnulare < 4)} onClick={e => { e.stopPropagation(); setExpl('anulare'); }}>
@@ -467,13 +485,16 @@ export default function KpiPage() {
           const sub30 = suma('sub30'), peste30 = suma('peste30'), legal = suma('legal');
           const total = sub30 + peste30 + legal;
           const eur = (lei: number) => fmt(lei / cursBnr);
-          const restante = ale.filter((r: any) => r.categorie !== 'sub30' && r.zile_max !== 9999).slice(0, 5);
+          const restanteToateL = ale.filter((r: any) => r.categorie !== 'sub30' && r.zile_max !== 9999 && Number(r.suma_lei) > 0)
+            .sort((a: any, b: any) => Number(b.suma_lei) - Number(a.suma_lei));
+          const restante = restanteToate ? restanteToateL.slice(0, 10) : restanteToateL.slice(0, 5);
+          const negative = ale.filter((r: any) => Number(r.suma_lei) < 0).reduce((x: number, r: any) => x + Number(r.suma_lei), 0);
           return (
             <>
               <Grupa t="COLECTARE" />
               <div style={{ ...card, cursor: 'pointer' }} onClick={() => setExpl('colectare')}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', flexWrap: 'wrap', gap: 6 }}>
-                  <div style={{ fontSize: 14, fontWeight: 700, color: C.ink }}>Neincasat · {solduri.meta?.snapCur}</div>
+                  <div style={{ fontSize: 14, fontWeight: 700, color: C.ink }}>Neincasat · {fmtData(solduri.meta?.snapCur || '')}</div>
                   <div style={{ fontSize: 16, fontWeight: 800, color: C.ink }}>{eur(total)} EUR</div>
                 </div>
                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 8, marginTop: 12 }}>
@@ -492,13 +513,20 @@ export default function KpiPage() {
                 </div>
                 {restante.length > 0 && (
                   <div style={{ marginTop: 12 }}>
-                    <div style={{ fontSize: 12, fontWeight: 700, color: C.ink, marginBottom: 4 }}>De sunat primele:</div>
+                    <div style={{ fontSize: 12, fontWeight: 700, color: C.ink, marginBottom: 4 }}>De sunat primele (dupa suma):</div>
                     {restante.map((r: any) => (
                       <div key={r.client + r.categorie} style={{ display: 'flex', justifyContent: 'space-between', fontSize: 13, padding: '5px 0', borderTop: `1px solid ${C.border}` }}>
                         <span style={{ color: C.ink }}>{r.client}</span>
                         <span style={{ color: C.amber, fontWeight: 700 }}>{eur(Number(r.suma_lei))} EUR <span style={{ color: C.grey, fontWeight: 400 }}>· {r.zile_max} zile</span></span>
                       </div>
                     ))}
+                    {restanteToateL.length > 5 && (
+                      <button onClick={e => { e.stopPropagation(); setRestanteToate(!restanteToate); }}
+                        style={{ marginTop: 8, width: '100%', padding: '8px 0', borderRadius: 8, border: `1px solid ${C.border}`, background: '#fafaf9', color: C.ink, fontSize: 12, fontWeight: 600, cursor: 'pointer' }}>
+                        {restanteToate ? 'Doar top 5' : `Vezi top 10 (din ${restanteToateL.length})`}
+                      </button>
+                    )}
+                    {negative < 0 && <div style={{ fontSize: 11, color: C.grey, marginTop: 8 }}>Solduri in favoarea clientilor (de restituit / compensat): {eur(negative)} EUR.</div>}
                   </div>
                 )}
                 <div style={{ fontSize: 11, color: C.grey, marginTop: 10 }}>In EUR la cursul BNR ({cursBnr.toFixed(4)}). Apasa pentru detalii.</div>
