@@ -22,14 +22,20 @@ function checkRate(ip: string): boolean {
 const RO_CITIES = ['bucuresti','bucurești','cluj','cluj-napoca','timisoara','timișoara','iasi','iași','constanta','constanța','craiova','brasov','brașov','galati','galați','ploiesti','ploiești','oradea','braila','brăila','arad','pitesti','pitești','sibiu','bacau','bacău','targu mures','târgu mureș','baia mare','buzau','buzău','satu mare','botosani','botoșani','suceava','piatra neamt','piatra neamț','focsani','focșani','targu jiu','târgu jiu','deva','alba iulia','resita','reșița','tulcea','slatina','ramnicu valcea','râmnicu vâlcea','targoviste','târgoviște','giurgiu','alexandria','calarasi','călărași','slobozia','zalau','zalău','bistrita','bistrița','vaslui','sfantu gheorghe','sfântu gheorghe','miercurea ciuc','onesti','onești','roman','dej','turda','sighisoara','sighișoara','medias','mediaș']
 const MD_CITIES = ['chisinau','chișinău','balti','bălți','tiraspol','cahul','orhei','ungheni','soroca','comrat']
 
+function fnDiac(x: string): string {
+  return x.normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+}
 function withCountry(city: string): string {
-  const c = city.trim().toLowerCase()
-  // daca userul a scris deja tara (are virgula), respectam
-  if (city.includes(',')) return city
-  if (MD_CITIES.some(m => c === m || c.includes(m))) return city + ', Moldova'
-  if (RO_CITIES.some(m => c === m)) return city + ', Romania'
-  // orice alt oras (Europa): il lasam asa, Google il gaseste
-  return city
+  // scoatem diacriticele din tot (oras + eventual judet dupa virgula)
+  // Google gaseste la fel, iar userii scriu inconsecvent (Darmanesti / Darmanesti)
+  const clean = fnDiac(city.trim())
+  const c = clean.toLowerCase()
+  // daca userul a scris deja tara/judetul (are virgula), respectam
+  if (clean.includes(',')) return clean
+  if (MD_CITIES.some(m => c === m || c.includes(m))) return clean + ', Moldova'
+  // orice alta localitate fara tara scrisa: presupun Romania (default pt evenimentele noastre)
+  // asa gasim si localitatile mici (Darmanesti, etc.) care nu sunt in lista de orase mari
+  return clean + ', Romania'
 }
 
 export async function GET(req: Request) {
