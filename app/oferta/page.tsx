@@ -580,7 +580,7 @@ export default function OfertaPage() {
         if (l.useAlcool && c.alcoolTotal > 0) out.push('Protocol bugetat: ' + c.alcoolTotal.toLocaleString('ro-RO') + ' lei (doar alcool)')
         // TOTAL cu TVA (cota standard 21% in 2026) - subtotal, TVA, total de plata
         {
-          const subtotal = c.feeLeiConv + c.transportLei + c.transportEurInLei + (c.diurnaTotal || 0) + (l.cazareFixa || 0) + (l.allInAvionLei || 0)
+          const subtotal = c.feeLeiConv + c.transportLei + c.transportEurInLei + (c.diurnaTotal || 0) + (l.cazareFixa || 0) + (l.allInAvionLei || 0) + (l.useAlcool ? (c.alcoolTotal || 0) : 0)
           const tva = Math.round(subtotal * 0.21)
           const totalCuTva = subtotal + tva
           out.push('')
@@ -823,7 +823,7 @@ export default function OfertaPage() {
       if (l.durata) rows.push('Durata: ' + l.durata)
       // total cu TVA doar la institutie publica (acelasi calcul ca in text)
       if (institutiePublica) {
-        const subtotalP = c.feeLeiConv + c.transportLei + c.transportEurInLei + (c.diurnaTotal || 0) + (l.cazareFixa || 0) + (l.allInAvionLei || 0)
+        const subtotalP = c.feeLeiConv + c.transportLei + c.transportEurInLei + (c.diurnaTotal || 0) + (l.cazareFixa || 0) + (l.allInAvionLei || 0) + (l.useAlcool ? (c.alcoolTotal || 0) : 0)
         const tvaP = Math.round(subtotalP * 0.21)
         const totalCuTvaP = subtotalP + tvaP
         rows.push('')
