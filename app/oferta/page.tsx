@@ -569,15 +569,15 @@ export default function OfertaPage() {
       if (institutiePublica) {
         // format oficial in lei
         if (dataEveniment) out.push('Disponibilitate: ' + formatData(dataEveniment))
-        out.push('Onorariu: ' + c.feeLeiConv.toLocaleString('ro-RO') + ' lei + TVA')
-        if (c.transportLei > 0) out.push('Transport: ' + l.leiKm + ' lei/km x ' + c.kmTotal + ' km = ' + c.transportLei.toLocaleString('ro-RO') + ' lei + TVA')
-        if (c.transportEur > 0) out.push('Transport: ' + l.leiKm + ' EUR/km x ' + c.kmTotal + ' km = ' + c.transportEur.toLocaleString('ro-RO') + ' EUR + TVA' + (c.transportEurInLei > 0 ? ' (aprox ' + c.transportEurInLei.toLocaleString('ro-RO') + ' lei)' : ''))
+        out.push('*Onorariu: ' + l.fee.toLocaleString('ro-RO') + ' EUR + TVA* (' + c.feeLeiConv.toLocaleString('ro-RO') + ' lei)')
+        if (c.transportLei > 0) out.push('Transport: ' + c.kmTotal + ' km x ' + l.leiKm + ' lei/km = ' + c.transportLei.toLocaleString('ro-RO') + ' lei + TVA')
+        if (c.transportEur > 0) out.push('*Transport: ' + c.kmTotal + ' km x ' + l.leiKm + ' EUR/km = ' + c.transportEur.toLocaleString('ro-RO') + ' EUR* + TVA' + (c.transportEurInLei > 0 ? ' (' + c.transportEurInLei.toLocaleString('ro-RO') + ' lei)' : ''))
         if (!c.local) out.push(l.cazareFixa > 0 ? 'Cazare: ' + l.cazareFixa.toLocaleString('ro-RO') + ' lei' : 'Cazare: ' + (c.totiZboara ? c.persoaneEfective + ' sng' : l.cazare))
-        if (!c.local && c.diurnaTotal > 0) out.push('Diurna: ' + (l.diurnaFixa > 0 ? c.diurnaTotal.toLocaleString('ro-RO') + ' lei' : l.diurnaPerPers + ' lei/pers x ' + c.persoaneEfective + ' pers' + (l.zile > 1 ? ' x ' + l.zile + ' zile' : '') + ' (' + c.diurnaTotal.toLocaleString('ro-RO') + ' lei + TVA) sau masa a la carte'))
+        if (!c.local && c.diurnaTotal > 0) out.push('Diurna: ' + (l.diurnaFixa > 0 ? c.diurnaTotal.toLocaleString('ro-RO') + ' lei' : c.persoaneEfective + ' pers x ' + l.diurnaPerPers + ' lei' + (l.zile > 1 ? ' x ' + l.zile + ' zile' : '') + ' = ' + c.diurnaTotal.toLocaleString('ro-RO') + ' lei + TVA (sau masa a la carte)'))
         if (!c.local && l.tipMasa === 'alacarte' && l.diurnaFixa === 0 && l.cazareFixa === 0) out.push('Masa: a la carte ' + c.persoaneEfective + ' pers (pranz, cina) + mic dejun la hotel')
         if (l.allInAvionLei > 0) out.push('Avion: ' + l.allInAvionLei.toLocaleString('ro-RO') + ' lei')
         else if (km !== null && km > 300 && l.bileteAvion > 0 && !esteOrasFaraAvion()) out.push('Avion: ' + l.bileteAvion + (l.bileteAvion === 1 ? ' bilet' : ' bilete') + ' + transfer de asigurat')
-        if (l.useAlcool && c.alcoolTotal > 0) out.push('Protocol: ' + c.alcoolTotal.toLocaleString('ro-RO') + ' lei (alcool)')
+        if (l.useAlcool && c.alcoolTotal > 0) out.push('Protocol bugetat: ' + c.alcoolTotal.toLocaleString('ro-RO') + ' lei (doar alcool)')
         // TOTAL cu TVA (cota standard 21% in 2026) - subtotal, TVA, total de plata
         {
           const subtotal = c.feeLeiConv + c.transportLei + c.transportEurInLei + (c.diurnaTotal || 0) + (l.cazareFixa || 0) + (l.allInAvionLei || 0)
@@ -586,10 +586,11 @@ export default function OfertaPage() {
           out.push('')
           out.push('Subtotal: ' + subtotal.toLocaleString('ro-RO') + ' lei')
           out.push('TVA 21%: ' + tva.toLocaleString('ro-RO') + ' lei')
-          out.push('TOTAL de plata: ' + totalCuTva.toLocaleString('ro-RO') + ' lei (TVA inclus)')
+          out.push('*TOTAL de plata: ' + totalCuTva.toLocaleString('ro-RO') + ' lei (TVA inclus)*')
         }
-        // echivalent euro defalcat
-        out.push('(echivalent: ' + l.fee + ' EUR onorariu, curs ' + c.cursAdaos.toFixed(4) + ' lei/EUR)')
+        // curs jos de tot
+        out.push('')
+        out.push('curs ' + c.cursAdaos.toFixed(4) + ' lei/EUR')
       } else {
         // format comercial normal
         const parts: string[] = []
@@ -794,21 +795,21 @@ export default function OfertaPage() {
       const rows: string[] = []
       let echivEurPdf = ''
       if (institutiePublica) {
-        rows.push('Onorariu: ' + c.feeLeiConv.toLocaleString('ro-RO') + ' lei + TVA')
-        echivEurPdf = '(echivalent: ' + l.fee + ' EUR onorariu, curs ' + c.cursAdaos.toFixed(4) + ' lei/EUR)'
+        rows.push('§Onorariu: ' + l.fee.toLocaleString('ro-RO') + ' EUR + TVA (' + c.feeLeiConv.toLocaleString('ro-RO') + ' lei)')
+        echivEurPdf = 'curs ' + c.cursAdaos.toFixed(4) + ' lei/EUR'
       } else {
         if (l.allIn) rows.push('Onorariu ALL IN: ' + l.allInSuma + ' EUR + TVA')
         else if (c.discount === 0) rows.push('Onorariu: ' + l.fee + ' EUR + TVA')
       }
       if (l.landed) rows.push('Transport: inclus in onorariu')
-      if (!l.landed && c.transportLei > 0) rows.push('Transport: ' + l.leiKm + ' lei/km x ' + c.kmTotal + ' km = ' + c.transportLei.toLocaleString('ro-RO') + ' lei + TVA')
-      if (c.transportEur > 0) rows.push('Transport: ' + l.leiKm + ' EUR/km x ' + c.kmTotal + ' km = ' + c.transportEur.toLocaleString('ro-RO') + ' EUR + TVA' + (c.transportEurInLei > 0 ? ' (aprox ' + c.transportEurInLei.toLocaleString('ro-RO') + ' lei)' : ''))
+      if (!l.landed && c.transportLei > 0) rows.push('Transport: ' + c.kmTotal + ' km x ' + l.leiKm + ' lei/km = ' + c.transportLei.toLocaleString('ro-RO') + ' lei + TVA')
+      if (c.transportEur > 0) rows.push((institutiePublica ? '§' : '') + 'Transport: ' + c.kmTotal + ' km x ' + l.leiKm + ' EUR/km = ' + c.transportEur.toLocaleString('ro-RO') + ' EUR + TVA' + (c.transportEurInLei > 0 ? ' (' + c.transportEurInLei.toLocaleString('ro-RO') + ' lei)' : ''))
       if (km !== null && km > 300 && l.bileteAvion > 0 && !esteOrasFaraAvion() && !(l.allInAvionLei > 0)) {
         let av = 'Avion: ' + l.bileteAvion + (l.bileteAvion === 1 ? ' bilet' : ' bilete') + ' + transfer de asigurat'
         rows.push(av)
       }
       if (!c.local) rows.push(l.cazareFixa > 0 ? 'Cazare: ' + l.cazareFixa.toLocaleString('ro-RO') + ' lei' : 'Cazare: ' + (c.totiZboara ? c.persoaneEfective + ' sng (' + c.persoaneEfective + ' persoane)' : l.cazare + ' (' + l.persoane + ' persoane)'))
-      if (!c.local && c.diurnaTotal > 0) rows.push('Diurna: ' + (l.diurnaFixa > 0 ? c.diurnaTotal.toLocaleString('ro-RO') + ' lei' : l.diurnaPerPers + ' lei/pers x ' + c.persoaneEfective + ' pers' + (l.zile > 1 ? ' x ' + l.zile + ' zile' : '') + ' (' + c.diurnaTotal.toLocaleString('ro-RO') + ' lei + TVA) sau masa a la carte'))
+      if (!c.local && c.diurnaTotal > 0) rows.push('Diurna: ' + (l.diurnaFixa > 0 ? c.diurnaTotal.toLocaleString('ro-RO') + ' lei' : c.persoaneEfective + ' pers x ' + l.diurnaPerPers + ' lei' + (l.zile > 1 ? ' x ' + l.zile + ' zile' : '') + ' = ' + c.diurnaTotal.toLocaleString('ro-RO') + ' lei + TVA (sau masa a la carte)'))
       if (!c.local && l.tipMasa === 'alacarte' && l.diurnaFixa === 0 && l.cazareFixa === 0) rows.push('Masa: a la carte ' + c.persoaneEfective + ' pers (pranz, cina) + mic dejun la hotel')
       if ((l.allIn || l.landed) && eurRate) {
         const bazaEurP = l.allIn ? l.allInSuma : l.fee
@@ -818,8 +819,18 @@ export default function OfertaPage() {
         if (l.allInAvionLei > 0) rows.push('Avion: ' + l.allInAvionLei.toLocaleString('ro-RO') + ' lei')
         rows.push('TOTAL: ' + totalEurP.toLocaleString('ro-RO') + ' EUR (~' + totalLeiP.toLocaleString('ro-RO') + ' lei) + TVA')
       }
-      if (l.useAlcool && c.alcoolTotal > 0) rows.push('Protocol: ' + c.alcoolTotal.toLocaleString('ro-RO') + ' lei (alcool)')
+      if (l.useAlcool && c.alcoolTotal > 0) rows.push('Protocol bugetat: ' + c.alcoolTotal.toLocaleString('ro-RO') + ' lei (doar alcool)')
       if (l.durata) rows.push('Durata: ' + l.durata)
+      // total cu TVA doar la institutie publica (acelasi calcul ca in text)
+      if (institutiePublica) {
+        const subtotalP = c.feeLeiConv + c.transportLei + c.transportEurInLei + (c.diurnaTotal || 0) + (l.cazareFixa || 0) + (l.allInAvionLei || 0)
+        const tvaP = Math.round(subtotalP * 0.21)
+        const totalCuTvaP = subtotalP + tvaP
+        rows.push('')
+        rows.push('Subtotal: ' + subtotalP.toLocaleString('ro-RO') + ' lei')
+        rows.push('TVA 21%: ' + tvaP.toLocaleString('ro-RO') + ' lei')
+        rows.push('§TOTAL de plata: ' + totalCuTvaP.toLocaleString('ro-RO') + ' lei (TVA inclus)')
+      }
       if (echivEurPdf) rows.push(echivEurPdf)
       if (!institutiePublica && c.discount > 0) {
         const etich = 'Onorariu: '
@@ -836,7 +847,14 @@ export default function OfertaPage() {
         doc.text(nou, xVechi + wVechi, ly)
         ly += 5
       }
-      for (const rr of rows) { doc.text(noDia(rr), textX, ly); ly += 5 }
+      for (const rr of rows) {
+        const bold = rr.startsWith('§')
+        const txt = bold ? rr.slice(1) : rr
+        if (bold) doc.setFont('helvetica', 'bold')
+        doc.text(noDia(txt), textX, ly)
+        if (bold) doc.setFont('helvetica', 'normal')
+        ly += 5
+      }
 
       if (destinatar === 'client' && c.discount > 0) {
         doc.setFont('helvetica', 'bold'); doc.setTextColor(5,150,105)
