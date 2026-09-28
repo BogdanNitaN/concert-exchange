@@ -77,6 +77,16 @@ export async function GET(req: Request, ctx: { params: Promise<{ token: string }
       }
     }
 
+    // inregistrez view-ul IMEDIAT ce linkul e valid, inainte sa construiesc payload-ul
+    // (daca payload pica sau clientul inchide pagina, view-ul e deja salvat)
+    try {
+      await supabase.from('roster_views').insert({
+        token, actiune: 'view',
+        artist_vazut: link.scop === 'roster' ? null : link.scop,
+        user_agent: req.headers.get('user-agent') || null,
+      })
+    } catch {}
+
     let payload: any
     if (link.scop === 'bal') {
       const { data: toti } = await supabase.from('oferta_artisti').select('*').order('id')
@@ -139,12 +149,6 @@ export async function GET(req: Request, ctx: { params: Promise<{ token: string }
       } catch {}
       payload = { tip: 'artist', artist }
     }
-
-    await supabase.from('roster_views').insert({
-      token, actiune: 'view',
-      artist_vazut: link.scop === 'roster' ? null : link.scop,
-      user_agent: req.headers.get('user-agent') || null,
-    })
 
     return NextResponse.json({ ok: true, destinatar: link.destinatar, audienta: link.tip_audienta, scop: link.scop, expiraLa: link.expira_la, ascundeContacte: !!link.ascunde_contacte, ...payload })
   } catch {
