@@ -47,6 +47,10 @@ export async function GET(req: Request, ctx: { params: Promise<{ token: string }
       if (link.arata_preturi && fee > 0) {
         if (prof) {
           preturi = { standard: fee, deLa: fee }
+          // revelion: adaug cele 3 intervale orare daca exista
+          if (rev && typeof rev.devreme === 'number' && typeof rev.tarziu === 'number') {
+            preturi.revInt = { devreme: rev.devreme, baza: rev.baza, tarziu: rev.tarziu }
+          }
         } else if (link.tip_audienta === 'b2b') {
           preturi = { standard: fee, revelion: Math.round(fee * (sh.mult_revelion ?? 2)), prom: Math.round(fee * (sh.mult_prom ?? 1)) }
         } else {

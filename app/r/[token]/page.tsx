@@ -142,12 +142,24 @@ function CardArtist({ a, audienta, token, tabInitial, destinatar, ascundeContact
 
         {a.preturi && audienta === 'b2b' && (
           <div>
+            {a.preturi.revInt ? (
+              <div style={{padding:'4px 0'}}>
+                <div style={{fontSize:'11px', color:UI.faint, fontWeight:700, textAlign:'center', textTransform:'uppercase', letterSpacing:'0.05em', marginBottom:'10px'}}>Onorariu in functie de interval</div>
+                <div style={{display:'flex', flexDirection:'column', gap:'6px', maxWidth:'280px', margin:'0 auto'}}>
+                  <div style={{display:'flex', justifyContent:'space-between', alignItems:'baseline', fontSize:'14px', color:UI.sub}}><span>20:00 - 22:30</span><span style={{fontWeight:700}}>{fmtEur(a.preturi.revInt.devreme)}</span></div>
+                  <div style={{display:'flex', justifyContent:'space-between', alignItems:'baseline', padding:'8px 12px', background:'#f0fdf4', border:'1.5px solid #86efac', borderRadius:'10px'}}><span style={{fontSize:'14px', fontWeight:700, color:UI.ink}}>22:30 - 01:00</span><span style={{fontSize:'19px', fontWeight:800, color:UI.ink, letterSpacing:'-0.5px'}}>{fmtEur(a.preturi.revInt.baza)}</span></div>
+                  <div style={{display:'flex', justifyContent:'space-between', alignItems:'baseline', fontSize:'14px', color:UI.sub}}><span>01:30 - 04:00</span><span style={{fontWeight:700}}>{fmtEur(a.preturi.revInt.tarziu)}</span></div>
+                </div>
+                <div style={{fontSize:'11px', color:UI.faint, fontWeight:600, marginTop:'12px', textAlign:'center'}}>Preturile sunt + TVA. Transportul, cazarea si diurna sunt cele de mai jos.</div>
+              </div>
+            ) : (
             <div style={{textAlign:'center', padding:'4px 0'}}>
               <div style={{fontSize:'33px', fontWeight:800, color:UI.ink, letterSpacing:'-1.5px', lineHeight:1}}>
                 {fmtEur(a.preturi.standard)}
               </div>
               <div style={{fontSize:'11px', color:UI.faint, fontWeight:600, marginTop:'8px'}}>{a.revelion ? 'Transportul, cazarea si diurna sunt cele de mai jos' : (a.logistica?.landed ? 'Transport inclus · onorariul nu include cazare si masa' : 'Onorariul nu include transport, cazare si masa')}</div>
             </div>
+            )}
             {!a.revelion && (
             <div style={{textAlign:'center', fontSize:'12px', color:UI.faint, fontWeight:600, padding:'10px 0', borderTop:'1px solid '+UI.line, marginTop:'12px'}}>
               Corporate · Private · Festival <span style={{color:UI.green, fontWeight:700}}>(la cerere)</span>
