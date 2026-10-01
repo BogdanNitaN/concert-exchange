@@ -87,6 +87,7 @@ interface Linie {
   formatSelectat: string
   durata: string
   dateOptiuni?: string
+  revInt?: { devreme: number, baza: number, tarziu: number } | null
   tipPret: string
   feeLista: number
   fee: number
@@ -514,7 +515,8 @@ export default function OfertaPage() {
     const r: any = tip === 'Revelion' ? (l.artist as any)?.revelion : null
     if (r) {
       const fee = typeof r.baza === 'number' ? r.baza : l.fee
-      return { ...l, tipPret: tip, feeLista: fee, fee,
+      const revInt = (typeof r.devreme === 'number' && typeof r.tarziu === 'number') ? { devreme: r.devreme, baza: r.baza, tarziu: r.tarziu } : null
+      return { ...l, tipPret: tip, feeLista: fee, fee, revInt,
         leiKm: typeof r.eurKm === 'number' ? r.eurKm : l.leiKm,
         artist: { ...l.artist, transport_moneda: 'euro' },
         bileteAvion: typeof r.bilete === 'number' ? r.bilete : l.bileteAvion,
@@ -572,7 +574,14 @@ export default function OfertaPage() {
       if (institutiePublica) {
         // format oficial in lei
         if (dataEveniment) out.push('Disponibilitate: ' + formatData(dataEveniment))
-        out.push('*Onorariu: ' + l.fee.toLocaleString('ro-RO') + ' EUR + TVA* (' + c.feeLeiConv.toLocaleString('ro-RO') + ' lei)')
+        if (l.revInt) {
+          out.push('Onorariu revelion (in functie de interval):')
+          out.push('  20:00 - 22:30: ' + l.revInt.devreme.toLocaleString('ro-RO') + ' EUR + TVA')
+          out.push('  *22:30 - 01:00: ' + l.revInt.baza.toLocaleString('ro-RO') + ' EUR + TVA*')
+          out.push('  01:30 - 04:00: ' + l.revInt.tarziu.toLocaleString('ro-RO') + ' EUR + TVA')
+        } else {
+          out.push('*Onorariu: ' + l.fee.toLocaleString('ro-RO') + ' EUR + TVA* (' + c.feeLeiConv.toLocaleString('ro-RO') + ' lei)')
+        }
         if (c.transportLei > 0) out.push('Transport: ' + c.kmTotal + ' km x ' + l.leiKm + ' lei/km = ' + c.transportLei.toLocaleString('ro-RO') + ' lei + TVA')
         if (c.transportEur > 0) out.push('Transport: ' + c.kmTotal + ' km x ' + l.leiKm + ' EUR/km = ' + c.transportEur.toLocaleString('ro-RO') + ' EUR + TVA' + (c.transportEurInLei > 0 ? ' (' + c.transportEurInLei.toLocaleString('ro-RO') + ' lei)' : ''))
         if (!c.local) out.push(l.cazareFixa > 0 ? 'Cazare: ' + l.cazareFixa.toLocaleString('ro-RO') + ' lei' : 'Cazare: ' + (c.totiZboara ? c.persoaneEfective + ' sng' : l.cazare))
@@ -601,7 +610,12 @@ export default function OfertaPage() {
         } else if (c.discount > 0) {
           out.push('*Onorariu: ~' + l.feeLista.toLocaleString('ro-RO') + ' EUR~ ' + l.fee.toLocaleString('ro-RO') + ' EUR + TVA*')
         } else {
-          out.push('*Onorariu: ' + l.fee.toLocaleString('ro-RO') + ' EUR + TVA*')
+          if (l.revInt) {
+          out.push('Onorariu revelion (in functie de interval):')
+          out.push('  20:00 - 22:30: ' + l.revInt.devreme.toLocaleString('ro-RO') + ' EUR + TVA')
+          out.push('  *22:30 - 01:00: ' + l.revInt.baza.toLocaleString('ro-RO') + ' EUR + TVA*')
+          out.push('  01:30 - 04:00: ' + l.revInt.tarziu.toLocaleString('ro-RO') + ' EUR + TVA')
+          } else out.push('*Onorariu: ' + l.fee.toLocaleString('ro-RO') + ' EUR + TVA*')
         }
         if (l.landed) out.push('Transport: inclus in onorariu')
         if (!l.landed && c.transportLei > 0) out.push('Transport: ' + c.kmTotal + ' km x ' + l.leiKm + ' lei/km = ' + c.transportLei.toLocaleString('ro-RO') + ' lei + TVA')
@@ -790,10 +804,23 @@ export default function OfertaPage() {
       const rows: string[] = []
       let echivEurPdf = ''
       if (institutiePublica) {
-        rows.push('§Onorariu: ' + l.fee.toLocaleString('ro-RO') + ' EUR + TVA (' + c.feeLeiConv.toLocaleString('ro-RO') + ' lei)')
+        if (l.revInt) {
+          rows.push('Onorariu revelion (in functie de interval):')
+          rows.push('  20:00 - 22:30: ' + l.revInt.devreme.toLocaleString('ro-RO') + ' EUR + TVA')
+          rows.push('§  22:30 - 01:00: ' + l.revInt.baza.toLocaleString('ro-RO') + ' EUR + TVA')
+          rows.push('  01:30 - 04:00: ' + l.revInt.tarziu.toLocaleString('ro-RO') + ' EUR + TVA')
+        } else {
+          rows.push('§Onorariu: ' + l.fee.toLocaleString('ro-RO') + ' EUR + TVA (' + c.feeLeiConv.toLocaleString('ro-RO') + ' lei)')
+        }
         echivEurPdf = 'curs ' + c.cursAdaos.toFixed(4) + ' lei/EUR'
       } else {
         if (l.allIn) rows.push('Onorariu ALL IN: ' + l.allInSuma + ' EUR + TVA')
+        else if (c.discount === 0 && l.revInt) {
+          rows.push('Onorariu revelion (in functie de interval):')
+          rows.push('  20:00 - 22:30: ' + l.revInt.devreme.toLocaleString('ro-RO') + ' EUR + TVA')
+          rows.push('§  22:30 - 01:00: ' + l.revInt.baza.toLocaleString('ro-RO') + ' EUR + TVA')
+          rows.push('  01:30 - 04:00: ' + l.revInt.tarziu.toLocaleString('ro-RO') + ' EUR + TVA')
+        }
         else if (c.discount === 0) rows.push('Onorariu: ' + l.fee + ' EUR + TVA')
       }
       if (l.landed) rows.push('Transport: inclus in onorariu')
