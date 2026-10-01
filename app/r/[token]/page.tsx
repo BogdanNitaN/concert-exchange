@@ -536,6 +536,16 @@ function ListaRoster({ artisti, audienta, token, ascundeContacte, destinatar, sc
               </div>
               {e && (
                 <div style={{padding:'4px 14px 16px', background:'#fafaf9'}}>
+                  {a.preturi && a.preturi.revInt && (
+                    <div style={{marginBottom:'14px'}}>
+                      <div style={{fontSize:'10px', color:UI.faint, fontWeight:800, textTransform:'uppercase', letterSpacing:'0.05em', marginBottom:'8px'}}>Onorariu in functie de interval orar</div>
+                      <div style={{display:'flex', flexDirection:'column', gap:'5px'}}>
+                        <div style={{display:'flex', justifyContent:'space-between', alignItems:'baseline', fontSize:'13px', color:UI.sub}}><span>20:00 - 22:30</span><span style={{fontWeight:700, color:UI.ink}}>{fmtEur(a.preturi.revInt.devreme)} +TVA</span></div>
+                        <div style={{display:'flex', justifyContent:'space-between', alignItems:'baseline', padding:'7px 11px', background:'#f0fdf4', border:'1.5px solid #86efac', borderRadius:'9px'}}><span style={{fontSize:'13px', fontWeight:700, color:UI.ink}}>22:30 - 01:00</span><span style={{fontSize:'15px', fontWeight:800, color:UI.ink}}>{fmtEur(a.preturi.revInt.baza)} +TVA</span></div>
+                        <div style={{display:'flex', justifyContent:'space-between', alignItems:'baseline', fontSize:'13px', color:UI.sub}}><span>01:30 - 04:00</span><span style={{fontWeight:700, color:UI.ink}}>{fmtEur(a.preturi.revInt.tarziu)} +TVA</span></div>
+                      </div>
+                    </div>
+                  )}
                   {a.preturi && audienta === 'b2b' && (
                     <div style={{display:'grid', gap:'5px', fontSize:'13px', marginBottom:'12px'}}>
                       {!a.revelion && (
