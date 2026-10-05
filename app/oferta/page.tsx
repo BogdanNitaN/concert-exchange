@@ -571,7 +571,31 @@ export default function OfertaPage() {
       out.push('*' + l.artist.nume.toUpperCase() + '*')
       if (l.dateOptiuni) out.push('Date posibile: ' + l.dateOptiuni)
 
-      if (institutiePublica) {
+      if (l.tipPret === 'Bal') {
+        // format simplificat pentru baluri (comitete de elevi) - fee ancora, logistica "se adauga", total estimativ rotunjit
+        if (dataEveniment) out.push('Data: ' + formatData(dataEveniment))
+        out.push('*Onorariu: ' + l.fee.toLocaleString('ro-RO') + ' EUR + TVA* (' + c.feeLeiConv.toLocaleString('ro-RO') + ' lei)')
+        const logistica: string[] = []
+        if (c.transportLei > 0) logistica.push('Transport: ~' + c.transportLei.toLocaleString('ro-RO') + ' lei')
+        if (c.transportEurInLei > 0) logistica.push('Transport: ~' + c.transportEurInLei.toLocaleString('ro-RO') + ' lei')
+        if (!c.local && l.cazare) logistica.push('Cazare: ' + (c.totiZboara ? c.persoaneEfective + ' single' : l.cazare))
+        if (!c.local && c.diurnaTotal > 0) logistica.push('Masa: ' + c.persoaneEfective + ' persoane (sau diurna ' + c.diurnaTotal.toLocaleString('ro-RO') + ' lei)')
+        if (km !== null && km > 300 && l.bileteAvion > 0 && !esteOrasFaraAvion()) logistica.push('Avion: ' + l.bileteAvion + (l.bileteAvion === 1 ? ' bilet' : ' bilete'))
+        if (l.useAlcool && c.alcoolTotal > 0) logistica.push('Protocol: ' + c.alcoolTotal.toLocaleString('ro-RO') + ' lei')
+        if (logistica.length) {
+          out.push('')
+          out.push('Se adauga (logistica artistului):')
+          logistica.forEach(x => out.push(x))
+        }
+        // total estimativ rotunjit, cu TVA 21%
+        const subtotalB = c.feeLeiConv + c.transportLei + c.transportEurInLei + (c.diurnaTotal || 0) + (l.cazareFixa || 0) + (l.allInAvionLei || 0) + (l.useAlcool ? (c.alcoolTotal || 0) : 0)
+        const totalB = Math.round(subtotalB * 1.21)
+        const totalRotund = Math.round(totalB / 1000) * 1000
+        out.push('─────────────────────────')
+        out.push('*Total estimativ: ~' + totalRotund.toLocaleString('ro-RO') + ' lei (cu TVA)*')
+        out.push('')
+        out.push('onorariu calculat la curs ' + c.cursAdaos.toFixed(2) + ' lei/EUR')
+      } else if (institutiePublica) {
         // format oficial in lei
         if (dataEveniment) out.push('Disponibilitate: ' + formatData(dataEveniment))
         if (l.revInt) {

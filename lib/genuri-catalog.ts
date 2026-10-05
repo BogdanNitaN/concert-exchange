@@ -31,7 +31,7 @@ export function esteAscuns(nume: string): boolean {
   return ARTISTI_ASCUNSI.includes(n)
 }
 
-const TIER_OVERRIDE: Record<string, string> = { 'andrew dum': 'A+' }
+const TIER_OVERRIDE: Record<string, string> = { 'andrew dum': 'A+', 'marko glass': 'A+', 'bvcovia': 'A+' }
 export function tierPentru(nume: string, metaTier: string | null, fee: number): string | null {
   const n = (nume || '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').trim()
   if (TIER_OVERRIDE[n]) return TIER_OVERRIDE[n]
