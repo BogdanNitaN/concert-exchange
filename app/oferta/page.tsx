@@ -415,7 +415,7 @@ export default function OfertaPage() {
       cazare: fmt ? fmt.cazare : a.cazare,
       persoane: fmt ? fmt.persoane : a.nr_persoane,
       bileteAvion: fmt ? fmt.bilete : (a.bilete_avion || 0),
-      restulRutier: true,
+      restulRutier: !['dj', 'trap', 'rap'].includes((a.categorie || '').toLowerCase()),
       tipMasa: 'alacarte',
       zile: 1,
       diurnaPerPers: 200,
