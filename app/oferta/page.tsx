@@ -578,7 +578,7 @@ export default function OfertaPage() {
         const logistica: string[] = []
         if (c.transportEur > 0) logistica.push('Transport: ~' + c.transportEur.toLocaleString('ro-RO') + ' EUR')
         else if (c.transportLei > 0) logistica.push('Transport: ~' + c.transportLei.toLocaleString('ro-RO') + ' lei')
-        else if (km === null && l.leiKm > 0) logistica.push('Transport: ' + l.leiKm + ' EUR/km (dupa confirmarea orasului)')
+        else if (km === null && l.leiKm > 0) logistica.push('Transport: ' + l.leiKm + ' EUR/km')
         if (!c.local && l.cazare) logistica.push('Cazare: ' + (c.totiZboara ? c.persoaneEfective + ' single' : l.cazare))
         if (!c.local && c.diurnaTotal > 0) logistica.push('Masa: ' + c.persoaneEfective + ' persoane (sau diurna ' + c.diurnaTotal.toLocaleString('ro-RO') + ' lei)')
         if (km !== null && km > 300 && l.bileteAvion > 0 && !esteOrasFaraAvion()) logistica.push('Avion: ' + l.bileteAvion + (l.bileteAvion === 1 ? ' bilet' : ' bilete'))
@@ -608,7 +608,7 @@ export default function OfertaPage() {
         }
         if (c.transportLei > 0) out.push('Transport: ' + c.kmTotal + ' km x ' + l.leiKm + ' lei/km = ' + c.transportLei.toLocaleString('ro-RO') + ' lei + TVA')
         if (c.transportEur > 0) out.push('Transport: ' + c.kmTotal + ' km x ' + l.leiKm + ' EUR/km = ' + c.transportEur.toLocaleString('ro-RO') + ' EUR + TVA' + (c.transportEurInLei > 0 ? ' (' + c.transportEurInLei.toLocaleString('ro-RO') + ' lei)' : ''))
-        if (km === null && !l.landed && l.leiKm > 0) out.push('Transport: ' + l.leiKm + ' ' + (l.artist.transport_moneda === 'euro' ? 'EUR' : 'lei') + '/km (distanta se calculeaza dupa confirmarea orasului)')
+        if (km === null && !l.landed && l.leiKm > 0) out.push('Transport: ' + l.leiKm + ' ' + (l.artist.transport_moneda === 'euro' ? 'EUR' : 'lei') + '/km')
         if (!c.local) out.push(l.cazareFixa > 0 ? 'Cazare: ' + l.cazareFixa.toLocaleString('ro-RO') + ' lei' : 'Cazare: ' + (c.totiZboara ? c.persoaneEfective + ' sng' : l.cazare))
         if (!c.local && c.diurnaTotal > 0) out.push('Diurna: ' + (l.diurnaFixa > 0 ? c.diurnaTotal.toLocaleString('ro-RO') + ' lei' : c.persoaneEfective + ' pers x ' + l.diurnaPerPers + ' lei' + (l.zile > 1 ? ' x ' + l.zile + ' zile' : '') + ' = ' + c.diurnaTotal.toLocaleString('ro-RO') + ' lei + TVA (sau masa a la carte)'))
         if (!c.local && l.tipMasa === 'alacarte' && l.diurnaFixa === 0 && l.cazareFixa === 0) out.push('Masa: a la carte ' + c.persoaneEfective + ' pers (pranz, cina) + mic dejun la hotel')
@@ -645,7 +645,7 @@ export default function OfertaPage() {
         if (l.landed) out.push('Transport: inclus in onorariu')
         if (!l.landed && c.transportLei > 0) out.push('Transport: ' + c.kmTotal + ' km x ' + l.leiKm + ' lei/km = ' + c.transportLei.toLocaleString('ro-RO') + ' lei + TVA')
         if (!l.landed && c.transportEur > 0) out.push('Transport: ' + c.kmTotal + ' km x ' + l.leiKm + ' EUR/km = ' + c.transportEur.toLocaleString('ro-RO') + ' EUR + TVA' + (c.transportEurInLei > 0 ? ' (' + c.transportEurInLei.toLocaleString('ro-RO') + ' lei)' : ''))
-        if (km === null && !l.landed && l.leiKm > 0) out.push('Transport: ' + l.leiKm + ' ' + (l.artist.transport_moneda === 'euro' ? 'EUR' : 'lei') + '/km (distanta se calculeaza dupa confirmarea orasului)')
+        if (km === null && !l.landed && l.leiKm > 0) out.push('Transport: ' + l.leiKm + ' ' + (l.artist.transport_moneda === 'euro' ? 'EUR' : 'lei') + '/km')
         if (km !== null && km > 300 && l.bileteAvion > 0 && !esteOrasFaraAvion() && !(l.allInAvionLei > 0)) out.push('Avion: ' + l.bileteAvion + (l.bileteAvion === 1 ? ' bilet' : ' bilete') + ' + transfer de asigurat')
         if (l.allInAvionLei > 0) out.push('Avion: ' + l.allInAvionLei.toLocaleString('ro-RO') + ' lei')
         if (!c.local) out.push(l.cazareFixa > 0 ? 'Cazare: ' + l.cazareFixa.toLocaleString('ro-RO') + ' lei' : 'Cazare: ' + (c.totiZboara ? c.persoaneEfective + ' sng' : l.cazare))
@@ -852,7 +852,7 @@ export default function OfertaPage() {
       if (l.landed) rows.push('Transport: inclus in onorariu')
       if (!l.landed && c.transportLei > 0) rows.push('Transport: ' + c.kmTotal + ' km x ' + l.leiKm + ' lei/km = ' + c.transportLei.toLocaleString('ro-RO') + ' lei + TVA')
       if (c.transportEur > 0) rows.push('Transport: ' + c.kmTotal + ' km x ' + l.leiKm + ' EUR/km = ' + c.transportEur.toLocaleString('ro-RO') + ' EUR + TVA' + (c.transportEurInLei > 0 ? ' (' + c.transportEurInLei.toLocaleString('ro-RO') + ' lei)' : ''))
-      if (km === null && !l.landed && l.leiKm > 0) rows.push('Transport: ' + l.leiKm + ' ' + (l.artist.transport_moneda === 'euro' ? 'EUR' : 'lei') + '/km (distanta se calculeaza dupa confirmarea orasului)')
+      if (km === null && !l.landed && l.leiKm > 0) rows.push('Transport: ' + l.leiKm + ' ' + (l.artist.transport_moneda === 'euro' ? 'EUR' : 'lei') + '/km')
       if (km !== null && km > 300 && l.bileteAvion > 0 && !esteOrasFaraAvion() && !(l.allInAvionLei > 0)) {
         let av = 'Avion: ' + l.bileteAvion + (l.bileteAvion === 1 ? ' bilet' : ' bilete') + ' + transfer de asigurat'
         rows.push(av)
