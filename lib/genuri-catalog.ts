@@ -1,14 +1,14 @@
 // taxonomia genurilor pentru cataloage (tabelul explicit al lui Bogdan)
 const GENURI: Record<string, string[]> = {
   'grasu xxl': ['Hip-Hop'], 'guess who': ['Hip-Hop'], 'killa fonic': ['Hip-Hop', 'Trap'], 'la familia': ['Hip-Hop'],
-  'parazitii': ['Hip-Hop'], 'puya': ['Hip-Hop'], 'vescan': ['Hip-Hop'], 'puya & urban symphony orchestra': ['Hip-Hop'],
+  'parazitii': ['Hip-Hop'], 'puya': ['Hip-Hop'], 'vescan': ['Hip-Hop'], 'puya & urban symphony orchestra': ['Special'],
   'dangerosu': ['Hip-Hop'], 'gojira': ['Hip-Hop'],
   'albwho': ['DJs'], 'andre rizo': ['DJs'], 'andrew dum': ['DJs'], 'manuel riva': ['DJs'], 'speak': ['DJs'],
   'chris hype': ['DJs'], 'moonsound': ['DJs'],
-  'babasha': ['Balkanic Pop'], 'feli & taraful fratii cazanoi': ['Balkanic Pop'], 'white mahala': ['Balkanic Pop'],
+  'babasha': ['Balkanic Pop'], 'feli & taraful fratii cazanoi': ['Special'], 'white mahala': ['Balkanic Pop'], 'bere gratis simfonic': ['Special'],
   'adi istrate': ['Pop-Dance'], 'andrei ursu': ['Pop-Dance'], 'tobi ibitoye': ['Pop-Dance'], 'erika isac': ['Pop-Dance', 'Trap'],
   'lazy ed': ['Pop-Dance'], 'zodier': ['Pop-Dance'], 'feli': ['Pop-Dance'], 'irina rimes': ['Pop-Dance'],
-  'the motans': ['Pop-Dance'], 'the motans & symphony orchestra': ['Pop-Dance'], "carla's dreams": ['Pop-Dance'],
+  'the motans': ['Pop-Dance'], 'the motans & symphony orchestra': ['Special'], "carla's dreams": ['Pop-Dance'],
   'alina eremia': ['Pop-Dance'], 'mira': ['Pop-Dance'], 'ami': ['Pop-Dance'], 'antonia': ['Pop-Dance'],
   'emaa': ['Pop-Dance'], 'minelli': ['Pop-Dance'], 'rares': ['Pop-Dance', 'Balkanic Pop'], 'mario': ['Pop-Dance'],
   'randi': ['Pop-Dance'], 'stefania': ['Pop-Dance'], 'holy molly': ['Pop-Dance'], 'eva timush': ['Pop-Dance'],
@@ -30,6 +30,7 @@ const GEN_CANONIC: Record<string, string> = {
   'rock / alternativ': 'rock', 'rock': 'rock', 'alternativ': 'rock',
   'manele': 'manele', 'lautareasca': 'lautareasca', 'latino': 'latino',
   'petrecere': 'petrecere', 'cover': 'cover', 'covers': 'cover',
+  'special': 'special',
 }
 function canonic(g: string): string {
   const k = (g || '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').trim()
@@ -43,7 +44,7 @@ export function genuriPentru(nume: string, fallback: string[] = []): string[] {
   return can
 }
 
-export const ARTISTI_ASCUNSI = ['gojira', 'puya & urban symphony orchestra', 'alternosfera', 'the motans & symphony orchestra', 'inna', 'dangerosu']
+export const ARTISTI_ASCUNSI = ['gojira', 'alternosfera', 'inna', 'dangerosu', 'connect-r, smiley & alex velea']
 export function esteAscuns(nume: string): boolean {
   const n = (nume || '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').trim()
   return ARTISTI_ASCUNSI.includes(n)

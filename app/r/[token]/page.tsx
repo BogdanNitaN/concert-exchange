@@ -263,7 +263,7 @@ function ListaRoster({ artisti, audienta, token, ascundeContacte, destinatar, sc
     const ot = (t: string | null) => (t && ordT[t] !== undefined) ? ordT[t] : 3
     // la piata: pastrez ordinea din API (gen fix, FWD primii, pret desc), doar pun header pe schimbare de gen
     if (scop === 'piata') {
-      const etGen: Record<string, string> = { pop: 'Pop', trap: 'Trap', rap: 'Rap / Hip-Hop', rock: 'Rock', dance: 'Dance', dj: 'DJs', balcanic_pop: 'Balcanic Pop', manele: 'Manele', lautareasca: 'Lautareasca', latino: 'Latino', petrecere: 'Petrecere', cover: 'Covers', altele: 'Altele' }
+      const etGen: Record<string, string> = { pop: 'Pop', trap: 'Trap', rap: 'Rap / Hip-Hop', rock: 'Rock', dance: 'Dance', dj: 'DJs', balcanic_pop: 'Balcanic Pop', manele: 'Manele', lautareasca: 'Lautareasca', latino: 'Latino', petrecere: 'Petrecere', cover: 'Covers', special: 'Proiecte Speciale', altele: 'Altele' }
       const o: any[] = []
       let gPrev = ''
       for (const a of filtrati) {

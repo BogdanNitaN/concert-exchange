@@ -111,7 +111,7 @@ export async function GET(req: Request, ctx: { params: Promise<{ token: string }
         const g = link.filtru_gen.toLowerCase()
         lista = lista.filter(a => (a.categorie || '').toLowerCase() === g)
       }
-      const ordGen: Record<string, number> = { pop: 0, trap: 1, rap: 2, rock: 3, dance: 4, dj: 5, balcanic_pop: 6, manele: 7, lautareasca: 8, latino: 9, petrecere: 10, cover: 11, altele: 12 }
+      const ordGen: Record<string, number> = { pop: 0, trap: 1, rap: 2, rock: 3, dance: 4, dj: 5, balcanic_pop: 6, manele: 7, lautareasca: 8, latino: 9, petrecere: 10, cover: 11, special: 12, altele: 13 }
       const mapate = lista.map(fa)
       mapate.sort((a: any, b: any) => {
         const ga = ordGen[(a.genuri?.[0] || 'altele').toLowerCase()] ?? 99
