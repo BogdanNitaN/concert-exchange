@@ -20,9 +20,27 @@ const GENURI: Record<string, string[]> = {
   'bob ramanka': ['Rock / Alternativ'], 'vlad corb': ['Rock / Alternativ'], 'alternosfera': ['Rock / Alternativ'],
 }
 
+// mapez etichetele din tabel + metadata la cheile canonice folosite pe /piata (etGen)
+const GEN_CANONIC: Record<string, string> = {
+  'hip-hop': 'rap', 'hip hop': 'rap', 'rap': 'rap',
+  'djs': 'dj', 'dj': 'dj',
+  'balkanic pop': 'balcanic_pop', 'balcanic pop': 'balcanic_pop', 'balcanic_pop': 'balcanic_pop',
+  'pop-dance': 'pop', 'pop dance': 'pop', 'pop': 'pop', 'dance': 'pop',
+  'trap': 'trap',
+  'rock / alternativ': 'rock', 'rock': 'rock', 'alternativ': 'rock',
+  'manele': 'manele', 'lautareasca': 'lautareasca', 'latino': 'latino',
+  'petrecere': 'petrecere', 'cover': 'cover', 'covers': 'cover',
+}
+function canonic(g: string): string {
+  const k = (g || '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').trim()
+  return GEN_CANONIC[k] || k
+}
 export function genuriPentru(nume: string, fallback: string[] = []): string[] {
   const norm = (nume || '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').trim()
-  return GENURI[norm] || fallback
+  const brute = GENURI[norm] || fallback
+  // normalizez la chei canonice si elimin duplicatele
+  const can = [...new Set(brute.map(canonic))]
+  return can
 }
 
 export const ARTISTI_ASCUNSI = ['gojira', 'puya & urban symphony orchestra', 'alternosfera', 'the motans & symphony orchestra', 'inna', 'dangerosu']
