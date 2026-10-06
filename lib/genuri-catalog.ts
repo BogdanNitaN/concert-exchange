@@ -6,6 +6,9 @@ const GENURI: Record<string, string[]> = {
   'albwho': ['DJs'], 'andre rizo': ['DJs'], 'andrew dum': ['DJs'], 'manuel riva': ['DJs'], 'speak': ['DJs'],
   'chris hype': ['DJs'], 'moonsound': ['DJs'],
   'babasha': ['Balkanic Pop'], 'feli & taraful fratii cazanoi': ['Special'], 'white mahala': ['Balkanic Pop'], 'bere gratis simfonic': ['Special'],
+  'madatorricelli': ['Trap'], 'ursaru': ['Trap'],
+  'dj project': ['Pop-Dance'], 'majii': ['Covers'], 'raluka & band': ['Balkanic Pop'],
+  'shondy & ghita munteanu': ['Petrecere'], 'ionica morosanu': ['Petrecere'],
   'adi istrate': ['Pop-Dance'], 'andrei ursu': ['Pop-Dance'], 'tobi ibitoye': ['Pop-Dance'], 'erika isac': ['Pop-Dance', 'Trap'],
   'lazy ed': ['Pop-Dance'], 'zodier': ['Pop-Dance'], 'feli': ['Pop-Dance'], 'irina rimes': ['Pop-Dance'],
   'the motans': ['Pop-Dance'], 'the motans & symphony orchestra': ['Special'], "carla's dreams": ['Pop-Dance'],
@@ -44,7 +47,7 @@ export function genuriPentru(nume: string, fallback: string[] = []): string[] {
   return can
 }
 
-export const ARTISTI_ASCUNSI = ['gojira', 'alternosfera', 'inna', 'dangerosu', 'connect-r, smiley & alex velea']
+export const ARTISTI_ASCUNSI = ['gojira', 'alternosfera', 'inna', 'dangerosu', 'connect-r, smiley & alex velea', 'sylvia by dj rynno']
 export function esteAscuns(nume: string): boolean {
   const n = (nume || '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').trim()
   return ARTISTI_ASCUNSI.includes(n)
