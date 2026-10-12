@@ -291,6 +291,14 @@ function ListaRoster({ artisti, audienta, token, ascundeContacte, destinatar, sc
     return out
   }, [filtrati, gen, q])
 
+  // la revelion deschid prima oferta implicit, ca oamenii sa vada ca se poate extinde
+  const [autoDeschis, setAutoDeschis] = useState(false)
+  useEffect(() => {
+    if (autoDeschis || !eRevelion || totiDeschisi || deschis || gen || q.trim()) return
+    const primul = randuri.find((x: any) => !x._h)
+    if (primul) { setDeschis(primul.nume); setAutoDeschis(true) }
+  }, [eRevelion, randuri, autoDeschis, totiDeschisi, deschis, gen, q])
+
   function log(actiune: string, artist?: string) {
     fetch('/api/share/' + token, { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify({ actiune, artist }) }).catch(() => {})
   }
