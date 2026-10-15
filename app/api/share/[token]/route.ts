@@ -58,7 +58,7 @@ export async function GET(req: Request, ctx: { params: Promise<{ token: string }
         }
       }
       return {
-        nume: a.nume, genuri: (genuriPentru(a.nume, meta?.genres || []).length ? genuriPentru(a.nume, meta?.genres || []) : (a.categorie ? [a.categorie] : [])), esteFwd: a.tip !== 'intermediere', tier: (balP && balP.tier) ? balP.tier : tierPentru(a.nume, meta?.tier || null, fee),
+        nume: a.nume, genuri: (genuriPentru(a.nume, meta?.genres || []).length ? genuriPentru(a.nume, meta?.genres || []) : (a.categorie ? [a.categorie] : [])), esteFwd: a.tip !== 'intermediere', tier: (prof && prof.tier) ? prof.tier : tierPentru(a.nume, meta?.tier || null, fee),
         revelion: !!rev,
         special: !!prof,
         catBal: (balP && balP.cat) || null,
