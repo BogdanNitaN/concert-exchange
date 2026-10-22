@@ -273,11 +273,15 @@ function ListaRoster({ artisti, audienta, token, ascundeContacte, destinatar, sc
       }
       return o
     }
-    const top = filtrati.filter(a => ot(a.tier) === 0 && !esteFaraTop(a.nume)).sort((a, b) => ot(a.tier) - ot(b.tier))
+    // proiectele speciale (gen special, ex. simfonicele) stau jos intr-o sectiune proprie, niciodata in Top
+    const esteSpecial = (a: any) => (a.genuri && a.genuri[0] || '').toLowerCase() === 'special'
+    const top = filtrati.filter(a => ot(a.tier) === 0 && !esteFaraTop(a.nume) && !esteSpecial(a)).sort((a, b) => ot(a.tier) - ot(b.tier))
     const topSet = new Set(top.map(a => a.nume))
+    const speciale = filtrati.filter(a => esteSpecial(a) && !topSet.has(a.nume))
+    const specialeSet = new Set(speciale.map(a => a.nume))
     const grupe: Record<string, any[]> = {}
     for (const a of filtrati) {
-      if (topSet.has(a.nume)) continue
+      if (topSet.has(a.nume) || specialeSet.has(a.nume)) continue
       const g = (a.genuri && a.genuri[0]) || 'Alte genuri'
       if (!grupe[g]) grupe[g] = []
       grupe[g].push(a)
@@ -287,6 +291,11 @@ function ListaRoster({ artisti, audienta, token, ascundeContacte, destinatar, sc
     for (const [g, l] of Object.entries(grupe).sort((x, y) => y[1].length - x[1].length)) {
       l.sort((a, b) => ot(a.tier) - ot(b.tier))
       out.push({ _h: g, _n: l.length }); out.push(...l)
+    }
+    // Proiecte Speciale la final
+    if (speciale.length) {
+      speciale.sort((a, b) => ot(a.tier) - ot(b.tier))
+      out.push({ _h: 'Proiecte Speciale', _n: speciale.length }); out.push(...speciale)
     }
     return out
   }, [filtrati, gen, q])
