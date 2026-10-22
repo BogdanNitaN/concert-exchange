@@ -1333,7 +1333,7 @@ export const ARTISTS_DATA = [
     ],
     "feeMin": 0,
     "feeMax": 0,
-    "tier": "A+",
+    "tier": "A",
     "cazare": "la cerere",
     "nrBileteAvion": 0,
     "costPerKm": 0
@@ -1346,7 +1346,7 @@ export const ARTISTS_DATA = [
     ],
     "feeMin": 0,
     "feeMax": 0,
-    "tier": "A+",
+    "tier": "A",
     "cazare": "la cerere",
     "nrBileteAvion": 0,
     "costPerKm": 0
@@ -1372,7 +1372,7 @@ export const ARTISTS_DATA = [
     ],
     "feeMin": 0,
     "feeMax": 0,
-    "tier": "A+",
+    "tier": "A",
     "cazare": "la cerere",
     "nrBileteAvion": 0,
     "costPerKm": 0
@@ -1385,7 +1385,7 @@ export const ARTISTS_DATA = [
     ],
     "feeMin": 0,
     "feeMax": 0,
-    "tier": "A+",
+    "tier": "A",
     "cazare": "la cerere",
     "nrBileteAvion": 0,
     "costPerKm": 0
