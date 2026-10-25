@@ -89,7 +89,8 @@ export default function RosterPublic() {
   }, [artisti, cauta, gen])
 
   const eFiltrat = !!(gen || cauta)
-  const top = useMemo(() => artisti.filter(a => ordTier(a.tier) === 0 && !esteFaraTop(a.nume)).sort((a, b) => ordTier(a.tier) - ordTier(b.tier)), [artisti])
+  // proiectele speciale (gen special, ex. simfonicele) nu stau in Top; raman in grupul lor mai jos
+  const top = useMemo(() => artisti.filter(a => ordTier(a.tier) === 0 && !esteFaraTop(a.nume) && (a.genuri[0] || '').toLowerCase() !== 'special'), [artisti])
   const topSet = useMemo(() => new Set(top.map(a => a.nume)), [top])
   const peGenuri = useMemo(() => {
     const m: Record<string, any[]> = {}
@@ -100,8 +101,17 @@ export default function RosterPublic() {
       m[g].push(a)
     }
     for (const g of Object.keys(m)) m[g].sort((a, b) => ordTier(a.tier) - ordTier(b.tier))
-    return Object.entries(m).sort((x, y) => y[1].length - x[1].length)
+    // grupele dupa marime, dar Proiecte Speciale mereu la final
+    return Object.entries(m).sort((x, y) => {
+      if ((x[0] || '').toLowerCase() === 'special') return 1
+      if ((y[0] || '').toLowerCase() === 'special') return -1
+      return y[1].length - x[1].length
+    })
   }, [artisti, topSet])
+  const etichetaGen = (g) => {
+    const et = { pop: 'Pop', trap: 'Trap', rap: 'Rap / Hip-Hop', rock: 'Rock', dance: 'Dance', dj: 'DJs', balcanic_pop: 'Balcanic Pop', manele: 'Manele', lautareasca: 'Lautareasca', latino: 'Latino', petrecere: 'Petrecere', cover: 'Covers', special: 'Proiecte Speciale', altele: 'Altele' }
+    return et[(g || '').toLowerCase()] || g
+  }
 
   const chip = (activ: boolean): any => ({
     padding:'9px 15px', borderRadius:'20px', border:'1.5px solid '+(activ ? UI.ink : UI.line), cursor:'pointer',
@@ -196,7 +206,7 @@ export default function RosterPublic() {
             )}
             {peGenuri.map(([g, lista]) => (
               <div key={g} style={{marginBottom:'28px'}}>
-                <div style={{fontSize:'12px', fontWeight:800, color:UI.sub, textTransform:'uppercase', letterSpacing:'0.1em', marginBottom:'12px'}}>{g} <span style={{color:UI.faint, fontWeight:700}}>· {lista.length}</span></div>
+                <div style={{fontSize:'12px', fontWeight:800, color:UI.sub, textTransform:'uppercase', letterSpacing:'0.1em', marginBottom:'12px'}}>{etichetaGen(g)} <span style={{color:UI.faint, fontWeight:700}}>· {lista.length}</span></div>
                 <div style={GRID}>
                   {lista.map((a: any) => <Card key={a.nume} a={a} onTier={r => { setTierExplicat(r); window.scrollTo({top: 0, behavior: 'smooth'}) }} />)}
                 </div>
