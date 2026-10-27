@@ -109,7 +109,7 @@ export default function RosterPublic() {
     })
   }, [artisti, topSet])
   const etichetaGen = (g: string): string => {
-    const et = { pop: 'Pop', trap: 'Trap', rap: 'Rap / Hip-Hop', rock: 'Rock', dance: 'Dance', dj: 'DJs', balcanic_pop: 'Balcanic Pop', manele: 'Manele', lautareasca: 'Lautareasca', latino: 'Latino', petrecere: 'Petrecere', cover: 'Covers', special: 'Proiecte Speciale', altele: 'Altele' }
+    const et: Record<string, string> = { pop: 'Pop', trap: 'Trap', rap: 'Rap / Hip-Hop', rock: 'Rock', dance: 'Dance', dj: 'DJs', balcanic_pop: 'Balcanic Pop', manele: 'Manele', lautareasca: 'Lautareasca', latino: 'Latino', petrecere: 'Petrecere', cover: 'Covers', special: 'Proiecte Speciale', altele: 'Altele' }
     return et[(g || '').toLowerCase()] || g
   }
 
