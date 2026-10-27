@@ -93,9 +93,11 @@ export default function RosterPublic() {
   const top = useMemo(() => artisti.filter(a => ordTier(a.tier) === 0 && !esteFaraTop(a.nume) && (a.genuri[0] || '').toLowerCase() !== 'special'), [artisti])
   const topSet = useMemo(() => new Set(top.map(a => a.nume)), [top])
   const peGenuri = useMemo(() => {
+    // artisti care apar in Top DAR si in grupul lor de gen, ca lista genului sa para completa
+    const dubleazaInGen = new Set(['Puya', 'Grasu XXL'])
     const m: Record<string, any[]> = {}
     for (const a of artisti) {
-      if (topSet.has(a.nume)) continue
+      if (topSet.has(a.nume) && !dubleazaInGen.has(a.nume)) continue
       const g = a.genuri[0] || 'Alte genuri'
       if (!m[g]) m[g] = []
       m[g].push(a)
