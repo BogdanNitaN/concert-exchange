@@ -2,7 +2,7 @@
 const GENURI: Record<string, string[]> = {
   'grasu xxl': ['Hip-Hop'], 'guess who': ['Hip-Hop'], 'killa fonic': ['Hip-Hop', 'Trap'], 'la familia': ['Hip-Hop'],
   'parazitii': ['Hip-Hop'], 'puya': ['Hip-Hop'], 'vescan': ['Hip-Hop'], 'puya & urban symphony orchestra': ['Special'],
-  'dangerosu': ['Hip-Hop'], 'gojira': ['Hip-Hop'],
+  'dangerosu': ['Hip-Hop'], 'gojira': ['Hip-Hop'], 'bad & boujee party': ['Hip-Hop'], 'marko glass & bvcovia': ['Trap'],
   'albwho': ['DJs'], 'andre rizo': ['DJs'], 'andrew dum': ['DJs'], 'manuel riva': ['DJs'], 'speak': ['DJs'],
   'chris hype': ['DJs'], 'moonsound': ['DJs'],
   'babasha': ['Balkanic Pop'], 'feli & taraful fratii cazanoi': ['Special'], 'white mahala': ['Balkanic Pop'], 'bere gratis simfonic': ['Special'],
