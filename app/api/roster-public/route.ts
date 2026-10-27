@@ -16,10 +16,13 @@ export async function GET() {
     const imgMap: Record<string, string> = {}
     for (const i of imgs || []) if (i.name) imgMap[i.name] = i.image_url
     const ascunsi = new Set((shares || []).filter(sh => sh.afisabil === false).map(sh => sh.nume))
+    // ascunsi DOAR pe /roster (raman vizibili pe /piata, unde se stie ca pot fi luati si la pachet)
+    const ASCUNSI_DOAR_ROSTER = new Set(['marko glass & bvcovia'])
+    const norm = (x: string) => (x || '').toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '').trim()
 
     const ordineTier: Record<string, number> = { 'A++': 0, 'Premium': 0, 'A+': 1, 'A': 2 }
     const artisti = (toti || [])
-      .filter(a => a.tip !== 'intermediere' && !ascunsi.has(a.nume) && !esteAscuns(a.nume))
+      .filter(a => a.tip !== 'intermediere' && !ascunsi.has(a.nume) && !esteAscuns(a.nume) && !ASCUNSI_DOAR_ROSTER.has(norm(a.nume)))
       .map(a => {
         const meta = (ARTISTS_DATA as unknown as any[]).find(x => (x.name || '').toLowerCase() === (a.nume || '').toLowerCase())
         const genuri: string[] = genuriPentru(a.nume, meta?.genres || [])
