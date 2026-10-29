@@ -19,9 +19,6 @@ export const CALENDAR_TO_ROSTER: Record<string, string> = {
   'EMAA': 'Emaa',
   'Dara': 'Dara',
   'Dangerosu': 'Dangerosu',
-  'CONCERTE MARIO': 'Mario',
-  'FELI': 'Feli',
-  'Events Feli': 'Feli',
   'Florian Rus': 'Florian Rus',
   'Grasu XXL': 'Grasu XXL',
   'Guess Who': 'Guess Who',
@@ -63,6 +60,7 @@ export const CALENDAR_EXCLUSE = [
   'Sasha Lopez', 'Sickotoy', 'DJ PROJECT', 'Manuel Riva', 'Nuante Epicenter',
   'NICOLE CHERRY', 'Nicole Cherry',
   'Bruja', 'Dangerosu',
+  'CONCERTE MARIO', 'Mario', 'FELI', 'Events Feli', 'Feli',
 ]
 
 export const ARTISTI_INACTIVI = ['Dara']
