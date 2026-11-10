@@ -27,7 +27,6 @@ export const CALENDAR_TO_ROSTER: Record<string, string> = {
   'IDK': 'IDK',
   'KILLA FONIC': 'Killa Fonic',
   'La Familia': 'La Familia',
-  'LAZY ED': 'Lazy Ed',
   'MINELLI': 'Minelli',
   'MIRA': 'Mira',
   'Parazitii': 'Parazitii',
@@ -61,6 +60,7 @@ export const CALENDAR_EXCLUSE = [
   'NICOLE CHERRY', 'Nicole Cherry',
   'Bruja', 'Dangerosu',
   'CONCERTE MARIO', 'Mario', 'FELI', 'Events Feli', 'Feli',
+  'LAZY ED', 'Lazy Ed',
 ]
 
 export const ARTISTI_INACTIVI = ['Dara']
